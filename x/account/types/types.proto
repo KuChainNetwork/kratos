@@ -1,0 +1,64 @@
+syntax = "proto3";
+package kuchain.x.account.types.v1;
+
+import "third_party/proto/gogoproto/gogo.proto";
+import "chain/types/types.proto";
+
+option go_package = "github.com/KuChain-io/kuchain/x/account/types";
+
+message AccountAuth {
+    option (gogoproto.goproto_getters) = false;
+    option (gogoproto.goproto_stringer) = false;
+
+    kuchain.chain.types.v1.Name name = 1 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"name\""
+    ];
+    bytes address = 2 [
+        (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
+        (gogoproto.moretags) = "yaml:\"address\""
+    ];
+}
+
+// KuAccount defines a account for kuchain
+message KuAccount {
+    option (gogoproto.goproto_getters) = false;
+    option (gogoproto.goproto_stringer) = false;
+
+    kuchain.chain.types.v1.AccountID id = 1 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"id\""
+    ];
+    uint64 account_number = 2 [(gogoproto.moretags) = "yaml:\"account_number\""];
+    repeated AccountAuth auths   = 3 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"auths\""
+    ];
+}
+
+message Auth {
+    option (gogoproto.goproto_getters) = false;
+    option (gogoproto.goproto_stringer) = false;
+
+    kuchain.chain.types.v1.Name name = 1 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"name\""
+    ];
+    bytes address = 2 [
+        (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
+        (gogoproto.moretags) = "yaml:\"address\""
+    ];
+    bytes  public_key  = 3 [(gogoproto.moretags) = "yaml:\"public_key\""];
+    uint64 number      = 4 [(gogoproto.moretags) = "yaml:\"number\""];
+    uint64 sequence    = 5 [(gogoproto.moretags) = "yaml:\"sequence\""];
+}
+
+// ModuleAccount defines an account for modules that holds coins on a pool
+message ModuleAccount {
+    option (gogoproto.goproto_getters)  = false;
+    option (gogoproto.goproto_stringer) = false;
+  
+    KuAccount base_account = 1
+        [(gogoproto.nullable) = false, (gogoproto.embed) = true, (gogoproto.moretags) = "yaml:\"base_account\""];
+    repeated string permissions = 2;
+  }

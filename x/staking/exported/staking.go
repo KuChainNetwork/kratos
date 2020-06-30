@@ -1,0 +1,74 @@
+package exported
+
+import (
+	"math/big"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+// staking constants
+const (
+
+	// default bond denomination
+	DefaultBondDenom = "kratos/kts"
+
+	// Delay, in blocks, between when validator updates are returned to the
+	// consensus-engine and when they are applied. For example, if
+	// ValidatorUpdateDelay is set to X, and if a validator set update is
+	// returned with new validators at the end of block 10, then the new
+	// validators are expected to sign blocks beginning at block 11+X.
+	//
+	// This value is constant as this should not change without a hard fork.
+	// For Tendermint this should be set to 1 block, for more details see:
+	// https://tendermint.com/docs/spec/abci/apps.html#endblock
+	ValidatorUpdateDelay int64 = 1
+)
+
+// PowerReduction is the amount of staking tokens required for 1 unit of consensus-engine power
+var PowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil))
+
+// TokensToConsensusPower - convert input tokens to potential consensus-engine power
+func TokensToConsensusPower(tokens sdk.Int) int64 {
+	return (tokens.Quo(PowerReduction)).Int64()
+}
+
+// TokensFromConsensusPower - convert input power to tokens
+func TokensFromConsensusPower(power int64) sdk.Int {
+	return sdk.NewInt(power).Mul(PowerReduction)
+}
+
+// BondStatus is the status of a validator
+type BondStatus int32
+
+// staking constants
+const (
+	Unbonded  BondStatus = 1
+	Unbonding BondStatus = 2
+	Bonded    BondStatus = 3
+
+	BondStatusUnbonded  = "Unbonded"
+	BondStatusUnbonding = "Unbonding"
+	BondStatusBonded    = "Bonded"
+)
+
+// Equal compares two BondStatus instances
+func (b BondStatus) Equal(b2 BondStatus) bool {
+	return byte(b) == byte(b2)
+}
+
+// String implements the Stringer interface for BondStatus.
+func (b BondStatus) String() string {
+	switch b {
+	case Unbonded:
+		return BondStatusUnbonded
+
+	case Unbonding:
+		return BondStatusUnbonding
+
+	case Bonded:
+		return BondStatusBonded
+
+	default:
+		panic("invalid bond status")
+	}
+}

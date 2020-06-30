@@ -1,0 +1,65 @@
+syntax = "proto3";
+package kuchain.chain.types.v1;
+
+import "third_party/proto/gogoproto/gogo.proto";
+import "vendor/github.com/cosmos/cosmos-sdk/types/types.proto";
+
+option go_package = "github.com/KuChain-io/kuchain/chain/types";
+
+// Name defines a account string name imp by 128 length byte.
+message Name {
+    option (gogoproto.goproto_getters)  = false;
+    option (gogoproto.goproto_stringer) = false;
+
+    bytes  value = 1 [(gogoproto.moretags) = "yaml:\"value\""];
+}
+
+// AccountID a id for the entity which can own asset, now the accountID will be a AccAddress or a name for a account
+message AccountID {
+    option (gogoproto.goproto_getters)  = false;
+    option (gogoproto.goproto_stringer) = false;
+
+    bytes  value = 1 [(gogoproto.moretags) = "yaml:\"value\""];
+}
+
+// KuMsg is the base msg for token transfer msg
+message KuMsg {
+    option (gogoproto.goproto_getters)  = false;
+
+    repeated bytes auth = 1 [
+        (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress",
+        (gogoproto.moretags) = "yaml:\"auth\""
+    ];
+    AccountID from = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"from\""
+    ];
+    AccountID to = 3 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"to\""
+    ];
+    repeated cosmos_sdk.v1.Coin amount = 4 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"amount\"",
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+    Name  router = 5 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"router\""
+    ];
+    Name  action = 6 [
+        (gogoproto.nullable) = false,
+        (gogoproto.moretags) = "yaml:\"action\""
+    ];
+    bytes data = 7 [
+        (gogoproto.moretags) = "yaml:\"data\""
+    ];
+}
+
+
+// AccountIDes defines a repeated set of AccountIDes.
+message AccountIDes {
+  option (gogoproto.goproto_stringer) = true;
+
+  repeated kuchain.chain.types.v1.AccountID addresses = 1[(gogoproto.nullable) = false];
+}

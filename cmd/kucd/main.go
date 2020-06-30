@@ -1,0 +1,126 @@
+package main
+
+import (
+	"encoding/json"
+	"io"
+
+	"github.com/KuChain-io/kuchain/x/asset"
+	"github.com/KuChain-io/kuchain/x/staking"
+
+	genutilcli "github.com/KuChain-io/kuchain/x/genutil/client/cli"
+
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/debug"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
+	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/store"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	//"github.com/KuChain-io/kuchain/x/staking"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/log"
+	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
+	"github.com/KuChain-io/kuchain/app"
+	chainCfg "github.com/KuChain-io/kuchain/chain/config"
+	"github.com/KuChain-io/kuchain/chain/constants"
+	kuLog "github.com/KuChain-io/kuchain/utils/log"
+	genTypes "github.com/KuChain-io/kuchain/x/genutil/types"
+)
+
+const flagInvCheckPeriod = "inv-check-period"
+
+var invCheckPeriod uint
+
+func main() {
+	cdc := codecstd.MakeCodec(app.ModuleBasics)
+	genCdc := genTypes.ModuleCdc
+
+	chainCfg.SealChainConfig()
+
+	ctx := server.NewDefaultContext()
+	cobra.EnableCommandSorting = false
+	rootCmd := &cobra.Command{
+		Use:               "ktsd",
+		Short:             "kratos Daemon (server)",
+		PersistentPreRunE: kuLog.PersistentPreRunEFn(ctx),
+	}
+
+	rootCmd.AddCommand(genutilcli.InitCmd(ctx, genCdc, app.ModuleBasics, app.DefaultNodeHome))
+	rootCmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, genCdc, asset.GenesisBalancesIterator{},
+		staking.NewFuncManager(), app.DefaultNodeHome))
+	rootCmd.AddCommand(
+		genutilcli.GenTxCmd(
+			ctx, genCdc, app.ModuleBasics, staking.AppModuleBasic{}, asset.GenesisBalancesIterator{},
+			app.DefaultNodeHome, app.DefaultCLIHome, staking.NewFuncManager(),
+		),
+	)
+	rootCmd.AddCommand(genutilcli.ValidateGenesisCmd(ctx, genCdc, app.ModuleBasics))
+
+	rootCmd.AddCommand(AddGenesisCmds(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome))
+
+	rootCmd.AddCommand(flags.NewCompletionCmd(rootCmd, true))
+	rootCmd.AddCommand(replayCmd())
+	rootCmd.AddCommand(debug.Cmd(cdc))
+
+	AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
+
+	// prepare and add flags
+	executor := cli.PrepareBaseCmd(rootCmd, "GA", app.DefaultNodeHome)
+	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
+		0, "Assert registered invariants every N blocks")
+	err := executor.Execute()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
+	var cache sdk.MultiStorePersistentCache
+
+	if viper.GetBool(server.FlagInterBlockCache) {
+		cache = store.NewCommitKVStoreCacheManager()
+	}
+
+	skipUpgradeHeights := make(map[int64]bool)
+	for _, h := range viper.GetIntSlice(server.FlagUnsafeSkipUpgrades) {
+		skipUpgradeHeights[int64(h)] = true
+	}
+
+	miniGasPrice := viper.GetString(server.FlagMinGasPrices)
+	if miniGasPrice == "" {
+		miniGasPrice = constants.MinGasPriceString
+	}
+
+	return app.NewKuchainApp(
+		logger, db, traceStore, true, invCheckPeriod,
+		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		baseapp.SetMinGasPrices(miniGasPrice),
+		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+		baseapp.SetInterBlockCache(cache),
+	)
+}
+
+func exportAppStateAndTMValidators(
+	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
+) (json.RawMessage, []tmtypes.GenesisValidator, error) {
+
+	if height != -1 {
+		kuApp := app.NewKuchainApp(logger, db, traceStore, false, uint(1))
+		err := kuApp.LoadHeight(height)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		return kuApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+	}
+
+	kuApp := app.NewKuchainApp(logger, db, traceStore, true, uint(1))
+	return kuApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+}

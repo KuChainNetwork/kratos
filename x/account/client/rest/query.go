@@ -1,0 +1,80 @@
+package rest
+
+import (
+	"fmt"
+	chainTypes "github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/gorilla/mux"
+	"net/http"
+)
+
+func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
+	r.HandleFunc(
+		"/account/{name}",
+		getAccountHandlerFn(cliCtx),
+	).Methods("GET")
+	r.HandleFunc(
+		"/account/auth/{auth}",
+		getAuthHandlerFn(cliCtx),
+	).Methods("GET")
+}
+
+func getAccountHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		name := vars["name"]
+
+		accGetter := types.NewAccountRetriever(cliCtx)
+
+		key, err := chainTypes.NewAccountIDFromStr(name)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		acc, height, err := accGetter.GetAccountWithHeight(key)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, acc)
+	}
+}
+
+func getAuthHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		auth := vars["auth"]
+
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		accGetter := types.NewAccountRetriever(cliCtx)
+
+		key, err := chainTypes.AccAddressFromBech32(auth)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, fmt.Sprintf("new acc-address error %v", err.Error()))
+			return
+		}
+
+		data, height, err := accGetter.GetAddAuthWithHeight(key)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, data)
+	}
+}

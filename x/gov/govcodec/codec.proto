@@ -1,0 +1,41 @@
+syntax = "proto3";
+package kuchain.x.gov.types.v1;
+
+import "third_party/proto/cosmos-proto/cosmos.proto";
+import "third_party/proto/gogoproto/gogo.proto";
+import "x/gov/types/types.proto";
+import "x/params/types/proposal/types.proto";
+
+option go_package = "github.com/KuChain-io/kuchain/x/gov/govcodec";
+
+// MsgSubmitProposal defines the application-level message type for handling
+// governance proposals.
+message CodecMsgSubmitProposal {
+  option (gogoproto.equal)           = true;
+  option (gogoproto.goproto_getters) = false;
+
+  kuchain.x.gov.v1.MsgSubmitProposalBase base    = 1 [(gogoproto.nullable) = false, (gogoproto.embed) = true];
+  CodecContent                                   content = 2;
+}
+
+// Proposal defines the application-level concrete proposal type used in governance
+// proposals.
+message CodecProposal {
+  option (gogoproto.equal) = true;
+
+  kuchain.x.gov.v1.ProposalBase base    = 1 [(gogoproto.embed) = true, (gogoproto.nullable) = false];
+  CodecContent                          content = 2 [(gogoproto.nullable) = false];
+}
+
+// Content defines the application-level allowed Content to be included in a
+// governance proposal.
+message CodecContent {
+  option (gogoproto.equal)             = true;
+  option (cosmos_proto.interface_type) = "github.com/KuChain-io/kuchain/x/gov/types.Content";
+
+  // sum defines a set of all acceptable concrete governance proposal Content types.
+  oneof sum {
+    kuchain.x.gov.v1.TextProposal                        text                    = 1;
+    kuchain.x.params.v1.ParameterChangeProposal          parameter_change        = 2;
+  }
+}

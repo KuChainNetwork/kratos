@@ -1,0 +1,205 @@
+syntax = "proto3";
+package kuchain.x.asset.types.v1;
+
+import "third_party/proto/gogoproto/gogo.proto";
+import "chain/types/types.proto";
+import "vendor/github.com/cosmos/cosmos-sdk/types/types.proto";
+
+option go_package = "github.com/KuChain-io/x/asset/types";
+
+// CoinDescription description info for a coin type
+message CoinDescription {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_stringer) = false;
+
+  // Symbol coin symbol name
+  kuchain.chain.types.v1.Name symbol = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"symbol\""
+  ];
+
+  // Creator coin creator account name
+  kuchain.chain.types.v1.Name creator = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"creator\""
+  ];
+
+  // Description coin description info
+  bytes description = 3 [ (gogoproto.moretags) = "yaml:\"description\"" ];
+}
+
+// CoinStat state for a coin type
+message CoinStat {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_stringer) = false;
+
+    // Symbol coin symbol name
+  kuchain.chain.types.v1.Name symbol = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"symbol\""
+  ];
+
+  // Creator coin creator account name
+  kuchain.chain.types.v1.Name creator = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"creator\""
+  ];
+
+  int64 create_height = 3 [
+    (gogoproto.moretags) = "yaml:\"create_height\""
+  ];
+
+  // Supply coin current supply
+  cosmos_sdk.v1.Coin supply = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"supply\""
+  ];
+
+  // MaxSupply coin max supply limit
+  cosmos_sdk.v1.Coin max_supply = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"max_supply\""
+  ];
+
+  bool can_issue = 6 [
+    (gogoproto.moretags) = "yaml:\"can_issue\""
+  ];
+
+  bool can_lock = 7 [
+    (gogoproto.moretags) = "yaml:\"can_lock\""
+  ];
+
+  int64 issue_to_height = 8 [
+    (gogoproto.moretags) = "yaml:\"issue_to_height\""
+  ];
+
+  // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+  cosmos_sdk.v1.Coin init_supply = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"init_supply\""
+  ];
+}
+
+message MsgCreateCoinData {
+  option (gogoproto.goproto_getters) = false;
+
+    // Symbol coin symbol name
+  kuchain.chain.types.v1.Name symbol = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"symbol\""
+  ];
+
+  // Creator coin creator account name
+  kuchain.chain.types.v1.Name creator = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"creator\""
+  ];
+
+  // MaxSupply coin max supply limit
+  cosmos_sdk.v1.Coin max_supply = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"max_supply\""
+  ];
+
+  // CanIssue if the coin can issue after create
+  bool can_issue = 4 [
+    (gogoproto.moretags) = "yaml:\"can_issue\""
+  ];
+
+  // CanLock if the coin can lock by user
+  bool can_lock = 5 [
+    (gogoproto.moretags) = "yaml:\"can_lock\""
+  ];
+
+  // IssueToHeight if this is not zero, creator only can issue this 
+  int64 issue_to_height = 6 [
+    (gogoproto.moretags) = "yaml:\"issue_to_height\""
+  ];
+
+  // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+  cosmos_sdk.v1.Coin init_supply = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"init_supply\""
+  ];
+
+  bytes desc = 8 [
+    (gogoproto.moretags) = "yaml:\"desc\""
+  ];
+}
+
+message MsgIssueCoinData {
+  option (gogoproto.goproto_getters) = false;
+
+    // Symbol coin symbol name
+  kuchain.chain.types.v1.Name symbol = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"symbol\""
+  ];
+
+  // Creator coin creator account name
+  kuchain.chain.types.v1.Name creator = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"creator\""
+  ];
+
+  // MaxSupply coin max supply limit
+  cosmos_sdk.v1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount\""
+  ];
+}
+
+message MsgBurnCoinData {
+  option (gogoproto.goproto_getters) = false;
+
+    // Symbol coin symbol name
+  kuchain.chain.types.v1.AccountID id = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+
+  // MaxSupply coin max supply limit
+  cosmos_sdk.v1.Coin amount = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount\""
+  ];
+}
+
+message MsgLockCoinData {
+  option (gogoproto.goproto_getters) = false;
+
+  // Id lock account
+  kuchain.chain.types.v1.AccountID id = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+
+  // Amount coins to lock
+  repeated cosmos_sdk.v1.Coin amount = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  // UnlockBlockHeight the block height the coins unlock
+  int64 unlockBlockHeight = 3 [
+    (gogoproto.moretags) = "yaml:\"unlockBlockHeight\""
+  ];
+}
+
+message MsgUnlockCoinData {
+  option (gogoproto.goproto_getters) = false;
+
+  // Id lock account
+  kuchain.chain.types.v1.AccountID id = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+
+  // Amount coins to lock
+  repeated cosmos_sdk.v1.Coin amount = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}

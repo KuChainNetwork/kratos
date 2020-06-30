@@ -1,0 +1,20 @@
+{
+    "plugins": [
+        {
+            "name": "test",
+            "ext_cfg_file": "",
+            "cfg": {}
+        },
+        {
+            "name": "db-history",
+            "cfg": {
+                "db": {
+                    "address": ":5432",
+                    "user": "pguser",
+                    "password": "123456",
+                    "database": "kuchaindb"
+                }
+            }
+        }
+    ]
+}
