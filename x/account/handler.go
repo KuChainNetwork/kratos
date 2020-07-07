@@ -38,6 +38,20 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 		return nil, types.ErrAccountCannotCreateSysAccount
 	}
 
+	// user only can create 12-length account
+	if creator, ok := msgData.Creator.ToName(); ok && constants.IsSystemAccount(creator) {
+		// system account can create accounts
+	} else {
+		if msgData.Name.Len() < 12 {
+			return nil, types.ErrAccountNameLenInvalid
+		}
+
+		// TODO: should use name
+		if !chainTypes.VerifyNameString(msgData.Name.String()) {
+			return nil, types.ErrAccountNameInvalid
+		}
+	}
+
 	logger.Debug("msg create account", "name", msgData.Name, "creator", msgData.Creator)
 
 	if a := k.GetAccountByName(ctx.Context(), msgData.Name); a != nil {
@@ -55,6 +69,7 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 
 	// add auth
 	k.EnsureAuthInited(ctx.Context(), msgData.Auth)
+	k.AddAccountByAuth(ctx.Context(), msgData.Auth, newAccount.GetName().String())
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -86,7 +101,8 @@ func handleMsgUpdateAccountAuth(ctx chainTypes.Context, k Keeper, msg *types.Msg
 	}
 
 	// Auth will Changed
-	ctx.RequireAccountAuth(accountStat.GetAuth())
+	oldAuth := accountStat.GetAuth()
+	ctx.RequireAccountAuth(oldAuth)
 
 	if err := accountStat.SetAuth(msgData.Auth); err != nil {
 		return nil, sdkerrors.Wrapf(err, "set auth to account error")
@@ -97,6 +113,8 @@ func handleMsgUpdateAccountAuth(ctx chainTypes.Context, k Keeper, msg *types.Msg
 
 	// add auth
 	k.EnsureAuthInited(ctx.Context(), msgData.Auth)
+	k.AddAccountByAuth(ctx.Context(), msgData.Auth, accountStat.GetName().String())
+	k.DeleteAccountByAuth(ctx.Context(), oldAuth, accountStat.GetName().String())
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

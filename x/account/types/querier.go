@@ -6,9 +6,10 @@ import (
 
 // query endpoints supported by the auth Querier
 const (
-	QueryAccount       = "account"
-	QueryAuthByAddress = "authByAddress"
-	QueryParams        = "params"
+	QueryAccount        = "account"
+	QueryAuthByAddress  = "authByAddress"
+	QueryAccountsByAuth = "accountsByAuth"
+	QueryParams         = "params"
 )
 
 // QueryAccountParams defines the params for querying accounts.
@@ -39,4 +40,14 @@ type QueryAuthByAddressParams struct {
 // NewQueryAddAuthParams creates a new instance of QueryAuthSeqParams.
 func NewQueryAddAuthParams(address chainTypes.AccAddress) QueryAuthByAddressParams {
 	return QueryAuthByAddressParams{Address: address}
+}
+
+// QueryAuthSeqParams defines the params for querying accounts.
+type QueryAccountsByAuthParams struct {
+	Auth chainTypes.AccAddress
+}
+
+// NewQueryAccountsByAuthParams creates a new instance of QueryAccountsByAuthParams.
+func NewQueryAccountsByAuthParams(auth string) QueryAccountsByAuthParams {
+	return QueryAccountsByAuthParams{Auth: chainTypes.MustAccAddressFromBech32(auth)}
 }

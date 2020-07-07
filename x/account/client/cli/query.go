@@ -25,6 +25,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(
 		GetAccountCmd(cdc),
 		GetAuthCmd(cdc),
+		GetAccountsCmd(cdc),
 	)
 
 	return cmd
@@ -81,6 +82,38 @@ func GetAuthCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			return cliCtx.PrintOutput(data)
+		},
+	}
+
+	return flags.GetCommands(cmd)[0]
+}
+
+func GetAccountsCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "accounts [auth]",
+		Short: "Query accounts by",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			params := types.NewQueryAccountsByAuthParams(args[0])
+			bz, err := cdc.MarshalJSON(params)
+			if err != nil {
+				return fmt.Errorf("failed to marshal params: %w", err)
+			}
+
+			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAccountsByAuth)
+			res, _, err := cliCtx.QueryWithData(route, bz)
+			if err != nil {
+				return err
+			}
+
+			var result types.Accounts
+			if err = cdc.UnmarshalJSON(res, &result); err != nil {
+				return fmt.Errorf("failed to unmarshal response: %w", err)
+			}
+
+			return cliCtx.PrintOutput(result)
 		},
 	}
 

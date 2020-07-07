@@ -22,6 +22,9 @@ var (
 	// AuthSeqStoreKeyPerfix seq num store prefix
 	AuthSeqStoreKeyPerfix = []byte{0x02}
 
+	// Auth - Accounts store prefix
+	AuthAccountsStoreKeyPerfix = []byte{0x03}
+
 	// GlobalAccountNumberKey param key for global account number
 	GlobalAccountNumberKey = types.MustName("g.account.number").Value
 )
@@ -39,4 +42,9 @@ func NameStoreKey(name types.Name) []byte {
 // AuthSeqStoreKey seq key for store
 func AuthSeqStoreKey(addr types.AccAddress) []byte {
 	return append(AuthSeqStoreKeyPerfix, addr.Bytes()...)
+}
+
+// Auth - Accounts key for store
+func AuthAccountsStoreKey(auth types.AccAddress) []byte {
+	return append(AuthAccountsStoreKeyPerfix, auth.Bytes()...)
 }

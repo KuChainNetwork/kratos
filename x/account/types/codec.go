@@ -14,6 +14,7 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterInterface((*exported.AccountStatKeeper)(nil), nil)
 	cdc.RegisterInterface((*exported.Account)(nil), nil)
 	cdc.RegisterInterface((*exported.GenesisAccount)(nil), nil)
+	cdc.RegisterInterface((*exported.AuthAccountKeeper)(nil), nil)
 
 	cdc.RegisterConcrete(&MsgCreateAccountData{}, "account/createData", nil)
 	cdc.RegisterConcrete(&MsgCreateAccount{}, "account/createMsg", nil)
@@ -23,6 +24,8 @@ func RegisterCodec(cdc *codec.Codec) {
 
 	cdc.RegisterConcrete(&KuAccount{}, "kuchain/Account", nil)
 	cdc.RegisterConcrete(&ModuleAccount{}, "kuchain/ModuleAccount", nil)
+
+	cdc.RegisterConcrete(&AuthAccounts{}, "account/authAccounts", nil)
 }
 
 // RegisterAccountTypeCodec registers an external account type defined in

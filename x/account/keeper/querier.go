@@ -19,6 +19,8 @@ func NewQuerier(keeper AccountKeeper) sdk.Querier {
 			return queryAccount(ctx, req, keeper)
 		case types.QueryAuthByAddress:
 			return queryAuthByAddress(ctx, req, keeper)
+		case types.QueryAccountsByAuth:
+			return queryAccountsByAuth(ctx, req, keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
 		}
@@ -71,4 +73,20 @@ func queryAuthByAddress(ctx sdk.Context, req abci.RequestQuery, ak AccountKeeper
 	}
 
 	return jsonBz, nil
+}
+
+func queryAccountsByAuth(ctx sdk.Context, req abci.RequestQuery, ak AccountKeeper) ([]byte, error) {
+	var params types.QueryAccountsByAuthParams
+	if err := ak.cdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	accounts := ak.GetAccountsByAuth(ctx, params.Auth)
+
+	bz, err := codec.MarshalJSONIndent(ak.cdc, accounts)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return bz, nil
 }

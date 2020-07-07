@@ -12,10 +12,16 @@ const (
 
 var (
 	FeeSystemAccount = types.MustName(FeeSystemAccountStr)
+	SystemAccount    = types.MustName("kratos")
 )
 
 func IsSystemAccount(name types.Name) bool {
 	if name.Eq(FeeSystemAccount) {
+		return true
+	}
+
+	// TODO use constants
+	if name.Eq(SystemAccount) {
 		return true
 	}
 

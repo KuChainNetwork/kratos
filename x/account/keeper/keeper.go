@@ -14,6 +14,7 @@ import (
 
 var _ exported.AccountAuthKeeper = (*AccountKeeper)(nil)
 var _ exported.AccountStatKeeper = (*AccountKeeper)(nil)
+var _ exported.AuthAccountKeeper = (*AccountKeeper)(nil)
 
 // AccountKeeper keeper for account module
 type AccountKeeper struct {

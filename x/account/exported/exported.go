@@ -21,6 +21,11 @@ type AccountStatKeeper interface {
 	GetNextAccountNumber(ctx sdk.Context) uint64
 }
 
+type AuthAccountKeeper interface {
+	GetAccountsByAuth(sdk.Context, types.AccAddress) []string
+	AddAccountByAuth(sdk.Context, types.AccAddress, string)
+}
+
 // Account is a interface for kuchain account and address,
 // kuchain support both cosmos address and eos-likely account.
 type Account interface {

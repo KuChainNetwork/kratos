@@ -19,6 +19,10 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		"/account/auth/{auth}",
 		getAuthHandlerFn(cliCtx),
 	).Methods("GET")
+	r.HandleFunc(
+		"/accounts/{auth}",
+		getAccountsByAuthHandlerFn(cliCtx),
+	).Methods("GET")
 }
 
 func getAccountHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
@@ -76,5 +80,40 @@ func getAuthHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		cliCtx = cliCtx.WithHeight(height)
 		rest.PostProcessResponse(w, cliCtx, data)
+	}
+}
+
+func getAccountsByAuthHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		auth := vars["auth"]
+
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		params := types.NewQueryAccountsByAuthParams(auth)
+		bz, err := cliCtx.Codec.MarshalJSON(params)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAccountsByAuth)
+		res, height, err := cliCtx.QueryWithData(route, bz)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		var result types.Accounts
+		if err = cliCtx.Codec.UnmarshalJSON(res, &result); err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, result)
 	}
 }

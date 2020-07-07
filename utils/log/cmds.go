@@ -6,7 +6,9 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
+	chainCfg "github.com/KuChain-io/kuchain/chain/config"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	cfg "github.com/tendermint/tendermint/config"
@@ -16,9 +18,8 @@ import (
 
 func PersistentPreRunEFn(context *server.Context) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		err := server.PersistentPreRunEFn(context)(cmd, args)
-		if err != nil {
-			return err
+		if cmd.Name() == version.Cmd.Name() {
+			return nil
 		}
 
 		zapLogger := mkZapLogger(viper.GetBool(cli.TraceFlag))
@@ -31,7 +32,7 @@ func PersistentPreRunEFn(context *server.Context) func(*cobra.Command, []string)
 		}
 
 		context.Logger = logger.With("module", "main")
-
+		context.Config = chainCfg.DefaultConfig()
 		return nil
 	}
 }

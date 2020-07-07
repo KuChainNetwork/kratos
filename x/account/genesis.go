@@ -15,6 +15,7 @@ func InitGenesis(ctx sdk.Context, ak Keeper, data GenesisState) {
 
 		// ensure auth init
 		ak.EnsureAuthInited(ctx, a.GetAuth())
+		ak.AddAccountByAuth(ctx, a.GetAuth(), a.GetName().String())
 	}
 }
 
