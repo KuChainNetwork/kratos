@@ -125,6 +125,10 @@ func checkPayerAuth(ctx sdk.Context, ak AccountKeeper, tx sdk.Tx, simulate bool,
 	}
 
 	acc := ak.GetAccount(ctx, payer)
+	if acc == nil {
+		return sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, "payer not found")
+	}
+
 	accAuth := acc.GetAuth()
 
 	if !isHasAuth(auths, accAuth) {
