@@ -33,12 +33,12 @@ func GenInflationRateChange(r *rand.Rand) sdk.Dec {
 
 // GenInflationMax randomized InflationMax
 func GenInflationMax(r *rand.Rand) sdk.Dec {
-	return sdk.NewDecWithPrec(20, 2)
+	return sdk.NewDecWithPrec(12, 2)
 }
 
 // GenInflationMin randomized InflationMin
 func GenInflationMin(r *rand.Rand) sdk.Dec {
-	return sdk.NewDecWithPrec(7, 2)
+	return sdk.NewDecWithPrec(6, 2)
 }
 
 // GenGoalBonded randomized GoalBonded
@@ -81,7 +81,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	)
 
 	mintDenom := StakingExported.DefaultBondDenom
-	blocksPerYear := uint64(60 * 60 * 8766 / 5)
+	blocksPerYear := uint64(60 * 60 * 8766 / 3)
 	params := types.NewParams(mintDenom, inflationRateChange, inflationMax, inflationMin, goalBonded, blocksPerYear)
 
 	mintGenesis := types.NewGenesisState(types.InitialMinter(inflation), params)
