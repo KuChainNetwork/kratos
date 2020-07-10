@@ -7,16 +7,14 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
-
+	"github.com/KuChain-io/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/input"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
-
-	"github.com/KuChain-io/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 )
 
 // GasEstimateResponse defines a response definition for tx gas estimation.
@@ -339,6 +337,10 @@ func QueryAccountAuth(cliCtx KuCLIContext, id types.AccountID) (types.AccAddress
 		acc, err := getter.GetAccount(id)
 		if err != nil {
 			return types.AccAddress{}, err
+		}
+
+		if acc == nil {
+			return types.AccAddress{}, errors.New("account not found")
 		}
 
 		return acc.GetAuth(), nil

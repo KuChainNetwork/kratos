@@ -53,8 +53,5 @@ func (k KuCLIContext) WithOutput(w io.Writer) KuCLIContext {
 
 // GetAccountInfo get account info by from account id
 func (k KuCLIContext) GetAccountInfo() (exported.Account, error) {
-	id := k.GetAccountID()
-
-	getter := NewAccountRetriever(k)
-	return getter.GetAccount(id)
+	return NewAccountRetriever(k).GetAccount(k.GetAccountID())
 }

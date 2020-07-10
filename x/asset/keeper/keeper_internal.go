@@ -140,7 +140,7 @@ func (a AssetKeeper) getStat(ctx sdk.Context, creator, symbol types.Name) (*type
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.CoinStatStoreKey(creator, symbol))
 	if bz == nil {
-		return nil, nil
+		return nil, types.ErrAssetCoinNoExit
 	}
 
 	var stat types.CoinStat
@@ -166,7 +166,7 @@ func (a AssetKeeper) getDescription(ctx sdk.Context, creator, symbol types.Name)
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.CoinDescStoreKey(creator, symbol))
 	if bz == nil {
-		return nil, nil
+		return nil, types.ErrAssetCoinNoExit
 	}
 
 	var res types.CoinDescription

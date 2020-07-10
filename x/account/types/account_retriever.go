@@ -98,6 +98,10 @@ func (ar AccountRetriever) GetAuthNumberSequence(id types.AccountID) (uint64, ui
 		if err != nil {
 			return 0, 0, err
 		}
+
+		if acc == nil {
+			return 0, 0, ErrAccountNoFound
+		}
 		auth = acc.GetAuth()
 	}
 
