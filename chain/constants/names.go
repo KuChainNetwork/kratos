@@ -3,13 +3,14 @@ package constants
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 const (
-	ChainNameStr     = "kts"
-	ChainMainNameStr = "kratos"
-	DefaultBondDenom = ChainMainNameStr + "/" + ChainNameStr
+	ChainNameStr     = keys.ChainNameStr
+	ChainMainNameStr = keys.ChainMainNameStr
+	DefaultBondDenom = keys.DefaultBondDenom
 )
 
 var (

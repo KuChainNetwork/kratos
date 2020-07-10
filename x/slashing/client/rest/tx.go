@@ -49,7 +49,7 @@ func unjailRequestHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 
 		valAccAddress, err := txutil.QueryAccountAuth(cliCtx, valAccountID)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("query account %s auth error", valAccountID, err))
+			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("query account %s auth error : %s", valAccountID, err.Error()))
 			return
 		}
 

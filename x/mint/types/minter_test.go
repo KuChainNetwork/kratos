@@ -20,28 +20,29 @@ func TestNextInflation(t *testing.T) {
 	tests := []struct {
 		bondedRatio, setInflation, expChange sdk.Dec
 	}{
-		// with 0% bonded atom kusupply the inflation should increase by InflationRateChange
-		{sdk.ZeroDec(), sdk.NewDecWithPrec(7, 2), params.InflationRateChange.Quo(blocksPerYr)},
+		//with 0% bonded atom kusupply the inflation should increase by InflationRateChange
+		{sdk.ZeroDec(), sdk.NewDecWithPrec(6, 2), params.InflationRateChange.Quo(blocksPerYr)},
 
 		// 100% bonded, starting at 20% inflation and being reduced
 		// (1 - (1/0.67))*(0.13/8667)
-		{sdk.OneDec(), sdk.NewDecWithPrec(20, 2),
+		{sdk.OneDec(), sdk.NewDecWithPrec(12, 2),
 			sdk.OneDec().Sub(sdk.OneDec().Quo(params.GoalBonded)).Mul(params.InflationRateChange).Quo(blocksPerYr)},
 
 		// 50% bonded, starting at 10% inflation and being increased
 		{sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(10, 2),
 			sdk.OneDec().Sub(sdk.NewDecWithPrec(5, 1).Quo(params.GoalBonded)).Mul(params.InflationRateChange).Quo(blocksPerYr)},
 
-		// test 7% minimum stop (testing with 100% bonded)
-		{sdk.OneDec(), sdk.NewDecWithPrec(7, 2), sdk.ZeroDec()},
-		{sdk.OneDec(), sdk.NewDecWithPrec(700000001, 10), sdk.NewDecWithPrec(-1, 10)},
+
+		//test 6% minimum stop (testing with 100% bonded)
+		{sdk.OneDec(), sdk.NewDecWithPrec(6, 2), sdk.ZeroDec()},
+		{sdk.OneDec(), sdk.NewDecWithPrec(600000001, 10), sdk.NewDecWithPrec(-1, 10)},
 
 		// test 20% maximum stop (testing with 0% bonded)
-		{sdk.ZeroDec(), sdk.NewDecWithPrec(20, 2), sdk.ZeroDec()},
-		{sdk.ZeroDec(), sdk.NewDecWithPrec(1999999999, 10), sdk.NewDecWithPrec(1, 10)},
+		{sdk.ZeroDec(), sdk.NewDecWithPrec(12, 2), sdk.ZeroDec()},
+		{sdk.ZeroDec(), sdk.NewDecWithPrec(1199999999, 10), sdk.NewDecWithPrec(1, 10)},
 
 		// perfect balance shouldn't change inflation
-		{sdk.NewDecWithPrec(67, 2), sdk.NewDecWithPrec(15, 2), sdk.ZeroDec()},
+		{sdk.NewDecWithPrec(67, 2), sdk.NewDecWithPrec(12, 2), sdk.ZeroDec()},
 	}
 	for i, tc := range tests {
 		minter.Inflation = tc.setInflation
