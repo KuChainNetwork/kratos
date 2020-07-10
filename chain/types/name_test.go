@@ -67,9 +67,6 @@ func TestName_ParseErr(t *testing.T) {
 
 		_, err8 := NewName("-dsfsddsdff")
 		So(err8, ShouldEqual, ErrNameStrNoValid)
-
-		_, err9 := NewName("")
-		So(err9, ShouldEqual, ErrNameStrNoValid)
 	})
 }
 
