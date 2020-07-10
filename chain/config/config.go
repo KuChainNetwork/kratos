@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/viper"
@@ -15,7 +15,7 @@ import (
 
 const (
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
-	Bech32MainPrefix = constants.ChainMainNameStr
+	Bech32MainPrefix = keys.ChainNameStr
 
 	// Will Set For https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 	CoinType = 23808
