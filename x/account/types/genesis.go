@@ -15,13 +15,5 @@ func DefaultGenesisState() GenesisState {
 		Accounts: exported.GenesisAccounts{},
 	}
 
-	// TODO: add default root account
-	// Fix genesis accounts
-	/*
-		res.Accounts = res.Accounts.Append(
-			NewKuAccountByName(types.MustName("kuchain"), types.MustAccAddressFromBech32("kuchain1xmc2z728py4gtwpc7jgytsan0282ww883qtv07"), 1),
-		)
-	*/
-
 	return res
 }

@@ -1,9 +1,11 @@
 package constants
 
-import "github.com/KuChainNetwork/kuchain/chain/types"
+import (
+	"github.com/KuChainNetwork/kuchain/chain/types"
+)
 
 const (
-	MinGasPriceString        = "0.0001kratos/kts"
+	MinGasPriceString        = "0.0001" + DefaultBondDenom
 	GasTxSizePrice    uint64 = 5
 )
 

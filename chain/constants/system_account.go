@@ -6,13 +6,10 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
-const (
-	FeeSystemAccountStr = "fee@kts"
-)
-
 var (
-	FeeSystemAccount = types.MustName(FeeSystemAccountStr)
-	SystemAccount    = types.MustName("kratos")
+	FeeSystemAccountStr = GetSystemAccount("fee")
+	FeeSystemAccount    = types.MustName(FeeSystemAccountStr)
+	SystemAccount       = ChainMainName
 )
 
 func IsSystemAccount(name types.Name) bool {
@@ -20,7 +17,6 @@ func IsSystemAccount(name types.Name) bool {
 		return true
 	}
 
-	// TODO use constants
 	if name.Eq(SystemAccount) {
 		return true
 	}
@@ -28,7 +24,7 @@ func IsSystemAccount(name types.Name) bool {
 	// TODO: add api to name to fast
 	str := name.String()
 	splits := strings.Split(str, "@")
-	if len(splits) == 2 && splits[1] == "kts" {
+	if len(splits) == 2 && splits[1] == ChainNameStr {
 		return true
 	}
 

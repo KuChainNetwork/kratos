@@ -62,7 +62,7 @@ func coinStoreKey2AccountID(pre []byte, key []byte) AccountID {
 		panic(errors.Errorf("coinStoreKey2AccountID key too len %d", len(keyBytes)))
 	}
 
-	if bytes.Equal(key[coinStoreKeyPreLen:coinStoreKeyPreLen+len(pre)], pre) {
+	if !bytes.Equal(key[coinStoreKeyPreLen:coinStoreKeyPreLen+len(pre)], pre) {
 		panic(errors.Errorf("coinStoreKey2AccountID pre not equal"))
 	}
 
