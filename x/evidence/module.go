@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/asset/keeper"
-	"github.com/KuChain-io/kuchain/x/evidence/client"
-	"github.com/KuChain-io/kuchain/x/evidence/client/cli"
-	"github.com/KuChain-io/kuchain/x/evidence/client/rest"
+	"github.com/KuChainNetwork/kuchain/x/asset/keeper"
+	"github.com/KuChainNetwork/kuchain/x/evidence/client"
+	"github.com/KuChainNetwork/kuchain/x/evidence/client/cli"
+	"github.com/KuChainNetwork/kuchain/x/evidence/client/rest"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,8 +17,8 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/chain/msg"
-	chainType "github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 var (

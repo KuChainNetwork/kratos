@@ -5,9 +5,9 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/account/exported"
-	"github.com/KuChain-io/kuchain/x/account/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/account/exported"
+	"github.com/KuChainNetwork/kuchain/x/account/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

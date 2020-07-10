@@ -3,9 +3,9 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/supply/exported"
-	supplyExported "github.com/KuChain-io/kuchain/x/supply/exported"
-	"github.com/KuChain-io/kuchain/x/supply/types"
+	"github.com/KuChainNetwork/kuchain/x/supply/exported"
+	supplyExported "github.com/KuChainNetwork/kuchain/x/supply/exported"
+	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"

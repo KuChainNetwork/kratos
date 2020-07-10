@@ -1,9 +1,9 @@
 package plugins
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	dbHistory "github.com/KuChain-io/kuchain/plugins/db_history"
-	"github.com/KuChain-io/kuchain/plugins/test"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	dbHistory "github.com/KuChainNetwork/kuchain/plugins/db_history"
+	"github.com/KuChainNetwork/kuchain/plugins/test"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

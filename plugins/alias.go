@@ -1,8 +1,8 @@
 package plugins
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/plugins/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/plugins/types"
 )
 
 type (

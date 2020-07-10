@@ -3,9 +3,9 @@ package gen
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/app"
-	"github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/account"
+	"github.com/KuChainNetwork/kuchain/app"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/account"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/spf13/cobra"

@@ -1,8 +1,8 @@
 package types // noalias
 
 import (
-	"github.com/KuChain-io/kuchain/chain/types"
-	supplyExported "github.com/KuChain-io/kuchain/x/supply/exported"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	supplyExported "github.com/KuChainNetwork/kuchain/x/supply/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -1,7 +1,7 @@
 package plugin
 
 import (
-	"github.com/KuChain-io/kuchain/x/plugin/types"
+	"github.com/KuChainNetwork/kuchain/x/plugin/types"
 )
 
 const (

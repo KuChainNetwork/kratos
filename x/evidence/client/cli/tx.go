@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"github.com/KuChain-io/kuchain/chain/client/flags"
-	"github.com/KuChain-io/kuchain/x/evidence/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/flags"
+	"github.com/KuChainNetwork/kuchain/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"

@@ -3,7 +3,7 @@ package distribution
 import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/x/distribution/keeper"
+	"github.com/KuChainNetwork/kuchain/x/distribution/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

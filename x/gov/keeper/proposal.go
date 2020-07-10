@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/gov/types"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

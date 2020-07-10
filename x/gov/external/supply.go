@@ -1,7 +1,7 @@
 package external
 
 import (
-	"github.com/KuChain-io/kuchain/x/supply/exported"
+	"github.com/KuChainNetwork/kuchain/x/supply/exported"
 )
 
 type SupplyModuleAccount = exported.ModuleAccountI

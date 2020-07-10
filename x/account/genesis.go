@@ -1,7 +1,7 @@
 package account
 
 import (
-	"github.com/KuChain-io/kuchain/x/account/exported"
+	"github.com/KuChainNetwork/kuchain/x/account/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

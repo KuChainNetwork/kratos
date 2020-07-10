@@ -1,7 +1,7 @@
 package mint_test
 
 import (
-	"github.com/KuChain-io/kuchain/x/mint"
+	"github.com/KuChainNetwork/kuchain/x/mint"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/stretchr/testify/require"

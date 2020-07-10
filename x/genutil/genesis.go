@@ -1,7 +1,7 @@
 package genutil
 
 import (
-	types2 "github.com/KuChain-io/kuchain/x/genutil/types"
+	types2 "github.com/KuChainNetwork/kuchain/x/genutil/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/slashing/types"
+	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )

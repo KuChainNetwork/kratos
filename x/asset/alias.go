@@ -1,9 +1,9 @@
 package asset
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/asset/keeper"
-	"github.com/KuChain-io/kuchain/x/asset/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/asset/keeper"
+	"github.com/KuChainNetwork/kuchain/x/asset/types"
 )
 
 const (

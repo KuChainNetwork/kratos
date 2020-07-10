@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/KuChain-io/kuchain/x/evidence/exported"
+	"github.com/KuChainNetwork/kuchain/x/evidence/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 

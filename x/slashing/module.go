@@ -10,12 +10,12 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/chain/msg"
-	"github.com/KuChain-io/kuchain/x/slashing/client/cli"
-	"github.com/KuChain-io/kuchain/x/slashing/client/rest"
-	"github.com/KuChain-io/kuchain/x/slashing/external"
-	"github.com/KuChain-io/kuchain/x/slashing/simulation"
-	"github.com/KuChain-io/kuchain/x/slashing/types"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
+	"github.com/KuChainNetwork/kuchain/x/slashing/client/cli"
+	"github.com/KuChainNetwork/kuchain/x/slashing/client/rest"
+	"github.com/KuChainNetwork/kuchain/x/slashing/external"
+	"github.com/KuChainNetwork/kuchain/x/slashing/simulation"
+	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

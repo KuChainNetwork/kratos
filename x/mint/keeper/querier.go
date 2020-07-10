@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/KuChain-io/kuchain/x/mint/types"
+	"github.com/KuChainNetwork/kuchain/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

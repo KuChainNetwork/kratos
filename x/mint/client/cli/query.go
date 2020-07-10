@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/chain/client/flags"
-	"github.com/KuChain-io/kuchain/x/mint/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/flags"
+	"github.com/KuChainNetwork/kuchain/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"

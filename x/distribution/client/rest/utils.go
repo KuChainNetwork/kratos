@@ -1,8 +1,8 @@
 package rest
 
 import (
-	chainType "github.com/KuChain-io/kuchain/chain/types"
-	rest "github.com/KuChain-io/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/KuChain-io/kuchain/x/account/exported"
+	"github.com/KuChainNetwork/kuchain/x/account/exported"
 )
 
 // GenesisState genesis state for account module

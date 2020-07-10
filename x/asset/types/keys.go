@@ -3,7 +3,7 @@ package types
 import (
 	"bytes"
 
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/pkg/errors"
 )
 

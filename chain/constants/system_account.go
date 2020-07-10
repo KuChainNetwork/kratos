@@ -3,7 +3,7 @@ package constants
 import (
 	"strings"
 
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 const (

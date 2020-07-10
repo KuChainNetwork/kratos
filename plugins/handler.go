@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/KuChain-io/kuchain/plugins/types"
+	"github.com/KuChainNetwork/kuchain/plugins/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 )

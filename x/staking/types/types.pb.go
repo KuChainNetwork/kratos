@@ -5,8 +5,8 @@ package types
 
 import (
 	fmt "fmt"
-	types "github.com/KuChain-io/kuchain/chain/types"
-	github_com_KuChain_io_kuchain_x_staking_exported "github.com/KuChain-io/kuchain/x/staking/exported"
+	types "github.com/KuChainNetwork/kuchain/chain/types"
+	github_com_KuChain_io_kuchain_x_staking_exported "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types1 "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
@@ -582,7 +582,7 @@ type Validator struct {
 	OperatorAccount   types.AccountID                                             `protobuf:"bytes,1,opt,name=operator_account,json=operatorAccount,proto3" json:"operator_account" yaml:"operator_account"`
 	ConsensusPubkey   string                                                      `protobuf:"bytes,2,opt,name=consensus_pubkey,json=consensusPubkey,proto3" json:"consensus_pubkey,omitempty" yaml:"consensus_pubkey"`
 	Jailed            bool                                                        `protobuf:"varint,3,opt,name=jailed,proto3" json:"jailed,omitempty"`
-	Status            github_com_KuChain_io_kuchain_x_staking_exported.BondStatus `protobuf:"varint,4,opt,name=status,proto3,casttype=github.com/KuChain-io/kuchain/x/staking/exported.BondStatus" json:"status,omitempty"`
+	Status            github_com_KuChain_io_kuchain_x_staking_exported.BondStatus `protobuf:"varint,4,opt,name=status,proto3,casttype=github.com/KuChainNetwork/kuchain/x/staking/exported.BondStatus" json:"status,omitempty"`
 	Tokens            github_com_cosmos_cosmos_sdk_types.Int                      `protobuf:"bytes,5,opt,name=tokens,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"tokens"`
 	DelegatorShares   github_com_cosmos_cosmos_sdk_types.Dec                      `protobuf:"bytes,6,opt,name=delegator_shares,json=delegatorShares,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"delegator_shares" yaml:"delegator_shares"`
 	Description       Description                                                 `protobuf:"bytes,7,opt,name=description,proto3" json:"description"`

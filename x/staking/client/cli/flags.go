@@ -3,7 +3,7 @@ package cli
 import (
 	flag "github.com/spf13/pflag"
 
-	"github.com/KuChain-io/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
 )
 
 // nolint

@@ -3,7 +3,7 @@ package types
 import (
 	"gopkg.in/yaml.v2"
 
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

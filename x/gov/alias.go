@@ -3,8 +3,8 @@ package gov
 // nolint
 
 import (
-	"github.com/KuChain-io/kuchain/x/gov/keeper"
-	"github.com/KuChain-io/kuchain/x/gov/types"
+	"github.com/KuChainNetwork/kuchain/x/gov/keeper"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
 )
 
 const (

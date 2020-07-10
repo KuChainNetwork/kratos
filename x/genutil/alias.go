@@ -1,7 +1,7 @@
 package genutil
 
 import (
-	"github.com/KuChain-io/kuchain/x/genutil/types"
+	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 )
 
 const (

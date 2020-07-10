@@ -1,7 +1,7 @@
 syntax = "proto3";
 package kuchanin.x.distribution.v1;
 
-option go_package            = "github.com/KuChain-io/kuchain/x/distribution/types";
+option go_package            = "github.com/KuChainNetwork/kuchain/x/distribution/types";
 option (gogoproto.equal_all) = true;
 
 import "third_party/proto/gogoproto/gogo.proto";
@@ -13,12 +13,12 @@ import "chain/types/types.proto";
 
 //message MsgSetWithdrawAddress {
 //kuchain.chain.types.v1.AccountID delegator_address = 1 [
-//// (gogoproto.casttype) = "github.com/KuChain-io/kuchain/chain/types.AccountID",
+//// (gogoproto.casttype) = "github.com/KuChainNetwork/kuchain/chain/types.AccountID",
 //(gogoproto.nullable) = false,
 //(gogoproto.moretags) = "yaml:\"delegator_address\""
 //];
 //kuchain.chain.types.v1.AccountID withdraw_address = 2 [
-//// (gogoproto.casttype) = "github.com/KuChain-io/kuchain/chain/types.AccountID",
+//// (gogoproto.casttype) = "github.com/KuChainNetwork/kuchain/chain/types.AccountID",
 //(gogoproto.nullable) = false,
 //(gogoproto.moretags) = "yaml:\"withdraw_address\""
 //];

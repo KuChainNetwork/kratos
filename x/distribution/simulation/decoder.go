@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/distribution/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmkv "github.com/tendermint/tendermint/libs/kv"

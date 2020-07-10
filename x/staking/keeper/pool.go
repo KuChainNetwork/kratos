@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"github.com/KuChain-io/kuchain/x/staking/types"
-	"github.com/KuChain-io/kuchain/x/supply/exported"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/supply/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/binary"
 
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 const (

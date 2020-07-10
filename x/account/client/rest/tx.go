@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	rest "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	rest "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/account/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"

@@ -5,9 +5,9 @@ package govcodec
 
 import (
 	fmt "fmt"
-	github_com_KuChain_io_kuchain_x_gov_types "github.com/KuChain-io/kuchain/x/gov/types"
-	types "github.com/KuChain-io/kuchain/x/gov/types"
-	proposal "github.com/KuChain-io/kuchain/x/params/types/proposal"
+	github_com_KuChain_io_kuchain_x_gov_types "github.com/KuChainNetwork/kuchain/x/gov/types"
+	types "github.com/KuChainNetwork/kuchain/x/gov/types"
+	proposal "github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/regen-network/cosmos-proto"

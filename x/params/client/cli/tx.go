@@ -7,11 +7,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	paramscutils "github.com/KuChain-io/kuchain/x/params/client/utils"
-	"github.com/KuChain-io/kuchain/x/params/external"
-	paramproposal "github.com/KuChain-io/kuchain/x/params/types/proposal"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	paramscutils "github.com/KuChainNetwork/kuchain/x/params/client/utils"
+	"github.com/KuChainNetwork/kuchain/x/params/external"
+	paramproposal "github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

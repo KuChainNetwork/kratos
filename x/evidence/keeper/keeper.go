@@ -6,9 +6,9 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/KuChain-io/kuchain/x/evidence/exported"
-	"github.com/KuChain-io/kuchain/x/evidence/external"
-	"github.com/KuChain-io/kuchain/x/evidence/types"
+	"github.com/KuChainNetwork/kuchain/x/evidence/exported"
+	"github.com/KuChainNetwork/kuchain/x/evidence/external"
+	"github.com/KuChainNetwork/kuchain/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

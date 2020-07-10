@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	chainType "github.com/KuChain-io/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 
 	"github.com/gorilla/mux"
 
-	"github.com/KuChain-io/kuchain/x/distribution/client/common"
-	"github.com/KuChain-io/kuchain/x/distribution/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"

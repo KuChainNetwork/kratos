@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	stakingexport "github.com/KuChain-io/kuchain/x/staking/exported"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

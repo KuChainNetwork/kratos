@@ -1,10 +1,10 @@
 package keeper
 
 import (
-	"github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/x/account/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"

@@ -5,10 +5,10 @@ import (
 
 	"github.com/tendermint/tendermint/crypto"
 
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	//"github.com/KuChain-io/kuchain/chain/types"
+	//"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 // NewMsgCreateValidator creates a new MsgCreateValidator instance.

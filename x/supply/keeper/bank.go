@@ -3,8 +3,8 @@ package keeper
 import (
 	"fmt"
 
-	stakingTypes "github.com/KuChain-io/kuchain/x/staking/types"
-	"github.com/KuChain-io/kuchain/x/supply/types"
+	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

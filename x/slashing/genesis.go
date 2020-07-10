@@ -1,8 +1,8 @@
 package slashing
 
 import (
-	"github.com/KuChain-io/kuchain/x/slashing/external"
-	"github.com/KuChain-io/kuchain/x/slashing/types"
+	"github.com/KuChainNetwork/kuchain/x/slashing/external"
+	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

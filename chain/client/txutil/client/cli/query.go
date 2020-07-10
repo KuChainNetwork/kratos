@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	"github.com/KuChain-io/kuchain/chain/client/utils"
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"

@@ -1,7 +1,7 @@
 package cli
 
 import (
-	chainType "github.com/KuChain-io/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"io/ioutil"
 
 	"github.com/cosmos/cosmos-sdk/codec"

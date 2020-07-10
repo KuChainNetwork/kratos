@@ -8,8 +8,8 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	stakingexport "github.com/KuChain-io/kuchain/x/staking/exported"
-	"github.com/KuChain-io/kuchain/x/staking/external"
+	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/staking/external"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

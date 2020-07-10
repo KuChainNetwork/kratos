@@ -5,9 +5,9 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/chain/types"
-	accountexported "github.com/KuChain-io/kuchain/x/account/exported"
-	"github.com/KuChain-io/kuchain/x/asset"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	accountexported "github.com/KuChainNetwork/kuchain/x/account/exported"
+	"github.com/KuChainNetwork/kuchain/x/asset"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

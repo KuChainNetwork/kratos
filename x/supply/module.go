@@ -11,10 +11,10 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/x/supply/client/cli"
-	"github.com/KuChain-io/kuchain/x/supply/client/rest"
-	"github.com/KuChain-io/kuchain/x/supply/simulation"
-	"github.com/KuChain-io/kuchain/x/supply/types"
+	"github.com/KuChainNetwork/kuchain/x/supply/client/cli"
+	"github.com/KuChainNetwork/kuchain/x/supply/client/rest"
+	"github.com/KuChainNetwork/kuchain/x/supply/simulation"
+	"github.com/KuChainNetwork/kuchain/x/supply/types"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"

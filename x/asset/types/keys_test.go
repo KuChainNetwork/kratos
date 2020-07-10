@@ -3,8 +3,8 @@ package types
 import (
 	"testing"
 
-	"github.com/KuChain-io/kuchain/chain/config"
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/config"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
 )

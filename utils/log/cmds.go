@@ -6,7 +6,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	chainCfg "github.com/KuChain-io/kuchain/chain/config"
+	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"

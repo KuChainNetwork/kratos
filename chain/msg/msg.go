@@ -1,7 +1,7 @@
 package msg
 
 import (
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 type (

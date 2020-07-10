@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/KuChain-io/kuchain/x/mint/types"
+	"github.com/KuChainNetwork/kuchain/x/mint/types"
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 )
 

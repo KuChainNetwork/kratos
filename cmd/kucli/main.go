@@ -18,12 +18,12 @@ import (
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/KuChain-io/kuchain/app"
-	blockrest "github.com/KuChain-io/kuchain/chain/client/blockutil/client/rest"
-	txcmd "github.com/KuChain-io/kuchain/chain/client/txutil/client/cli"
-	txrest "github.com/KuChain-io/kuchain/chain/client/txutil/client/rest"
-	chainCfg "github.com/KuChain-io/kuchain/chain/config"
-	txCli "github.com/KuChain-io/kuchain/chain/transaction/client"
+	"github.com/KuChainNetwork/kuchain/app"
+	blockrest "github.com/KuChainNetwork/kuchain/chain/client/blockutil/client/rest"
+	txcmd "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/cli"
+	txrest "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/rest"
+	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
+	txCli "github.com/KuChainNetwork/kuchain/chain/transaction/client"
 )
 
 var (

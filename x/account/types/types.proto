@@ -4,7 +4,7 @@ package kuchain.x.account.types.v1;
 import "third_party/proto/gogoproto/gogo.proto";
 import "chain/types/types.proto";
 
-option go_package = "github.com/KuChain-io/kuchain/x/account/types";
+option go_package = "github.com/KuChainNetwork/kuchain/x/account/types";
 
 message AccountAuth {
     option (gogoproto.goproto_getters) = false;

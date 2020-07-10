@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	rest "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/asset/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	rest "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

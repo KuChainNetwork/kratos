@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	chainType "github.com/KuChain-io/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

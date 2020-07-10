@@ -9,8 +9,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/KuChain-io/kuchain/x/gov/types"
-	stakingexport "github.com/KuChain-io/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
+	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/simulation"

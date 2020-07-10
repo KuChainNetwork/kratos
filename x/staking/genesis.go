@@ -6,9 +6,9 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	statkingexport "github.com/KuChain-io/kuchain/x/staking/exported"
-	"github.com/KuChain-io/kuchain/x/staking/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	statkingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

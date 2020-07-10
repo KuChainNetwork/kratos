@@ -1,7 +1,7 @@
 package ante
 
 import (
-	"github.com/KuChain-io/kuchain/plugins"
+	"github.com/KuChainNetwork/kuchain/plugins"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

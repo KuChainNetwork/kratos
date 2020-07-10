@@ -1,7 +1,7 @@
 package govcodec
 
 import (
-	gov "github.com/KuChain-io/kuchain/x/gov/types"
+	gov "github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 

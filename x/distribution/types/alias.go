@@ -1,14 +1,14 @@
 package types
 
 import (
-	"github.com/KuChain-io/kuchain/chain/types"
-	GovTypes "github.com/KuChain-io/kuchain/x/gov/types"
-	"github.com/KuChain-io/kuchain/x/staking"
-	"github.com/KuChain-io/kuchain/x/staking/exported"
-	StakingExported "github.com/KuChain-io/kuchain/x/staking/exported"
-	StakingKP "github.com/KuChain-io/kuchain/x/staking/keeper"
-	StakingTypes "github.com/KuChain-io/kuchain/x/staking/types"
-	"github.com/KuChain-io/kuchain/x/supply"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	GovTypes "github.com/KuChainNetwork/kuchain/x/gov/types"
+	"github.com/KuChainNetwork/kuchain/x/staking"
+	"github.com/KuChainNetwork/kuchain/x/staking/exported"
+	StakingExported "github.com/KuChainNetwork/kuchain/x/staking/exported"
+	StakingKP "github.com/KuChainNetwork/kuchain/x/staking/keeper"
+	StakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/supply"
 	Sim "github.com/cosmos/cosmos-sdk/x/simulation"
 )
 

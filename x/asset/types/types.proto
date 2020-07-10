@@ -5,7 +5,7 @@ import "third_party/proto/gogoproto/gogo.proto";
 import "chain/types/types.proto";
 import "vendor/github.com/cosmos/cosmos-sdk/types/types.proto";
 
-option go_package = "github.com/KuChain-io/x/asset/types";
+option go_package = "github.com/KuChainNetwork/x/asset/types";
 
 // CoinDescription description info for a coin type
 message CoinDescription {

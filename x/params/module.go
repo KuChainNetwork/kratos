@@ -7,8 +7,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 
-	"github.com/KuChain-io/kuchain/x/params/simulation"
-	"github.com/KuChain-io/kuchain/x/params/types/proposal"
+	"github.com/KuChainNetwork/kuchain/x/params/simulation"
+	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

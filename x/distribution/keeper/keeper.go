@@ -2,11 +2,11 @@ package keeper
 
 import (
 	"fmt"
-	"github.com/KuChain-io/kuchain/x/account"
+	"github.com/KuChainNetwork/kuchain/x/account"
 	"time"
 
-	chainType "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/distribution/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

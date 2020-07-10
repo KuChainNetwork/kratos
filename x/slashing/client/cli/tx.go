@@ -3,10 +3,10 @@ package cli
 import (
 	"bufio"
 
-	"github.com/KuChain-io/kuchain/chain/client/flags"
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/slashing/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/flags"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

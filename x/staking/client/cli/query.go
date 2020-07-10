@@ -7,9 +7,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/KuChain-io/kuchain/chain/client/flags"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/flags"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"

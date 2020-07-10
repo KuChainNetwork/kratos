@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/x/account/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tendermint/tendermint/crypto"

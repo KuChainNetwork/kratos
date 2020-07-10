@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"encoding/json"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 
-	"github.com/KuChain-io/kuchain/x/distribution/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

@@ -1,7 +1,7 @@
 package chaindb
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"

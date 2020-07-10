@@ -2,7 +2,7 @@ package rest
 
 import (
 	"fmt"
-	types "github.com/KuChain-io/kuchain/x/genutil/types"
+	types "github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"

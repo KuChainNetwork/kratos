@@ -1,11 +1,11 @@
 package types
 
 import (
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/gov/external"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/gov/external"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	accountExported "github.com/KuChain-io/kuchain/x/account/exported"
+	accountExported "github.com/KuChainNetwork/kuchain/x/account/exported"
 	"time"
 )
 

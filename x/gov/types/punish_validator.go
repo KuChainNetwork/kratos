@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"time"
 )
 

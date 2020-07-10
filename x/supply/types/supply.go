@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/supply/exported"
+	"github.com/KuChainNetwork/kuchain/x/supply/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gopkg.in/yaml.v2"
 )

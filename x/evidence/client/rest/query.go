@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/KuChain-io/kuchain/x/evidence/types"
+	"github.com/KuChainNetwork/kuchain/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
