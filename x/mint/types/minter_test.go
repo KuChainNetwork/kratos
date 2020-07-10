@@ -64,10 +64,10 @@ func TestBlockProvision(t *testing.T) {
 		annualProvisions int64
 		expProvisions    int64
 	}{
-		{secondsPerYear / 5, 1},
-		{secondsPerYear/5 + 1, 1},
-		{(secondsPerYear / 5) * 2, 2},
-		{(secondsPerYear / 5) / 2, 0},
+		{secondsPerYear / 3, 1},
+		{secondsPerYear/ 3 + 1, 1},
+		{(secondsPerYear / 3) * 2, 2},
+		{(secondsPerYear / 3) / 2, 0},
 	}
 	for i, tc := range tests {
 		minter.AnnualProvisions = sdk.NewDec(tc.annualProvisions)
