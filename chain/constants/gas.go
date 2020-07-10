@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	MinGasPriceString        = "0.0001" + DefaultBondDenom
+	MinGasPriceString        = "0.01" + DefaultBondDenom
 	GasTxSizePrice    uint64 = 5
 )
 
