@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/spf13/cobra"
 
-	accountGen "github.com/KuChain-io/kuchain/x/account/client/gen"
-	assetGen "github.com/KuChain-io/kuchain/x/asset/client/gen"
+	accountGen "github.com/KuChainNetwork/kuchain/x/account/client/gen"
+	assetGen "github.com/KuChainNetwork/kuchain/x/asset/client/gen"
 )
 
 // AddGenesisCmds

@@ -4,7 +4,7 @@ import (
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 
-	"github.com/KuChain-io/kuchain/plugins/db_history/chaindb"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/chaindb"
 )
 
 // createSchema creates database schema for User and Story models.

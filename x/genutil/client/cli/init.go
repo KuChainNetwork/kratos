@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/KuChain-io/kuchain/chain/client/flags"
-	"github.com/KuChain-io/kuchain/x/genutil"
+	"github.com/KuChainNetwork/kuchain/chain/client/flags"
+	"github.com/KuChainNetwork/kuchain/x/genutil"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"

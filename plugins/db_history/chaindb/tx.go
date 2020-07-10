@@ -1,6 +1,6 @@
 package chaindb
 
-import "github.com/KuChain-io/kuchain/chain/types"
+import "github.com/KuChainNetwork/kuchain/chain/types"
 
 type txInDB struct {
 	tableName struct{} `pg:"tx,alias:tx"` // default values are the same

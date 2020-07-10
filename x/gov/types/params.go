@@ -6,9 +6,9 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/KuChain-io/kuchain/x/gov/external"
-	paramtypes "github.com/KuChain-io/kuchain/x/params/types"
-	stakingexport "github.com/KuChain-io/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/gov/external"
+	paramtypes "github.com/KuChainNetwork/kuchain/x/params/types"
+	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -1,7 +1,7 @@
 package flags
 
 import (
-	"github.com/KuChain-io/kuchain/chain/transaction"
+	"github.com/KuChainNetwork/kuchain/chain/transaction"
 	cosmosFlags "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 )

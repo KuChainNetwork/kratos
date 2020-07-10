@@ -6,7 +6,7 @@ package types
 import (
 	bytes "bytes"
 	fmt "fmt"
-	types "github.com/KuChain-io/kuchain/chain/types"
+	types "github.com/KuChainNetwork/kuchain/chain/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	github_com_cosmos_cosmos_sdk_x_evidence_exported "github.com/cosmos/cosmos-sdk/x/evidence/exported"
 	_ "github.com/gogo/protobuf/gogoproto"

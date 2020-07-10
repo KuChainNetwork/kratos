@@ -3,7 +3,7 @@ package types
 import (
 	"time"
 
-	"github.com/KuChain-io/kuchain/x/evidence/external"
+	"github.com/KuChainNetwork/kuchain/x/evidence/external"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )

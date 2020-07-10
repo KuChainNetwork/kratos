@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	gcutils "github.com/KuChain-io/kuchain/x/gov/client/utils"
-	"github.com/KuChain-io/kuchain/x/gov/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	gcutils "github.com/KuChainNetwork/kuchain/x/gov/client/utils"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"

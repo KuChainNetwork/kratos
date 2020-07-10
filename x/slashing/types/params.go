@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/KuChain-io/kuchain/x/slashing/external"
+	"github.com/KuChainNetwork/kuchain/x/slashing/external"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

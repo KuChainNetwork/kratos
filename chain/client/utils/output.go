@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"gopkg.in/yaml.v2"
 )

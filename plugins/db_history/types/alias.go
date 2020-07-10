@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/plugins/types"
+	"github.com/KuChainNetwork/kuchain/plugins/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	rest "github.com/KuChain-io/kuchain/chain/types"
+	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 )
 

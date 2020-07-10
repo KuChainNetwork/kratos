@@ -1,9 +1,9 @@
 package external
 
 import (
-	"github.com/KuChain-io/kuchain/x/gov/client"
-	"github.com/KuChain-io/kuchain/x/gov/client/rest"
-	"github.com/KuChain-io/kuchain/x/gov/types"
+	"github.com/KuChainNetwork/kuchain/x/gov/client"
+	"github.com/KuChainNetwork/kuchain/x/gov/client/rest"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	costype "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 

@@ -1,9 +1,9 @@
 package external
 
 import (
-	"github.com/KuChain-io/kuchain/x/staking"
-	"github.com/KuChain-io/kuchain/x/staking/exported"
-	"github.com/KuChain-io/kuchain/x/staking/keeper"
+	"github.com/KuChainNetwork/kuchain/x/staking"
+	"github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/staking/keeper"
 )
 
 type StakingValidatorl = exported.ValidatorI

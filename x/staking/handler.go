@@ -7,11 +7,11 @@ import (
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/KuChain-io/kuchain/chain/msg"
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	stakingexport "github.com/KuChain-io/kuchain/x/staking/exported"
-	"github.com/KuChain-io/kuchain/x/staking/keeper"
-	"github.com/KuChain-io/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/staking/keeper"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

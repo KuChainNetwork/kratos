@@ -6,7 +6,7 @@ import "third_party/proto/gogoproto/gogo.proto";
 import "x/gov/types/types.proto";
 import "x/params/types/proposal/types.proto";
 
-option go_package = "github.com/KuChain-io/kuchain/x/gov/govcodec";
+option go_package = "github.com/KuChainNetwork/kuchain/x/gov/govcodec";
 
 // MsgSubmitProposal defines the application-level message type for handling
 // governance proposals.
@@ -31,7 +31,7 @@ message CodecProposal {
 // governance proposal.
 message CodecContent {
   option (gogoproto.equal)             = true;
-  option (cosmos_proto.interface_type) = "github.com/KuChain-io/kuchain/x/gov/types.Content";
+  option (cosmos_proto.interface_type) = "github.com/KuChainNetwork/kuchain/x/gov/types.Content";
 
   // sum defines a set of all acceptable concrete governance proposal Content types.
   oneof sum {

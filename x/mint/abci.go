@@ -1,7 +1,7 @@
 package mint
 
 import (
-	"github.com/KuChain-io/kuchain/x/mint/types"
+	"github.com/KuChainNetwork/kuchain/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

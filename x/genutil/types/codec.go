@@ -1,12 +1,12 @@
 package types
 
 import (
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	"github.com/KuChain-io/kuchain/chain/types"
-	accounttypes "github.com/KuChain-io/kuchain/x/account/types"
-	assettypes "github.com/KuChain-io/kuchain/x/asset/types"
-	evidencetypes "github.com/KuChain-io/kuchain/x/evidence/types"
-	stakingtypes "github.com/KuChain-io/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	accounttypes "github.com/KuChainNetwork/kuchain/x/account/types"
+	assettypes "github.com/KuChainNetwork/kuchain/x/asset/types"
+	evidencetypes "github.com/KuChainNetwork/kuchain/x/evidence/types"
+	stakingtypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

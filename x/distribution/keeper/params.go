@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/KuChain-io/kuchain/x/distribution/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

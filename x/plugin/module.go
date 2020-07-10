@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/x/plugin/types"
+	"github.com/KuChainNetwork/kuchain/x/plugin/types"
 )
 
 var (

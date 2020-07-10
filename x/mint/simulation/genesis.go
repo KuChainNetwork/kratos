@@ -4,8 +4,8 @@ package simulation
 
 import (
 	"fmt"
-	"github.com/KuChain-io/kuchain/x/mint/types"
-	StakingExported "github.com/KuChain-io/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/mint/types"
+	StakingExported "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"

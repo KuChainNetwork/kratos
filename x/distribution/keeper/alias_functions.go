@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	chainType "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/distribution/types"
-	supplyexported "github.com/KuChain-io/kuchain/x/supply/exported"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
+	supplyexported "github.com/KuChainNetwork/kuchain/x/supply/exported"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

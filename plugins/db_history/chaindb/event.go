@@ -1,7 +1,7 @@
 package chaindb
 
 import (
-	"github.com/KuChain-io/kuchain/plugins/db_history/types"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/types"
 	"github.com/go-pg/pg/v10"
 	"github.com/tendermint/tendermint/libs/log"
 )

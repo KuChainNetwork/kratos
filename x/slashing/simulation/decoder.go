@@ -8,7 +8,7 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 	tmkv "github.com/tendermint/tendermint/libs/kv"
 
-	"github.com/KuChain-io/kuchain/x/slashing/types"
+	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

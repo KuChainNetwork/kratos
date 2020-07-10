@@ -1,9 +1,9 @@
 package client
 
 import (
-	"github.com/KuChain-io/kuchain/x/params/client/cli"
-	"github.com/KuChain-io/kuchain/x/params/client/rest"
-	"github.com/KuChain-io/kuchain/x/params/external"
+	"github.com/KuChainNetwork/kuchain/x/params/client/cli"
+	"github.com/KuChainNetwork/kuchain/x/params/client/rest"
+	"github.com/KuChainNetwork/kuchain/x/params/external"
 )
 
 // param change proposal handler

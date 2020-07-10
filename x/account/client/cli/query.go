@@ -3,9 +3,9 @@ package cli
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/chain/client/flags"
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/flags"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/account/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"

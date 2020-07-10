@@ -3,6 +3,7 @@ package exported
 import (
 	"math/big"
 
+	"github.com/KuChainNetwork/kuchain/chain/constants"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -10,7 +11,7 @@ import (
 const (
 
 	// default bond denomination
-	DefaultBondDenom = "kratos/kts"
+	DefaultBondDenom = constants.DefaultBondDenom
 
 	// Delay, in blocks, between when validator updates are returned to the
 	// consensus-engine and when they are applied. For example, if

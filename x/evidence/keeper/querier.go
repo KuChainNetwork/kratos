@@ -3,8 +3,8 @@ package keeper
 import (
 	"encoding/hex"
 
-	"github.com/KuChain-io/kuchain/x/evidence/exported"
-	"github.com/KuChain-io/kuchain/x/evidence/types"
+	"github.com/KuChainNetwork/kuchain/x/evidence/exported"
+	"github.com/KuChainNetwork/kuchain/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/genutil/types"
+	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 

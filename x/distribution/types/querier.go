@@ -1,7 +1,7 @@
 package types
 
 import (
-	chainType "github.com/KuChain-io/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 // querier keys

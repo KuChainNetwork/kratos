@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	StakingExported "github.com/KuChain-io/kuchain/x/staking/exported"
+	StakingExported "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"

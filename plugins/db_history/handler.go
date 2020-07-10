@@ -1,8 +1,8 @@
 package dbHistory
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/plugins/db_history/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/KuChain-io/kuchain/chain/client/txutil/client/cli"
-	"github.com/KuChain-io/kuchain/chain/client/utils"
-	genutilrest "github.com/KuChain-io/kuchain/x/genutil/client/rest"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil/client/cli"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
+	genutilrest "github.com/KuChainNetwork/kuchain/x/genutil/client/rest"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"

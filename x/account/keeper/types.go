@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 type (

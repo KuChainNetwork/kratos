@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/KuChain-io/kuchain/chain/msg"
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -4,7 +4,7 @@ package kuchain.chain.types.v1;
 import "third_party/proto/gogoproto/gogo.proto";
 import "vendor/github.com/cosmos/cosmos-sdk/types/types.proto";
 
-option go_package = "github.com/KuChain-io/kuchain/chain/types";
+option go_package = "github.com/KuChainNetwork/kuchain/chain/types";
 
 // Name defines a account string name imp by 128 length byte.
 message Name {

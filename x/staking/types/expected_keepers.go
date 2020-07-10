@@ -1,11 +1,11 @@
 package types
 
 import (
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	accountExported "github.com/KuChain-io/kuchain/x/account/exported"
-	stakingexported "github.com/KuChain-io/kuchain/x/staking/exported"
-	"github.com/KuChain-io/kuchain/x/staking/external"
-	supplyexported "github.com/KuChain-io/kuchain/x/supply/exported"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	accountExported "github.com/KuChainNetwork/kuchain/x/account/exported"
+	stakingexported "github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/staking/external"
+	supplyexported "github.com/KuChainNetwork/kuchain/x/supply/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

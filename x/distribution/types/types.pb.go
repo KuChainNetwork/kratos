@@ -5,7 +5,7 @@ package types
 
 import (
 	fmt "fmt"
-	types1 "github.com/KuChain-io/kuchain/chain/types"
+	types1 "github.com/KuChainNetwork/kuchain/chain/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"

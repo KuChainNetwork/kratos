@@ -1,4 +1,4 @@
-module github.com/KuChain-io/kuchain
+module github.com/KuChainNetwork/kuchain
 
 go 1.14
 

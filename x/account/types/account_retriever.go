@@ -3,8 +3,8 @@ package types
 import (
 	fmt "fmt"
 
-	"github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/account/exported"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/account/exported"
 )
 
 // NodeQuerier is an interface that is satisfied by types that provide the QueryWithData method

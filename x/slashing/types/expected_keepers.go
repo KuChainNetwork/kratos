@@ -3,9 +3,9 @@
 package types
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/account/exported"
-	"github.com/KuChain-io/kuchain/x/slashing/external"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/account/exported"
+	"github.com/KuChainNetwork/kuchain/x/slashing/external"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

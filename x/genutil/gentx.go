@@ -3,8 +3,8 @@ package genutil
 import (
 	"encoding/json"
 
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	"github.com/KuChain-io/kuchain/x/genutil/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"

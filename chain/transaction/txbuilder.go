@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/KuChain-io/kuchain/chain/constants"
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/spf13/viper"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"

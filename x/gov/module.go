@@ -12,12 +12,12 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/chain/msg"
-	"github.com/KuChain-io/kuchain/x/gov/client"
-	"github.com/KuChain-io/kuchain/x/gov/client/cli"
-	"github.com/KuChain-io/kuchain/x/gov/client/rest"
-	"github.com/KuChain-io/kuchain/x/gov/simulation"
-	"github.com/KuChain-io/kuchain/x/gov/types"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
+	"github.com/KuChainNetwork/kuchain/x/gov/client"
+	"github.com/KuChainNetwork/kuchain/x/gov/client/cli"
+	"github.com/KuChainNetwork/kuchain/x/gov/client/rest"
+	"github.com/KuChainNetwork/kuchain/x/gov/simulation"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

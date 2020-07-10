@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/KuChain-io/kuchain/x/gov/types"
+import "github.com/KuChainNetwork/kuchain/x/gov/types"
 
 // NormalizeVoteOption - normalize user specified vote option
 func NormalizeVoteOption(option string) string {

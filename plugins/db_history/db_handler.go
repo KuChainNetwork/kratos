@@ -1,8 +1,8 @@
 package dbHistory
 
 import (
-	"github.com/KuChain-io/kuchain/plugins/db_history/chaindb"
-	"github.com/KuChain-io/kuchain/plugins/db_history/types"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/chaindb"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/types"
 )
 
 func (db *dbService) OnEvent(evt types.Event) error {

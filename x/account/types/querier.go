@@ -1,7 +1,7 @@
 package types
 
 import (
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 // query endpoints supported by the auth Querier

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/cosmos/cosmos-sdk/codec"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmtypes "github.com/tendermint/tendermint/types"

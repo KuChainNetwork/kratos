@@ -1,8 +1,8 @@
 package account
 
 import (
-	"github.com/KuChain-io/kuchain/x/account/keeper"
-	"github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/x/account/keeper"
+	"github.com/KuChainNetwork/kuchain/x/account/types"
 )
 
 const (

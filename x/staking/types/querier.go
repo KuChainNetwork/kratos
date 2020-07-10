@@ -2,7 +2,7 @@ package types
 
 import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 // query endpoints supported by the staking Querier

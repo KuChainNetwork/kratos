@@ -1,8 +1,8 @@
 package evidence
 
 import (
-	"github.com/KuChain-io/kuchain/x/evidence/keeper"
-	"github.com/KuChain-io/kuchain/x/evidence/types"
+	"github.com/KuChainNetwork/kuchain/x/evidence/keeper"
+	"github.com/KuChainNetwork/kuchain/x/evidence/types"
 )
 
 // nolint

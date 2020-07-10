@@ -1,9 +1,9 @@
 package txutil
 
 import (
-	"github.com/KuChain-io/kuchain/chain/transaction"
-	"github.com/KuChain-io/kuchain/chain/types"
-	accountTypes "github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/chain/transaction"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

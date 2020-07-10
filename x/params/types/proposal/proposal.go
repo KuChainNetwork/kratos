@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	govtypes "github.com/KuChain-io/kuchain/x/gov/types"
-	//	"github.com/KuChain-io/kuchain/x/params/external"
+	govtypes "github.com/KuChainNetwork/kuchain/x/gov/types"
+	//	"github.com/KuChainNetwork/kuchain/x/params/external"
 )
 
 const (

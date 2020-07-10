@@ -3,8 +3,8 @@ package simulation
 import (
 	"math/rand"
 
-	"github.com/KuChain-io/kuchain/x/params/external"
-	"github.com/KuChain-io/kuchain/x/params/types/proposal"
+	"github.com/KuChainNetwork/kuchain/x/params/external"
+	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 )

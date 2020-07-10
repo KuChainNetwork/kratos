@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	rest "github.com/KuChain-io/kuchain/chain/types"
+	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

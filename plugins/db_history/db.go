@@ -3,8 +3,8 @@ package dbHistory
 import (
 	"sync"
 
-	"github.com/KuChain-io/kuchain/plugins/db_history/chaindb"
-	"github.com/KuChain-io/kuchain/plugins/db_history/config"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/chaindb"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/config"
 	"github.com/go-pg/pg/v10"
 	"github.com/tendermint/tendermint/libs/log"
 )

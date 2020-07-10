@@ -3,9 +3,9 @@ package staking
 // nolint
 
 import (
-	"github.com/KuChain-io/kuchain/x/staking/exported"
-	"github.com/KuChain-io/kuchain/x/staking/keeper"
-	"github.com/KuChain-io/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/staking/keeper"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
 )
 
 const (

@@ -2,8 +2,8 @@ package cli
 
 import (
 	"encoding/json"
-	"github.com/KuChain-io/kuchain/x/genutil"
-	"github.com/KuChain-io/kuchain/x/genutil/types"
+	"github.com/KuChainNetwork/kuchain/x/genutil"
+	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"path/filepath"
 
 	"github.com/pkg/errors"

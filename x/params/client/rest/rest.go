@@ -2,11 +2,11 @@ package rest
 
 import (
 	"fmt"
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
-	rest "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/params/external"
-	"github.com/KuChain-io/kuchain/x/params/types/proposal"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	rest "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/params/external"
+	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"net/http"

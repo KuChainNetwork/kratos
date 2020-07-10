@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/KuChain-io/kuchain/x/evidence/external"
+	"github.com/KuChainNetwork/kuchain/x/evidence/external"
 )
 
 // DONTCOVER

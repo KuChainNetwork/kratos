@@ -1,6 +1,6 @@
 package test
 
-import "github.com/KuChain-io/kuchain/plugins/test/types"
+import "github.com/KuChainNetwork/kuchain/plugins/test/types"
 
 const (
 	PluginName = types.PluginName

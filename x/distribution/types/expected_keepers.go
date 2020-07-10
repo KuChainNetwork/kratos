@@ -3,9 +3,9 @@ package types
 import (
 	"time"
 
-	"github.com/KuChain-io/kuchain/chain/types"
-	accExported "github.com/KuChain-io/kuchain/x/account/exported"
-	supplyexported "github.com/KuChain-io/kuchain/x/supply/exported"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	accExported "github.com/KuChainNetwork/kuchain/x/account/exported"
+	supplyexported "github.com/KuChainNetwork/kuchain/x/supply/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

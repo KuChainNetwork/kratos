@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 // NewVote creates a new Vote instance

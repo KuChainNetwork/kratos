@@ -4,9 +4,9 @@ package supply
 // nolint
 
 import (
-	accountTypes "github.com/KuChain-io/kuchain/x/account/types"
-	"github.com/KuChain-io/kuchain/x/supply/keeper"
-	"github.com/KuChain-io/kuchain/x/supply/types"
+	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/x/supply/keeper"
+	"github.com/KuChainNetwork/kuchain/x/supply/types"
 )
 
 const (

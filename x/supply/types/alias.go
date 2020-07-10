@@ -1,9 +1,9 @@
 package types
 
 import (
-	"github.com/KuChain-io/kuchain/chain/types"
-	accountExported "github.com/KuChain-io/kuchain/x/account/exported"
-	accountTypes "github.com/KuChain-io/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	accountExported "github.com/KuChainNetwork/kuchain/x/account/exported"
+	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
 )
 
 type (

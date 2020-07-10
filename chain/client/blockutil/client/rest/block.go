@@ -3,7 +3,7 @@ package rest
 import (
 	"sync"
 
-	"github.com/KuChain-io/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmliteProxy "github.com/tendermint/tendermint/lite/proxy"

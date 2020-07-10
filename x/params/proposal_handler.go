@@ -3,9 +3,9 @@ package params
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/params/external"
-	"github.com/KuChain-io/kuchain/x/params/keeper"
-	"github.com/KuChain-io/kuchain/x/params/types/proposal"
+	"github.com/KuChainNetwork/kuchain/x/params/external"
+	"github.com/KuChainNetwork/kuchain/x/params/keeper"
+	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

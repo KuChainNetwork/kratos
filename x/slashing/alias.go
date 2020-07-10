@@ -3,8 +3,8 @@ package slashing
 // nolint
 
 import (
-	"github.com/KuChain-io/kuchain/x/slashing/keeper"
-	"github.com/KuChain-io/kuchain/x/slashing/types"
+	"github.com/KuChainNetwork/kuchain/x/slashing/keeper"
+	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 )
 
 const (

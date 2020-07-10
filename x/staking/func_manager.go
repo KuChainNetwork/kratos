@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/asset"
-	genutiltypes "github.com/KuChain-io/kuchain/x/genutil/types"
-	"github.com/KuChain-io/kuchain/x/staking/types"
-	stakingtypes "github.com/KuChain-io/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/asset"
+	genutiltypes "github.com/KuChainNetwork/kuchain/x/genutil/types"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
+	stakingtypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

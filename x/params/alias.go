@@ -3,8 +3,8 @@ package params
 // nolint
 
 import (
-	"github.com/KuChain-io/kuchain/x/params/keeper"
-	"github.com/KuChain-io/kuchain/x/params/types"
+	"github.com/KuChainNetwork/kuchain/x/params/keeper"
+	"github.com/KuChainNetwork/kuchain/x/params/types"
 )
 
 const (

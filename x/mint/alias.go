@@ -3,8 +3,8 @@ package mint
 // nolint
 
 import (
-	"github.com/KuChain-io/kuchain/x/mint/keeper"
-	"github.com/KuChain-io/kuchain/x/mint/types"
+	"github.com/KuChainNetwork/kuchain/x/mint/keeper"
+	"github.com/KuChainNetwork/kuchain/x/mint/types"
 )
 
 const (

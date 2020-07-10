@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/plugins/db_history/config"
-	"github.com/KuChain-io/kuchain/plugins/db_history/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/config"
+	"github.com/KuChainNetwork/kuchain/plugins/db_history/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 )

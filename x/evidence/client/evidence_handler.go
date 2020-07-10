@@ -3,7 +3,7 @@ package client
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/KuChain-io/kuchain/x/evidence/client/rest"
+	"github.com/KuChainNetwork/kuchain/x/evidence/client/rest"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 )

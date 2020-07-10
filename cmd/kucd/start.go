@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"runtime/pprof"
 
-	"github.com/KuChain-io/kuchain/plugins"
+	"github.com/KuChainNetwork/kuchain/plugins"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/pkg/errors"

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/KuChain-io/kuchain/x/gov/external"
-	"github.com/KuChain-io/kuchain/x/gov/types"
+	"github.com/KuChainNetwork/kuchain/x/gov/external"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 )

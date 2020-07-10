@@ -3,10 +3,10 @@ package asset
 import (
 	"strconv"
 
-	"github.com/KuChain-io/kuchain/chain/msg"
-	chainTypes "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/asset/keeper"
-	"github.com/KuChain-io/kuchain/x/asset/types"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/asset/keeper"
+	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/KuChain-io/kuchain/x/evidence/exported"
+	"github.com/KuChainNetwork/kuchain/x/evidence/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"

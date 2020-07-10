@@ -3,7 +3,7 @@ package gov
 import (
 	"fmt"
 
-	"github.com/KuChain-io/kuchain/x/gov/types"
+	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

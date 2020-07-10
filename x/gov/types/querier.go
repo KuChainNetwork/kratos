@@ -1,7 +1,7 @@
 package types
 
 import (
-	chaintype "github.com/KuChain-io/kuchain/chain/types"
+	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 // DONTCOVER

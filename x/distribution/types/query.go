@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	chainType "github.com/KuChain-io/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/KuChain-io/kuchain/x/asset"
-	"github.com/KuChain-io/kuchain/x/staking"
+	"github.com/KuChainNetwork/kuchain/x/asset"
+	"github.com/KuChainNetwork/kuchain/x/staking"
 
-	genutilcli "github.com/KuChain-io/kuchain/x/genutil/client/cli"
+	genutilcli "github.com/KuChainNetwork/kuchain/x/genutil/client/cli"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -17,7 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	//"github.com/KuChain-io/kuchain/x/staking"
+	//"github.com/KuChainNetwork/kuchain/x/staking"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -26,11 +26,11 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/KuChain-io/kuchain/app"
-	chainCfg "github.com/KuChain-io/kuchain/chain/config"
-	"github.com/KuChain-io/kuchain/chain/constants"
-	kuLog "github.com/KuChain-io/kuchain/utils/log"
-	genTypes "github.com/KuChain-io/kuchain/x/genutil/types"
+	"github.com/KuChainNetwork/kuchain/app"
+	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
+	"github.com/KuChainNetwork/kuchain/chain/constants"
+	kuLog "github.com/KuChainNetwork/kuchain/utils/log"
+	genTypes "github.com/KuChainNetwork/kuchain/x/genutil/types"
 )
 
 const flagInvCheckPeriod = "inv-check-period"

@@ -10,9 +10,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/KuChain-io/kuchain/chain/client/txutil"
-	"github.com/KuChain-io/kuchain/x/asset"
-	"github.com/KuChain-io/kuchain/x/genutil/types"
+	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/x/asset"
+	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 
 	cfg "github.com/tendermint/tendermint/config"
 	tmtypes "github.com/tendermint/tendermint/types"

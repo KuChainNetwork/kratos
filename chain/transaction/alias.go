@@ -1,6 +1,6 @@
 package transaction
 
-import "github.com/KuChain-io/kuchain/chain/types"
+import "github.com/KuChainNetwork/kuchain/chain/types"
 
 type (
 	StdTx        = types.StdTx

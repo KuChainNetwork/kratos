@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	"github.com/KuChain-io/kuchain/chain/config"
+	"github.com/KuChainNetwork/kuchain/chain/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
 )

@@ -3,7 +3,7 @@ package staking
 import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/KuChain-io/kuchain/x/staking/keeper"
+	"github.com/KuChainNetwork/kuchain/x/staking/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

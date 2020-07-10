@@ -1,9 +1,9 @@
 package distribution
 
 import (
-	"github.com/KuChain-io/kuchain/x/distribution/client"
-	"github.com/KuChain-io/kuchain/x/distribution/keeper"
-	"github.com/KuChain-io/kuchain/x/distribution/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/client"
+	"github.com/KuChainNetwork/kuchain/x/distribution/keeper"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 )
 
 // nolint

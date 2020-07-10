@@ -3,7 +3,7 @@ package keeper
 import (
 	"time"
 
-	"github.com/KuChain-io/kuchain/x/evidence/types"
+	"github.com/KuChainNetwork/kuchain/x/evidence/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

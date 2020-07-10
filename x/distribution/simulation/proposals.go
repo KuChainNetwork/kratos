@@ -3,9 +3,9 @@ package simulation
 import (
 	"math/rand"
 
-	chainType "github.com/KuChain-io/kuchain/chain/types"
-	"github.com/KuChain-io/kuchain/x/distribution/keeper"
-	"github.com/KuChain-io/kuchain/x/distribution/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/keeper"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
