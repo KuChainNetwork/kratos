@@ -3,6 +3,7 @@ package constants
 import (
 	"strconv"
 
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
@@ -21,4 +22,9 @@ func LogVersion(logger log.Logger) {
 
 func GetFixAssetHeight() int64 {
 	return FixAssetHeightVal
+}
+
+// IsFixAssetHeight is fix asset
+func IsFixAssetHeight(ctx types.Context) bool {
+	return ctx.BlockHeight() > FixAssetHeightVal
 }

@@ -22,4 +22,5 @@ var (
 	ErrAssetCoinMustCanIssueWhenIssueByBlock = sdkerrors.Register(ModuleName, 17, "coin state must can issue when set to issue by height")
 	ErrAssetCoinMustSupplyNeedGTInitSupply   = sdkerrors.Register(ModuleName, 18, "coin max_supply need > init_supply")
 	ErrAssetIssueToHeightMustGTCurrentHeight = sdkerrors.Register(ModuleName, 19, "coin issue to height must > current height")
+	ErrAssetSymbolError                      = sdkerrors.Register(ModuleName, 20, "asset symbol error")
 )
