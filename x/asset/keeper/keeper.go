@@ -18,7 +18,6 @@ type AssetCoinsKeeper interface {
 	Create(ctx sdk.Context, creator, symbol types.Name, maxSupply types.Coin, canIssue, canLock bool, issue2Height int64, initSupply types.Coin, desc []byte) error
 	Issue(ctx sdk.Context, creator, symbol types.Name, amount types.Coin) error
 	Burn(ctx sdk.Context, id types.AccountID, amt sdk.Coin) error
-	Retire(ctx sdk.Context, creator, symbol types.Name, amount types.Coin) error
 
 	LockCoins(ctx sdk.Context, account types.AccountID, unlockBlockHeight int64, coins types.Coins) error
 	UnLockCoins(ctx sdk.Context, account types.AccountID, coins types.Coins) error
@@ -149,10 +148,6 @@ func (a AssetKeeper) Burn(ctx sdk.Context, id types.AccountID, amount types.Coin
 		return sdkerrors.Wrap(err, "burn set coins")
 	}
 
-	return nil
-}
-
-func (a AssetKeeper) Retire(ctx sdk.Context, creator, symbol types.Name, amount types.Coin) error {
 	return nil
 }
 
