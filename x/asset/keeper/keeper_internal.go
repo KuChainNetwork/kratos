@@ -4,6 +4,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/KuChainNetwork/kuchain/chain/constants"
 )
 
 // Some internal implements for asset keeper
@@ -140,7 +141,10 @@ func (a AssetKeeper) getStat(ctx sdk.Context, creator, symbol types.Name) (*type
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.CoinStatStoreKey(creator, symbol))
 	if bz == nil {
-		return nil, types.ErrAssetCoinNoExit
+		if constants.IsFixAssetHeight(ctx) {
+			return nil, types.ErrAssetCoinNoExit
+		}
+		return nil, nil
 	}
 
 	var stat types.CoinStat
@@ -166,7 +170,10 @@ func (a AssetKeeper) getDescription(ctx sdk.Context, creator, symbol types.Name)
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.CoinDescStoreKey(creator, symbol))
 	if bz == nil {
-		return nil, types.ErrAssetCoinNoExit
+		if constants.IsFixAssetHeight(ctx) {
+			return nil, types.ErrAssetCoinNoExit
+		}
+		return nil, nil
 	}
 
 	var res types.CoinDescription

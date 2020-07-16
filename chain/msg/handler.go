@@ -49,7 +49,7 @@ func onHandlerKuMsg(ctx Context, k AssetTransfer, msg KuTransfMsg) error {
 	to := msg.GetTo()
 	amount := msg.GetAmount()
 
-	if from.Empty() || to.Empty() || amount.IsZero() || (constants.IsFixAssetHeight(ctx) && from.Eq(to)) {
+	if from.Empty() || to.Empty() || amount.IsZero() || (constants.IsFixAssetHeight(ctx.Context()) && from.Eq(to)) {
 		return nil
 	}
 

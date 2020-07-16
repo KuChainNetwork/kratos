@@ -42,7 +42,7 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 	if creator, ok := msgData.Creator.ToName(); ok && constants.IsSystemAccount(creator) {
 		// system account can create accounts
 	} else {
-		if constants.IsFixAssetHeight(ctx) {
+		if constants.IsFixAssetHeight(ctx.Context()) {
 			if msgData.Name.Len() != 12 {
 				return nil, types.ErrAccountNameLenInvalid
 			}
