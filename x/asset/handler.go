@@ -61,7 +61,7 @@ func handleMsgCreate(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *typ
 
 	ctx.RequireAccount(msgData.Creator)
 
-	if constants.IsFixAssetHeight(ctx) {
+	if constants.IsFixAssetHeight(ctx.Context()) {
 		denom := types.CoinDenom(msgData.Creator, msgData.Symbol)
 		if denom != msgData.InitSupply.Denom || denom != msgData.MaxSupply.Denom {
 			return nil, sdkerrors.Wrapf(types.ErrAssetSymbolError, "coin denom should be equal")
@@ -101,7 +101,7 @@ func handleMsgIssue(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *type
 		return nil, sdkerrors.Wrapf(err, "msg issue coin data unmarshal error")
 	}
 
-	if constants.IsFixAssetHeight(ctx) && (msgData.Amount.Denom != types.CoinDenom(msgData.Creator, msgData.Symbol)) {
+	if constants.IsFixAssetHeight(ctx.Context()) && (msgData.Amount.Denom != types.CoinDenom(msgData.Creator, msgData.Symbol)) {
 		return nil, sdkerrors.Wrapf(types.ErrAssetSymbolError, "coin denom not match")
 	}
 
