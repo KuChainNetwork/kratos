@@ -104,6 +104,10 @@ func handleMsgUpdateAccountAuth(ctx chainTypes.Context, k Keeper, msg *types.Msg
 	oldAuth := accountStat.GetAuth()
 	ctx.RequireAccountAuth(oldAuth)
 
+	if oldAuth.Equals(msgData.Auth) {
+		return nil, sdkerrors.Wrapf(types.ErrAuthNoChanged, "set auth %s", msgData.Auth)
+	}
+
 	if err := accountStat.SetAuth(msgData.Auth); err != nil {
 		return nil, sdkerrors.Wrapf(err, "set auth to account error")
 	}
