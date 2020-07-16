@@ -297,6 +297,8 @@ func NewKuchainApp(
 		}
 	}
 
+	constants.LogVersion(app.Logger())
+
 	return app
 }
 

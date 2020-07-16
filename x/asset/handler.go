@@ -3,6 +3,7 @@ package asset
 import (
 	"strconv"
 
+	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset/keeper"
@@ -60,6 +61,13 @@ func handleMsgCreate(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *typ
 
 	ctx.RequireAccount(msgData.Creator)
 
+	if constants.IsFixAssetHeight(ctx) {
+		denom := types.CoinDenom(msgData.Creator, msgData.Symbol)
+		if denom != msgData.InitSupply.Denom || denom != msgData.MaxSupply.Denom {
+			return nil, sdkerrors.Wrapf(types.ErrAssetSymbolError, "coin denom should be equal")
+		}
+	}
+
 	if err := k.Create(ctx.Context(),
 		msgData.Creator, msgData.Symbol, msgData.MaxSupply,
 		msgData.CanIssue, msgData.CanLock, msgData.IssueToHeight, msgData.InitSupply, msgData.Desc); err != nil {
@@ -91,6 +99,10 @@ func handleMsgIssue(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *type
 	msgData := types.MsgIssueCoinData{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return nil, sdkerrors.Wrapf(err, "msg issue coin data unmarshal error")
+	}
+
+	if constants.IsFixAssetHeight(ctx) && (msgData.Amount.Denom != types.CoinDenom(msgData.Creator, msgData.Symbol)) {
+		return nil, sdkerrors.Wrapf(types.ErrAssetSymbolError, "coin denom not match")
 	}
 
 	logger.Debug("handle coin issue",

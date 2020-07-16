@@ -7,6 +7,8 @@ COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 
+FixAssetHeight := 100
+
 export GO111MODULE = on
 
 # process build tags
@@ -53,7 +55,8 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=kts \
 		  -X github.com/cosmos/cosmos-sdk/version.ClientName=ktscli \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+      -X github.com/KuChainNetwork/kuchain/chain/constants.FixAssetHeight=$(FixAssetHeight)
 
 ifeq ($(WITH_CLEVELDB),yes)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
