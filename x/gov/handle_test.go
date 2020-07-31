@@ -34,13 +34,15 @@ func newTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccA
 	if !succ {
 		resInt = sdk.NewInt(10000000000000000)
 	}
+	otherCoinDenom := types.CoinDenom(types.MustName("foo"),types.MustName("coin"))
+
 	initAsset := types.NewCoin(constants.DefaultBondDenom, resInt)
 	asset1 := types.Coins{
-		types.NewInt64Coin("foo/coin", 6700000000000),
+		types.NewInt64Coin(otherCoinDenom, 6700000000000),
 		initAsset}
 
 	asset2 := types.Coins{
-		types.NewInt64Coin("foo/coin", 6700000000000),
+		types.NewInt64Coin(otherCoinDenom, 6700000000000),
 		types.NewInt64Coin(constants.DefaultBondDenom, 10000000)}
 
 	genAlice := simapp.NewSimGenesisAccount(accAlice, addAlice).WithAsset(asset1)
@@ -225,7 +227,8 @@ func TestGovHandler(t *testing.T) {
 		err := createValidator(t, wallet, app, addAlice, accAlice, rate, pk, true)
 		So(err, ShouldBeNil)
 		initdepost := types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000000000)
-		otherdeposit := types.NewInt64Coin("foo/coin", 1000000)
+		otherCoinDenom := types.CoinDenom(types.MustName("foo"),types.MustName("coin"))
+		otherdeposit := types.NewInt64Coin(otherCoinDenom, 1000000)
 
 		depositInt, succ := sdk.NewIntFromString("500000000000000000000")
 		if !succ {
@@ -277,7 +280,6 @@ func TestGovHandler(t *testing.T) {
 		So(err, ShouldBeNil)
 		initdepost := types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000000000)
 		jackdepost := types.NewInt64Coin(constants.DefaultBondDenom, 1500000000000000000)
-		//	otherdeposit := types.NewInt64Coin("foo/coin", 1000000)
 
 		err = delegationValidator(t, wallet, app, addAlice, accAlice, accAlice, initdepost, true)
 		So(err, ShouldBeNil)
@@ -391,7 +393,6 @@ func TestGovHandler(t *testing.T) {
 		err := createValidator(t, wallet, app, addAlice, accAlice, rate, pk, true)
 		So(err, ShouldBeNil)
 		initdepost := types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000000000)
-		//	otherdeposit := types.NewInt64Coin("foo/coin", 1000000)
 
 		depositInt, succ := sdk.NewIntFromString("500000000000000000000")
 		if !succ {
