@@ -7,7 +7,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
-const (
+var (
 	ChainNameStr      = keys.ChainNameStr
 	ChainMainNameStr  = keys.ChainMainNameStr
 	DefaultBondDenom  = keys.DefaultBondDenom
