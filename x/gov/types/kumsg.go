@@ -97,6 +97,14 @@ func NewKuMsgDeposit(auth sdk.AccAddress, depositor AccountID, proposalID uint64
 	}
 }
 
+func (msg KuMsgDeposit) ValidateBasic() error {
+	msgData := MsgDeposit{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
+}
+
 type KuMsgVote struct {
 	KuMsg
 }
@@ -109,6 +117,14 @@ func NewKuMsgVote(auth sdk.AccAddress, voter AccountID, proposalID uint64, optio
 			msg.WithData(Cdc(), &MsgVote{proposalID, voter, option}),
 		),
 	}
+}
+
+func (msg KuMsgVote) ValidateBasic() error {
+	msgData := MsgVote{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
 }
 
 type MsgGovUnJail struct {

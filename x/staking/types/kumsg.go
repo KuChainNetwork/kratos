@@ -40,6 +40,14 @@ func NewKuMsgCreateValidator(auth sdk.AccAddress, valAddr chainTypes.AccountID, 
 	}
 }
 
+func (msg KuMsgCreateValidator) ValidateBasic() error {
+	msgData := MsgCreateValidator{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
+}
+
 type KuMsgDelegate struct {
 	chainTypes.KuMsg
 }
@@ -60,6 +68,14 @@ func NewKuMsgDelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr
 	}
 }
 
+func (msg KuMsgDelegate) ValidateBasic() error {
+	msgData := MsgDelegate{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
+}
+
 type KuMsgEditValidator struct {
 	chainTypes.KuMsg
 }
@@ -77,6 +93,14 @@ func NewKuMsgEditValidator(auth sdk.AccAddress, valAddr chainTypes.AccountID, de
 			}),
 		),
 	}
+}
+
+func (msg KuMsgEditValidator) ValidateBasic() error {
+	msgData := MsgEditValidator{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
 }
 
 type KuMsgRedelegate struct {
@@ -99,6 +123,14 @@ func NewKuMsgRedelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valSr
 	}
 }
 
+func (msg KuMsgRedelegate) ValidateBasic() error {
+	msgData := MsgBeginRedelegate{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
+}
+
 type KuMsgUnbond struct {
 	chainTypes.KuMsg
 }
@@ -116,4 +148,12 @@ func NewKuMsgUnbond(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr c
 			}),
 		),
 	}
+}
+
+func (msg KuMsgUnbond) ValidateBasic() error {
+	msgData := MsgUndelegate{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
 }
