@@ -403,6 +403,18 @@ func (app *SimApp) MintKeeper() *mint.Keeper {
 	return &app.mintKeeper
 }
 
+func (app *SimApp) StakeKeeper() *staking.Keeper {
+	return &app.stakingKeeper
+}
+
+func (app *SimApp) SlashKeeper() *slashing.Keeper {
+	return &app.slashingKeeper
+}
+
+func (app *SimApp) GovKeeper() *gov.Keeper {
+	return &app.govKeeper
+}
+
 // GetMaccPerms returns a copy of the module account permissions
 func GetMaccPerms() map[string][]string {
 	dupMaccPerms := make(map[string][]string)

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"bytes"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -93,6 +94,13 @@ func MustUnmarshalDelegation(cdc *codec.Codec, value []byte) Delegation {
 func UnmarshalDelegation(cdc *codec.Codec, value []byte) (delegation Delegation, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &delegation)
 	return delegation, err
+}
+
+// nolint
+func (d Delegation) Equal(d2 Delegation) bool {
+	return bytes.Equal(d.DelegatorAccount.Bytes(), d2.DelegatorAccount.Bytes()) &&
+		bytes.Equal(d.ValidatorAccount.Bytes(), d2.ValidatorAccount.Bytes()) &&
+		d.Shares.Equal(d2.Shares)
 }
 
 // nolint - for Delegation
@@ -196,6 +204,12 @@ type UnbondingDelegation struct {
 	DelegatorAccount AccountID                  `json:"delegator_account" yaml:"delegator_account"`
 	ValidatorAccount AccountID                  `json:"validator_account" yaml:"validator_account"`
 	Entries          []UnbondingDelegationEntry `json:"entries" yaml:"entries"`
+}
+
+func (d UnbondingDelegation) Equal(d2 UnbondingDelegation) bool {
+	bz1 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d)
+	bz2 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d2)
+	return bytes.Equal(bz1, bz2)
 }
 
 // String returns a human readable string representation of an UnbondingDelegation.
@@ -313,6 +327,14 @@ func MustUnmarshalRED(cdc *codec.Codec, value []byte) Redelegation {
 func UnmarshalRED(cdc *codec.Codec, value []byte) (red Redelegation, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &red)
 	return red, err
+}
+
+// nolint
+// inefficient but only used in tests
+func (d Redelegation) Equal(d2 Redelegation) bool {
+	bz1 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d)
+	bz2 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d2)
+	return bytes.Equal(bz1, bz2)
 }
 
 // String returns a human readable string representation of a Redelegation.

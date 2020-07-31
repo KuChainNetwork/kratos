@@ -113,7 +113,7 @@ func (k Keeper) UndelegateCoinsFromModuleToAccount(
 	}
 
 	// Delegate will first send coins to ModuleAccountID
-	if err := k.bk.CoinsToPower(ctx, acc.GetID(), recipientAcc, amt); err != nil {
+	if err := k.bk.SendCoinPower(ctx, acc.GetID(), recipientAcc, amt); err != nil {
 		return sdkerrors.Wrapf(err,
 			"UndelegateCoinsFromModuleToAccount %s by %s", recipientAcc, amt.String())
 	}
