@@ -174,6 +174,12 @@ func NewCoins(coins ...Coin) Coins {
 	return newCoins
 }
 
+// NewInt64Coins returns a new coin with a denomination and amount. It will panic
+// if the amount is negative.
+func NewInt64Coins(denom string, amount int64) Coins {
+	return NewCoins(NewCoin(denom, NewInt(amount)))
+}
+
 type coinsJSON Coins
 
 // MarshalJSON implements a custom JSON marshaller for the Coins type to allow
