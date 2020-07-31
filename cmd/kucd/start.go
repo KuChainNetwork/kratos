@@ -228,8 +228,6 @@ func startInProcess(ctx *server.Context, appCreator server.AppCreator) (*node.No
 		return nil, err
 	}
 
-	server.UpgradeOldPrivValFile(cfg)
-
 	// create & start tendermint node
 	tmNode, err := node.NewNode(
 		cfg,

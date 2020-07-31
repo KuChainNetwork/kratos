@@ -17,14 +17,14 @@ type AccountKeeper interface {
 
 // BankKeeper defines the expected bank keeper (noalias)
 type BankKeeper interface {
-	SendCoinPower(ctx sdk.Context, from, to types.AccountID, amt sdk.Coins) error
-	IssueCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.Coins) (sdk.Coins, error)
-	BurnCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.Coins) (sdk.Coins, error)
-	CoinsToPower(ctx sdk.Context, from, to types.AccountID, amt sdk.Coins) error
+	SendCoinPower(ctx sdk.Context, from, to types.AccountID, amt types.Coins) error
+	IssueCoinPower(ctx sdk.Context, id types.AccountID, amt types.Coins) (types.Coins, error)
+	BurnCoinPower(ctx sdk.Context, id types.AccountID, amt types.Coins) (types.Coins, error)
+	CoinsToPower(ctx sdk.Context, from, to types.AccountID, amt types.Coins) error
 
 	GetCoinsTotalSupply(ctx sdk.Context) types.Coins
 	GetCoinTotalSupply(ctx sdk.Context, creator, symbol types.Name) types.Coin
 
-	IterateAllCoins(ctx sdk.Context, cb func(address types.AccountID, balance sdk.Coins) (stop bool))
-	IterateAllCoinPowers(ctx sdk.Context, cb func(address types.AccountID, balance sdk.Coins) (stop bool))
+	IterateAllCoins(ctx sdk.Context, cb func(address types.AccountID, balance types.Coins) (stop bool))
+	IterateAllCoinPowers(ctx sdk.Context, cb func(address types.AccountID, balance types.Coins) (stop bool))
 }

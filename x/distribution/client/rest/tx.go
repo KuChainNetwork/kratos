@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
@@ -70,7 +70,7 @@ func withdrawDelegatorRewardsHandlerFn(cliCtx context.CLIContext, queryRoute str
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		delegatorAcc, err := chainType.NewAccountIDFromStr(req.DelegatorAcc)
+		delegatorAcc, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -104,13 +104,13 @@ func withdrawDelegationRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerF
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		delegatorAcc, err := chainType.NewAccountIDFromStr(req.DelegatorAcc)
+		delegatorAcc, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		validatorAcc, err := chainType.NewAccountIDFromStr(req.ValidatorAcc)
+		validatorAcc, err := chainTypes.NewAccountIDFromStr(req.ValidatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -144,13 +144,13 @@ func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.Handler
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		delegatorAcc, err := chainType.NewAccountIDFromStr(req.DelegatorAcc)
+		delegatorAcc, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		withdrawAcc, err := chainType.NewAccountIDFromStr(req.WithdrawAcc)
+		withdrawAcc, err := chainTypes.NewAccountIDFromStr(req.WithdrawAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -184,7 +184,7 @@ func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		validatorAcc, err := chainType.NewAccountIDFromStr(req.ValidatorAcc)
+		validatorAcc, err := chainTypes.NewAccountIDFromStr(req.ValidatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -216,13 +216,13 @@ func fundCommunityPoolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		amount, err := sdk.ParseCoins(req.Amount)
+		amount, err := chainTypes.ParseCoins(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		depositor, err := chainType.NewAccountIDFromStr(req.DepositorAcc)
+		depositor, err := chainTypes.NewAccountIDFromStr(req.DepositorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -245,22 +245,22 @@ func fundCommunityPoolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func checkDelegatorAddressVar(w http.ResponseWriter, r *http.Request) (chainType.AccountID, bool) {
-	accID, err := chainType.NewAccountIDFromStr(mux.Vars(r)["delegatorAddr"])
+func checkDelegatorAddressVar(w http.ResponseWriter, r *http.Request) (chainTypes.AccountID, bool) {
+	accID, err := chainTypes.NewAccountIDFromStr(mux.Vars(r)["delegatorAddr"])
 	if err != nil {
 		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		return chainType.EmptyAccountID(), false
+		return chainTypes.EmptyAccountID(), false
 	}
 
 	return accID, true
 }
 
-func checkValidatorAddressVar(w http.ResponseWriter, r *http.Request) (chainType.AccountID, bool) {
+func checkValidatorAddressVar(w http.ResponseWriter, r *http.Request) (chainTypes.AccountID, bool) {
 	// FIXME: support accountID
-	addr, err := chainType.NewAccountIDFromStr(mux.Vars(r)["validatorAddr"])
+	addr, err := chainTypes.NewAccountIDFromStr(mux.Vars(r)["validatorAddr"])
 	if err != nil {
 		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		return chainType.EmptyAccountID(), false
+		return chainTypes.EmptyAccountID(), false
 	}
 
 	return addr, true

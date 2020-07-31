@@ -1,12 +1,9 @@
 package params
 
 import (
-	"encoding/json"
 	"math/rand"
 
-	"github.com/gorilla/mux"
-	"github.com/spf13/cobra"
-
+	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/x/params/simulation"
 	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -14,6 +11,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/gorilla/mux"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -22,24 +21,24 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the params module.
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	genesis.EmptyGenesisModuleBasicBase
+}
 
 // Name returns the params module's name.
 func (AppModuleBasic) Name() string {
 	return proposal.ModuleName
 }
 
+// NewAppModuleBasic new app module basic
+func NewAppModuleBasic() AppModuleBasic {
+	return AppModuleBasic{}
+}
+
 // RegisterCodec registers the params module's types for the given codec.
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	proposal.RegisterCodec(cdc)
 }
-
-// DefaultGenesis returns default genesis state as raw bytes for the params
-// module.
-func (AppModuleBasic) DefaultGenesis(_ codec.JSONMarshaler) json.RawMessage { return nil }
-
-// ValidateGenesis performs genesis state validation for the params module.
-func (AppModuleBasic) ValidateGenesis(_ codec.JSONMarshaler, _ json.RawMessage) error { return nil }
 
 // RegisterRESTRoutes registers the REST routes for the params module.
 func (AppModuleBasic) RegisterRESTRoutes(_ context.CLIContext, _ *mux.Router) {}

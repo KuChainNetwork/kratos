@@ -20,7 +20,7 @@ type SupplyKeeper interface {
 	SetModuleAccount(sdk.Context, supplyExported.ModuleAccountI)
 	GetModuleAccount(ctx sdk.Context, moduleName string) supplyExported.ModuleAccountI
 
-	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr types.AccountID, amt sdk.Coins) error
-	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
-	MintCoins(ctx sdk.Context, name string, amt *sdk.Coins) error
+	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr types.AccountID, amt types.Coins) error
+	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt types.Coins) error
+	MintCoins(ctx sdk.Context, name string, amt *types.Coins) error
 }

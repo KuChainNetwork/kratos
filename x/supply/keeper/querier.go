@@ -37,7 +37,7 @@ func queryTotalSupply(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte,
 
 	start, end := client.Paginate(len(totalSupply), params.Page, params.Limit, 100)
 	if start < 0 || end < 0 {
-		totalSupply = sdk.Coins{}
+		totalSupply = types.Coins{}
 	} else {
 		totalSupply = totalSupply[start:end]
 	}

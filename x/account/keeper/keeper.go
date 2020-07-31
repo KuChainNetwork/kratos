@@ -72,3 +72,7 @@ func (ak AccountKeeper) GetAuth(ctx sdk.Context, account Name) (sdk.AccAddress, 
 
 	return acc.GetAuth(), nil
 }
+
+func (ak AccountKeeper) GetStoreKey() sdk.StoreKey {
+	return ak.key
+}

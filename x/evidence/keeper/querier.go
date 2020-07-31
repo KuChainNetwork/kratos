@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -41,7 +40,7 @@ func NewQuerier(k Keeper) sdk.Querier {
 func queryParams(ctx sdk.Context, k Keeper) ([]byte, error) {
 	params := k.GetParams(ctx)
 
-	res, err := codec.MarshalJSONIndent(k.cdc, params)
+	res, err := codec.MarshalJSONIndent(types.ModuleCdc, params)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -52,7 +51,7 @@ func queryParams(ctx sdk.Context, k Keeper) ([]byte, error) {
 func queryEvidence(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, error) {
 	var params types.QueryEvidenceParams
 
-	err := k.cdc.UnmarshalJSON(req.Data, &params)
+	err := types.ModuleCdc.UnmarshalJSON(req.Data, &params)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
@@ -67,7 +66,7 @@ func queryEvidence(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, er
 		return nil, sdkerrors.Wrap(types.ErrNoEvidenceExists, params.EvidenceHash)
 	}
 
-	res, err := codec.MarshalJSONIndent(k.cdc, evidence)
+	res, err := codec.MarshalJSONIndent(types.ModuleCdc, evidence)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
@@ -78,7 +77,7 @@ func queryEvidence(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, er
 func queryAllEvidence(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, error) {
 	var params types.QueryAllEvidenceParams
 
-	err := k.cdc.UnmarshalJSON(req.Data, &params)
+	err := types.ModuleCdc.UnmarshalJSON(req.Data, &params)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
@@ -92,7 +91,7 @@ func queryAllEvidence(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte,
 		evidence = evidence[start:end]
 	}
 
-	res, err := codec.MarshalJSONIndent(k.cdc, evidence)
+	res, err := codec.MarshalJSONIndent(types.ModuleCdc, evidence)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}

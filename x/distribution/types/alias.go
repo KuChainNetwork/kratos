@@ -9,6 +9,7 @@ import (
 	StakingKP "github.com/KuChainNetwork/kuchain/x/staking/keeper"
 	StakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/KuChainNetwork/kuchain/x/supply"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	Sim "github.com/cosmos/cosmos-sdk/x/simulation"
 )
 
@@ -19,6 +20,9 @@ type (
 	KuMsg      = types.KuMsg
 	AccAddress = types.AccAddress
 	Name       = types.Name
+	Dec        = sdk.Dec
+	DecCoins   = types.DecCoins
+	DecCoin    = types.DecCoin
 )
 
 var (

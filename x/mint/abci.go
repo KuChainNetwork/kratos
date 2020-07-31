@@ -1,6 +1,7 @@
 package mint
 
 import (
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -28,7 +29,7 @@ func BeginBlocker(ctx sdk.Context, k Keeper) {
 
 	// mint coins, update kusupply
 	mintedCoin := minter.BlockProvision(params)
-	mintedCoins := sdk.NewCoins(mintedCoin)
+	mintedCoins := chainTypes.NewCoins(mintedCoin)
 
 	logger.Debug("minted coins", "coin", mintedCoins, "params", params)
 

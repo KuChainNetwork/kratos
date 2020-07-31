@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -106,7 +105,7 @@ func DepositsKey(proposalID uint64) []byte {
 }
 
 // DepositKey key of a specific deposit from the store
-func DepositKey(proposalID uint64, depositorAddr chaintype.AccountID) []byte {
+func DepositKey(proposalID uint64, depositorAddr AccountID) []byte {
 	return append(DepositsKey(proposalID), depositorAddr.Value...)
 }
 
@@ -116,7 +115,7 @@ func VotesKey(proposalID uint64) []byte {
 }
 
 // VoteKey key of a specific vote from the store
-func VoteKey(proposalID uint64, voterAddr chaintype.AccountID) []byte {
+func VoteKey(proposalID uint64, voterAddr AccountID) []byte {
 	return append(VotesKey(proposalID), voterAddr.Value...)
 }
 
@@ -142,12 +141,12 @@ func SplitInactiveProposalQueueKey(key []byte) (proposalID uint64, endTime time.
 }
 
 // SplitKeyDeposit split the deposits key and returns the proposal id and depositor address
-func SplitKeyDeposit(key []byte) (proposalID uint64, depositorAddr chaintype.AccountID) {
+func SplitKeyDeposit(key []byte) (proposalID uint64, depositorAddr AccountID) {
 	return splitKeyWithAddress(key)
 }
 
 // SplitKeyVote split the votes key and returns the proposal id and voter address
-func SplitKeyVote(key []byte) (proposalID uint64, voterAddr chaintype.AccountID) {
+func SplitKeyVote(key []byte) (proposalID uint64, voterAddr AccountID) {
 	return splitKeyWithAddress(key)
 }
 
@@ -167,16 +166,16 @@ func splitKeyWithTime(key []byte) (proposalID uint64, endTime time.Time) {
 	return
 }
 
-func splitKeyWithAddress(key []byte) (proposalID uint64, addr chaintype.AccountID) {
+func splitKeyWithAddress(key []byte) (proposalID uint64, addr AccountID) {
 	if len(key[1:]) != 8+AccountIDlen {
 		panic(fmt.Sprintf("unexpected key length (%d ≠ %d)", len(key), 8+AccountIDlen))
 	}
 
 	proposalID = GetProposalIDFromBytes(key[1:9])
-	addr = chaintype.AccountID{key[9:]}
+	addr = NewAccountIDFromByte(key[9:])
 	return
 }
 
-func GetValidatorKey(validatorAccount chaintype.AccountID) []byte {
+func GetValidatorKey(validatorAccount AccountID) []byte {
 	return append(ValidatorKeyPrefix, validatorAccount.StoreKey()...)
 }

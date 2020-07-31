@@ -3,7 +3,7 @@ package simulation
 import (
 	"math/rand"
 
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/keeper"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -42,13 +42,13 @@ func SimulateCommunityPoolSpendProposalContent(k keeper.Keeper) types.Simulation
 			return nil
 		}
 
-		aid, _ := chainType.NewAccountIDFromStr(string(simAccount.Address))
+		aid, _ := chainTypes.NewAccountIDFromStr(string(simAccount.Address))
 
 		return types.NewCommunityPoolSpendProposal(
 			types.SimulationRandStringOfLength(r, 10),
 			types.SimulationRandStringOfLength(r, 100),
 			aid,
-			sdk.NewCoins(sdk.NewCoin(balance[denomIndex].Denom, amount)),
+			chainTypes.NewCoins(chainTypes.NewCoin(balance[denomIndex].Denom, amount)),
 		)
 	}
 }

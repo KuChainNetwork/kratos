@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/tendermint/tendermint/crypto"
 )
 
@@ -39,3 +40,7 @@ func NewInitConfig(chainID, genTxsDir, name, nodeID string, valPubKey crypto.Pub
 		ValPubKey: valPubKey,
 	}
 }
+
+type (
+	Coins = types.Coins
+)

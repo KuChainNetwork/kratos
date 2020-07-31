@@ -9,12 +9,11 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/spf13/viper"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/viper"
 )
 
 // TxBuilder implements a transaction context created in SDK modules.
@@ -28,15 +27,15 @@ type TxBuilder struct {
 	simulateAndExecute bool
 	chainID            string
 	memo               string
-	fees               sdk.Coins
-	gasPrices          sdk.DecCoins
+	fees               Coins
+	gasPrices          DecCoins
 	payer              string
 }
 
 // NewTxBuilder returns a new initialized TxBuilder.
 func NewTxBuilder(
 	txEncoder sdk.TxEncoder, accNumber, seq, gas uint64, gasAdj float64,
-	simulateAndExecute bool, chainID, memo string, fees sdk.Coins, gasPrices sdk.DecCoins,
+	simulateAndExecute bool, chainID, memo string, fees Coins, gasPrices DecCoins,
 ) TxBuilder {
 
 	return TxBuilder{
@@ -108,10 +107,10 @@ func (bldr TxBuilder) ChainID() string { return bldr.chainID }
 func (bldr TxBuilder) Memo() string { return bldr.memo }
 
 // Fees returns the fees for the transaction
-func (bldr TxBuilder) Fees() sdk.Coins { return bldr.fees }
+func (bldr TxBuilder) Fees() Coins { return bldr.fees }
 
 // GasPrices returns the gas prices set for the transaction, if any.
-func (bldr TxBuilder) GasPrices() sdk.DecCoins { return bldr.gasPrices }
+func (bldr TxBuilder) GasPrices() types.DecCoins { return bldr.gasPrices }
 
 // FeePayer returns fee payer name
 func (bldr TxBuilder) FeePayer() types.AccountID {
@@ -145,7 +144,7 @@ func (bldr TxBuilder) WithGas(gas uint64) TxBuilder {
 
 // WithFees returns a copy of the context with an updated fee.
 func (bldr TxBuilder) WithFees(fees string) TxBuilder {
-	parsedFees, err := sdk.ParseCoins(fees)
+	parsedFees, err := types.ParseCoins(fees)
 	if err != nil {
 		panic(err)
 	}
@@ -162,7 +161,7 @@ func (bldr TxBuilder) WithPayer(acc string) TxBuilder {
 
 // WithGasPrices returns a copy of the context with updated gas prices.
 func (bldr TxBuilder) WithGasPrices(gasPrices string) TxBuilder {
-	parsedGasPrices, err := sdk.ParseDecCoins(gasPrices)
+	parsedGasPrices, err := types.ParseDecCoins(gasPrices)
 	if err != nil {
 		panic(err)
 	}
@@ -213,14 +212,14 @@ func (bldr TxBuilder) BuildSignMsg(msgs []sdk.Msg) (StdSignMsg, error) {
 			return StdSignMsg{}, errors.New("cannot provide both fees and gas prices")
 		}
 
-		glDec := sdk.NewDec(int64(bldr.gas))
+		glDec := NewDec(int64(bldr.gas))
 
 		// Derive the fees based on the provided gas prices, where
 		// fee = ceil(gasPrice * gasLimit).
-		fees = make(sdk.Coins, len(bldr.gasPrices))
+		fees = make(Coins, len(bldr.gasPrices))
 		for i, gp := range bldr.gasPrices {
 			fee := gp.Amount.Mul(glDec)
-			fees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+			fees[i] = NewCoin(gp.Denom, fee.Ceil().RoundInt())
 		}
 	}
 

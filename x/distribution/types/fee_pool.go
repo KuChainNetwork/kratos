@@ -2,15 +2,18 @@ package types
 
 import (
 	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // zero fee pool
 func InitialFeePool() FeePool {
 	return FeePool{
-		CommunityPool: sdk.DecCoins{},
+		CommunityPool: DecCoins{},
 	}
+}
+
+// global fee pool for distribution
+type FeePool struct {
+	CommunityPool DecCoins `json:"community_pool" yaml:"community_pool"`
 }
 
 // ValidateGenesis validates the fee pool for a genesis state

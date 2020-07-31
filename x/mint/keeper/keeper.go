@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	"github.com/KuChainNetwork/kuchain/x/mint/types"
+	"github.com/KuChainNetwork/kuchain/x/params"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
 // Keeper of the mint store
 type Keeper struct {
-	cdc              codec.Marshaler
+	cdc              *codec.Codec
 	storeKey         sdk.StoreKey
 	paramSpace       params.Subspace
 	sk               types.StakingKeeper
@@ -22,7 +22,7 @@ type Keeper struct {
 
 // NewKeeper creates a new mint Keeper instance
 func NewKeeper(
-	cdc codec.Marshaler, key sdk.StoreKey, paramSpace params.Subspace,
+	cdc *codec.Codec, key sdk.StoreKey, paramSpace params.Subspace,
 	sk types.StakingKeeper, supplyKeeper types.SupplyKeeper, feeCollectorName string,
 ) Keeper {
 
@@ -96,7 +96,7 @@ func (k Keeper) BondedRatio(ctx sdk.Context) sdk.Dec {
 
 // MintCoins implements an alias call to the underlying kusupply keeper's
 // MintCoins to be used in BeginBlocker.
-func (k Keeper) MintCoins(ctx sdk.Context, newCoins *sdk.Coins) error {
+func (k Keeper) MintCoins(ctx sdk.Context, newCoins *types.Coins) error {
 	if newCoins.Empty() {
 		// skip as no coins need to be minted
 		return nil
@@ -107,6 +107,6 @@ func (k Keeper) MintCoins(ctx sdk.Context, newCoins *sdk.Coins) error {
 
 // AddCollectedFees implements an alias call to the underlying kusupply keeper's
 // AddCollectedFees to be used in BeginBlocker.
-func (k Keeper) AddCollectedFees(ctx sdk.Context, fees sdk.Coins) error {
+func (k Keeper) AddCollectedFees(ctx sdk.Context, fees types.Coins) error {
 	return k.supplyKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, fees)
 }

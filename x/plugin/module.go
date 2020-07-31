@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/genesis"
+	"github.com/KuChainNetwork/kuchain/x/plugin/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,8 +15,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
-
-	"github.com/KuChainNetwork/kuchain/x/plugin/types"
 )
 
 var (
@@ -24,7 +24,15 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the asset module.
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	genesis.ModuleBasicBase
+}
+
+func NewAppModuleBasic() AppModuleBasic {
+	return AppModuleBasic{
+		ModuleBasicBase: genesis.NewModuleBasicBase(ModuleCdc, DefaultGenesisState()),
+	}
+}
 
 // Name returns the asset module's name.
 func (AppModuleBasic) Name() string {
@@ -34,16 +42,6 @@ func (AppModuleBasic) Name() string {
 // RegisterCodec registers the asset module's types for the given codec.
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	types.RegisterCodec(cdc)
-}
-
-// DefaultGenesis returns default genesis state as raw bytes for the asset module.
-func (AppModuleBasic) DefaultGenesis(codec.JSONMarshaler) json.RawMessage {
-	return ModuleCdc.MustMarshalJSON(types.DefaultGenesisState())
-}
-
-// ValidateGenesis performs genesis state validation for the asset module.
-func (AppModuleBasic) ValidateGenesis(_ codec.JSONMarshaler, bz json.RawMessage) error {
-	return nil
 }
 
 // RegisterRESTRoutes registers the REST routes for the asset module.
@@ -99,12 +97,12 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 }
 
 // InitGenesis performs genesis initialization for the asset module. It returns no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the exported genesis state as raw bytes for the asset module.
-func (am AppModule) ExportGenesis(ctx sdk.Context, _ codec.JSONMarshaler) json.RawMessage {
+func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 	return types.ModuleCdc.MustMarshalJSON(GenesisState{})
 }
 

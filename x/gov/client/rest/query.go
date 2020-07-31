@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	gcutils "github.com/KuChainNetwork/kuchain/x/gov/client/utils"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -185,7 +185,7 @@ func queryDepositHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		depositorAccountID, err := chaintype.NewAccountIDFromStr(Depositor)
+		depositorAccountID, err := chainTypes.NewAccountIDFromStr(Depositor)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -254,7 +254,7 @@ func queryVoteHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		voterAccountID, err := chaintype.NewAccountIDFromStr(Voter)
+		voterAccountID, err := chainTypes.NewAccountIDFromStr(Voter)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -376,13 +376,13 @@ func queryProposalsWithParameterFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var (
-			voteAccountID      chaintype.AccountID
-			depositorAccountID chaintype.AccountID
+			voteAccountID      chainTypes.AccountID
+			depositorAccountID chainTypes.AccountID
 			proposalStatus     types.ProposalStatus
 		)
 
 		if v := r.URL.Query().Get(RestVoter); len(v) != 0 {
-			voteAccountID, err = chaintype.NewAccountIDFromStr(v)
+			voteAccountID, err = chainTypes.NewAccountIDFromStr(v)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
@@ -390,7 +390,7 @@ func queryProposalsWithParameterFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		if v := r.URL.Query().Get(RestDepositor); len(v) != 0 {
-			depositorAccountID, err = chaintype.NewAccountIDFromStr(v)
+			depositorAccountID, err = chainTypes.NewAccountIDFromStr(v)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return

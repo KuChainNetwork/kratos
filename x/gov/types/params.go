@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"gopkg.in/yaml.v2"
-
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/gov/external"
 	paramtypes "github.com/KuChainNetwork/kuchain/x/params/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gopkg.in/yaml.v2"
 )
 
 // Default period for deposits & voting
@@ -25,7 +25,7 @@ var (
 	DefaultThreshold        = sdk.NewDecWithPrec(5, 1)
 	DefaultVeto             = sdk.NewDecWithPrec(334, 3)
 	DefaultEmergengcy       = sdk.NewDecWithPrec(667, 3)
-	DefaultSlashFraction    = sdk.NewDec(1).Quo(sdk.NewDec(10000))
+	DefaultSlashFraction    = types.NewDec(1).Quo(types.NewDec(10000))
 )
 
 // Parameter store key
@@ -46,12 +46,12 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // DepositParams defines the params around deposits for governance
 type DepositParams struct {
-	MinDeposit       sdk.Coins     `json:"min_deposit,omitempty" yaml:"min_deposit,omitempty"`               //  Minimum deposit for a proposal to enter voting period.
+	MinDeposit       Coins         `json:"min_deposit,omitempty" yaml:"min_deposit,omitempty"`               //  Minimum deposit for a proposal to enter voting period.
 	MaxDepositPeriod time.Duration `json:"max_deposit_period,omitempty" yaml:"max_deposit_period,omitempty"` //  Maximum period for Atom holders to deposit on a proposal. Initial value: 2 months
 }
 
 // NewDepositParams creates a new DepositParams object
-func NewDepositParams(minDeposit sdk.Coins, maxDepositPeriod time.Duration) DepositParams {
+func NewDepositParams(minDeposit Coins, maxDepositPeriod time.Duration) DepositParams {
 	return DepositParams{
 		MinDeposit:       minDeposit,
 		MaxDepositPeriod: maxDepositPeriod,
@@ -61,7 +61,7 @@ func NewDepositParams(minDeposit sdk.Coins, maxDepositPeriod time.Duration) Depo
 // DefaultDepositParams default parameters for deposits
 func DefaultDepositParams() DepositParams {
 	return NewDepositParams(
-		sdk.NewCoins(sdk.NewCoin(stakingexport.DefaultBondDenom, DefaultMinDepositTokens)),
+		types.NewCoins(types.NewCoin(stakingexport.DefaultBondDenom, DefaultMinDepositTokens)),
 		DefaultPeriod,
 	)
 }

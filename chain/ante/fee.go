@@ -44,14 +44,14 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	if ctx.IsCheckTx() && !simulate {
 		minGasPrices := ctx.MinGasPrices()
 		if !minGasPrices.IsZero() {
-			requiredFees := make(sdk.Coins, len(minGasPrices))
+			requiredFees := make(Coins, len(minGasPrices))
 
 			// Determine the required fees by multiplying each required minimum gas
 			// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-			glDec := sdk.NewDec(int64(gas))
+			glDec := types.NewDec(int64(gas))
 			for i, gp := range minGasPrices {
 				fee := gp.Amount.Mul(glDec)
-				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+				requiredFees[i] = types.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
 
 			if !feeCoins.IsAnyGTE(requiredFees) {

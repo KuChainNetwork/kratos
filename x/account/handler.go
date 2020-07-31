@@ -42,14 +42,8 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 	if creator, ok := msgData.Creator.ToName(); ok && constants.IsSystemAccount(creator) {
 		// system account can create accounts
 	} else {
-		if constants.IsFixAssetHeight(ctx.Context()) {
-			if msgData.Name.Len() != 12 {
-				return nil, types.ErrAccountNameLenInvalid
-			}
-		} else {
-			if msgData.Name.Len() < 12 {
-				return nil, types.ErrAccountNameLenInvalid
-			}
+		if msgData.Name.Len() != 12 {
+			return nil, types.ErrAccountNameLenInvalid
 		}
 
 		// TODO: should use name
@@ -103,16 +97,12 @@ func handleMsgUpdateAccountAuth(ctx chainTypes.Context, k Keeper, msg *types.Msg
 	accountStat := k.GetAccountByName(ctx.Context(), msgData.Name)
 	if accountStat == nil {
 		logger.Debug("account no found", "name", msgData.Name)
-		return nil, sdkerrors.Wrapf(types.ErrAccountHasCreated, "name %s", msgData.Name)
+		return nil, sdkerrors.Wrapf(types.ErrAccountNoFound, "name %s", msgData.Name)
 	}
 
 	// Auth will Changed
 	oldAuth := accountStat.GetAuth()
 	ctx.RequireAccountAuth(oldAuth)
-
-	if oldAuth.Equals(msgData.Auth) {
-		return nil, sdkerrors.Wrapf(types.ErrAuthNoChanged, "set auth %s", msgData.Auth)
-	}
 
 	if err := accountStat.SetAuth(msgData.Auth); err != nil {
 		return nil, sdkerrors.Wrapf(err, "set auth to account error")

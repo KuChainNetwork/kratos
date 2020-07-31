@@ -3,26 +3,24 @@ package keeper
 import (
 	"fmt"
 
-	gogotypes "github.com/gogo/protobuf/types"
-
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/libs/log"
-
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 // Keeper of the slashing store
 type Keeper struct {
 	storeKey   sdk.StoreKey
-	cdc        codec.Marshaler
+	cdc        *codec.Codec
 	sk         types.StakingKeeper
 	paramspace types.ParamSubspace
 }
 
 // NewKeeper creates a slashing keeper
-func NewKeeper(cdc codec.Marshaler, key sdk.StoreKey, sk types.StakingKeeper, paramspace types.ParamSubspace) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, sk types.StakingKeeper, paramspace types.ParamSubspace) Keeper {
 	return Keeper{
 		storeKey:   key,
 		cdc:        cdc,

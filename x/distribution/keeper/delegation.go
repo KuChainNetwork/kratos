@@ -27,7 +27,7 @@ func (k Keeper) initializeDelegation(ctx sdk.Context, valId AccountID, delId Acc
 
 // calculate the rewards accrued by a delegation between two periods
 func (k Keeper) calculateDelegationRewardsBetween(ctx sdk.Context, val types.ValidatorI,
-	startingPeriod, endingPeriod uint64, stake sdk.Dec) (rewards sdk.DecCoins) {
+	startingPeriod, endingPeriod uint64, stake sdk.Dec) (rewards types.DecCoins) {
 	// sanity check
 	if startingPeriod > endingPeriod {
 		panic("startingPeriod cannot be greater than endingPeriod")
@@ -51,7 +51,7 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx sdk.Context, val types.Val
 }
 
 // calculate the total rewards accrued by a delegation
-func (k Keeper) CalculateDelegationRewards(ctx sdk.Context, val types.ValidatorI, del types.DelegationI, endingPeriod uint64) (rewards sdk.DecCoins) {
+func (k Keeper) CalculateDelegationRewards(ctx sdk.Context, val types.ValidatorI, del types.DelegationI, endingPeriod uint64) (rewards types.DecCoins) {
 	// fetch starting info for delegation
 	startingInfo := k.GetDelegatorStartingInfo(ctx, del.GetValidatorAccountID(), del.GetDelegatorAccountID())
 
@@ -142,7 +142,7 @@ func (k Keeper) CalculateDelegationRewards(ctx sdk.Context, val types.ValidatorI
 	return rewards
 }
 
-func (k Keeper) withdrawDelegationRewards(ctx sdk.Context, val types.ValidatorI, del types.DelegationI) (sdk.Coins, error) {
+func (k Keeper) withdrawDelegationRewards(ctx sdk.Context, val types.ValidatorI, del types.DelegationI) (Coins, error) {
 	// check existence of delegator starting info
 	if !k.HasDelegatorStartingInfo(ctx, del.GetValidatorAccountID(), del.GetDelegatorAccountID()) {
 		return nil, types.ErrEmptyDelegationDistInfo

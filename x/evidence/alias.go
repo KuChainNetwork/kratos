@@ -32,7 +32,7 @@ var (
 	NewQueryEvidenceParams       = types.NewQueryEvidenceParams
 	NewQueryAllEvidenceParams    = types.NewQueryAllEvidenceParams
 	RegisterCodec                = types.RegisterCodec
-	ModuleCdc                    = types.Evidence_Cdc.Marshaler
+	ModuleCdc                    = types.ModuleCdc
 	NewGenesisState              = types.NewGenesisState
 	DefaultGenesisState          = types.DefaultGenesisState
 	ConvertDuplicateVoteEvidence = types.ConvertDuplicateVoteEvidence

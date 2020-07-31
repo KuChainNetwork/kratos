@@ -1,16 +1,19 @@
 package types
 
 import (
+	"math"
+
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // RouterKey is they name of the asset module
 const RouterKey = ModuleName
 
 var (
-	RouterKeyName = types.MustName(RouterKey)
+	RouterKeyName                 = types.MustName(RouterKey)
+	_, _, _, _, _ types.KuMsgData = (*MsgCreateCoinData)(nil), (*MsgIssueCoinData)(nil), (*MsgBurnCoinData)(nil), (*MsgLockCoinData)(nil), (*MsgUnlockCoinData)(nil)
 )
 
 type (
@@ -18,7 +21,7 @@ type (
 )
 
 // NewMsgTransfer create msg transfer
-func NewMsgTransfer(auth types.AccAddress, from types.AccountID, to types.AccountID, amount sdk.Coins) KuMsg {
+func NewMsgTransfer(auth types.AccAddress, from types.AccountID, to types.AccountID, amount Coins) KuMsg {
 	return *msg.MustNewKuMsg(
 		RouterKeyName,
 		msg.WithAuth(auth),
@@ -30,7 +33,22 @@ type MsgCreateCoin struct {
 	types.KuMsg
 }
 
-func (MsgCreateCoinData) Type() types.Name { return types.MustName("create@coin") }
+type MsgCreateCoinData struct {
+	Symbol        Name   `json:"symbol" yaml:"symbol"`                             // Symbol coin symbol name
+	Creator       Name   `json:"creator" yaml:"creator"`                           // Creator coin creator account name
+	MaxSupply     Coin   `json:"max_supply" yaml:"max_supply"`                     // MaxSupply coin max supply limit
+	CanIssue      bool   `json:"can_issue,omitempty" yaml:"can_issue"`             // CanIssue if the coin can issue after create
+	CanLock       bool   `json:"can_lock,omitempty" yaml:"can_lock"`               // CanLock if the coin can lock by user
+	IssueToHeight int64  `json:"issue_to_height,omitempty" yaml:"issue_to_height"` // IssueToHeight if this is not zero, creator only can issue this
+	InitSupply    Coin   `json:"init_supply" yaml:"init_supply"`                   // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+	Desc          []byte `json:"desc" yaml:"desc"`                                 // Description
+}
+
+func (MsgCreateCoinData) Type() types.Name { return types.MustName("create@asset") }
+
+func (msg MsgCreateCoinData) Sender() AccountID {
+	return NewAccountIDFromName(msg.Creator)
+}
 
 // NewMsgCreate new create coin msg
 func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, maxSupply types.Coin, canIssue, canLock bool, issue2Height int64, initSupply types.Coin, desc []byte) MsgCreateCoin {
@@ -52,12 +70,68 @@ func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, 
 	}
 }
 
+func (msg MsgCreateCoin) GetData() (MsgCreateCoinData, error) {
+	res := MsgCreateCoinData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgCreateCoinData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgCreateCoin) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Creator.Empty() || data.Symbol.Empty() {
+		return types.ErrNameNilString
+	}
+
+	if len(data.Desc) > CoinDescriptionLen {
+		return ErrAssetDescriptorTooLarge
+	}
+
+	denom := types.CoinDenom(data.Creator, data.Symbol)
+	if err := types.ValidateDenom(denom); err != nil {
+		return err
+	}
+
+	if denom != data.MaxSupply.Denom || denom != data.InitSupply.Denom {
+		return ErrAssetSymbolError
+	}
+
+	if err := CheckCoinStatOpts(
+		math.MaxInt64, // no check this
+		data.CanIssue, data.CanLock,
+		data.IssueToHeight,
+		data.InitSupply, data.MaxSupply); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type MsgIssueCoin struct {
 	types.KuMsg
 }
 
+type MsgIssueCoinData struct {
+	Symbol  Name `json:"symbol" yaml:"symbol"`   // Symbol coin symbol name
+	Creator Name `json:"creator" yaml:"creator"` // Creator coin creator account name
+	Amount  Coin `json:"amount" yaml:"amount"`   // MaxSupply coin max supply limit
+}
+
 // Type imp for data KuMsgData
 func (MsgIssueCoinData) Type() types.Name { return types.MustName("issue") }
+
+func (msg MsgIssueCoinData) Sender() AccountID {
+	return NewAccountIDFromName(msg.Creator)
+}
 
 // NewMsgIssue new issue msg
 func NewMsgIssue(auth types.AccAddress, creator, symbol types.Name, amount types.Coin) MsgIssueCoin {
@@ -74,12 +148,55 @@ func NewMsgIssue(auth types.AccAddress, creator, symbol types.Name, amount types
 	}
 }
 
+func (msg MsgIssueCoin) GetData() (MsgIssueCoinData, error) {
+	res := MsgIssueCoinData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgIssueCoinData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgIssueCoin) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	denom := types.CoinDenom(data.Creator, data.Symbol)
+	if err := types.ValidateDenom(denom); err != nil {
+		return err
+	}
+
+	if denom != data.Amount.Denom {
+		return ErrAssetSymbolError
+	}
+
+	if data.Amount.IsNegative() {
+		return ErrAssetCoinNoEnough
+	}
+
+	return nil
+}
+
 type MsgBurnCoin struct {
 	types.KuMsg
 }
 
+type MsgBurnCoinData struct {
+	Id     AccountID `json:"id" yaml:"id"`         // Symbol coin symbol name
+	Amount Coin      `json:"amount" yaml:"amount"` // MaxSupply coin max supply limit
+}
+
 // Type imp for data KuMsgData
 func (MsgBurnCoinData) Type() types.Name { return types.MustName("burn") }
+
+func (msg MsgBurnCoinData) Sender() AccountID {
+	return msg.Id
+}
 
 // NewMsgBurn new issue msg
 func NewMsgBurn(auth types.AccAddress, id types.AccountID, amount types.Coin) MsgIssueCoin {
@@ -95,13 +212,56 @@ func NewMsgBurn(auth types.AccAddress, id types.AccountID, amount types.Coin) Ms
 	}
 }
 
+func (msg MsgBurnCoin) GetData() (MsgBurnCoinData, error) {
+	res := MsgBurnCoinData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgBurnCoinData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgBurnCoin) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Id.Empty() {
+		return types.ErrKuMsgAccountIDNil
+	}
+
+	if err := types.ValidateDenom(data.Amount.Denom); err != nil {
+		return err
+	}
+
+	if data.Amount.IsNegative() {
+		return ErrAssetCoinNoEnough
+	}
+
+	return nil
+}
+
 // MsgLockCoin msg to lock coin
 type MsgLockCoin struct {
 	types.KuMsg
 }
 
+type MsgLockCoinData struct {
+	Id                AccountID `json:"id" yaml:"id"`                                         // Id lock account
+	Amount            Coins     `json:"amount" yaml:"amount"`                                 // Amount coins to lock
+	UnlockBlockHeight int64     `json:"unlockBlockHeight,omitempty" yaml:"unlockBlockHeight"` // UnlockBlockHeight the block height the coins unlock
+}
+
 // Type imp for data KuMsgData
 func (m *MsgLockCoinData) Type() types.Name { return types.MustName("lock@coin") }
+
+func (m MsgLockCoinData) Sender() AccountID {
+	return m.Id
+}
 
 // NewMsgLockCoin create new lock coin msg
 func NewMsgLockCoin(auth types.AccAddress, id types.AccountID, amount types.Coins, unlockBlockHeight int64) MsgLockCoin {
@@ -118,13 +278,61 @@ func NewMsgLockCoin(auth types.AccAddress, id types.AccountID, amount types.Coin
 	}
 }
 
+func (msg MsgLockCoin) GetData() (MsgLockCoinData, error) {
+	res := MsgLockCoinData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgLockCoinData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgLockCoin) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Id.Empty() {
+		return types.ErrKuMsgAccountIDNil
+	}
+
+	for _, c := range data.Amount {
+		if err := types.ValidateDenom(c.Denom); err != nil {
+			return err
+		}
+
+		if c.IsNegative() {
+			return ErrAssetCoinNoEnough
+		}
+	}
+
+	if data.UnlockBlockHeight <= 0 {
+		return ErrAssetLockUnlockBlockHeightErr
+	}
+
+	return nil
+}
+
 // MsgUnlockCoin msg to unlock coin
 type MsgUnlockCoin struct {
 	types.KuMsg
 }
 
+type MsgUnlockCoinData struct {
+	Id     AccountID `json:"id" yaml:"id"`         // Id lock account
+	Amount Coins     `json:"amount" yaml:"amount"` // Amount coins to lock
+}
+
 // Type imp for data KuMsgData
 func (m *MsgUnlockCoinData) Type() types.Name { return types.MustName("unlock@coin") }
+
+func (m MsgUnlockCoinData) Sender() AccountID {
+	return m.Id
+}
 
 // NewMsgUnlockCoin create new lock coin msg
 func NewMsgUnlockCoin(auth types.AccAddress, id types.AccountID, amount types.Coins) MsgUnlockCoin {
@@ -138,4 +346,39 @@ func NewMsgUnlockCoin(auth types.AccAddress, id types.AccountID, amount types.Co
 			}),
 		),
 	}
+}
+
+func (msg MsgUnlockCoin) GetData() (MsgUnlockCoinData, error) {
+	res := MsgUnlockCoinData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgUnlockCoinData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgUnlockCoin) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Id.Empty() {
+		return types.ErrKuMsgAccountIDNil
+	}
+
+	for _, c := range data.Amount {
+		if err := types.ValidateDenom(c.Denom); err != nil {
+			return err
+		}
+
+		if c.IsNegative() {
+			return ErrAssetCoinNoEnough
+		}
+	}
+
+	return nil
 }

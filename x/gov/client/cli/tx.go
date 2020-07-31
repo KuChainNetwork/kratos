@@ -8,7 +8,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	govutils "github.com/KuChainNetwork/kuchain/x/gov/client/utils"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -116,12 +116,12 @@ $ %s tx kugov submit-proposal jack --title="Test Proposal" --description="My awe
 				return err
 			}
 
-			amount, err := sdk.ParseCoins(proposal.Deposit)
+			amount, err := chainTypes.ParseCoins(proposal.Deposit)
 			if err != nil {
 				return err
 			}
 
-			proposerAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			proposerAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "proposer account id error")
 			}
@@ -182,12 +182,12 @@ $ %s tx kugov deposit 1 10stake --from mykey
 			}
 
 			// Get amount of coins
-			amount, err := sdk.ParseCoins(args[2])
+			amount, err := chainTypes.ParseCoins(args[2])
 			if err != nil {
 				return err
 			}
 
-			depositorAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			depositorAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "depositor account id error")
 			}
@@ -246,7 +246,7 @@ $ %s tx kugov vote jack 1 yes --from mykey
 				return err
 			}
 
-			VoterAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			VoterAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "depositor account id error")
 			}
@@ -285,7 +285,7 @@ $ <appcli> tx kugov unjail validator --from validator
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
-			ValidatorAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			ValidatorAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "depositor account id error")
 			}

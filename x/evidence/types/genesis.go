@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -30,8 +31,18 @@ func DefaultGenesisState() GenesisState {
 	}
 }
 
-// Validate performs basic gensis state validation returning an error upon any
+// ValidateGenesis performs basic gensis state validation returning an error upon any
 // failure.
+func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
+	gs := DefaultGenesisState()
+
+	if err := ModuleCdc.UnmarshalJSON(bz, &gs); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
+	}
+
+	return gs.Validate()
+}
+
 func (gs GenesisState) Validate() error {
 	for _, e := range gs.Evidence {
 		if err := e.ValidateBasic(); err != nil {

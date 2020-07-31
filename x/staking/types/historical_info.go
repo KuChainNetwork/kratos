@@ -3,11 +3,17 @@ package types
 import (
 	"sort"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
+
+// HistoricalInfo contains the historical information that gets stored at
+// each height.
+type HistoricalInfo struct {
+	Header abci.Header `json:"header" yaml:"header"`
+	Valset []Validator `json:"valset" yaml:"valset"`
+}
 
 // NewHistoricalInfo will create a historical information struct from header and valset
 // it will first sort valset before inclusion into historical info

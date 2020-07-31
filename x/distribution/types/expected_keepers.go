@@ -18,10 +18,10 @@ type AccountKeeperAccountID interface {
 // BankKeeper defines the expected interface needed to retrieve account balances.
 type BankKeeperAccountID interface {
 	types.AssetTransfer
-	GetAllBalances(ctx sdk.Context, Id AccountID) sdk.Coins
-	GetCoinPowers(ctx sdk.Context, Id AccountID) sdk.Coins
-	SpendableCoins(ctx sdk.Context, Id AccountID) sdk.Coins
-	CoinsToPower(ctx sdk.Context, from, to AccountID, amt sdk.Coins) error
+	GetAllBalances(ctx sdk.Context, Id AccountID) Coins
+	GetCoinPowers(ctx sdk.Context, Id AccountID) Coins
+	SpendableCoins(ctx sdk.Context, Id AccountID) Coins
+	CoinsToPower(ctx sdk.Context, from, to AccountID, amt Coins) error
 }
 
 // StakingKeeper expected staking keeper (noalias) by cancer
@@ -80,9 +80,9 @@ type SupplyKeeperAccountID interface {
 	// TODO remove with genesis 2-phases refactor https://github.com/cosmos/cosmos-sdk/issues/2862
 	SetModuleAccount(sdk.Context, supplyexported.ModuleAccountI)
 
-	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientId AccountID, amt sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, senderId AccountID, recipientModule string, amt sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt Coins) error
+	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientId AccountID, amt Coins) error
+	SendCoinsFromAccountToModule(ctx sdk.Context, senderId AccountID, recipientModule string, amt Coins) error
 }
 
 type DistributionKeeper interface {

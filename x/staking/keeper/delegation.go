@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,7 +13,7 @@ import (
 
 // return a specific delegation
 func (k Keeper) GetDelegation(ctx sdk.Context,
-	delAddr chaintype.AccountID, valAddr chaintype.AccountID) (
+	delAddr AccountID, valAddr AccountID) (
 	delegation types.Delegation, found bool) {
 
 	store := ctx.KVStore(k.storeKey)
@@ -52,7 +51,7 @@ func (k Keeper) GetAllDelegations(ctx sdk.Context) (delegations []types.Delegati
 }
 
 // return all delegations to a specific validator. Useful for querier.
-func (k Keeper) GetValidatorDelegations(ctx sdk.Context, valAddr chaintype.AccountID) (delegations []types.Delegation) { //nolint:interfacer
+func (k Keeper) GetValidatorDelegations(ctx sdk.Context, valAddr AccountID) (delegations []types.Delegation) { //nolint:interfacer
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.DelegationKey)
 	defer iterator.Close()
@@ -67,7 +66,7 @@ func (k Keeper) GetValidatorDelegations(ctx sdk.Context, valAddr chaintype.Accou
 }
 
 // return a given amount of all the delegations from a delegator
-func (k Keeper) GetDelegatorDelegations(ctx sdk.Context, delegator chaintype.AccountID,
+func (k Keeper) GetDelegatorDelegations(ctx sdk.Context, delegator AccountID,
 	maxRetrieve uint16) (delegations []types.Delegation) {
 
 	delegations = make([]types.Delegation, maxRetrieve)
@@ -102,7 +101,7 @@ func (k Keeper) RemoveDelegation(ctx sdk.Context, delegation types.Delegation) {
 }
 
 // return a given amount of all the delegator unbonding-delegations
-func (k Keeper) GetUnbondingDelegations(ctx sdk.Context, delegator chaintype.AccountID,
+func (k Keeper) GetUnbondingDelegations(ctx sdk.Context, delegator AccountID,
 	maxRetrieve uint16) (unbondingDelegations []types.UnbondingDelegation) {
 
 	unbondingDelegations = make([]types.UnbondingDelegation, maxRetrieve)
@@ -123,7 +122,7 @@ func (k Keeper) GetUnbondingDelegations(ctx sdk.Context, delegator chaintype.Acc
 
 // return a unbonding delegation
 func (k Keeper) GetUnbondingDelegation(
-	ctx sdk.Context, delAddr chaintype.AccountID, valAddr chaintype.AccountID,
+	ctx sdk.Context, delAddr AccountID, valAddr AccountID,
 ) (ubd types.UnbondingDelegation, found bool) {
 
 	store := ctx.KVStore(k.storeKey)
@@ -138,7 +137,7 @@ func (k Keeper) GetUnbondingDelegation(
 }
 
 // return all unbonding delegations from a particular validator
-func (k Keeper) GetUnbondingDelegationsFromValidator(ctx sdk.Context, valAddr chaintype.AccountID) (ubds []types.UnbondingDelegation) {
+func (k Keeper) GetUnbondingDelegationsFromValidator(ctx sdk.Context, valAddr AccountID) (ubds []types.UnbondingDelegation) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetUBDsByValIndexKey(valAddr))
 	defer iterator.Close()
@@ -169,7 +168,7 @@ func (k Keeper) IterateUnbondingDelegations(ctx sdk.Context, fn func(index int64
 
 // HasMaxUnbondingDelegationEntries - check if unbonding delegation has maximum number of entries
 func (k Keeper) HasMaxUnbondingDelegationEntries(ctx sdk.Context,
-	delegatorAddr chaintype.AccountID, validatorAddr chaintype.AccountID) bool {
+	delegatorAddr AccountID, validatorAddr AccountID) bool {
 
 	ubd, found := k.GetUnbondingDelegation(ctx, delegatorAddr, validatorAddr)
 	if !found {
@@ -198,7 +197,7 @@ func (k Keeper) RemoveUnbondingDelegation(ctx sdk.Context, ubd types.UnbondingDe
 // SetUnbondingDelegationEntry adds an entry to the unbonding delegation at
 // the given addresses. It creates the unbonding delegation if it does not exist
 func (k Keeper) SetUnbondingDelegationEntry(
-	ctx sdk.Context, delegatorAddr chaintype.AccountID, validatorAddr chaintype.AccountID,
+	ctx sdk.Context, delegatorAddr AccountID, validatorAddr AccountID,
 	creationHeight int64, minTime time.Time, balance sdk.Int,
 ) types.UnbondingDelegation {
 
@@ -277,7 +276,7 @@ func (k Keeper) DequeueAllMatureUBDQueue(ctx sdk.Context, currTime time.Time) (m
 }
 
 // return a given amount of all the delegator redelegations
-func (k Keeper) GetRedelegations(ctx sdk.Context, delegator chaintype.AccountID,
+func (k Keeper) GetRedelegations(ctx sdk.Context, delegator AccountID,
 	maxRetrieve uint16) (redelegations []types.Redelegation) {
 	redelegations = make([]types.Redelegation, maxRetrieve)
 
@@ -297,7 +296,7 @@ func (k Keeper) GetRedelegations(ctx sdk.Context, delegator chaintype.AccountID,
 
 // return a redelegation
 func (k Keeper) GetRedelegation(ctx sdk.Context,
-	delAddr chaintype.AccountID, valSrcAddr, valDstAddr chaintype.AccountID) (red types.Redelegation, found bool) {
+	delAddr AccountID, valSrcAddr, valDstAddr AccountID) (red types.Redelegation, found bool) {
 
 	store := ctx.KVStore(k.storeKey)
 	key := types.GetREDKey(delAddr.StoreKey(), valSrcAddr.StoreKey(), valDstAddr.StoreKey())
@@ -311,7 +310,7 @@ func (k Keeper) GetRedelegation(ctx sdk.Context,
 }
 
 // return all redelegations from a particular validator
-func (k Keeper) GetRedelegationsFromSrcValidator(ctx sdk.Context, valAddr chaintype.AccountID) (reds []types.Redelegation) {
+func (k Keeper) GetRedelegationsFromSrcValidator(ctx sdk.Context, valAddr AccountID) (reds []types.Redelegation) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetREDsFromValSrcIndexKey(valAddr.StoreKey()))
 	defer iterator.Close()
@@ -327,7 +326,7 @@ func (k Keeper) GetRedelegationsFromSrcValidator(ctx sdk.Context, valAddr chaint
 
 // check if validator is receiving a redelegation
 func (k Keeper) HasReceivingRedelegation(ctx sdk.Context,
-	delAddr chaintype.AccountID, valDstAddr chaintype.AccountID) bool {
+	delAddr AccountID, valDstAddr AccountID) bool {
 
 	store := ctx.KVStore(k.storeKey)
 	prefix := types.GetREDsByDelToValDstIndexKey(delAddr, valDstAddr)
@@ -339,8 +338,8 @@ func (k Keeper) HasReceivingRedelegation(ctx sdk.Context,
 
 // HasMaxRedelegationEntries - redelegation has maximum number of entries
 func (k Keeper) HasMaxRedelegationEntries(ctx sdk.Context,
-	delegatorAddr chaintype.AccountID, validatorSrcAddr,
-	validatorDstAddr chaintype.AccountID) bool {
+	delegatorAddr AccountID, validatorSrcAddr,
+	validatorDstAddr AccountID) bool {
 
 	red, found := k.GetRedelegation(ctx, delegatorAddr, validatorSrcAddr, validatorDstAddr)
 	if !found {
@@ -362,8 +361,8 @@ func (k Keeper) SetRedelegation(ctx sdk.Context, red types.Redelegation) {
 // SetUnbondingDelegationEntry adds an entry to the unbonding delegation at
 // the given addresses. It creates the unbonding delegation if it does not exist
 func (k Keeper) SetRedelegationEntry(ctx sdk.Context,
-	delegatorAddr chaintype.AccountID, validatorSrcAddr,
-	validatorDstAddr chaintype.AccountID, creationHeight int64,
+	delegatorAddr AccountID, validatorSrcAddr,
+	validatorDstAddr AccountID, creationHeight int64,
 	minTime time.Time, balance sdk.Int,
 	sharesSrc, sharesDst sdk.Dec) types.Redelegation {
 
@@ -471,7 +470,7 @@ func (k Keeper) DequeueAllMatureRedelegationQueue(ctx sdk.Context, currTime time
 // Perform a delegation, set/update everything necessary within the store.
 // tokenSrc indicates the bond status of the incoming funds.
 func (k Keeper) Delegate(
-	ctx sdk.Context, delAddr chaintype.AccountID, bondAmt sdk.Int, tokenSrc stakingexport.BondStatus,
+	ctx sdk.Context, delAddr AccountID, bondAmt sdk.Int, tokenSrc stakingexport.BondStatus,
 	validator types.Validator, subtractAccount bool,
 ) (newShares sdk.Dec, err error) {
 
@@ -512,7 +511,7 @@ func (k Keeper) Delegate(
 			panic("invalid validator status")
 		}
 
-		coins := sdk.NewCoins(sdk.NewCoin(k.BondDenom(ctx), bondAmt))
+		coins := NewCoins(NewCoin(k.BondDenom(ctx), bondAmt))
 		err := k.supplyKeeper.DelegateCoinsFromAccountToModule(ctx, sendName, coins)
 		if err != nil {
 			return sdk.Dec{}, err
@@ -549,7 +548,7 @@ func (k Keeper) Delegate(
 
 // unbond a particular delegation and perform associated store operations
 func (k Keeper) Unbond(
-	ctx sdk.Context, delAddr chaintype.AccountID, valAddr chaintype.AccountID, shares sdk.Dec,
+	ctx sdk.Context, delAddr AccountID, valAddr AccountID, shares sdk.Dec,
 ) (amount sdk.Int, err error) {
 
 	// check if a delegation object exists in the store
@@ -611,7 +610,7 @@ func (k Keeper) Unbond(
 // with a boolean signaling if the redelegation is complete based on the source
 // validator.
 func (k Keeper) getBeginInfo(
-	ctx sdk.Context, valSrcAddr chaintype.AccountID,
+	ctx sdk.Context, valSrcAddr AccountID,
 ) (completionTime time.Time, height int64, completeNow bool) {
 
 	validator, found := k.GetValidator(ctx, valSrcAddr)
@@ -642,7 +641,7 @@ func (k Keeper) getBeginInfo(
 // an unbonding object and inserting it into the unbonding queue which will be
 // processed during the staking EndBlocker.
 func (k Keeper) Undelegate(
-	ctx sdk.Context, delAddr chaintype.AccountID, valAddr chaintype.AccountID, sharesAmount sdk.Dec,
+	ctx sdk.Context, delAddr AccountID, valAddr AccountID, sharesAmount sdk.Dec,
 ) (time.Time, error) {
 
 	validator, found := k.GetValidator(ctx, valAddr)
@@ -674,14 +673,14 @@ func (k Keeper) Undelegate(
 // CompleteUnbonding completes the unbonding of all mature entries in the
 // retrieved unbonding delegation object and returns the total unbonding balance
 // or an error upon failure.
-func (k Keeper) CompleteUnbonding(ctx sdk.Context, delAddr chaintype.AccountID, valAddr chaintype.AccountID) (sdk.Coins, error) {
+func (k Keeper) CompleteUnbonding(ctx sdk.Context, delAddr AccountID, valAddr AccountID) (Coins, error) {
 	ubd, found := k.GetUnbondingDelegation(ctx, delAddr, valAddr)
 	if !found {
 		return nil, types.ErrNoUnbondingDelegation
 	}
 
 	bondDenom := k.GetParams(ctx).BondDenom
-	balances := sdk.NewCoins()
+	balances := NewCoins()
 	ctxTime := ctx.BlockHeader().Time
 
 	// loop through all the entries and complete unbonding mature entries
@@ -693,9 +692,9 @@ func (k Keeper) CompleteUnbonding(ctx sdk.Context, delAddr chaintype.AccountID, 
 
 			// track undelegation only when remaining or truncated shares are non-zero
 			if !entry.Balance.IsZero() {
-				amt := sdk.NewCoin(bondDenom, entry.Balance)
+				amt := NewCoin(bondDenom, entry.Balance)
 				err := k.supplyKeeper.UndelegateCoinsFromModuleToAccount(
-					ctx, types.NotBondedPoolName, ubd.DelegatorAccount, sdk.NewCoins(amt),
+					ctx, types.NotBondedPoolName, ubd.DelegatorAccount, NewCoins(amt),
 				)
 				if err != nil {
 					return nil, err
@@ -718,7 +717,7 @@ func (k Keeper) CompleteUnbonding(ctx sdk.Context, delAddr chaintype.AccountID, 
 
 // begin unbonding / redelegation; create a redelegation record
 func (k Keeper) BeginRedelegation(
-	ctx sdk.Context, delAddr chaintype.AccountID, valSrcAddr, valDstAddr chaintype.AccountID, sharesAmount sdk.Dec,
+	ctx sdk.Context, delAddr AccountID, valSrcAddr, valDstAddr AccountID, sharesAmount sdk.Dec,
 ) (completionTime time.Time, err error) {
 
 	if bytes.Equal(valSrcAddr.StoreKey(), valDstAddr.StoreKey()) {
@@ -777,8 +776,8 @@ func (k Keeper) BeginRedelegation(
 // retrieved redelegation object and returns the total redelegation (initial)
 // balance or an error upon failure.
 func (k Keeper) CompleteRedelegation(
-	ctx sdk.Context, delAddr chaintype.AccountID, valSrcAddr, valDstAddr chaintype.AccountID,
-) (sdk.Coins, error) {
+	ctx sdk.Context, delAddr AccountID, valSrcAddr, valDstAddr AccountID,
+) (Coins, error) {
 
 	red, found := k.GetRedelegation(ctx, delAddr, valSrcAddr, valDstAddr)
 	if !found {
@@ -786,7 +785,7 @@ func (k Keeper) CompleteRedelegation(
 	}
 
 	bondDenom := k.GetParams(ctx).BondDenom
-	balances := sdk.NewCoins()
+	balances := NewCoins()
 	ctxTime := ctx.BlockHeader().Time
 
 	// loop through all the entries and complete mature redelegation entries
@@ -797,7 +796,7 @@ func (k Keeper) CompleteRedelegation(
 			i--
 
 			if !entry.InitialBalance.IsZero() {
-				balances = balances.Add(sdk.NewCoin(bondDenom, entry.InitialBalance))
+				balances = balances.Add(NewCoin(bondDenom, entry.InitialBalance))
 			}
 		}
 	}
@@ -816,7 +815,7 @@ func (k Keeper) CompleteRedelegation(
 // valied based on upon the converted shares. If the amount is valid, the total
 // amount of respective shares is returned, otherwise an error is returned.
 func (k Keeper) ValidateUnbondAmount(
-	ctx sdk.Context, delAddr chaintype.AccountID, valAddr chaintype.AccountID, amt sdk.Int,
+	ctx sdk.Context, delAddr AccountID, valAddr AccountID, amt sdk.Int,
 ) (shares sdk.Dec, err error) {
 
 	validator, found := k.GetValidator(ctx, valAddr)

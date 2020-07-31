@@ -7,10 +7,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -32,8 +31,8 @@ func GenDepositParamsDepositPeriod(r *rand.Rand) time.Duration {
 }
 
 // GenDepositParamsMinDeposit randomized DepositParamsMinDeposit
-func GenDepositParamsMinDeposit(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewInt64Coin(stakingexport.DefaultBondDenom, int64(simulation.RandIntBetween(r, 1, 1e3))))
+func GenDepositParamsMinDeposit(r *rand.Rand) Coins {
+	return NewCoins(NewInt64Coin(stakingexport.DefaultBondDenom, int64(simulation.RandIntBetween(r, 1, 1e3))))
 }
 
 // GenVotingParamsVotingPeriod randomized VotingParamsVotingPeriod
@@ -65,7 +64,7 @@ func GenTallyParamsEmergency(r *rand.Rand) sdk.Dec {
 func RandomizedGenState(simState *module.SimulationState) {
 	startingProposalID := uint64(simState.Rand.Intn(100))
 
-	var minDeposit sdk.Coins
+	var minDeposit Coins
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, DepositParamsMinDeposit, &minDeposit, simState.Rand,
 		func(r *rand.Rand) { minDeposit = GenDepositParamsMinDeposit(r) },

@@ -61,13 +61,10 @@ func handleMsgCreate(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *typ
 
 	ctx.RequireAccount(msgData.Creator)
 
-	if constants.IsFixAssetHeight(ctx.Context()) {
-		denom := types.CoinDenom(msgData.Creator, msgData.Symbol)
-		if denom != msgData.InitSupply.Denom || denom != msgData.MaxSupply.Denom {
-			return nil, sdkerrors.Wrapf(types.ErrAssetSymbolError, "coin denom should be equal")
-		}
+	denom := types.CoinDenom(msgData.Creator, msgData.Symbol)
+	if denom != msgData.InitSupply.Denom || denom != msgData.MaxSupply.Denom {
+		return nil, sdkerrors.Wrapf(types.ErrAssetSymbolError, "coin denom should be equal")
 	}
-
 	if err := k.Create(ctx.Context(),
 		msgData.Creator, msgData.Symbol, msgData.MaxSupply,
 		msgData.CanIssue, msgData.CanLock, msgData.IssueToHeight, msgData.InitSupply, msgData.Desc); err != nil {
@@ -101,7 +98,7 @@ func handleMsgIssue(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *type
 		return nil, sdkerrors.Wrapf(err, "msg issue coin data unmarshal error")
 	}
 
-	if constants.IsFixAssetHeight(ctx.Context()) && (msgData.Amount.Denom != types.CoinDenom(msgData.Creator, msgData.Symbol)) {
+	if msgData.Amount.Denom != types.CoinDenom(msgData.Creator, msgData.Symbol) {
 		return nil, sdkerrors.Wrapf(types.ErrAssetSymbolError, "coin denom not match")
 	}
 
@@ -118,8 +115,10 @@ func handleMsgIssue(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *type
 	}
 
 	// if coins cannot be issue, if there is 1000 blocks after coin created, no one can issue
-	if !stat.CanIssue && (ctx.BlockHeight() > (stat.CreateHeight + 5)) { // FIXME: for test
-		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeLock, "coin %s cannot be issue after 1000 block from coin create", msg.Amount.String())
+	if !stat.CanIssue && (ctx.BlockHeight() > (stat.CreateHeight + constants.IssueCoinsWaitBlockNums)) {
+		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeIssue,
+			"coin %s cannot be issue after %d block from coin create",
+			msg.Amount.String(), constants.IssueCoinsWaitBlockNums)
 	}
 
 	if err := k.Issue(ctx.Context(), msgData.Creator, msgData.Symbol, msgData.Amount); err != nil {

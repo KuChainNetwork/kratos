@@ -5,12 +5,13 @@ import (
 	"math/rand"
 	"time"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/transaction/helpers"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	kuSim "github.com/KuChainNetwork/kuchain/test/simulation"
 	"github.com/KuChainNetwork/kuchain/x/gov/keeper"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -117,8 +118,7 @@ func SimulateSubmitProposal(
 		}
 
 		simAccount, _ := simulation.RandomAcc(r, accs)
-		// FIXME: use account id
-		id := chaintype.NewAccountIDFromAccAdd(simAccount.Address)
+		id := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 
 		deposit, skip, err := randomDeposit(r, ctx, ak, bk, k, id)
 		switch {
@@ -132,10 +132,10 @@ func SimulateSubmitProposal(
 		account := ak.GetAccount(ctx, id)
 		spendable := bk.SpendableCoins(ctx, id)
 
-		var fees sdk.Coins
+		var fees Coins
 		coins, hasNeg := spendable.SafeSub(deposit)
 		if !hasNeg {
-			fees, err = simulation.RandomFees(r, ctx, coins)
+			fees, err = kuSim.RandomFees(r, ctx, coins)
 			if err != nil {
 				return simulation.NoOpMsg(types.ModuleName), nil, err
 			}
@@ -201,7 +201,7 @@ func SimulateMsgDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Ke
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
 
-		depositAccountID := chaintype.NewAccountIDFromAccAdd(simAccount.Address)
+		depositAccountID := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 		deposit, skip, err := randomDeposit(r, ctx, ak, bk, k, depositAccountID)
 		switch {
 		case skip:
@@ -214,10 +214,10 @@ func SimulateMsgDeposit(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Ke
 		account := ak.GetAccount(ctx, depositAccountID)
 		spendable := bk.SpendableCoins(ctx, depositAccountID)
 
-		var fees sdk.Coins
+		var fees Coins
 		coins, hasNeg := spendable.SafeSub(deposit)
 		if !hasNeg {
-			fees, err = simulation.RandomFees(r, ctx, coins)
+			fees, err = kuSim.RandomFees(r, ctx, coins)
 			if err != nil {
 				return simulation.NoOpMsg(types.ModuleName), nil, err
 			}
@@ -269,14 +269,14 @@ func operationSimulateMsgVote(ak types.AccountKeeper, bk types.BankKeeper, k kee
 		default:
 			proposalID = uint64(proposalIDInt)
 		}
-		voteAccountID := chaintype.NewAccountIDFromAccAdd(simAccount.Address)
+		voteAccountID := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 		option := randomVotingOption(r)
 		msg := types.NewKuMsgVote(simAccount.Address, voteAccountID, proposalID, option)
 
 		account := ak.GetAccount(ctx, voteAccountID)
 		spendable := bk.SpendableCoins(ctx, voteAccountID)
 
-		fees, err := simulation.RandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
@@ -305,8 +305,8 @@ func operationSimulateMsgVote(ak types.AccountKeeper, bk types.BankKeeper, k kee
 // This is to simulate multiple users depositing to get the
 // proposal above the minimum deposit amount
 func randomDeposit(r *rand.Rand, ctx sdk.Context,
-	ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper, id chaintype.AccountID,
-) (deposit sdk.Coins, skip bool, err error) {
+	ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper, id chainTypes.AccountID,
+) (deposit Coins, skip bool, err error) {
 	spendable := bk.SpendableCoins(ctx, id)
 
 	if spendable.Empty() {
@@ -332,7 +332,7 @@ func randomDeposit(r *rand.Rand, ctx sdk.Context,
 		return nil, false, err
 	}
 
-	return sdk.Coins{sdk.NewCoin(denom, amount)}, false, nil
+	return Coins{chainTypes.NewCoin(denom, amount)}, false, nil
 }
 
 // Pick a random proposal ID between the initial proposal ID

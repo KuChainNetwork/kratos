@@ -155,5 +155,4 @@ type (
 	Vote                  = types.Vote
 	Votes                 = types.Votes
 	VoteOption            = types.VoteOption
-	Codec                 = types.Codec
 )

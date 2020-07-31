@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -20,7 +22,7 @@ func (k Keeper) AllocateTokens(
 	// (and distributed to the previous proposer)
 	feeCollector := k.supplyKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	feesCollectedInt := k.BankKeeper.GetCoinPowers(ctx, feeCollector.GetID())
-	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
+	feesCollected := chainTypes.NewDecCoinsFromCoins(feesCollectedInt...)
 
 	// transfer collected fees to the distribution module account
 	err := k.supplyKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, types.ModuleName, feesCollectedInt)
@@ -38,7 +40,7 @@ func (k Keeper) AllocateTokens(
 	}
 
 	// calculate fraction votes
-	previousFractionVotes := sdk.NewDec(sumPreviousPrecommitPower).Quo(sdk.NewDec(totalPreviousPower))
+	previousFractionVotes := chainTypes.NewDec(sumPreviousPrecommitPower).Quo(chainTypes.NewDec(totalPreviousPower))
 
 	// calculate previous proposer reward
 	baseProposerReward := k.GetBaseProposerReward(ctx)
@@ -88,7 +90,7 @@ func (k Keeper) AllocateTokens(
 
 		// TODO consider microslashing for missing votes.
 		// ref https://github.com/cosmos/cosmos-sdk/issues/2525#issuecomment-430838701
-		powerFraction := sdk.NewDec(vote.Validator.Power).QuoTruncate(sdk.NewDec(totalPreviousPower))
+		powerFraction := chainTypes.NewDec(vote.Validator.Power).QuoTruncate(chainTypes.NewDec(totalPreviousPower))
 		reward := feesCollected.MulDecTruncate(voteMultiplier).MulDecTruncate(powerFraction)
 		k.AllocateTokensToValidator(ctx, validator, reward)
 		remaining = remaining.Sub(reward)
@@ -101,7 +103,7 @@ func (k Keeper) AllocateTokens(
 }
 
 // AllocateTokensToValidator allocate tokens to a particular validator, splitting according to commission
-func (k Keeper) AllocateTokensToValidator(ctx sdk.Context, val types.StakingExportedValidatorI, tokens sdk.DecCoins) {
+func (k Keeper) AllocateTokensToValidator(ctx sdk.Context, val types.StakingExportedValidatorI, tokens types.DecCoins) {
 	// split tokens between validator and delegators according to commission
 	commission := tokens.MulDec(val.GetCommission())
 	shared := tokens.Sub(commission)

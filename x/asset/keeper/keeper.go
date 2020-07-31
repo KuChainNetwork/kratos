@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,8 +18,7 @@ type AssetCoinsKeeper interface {
 
 	Create(ctx sdk.Context, creator, symbol types.Name, maxSupply types.Coin, canIssue, canLock bool, issue2Height int64, initSupply types.Coin, desc []byte) error
 	Issue(ctx sdk.Context, creator, symbol types.Name, amount types.Coin) error
-	Burn(ctx sdk.Context, id types.AccountID, amt sdk.Coin) error
-
+	Burn(ctx sdk.Context, id types.AccountID, amt types.Coin) error
 	LockCoins(ctx sdk.Context, account types.AccountID, unlockBlockHeight int64, coins types.Coins) error
 	UnLockCoins(ctx sdk.Context, account types.AccountID, coins types.Coins) error
 }
@@ -81,7 +81,7 @@ func (a AssetKeeper) Create(ctx sdk.Context, creator, symbol types.Name, max_sup
 
 	// check denom
 	denom := types.CoinDenom(creator, symbol)
-	if err := sdk.ValidateDenom(denom); err != nil {
+	if err := coin.ValidateDenom(denom); err != nil {
 		return sdkerrors.Wrapf(types.ErrAssetDenom, "denom %s", denom)
 	}
 
@@ -209,4 +209,8 @@ func (a AssetKeeper) GenesisCoins(ctx sdk.Context, account types.AccountID, coin
 		}
 	}
 	return a.setCoins(ctx, account, coins)
+}
+
+func (k AssetKeeper) GetStoreKey() sdk.StoreKey {
+	return k.key
 }

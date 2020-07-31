@@ -63,7 +63,7 @@ func Transfer(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			coin, err := sdk.ParseCoins(args[2])
+			coin, err := chainTypes.ParseCoins(args[2])
 			if err != nil {
 				return err
 			}

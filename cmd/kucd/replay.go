@@ -180,7 +180,8 @@ func replayTxs(rootDir string) error {
 
 		t2 := time.Now()
 
-		state, err = blockExec.ApplyBlock(state, blockmeta.BlockID, block)
+		var retainHeight int64
+		state, retainHeight, err = blockExec.ApplyBlock(state, blockmeta.BlockID, block)
 		if err != nil {
 			return err
 		}
@@ -189,7 +190,7 @@ func replayTxs(rootDir string) error {
 		tz[0] += t2.Sub(t1)
 		tz[1] += t3.Sub(t2)
 
-		fmt.Fprintf(os.Stderr, "new app hash: %X\n", state.AppHash)
+		fmt.Fprintf(os.Stderr, "new app retainHeight: %d, hash: %X\n", retainHeight, state.AppHash)
 		fmt.Fprintln(os.Stderr, tz)
 	}
 }

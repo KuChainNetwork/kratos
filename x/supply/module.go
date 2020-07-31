@@ -2,25 +2,21 @@ package supply
 
 import (
 	"encoding/json"
-	"fmt"
-
 	"math/rand"
 
-	"github.com/gorilla/mux"
-	"github.com/spf13/cobra"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-
+	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/x/supply/client/cli"
 	"github.com/KuChainNetwork/kuchain/x/supply/client/rest"
 	"github.com/KuChainNetwork/kuchain/x/supply/simulation"
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/gorilla/mux"
+	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
@@ -30,32 +26,24 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the supply module.
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	genesis.ModuleBasicBase
+}
 
 // Name returns the supply module's name.
 func (AppModuleBasic) Name() string {
 	return ModuleName
 }
 
+func NewAppModuleBasic() AppModuleBasic {
+	return AppModuleBasic{
+		ModuleBasicBase: genesis.NewModuleBasicBase(ModuleCdc, DefaultGenesisState()),
+	}
+}
+
 // RegisterCodec registers the supply module's typesxx for the given codec.
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	RegisterCodec(cdc)
-}
-
-// DefaultGenesis returns default genesis state as raw bytes for the supply
-// module.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(DefaultGenesisState())
-}
-
-// ValidateGenesis performs genesis state validation for the supply module.
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
-	var data GenesisState
-	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
-	}
-
-	return ValidateGenesis(data)
 }
 
 // RegisterRESTRoutes registers the REST routes for the supply module.
@@ -122,18 +110,17 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 
 // InitGenesis performs genesis initialization for the supply module. It returns
 // no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
-	cdc.MustUnmarshalJSON(data, &genesisState)
+	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
 	InitGenesis(ctx, am.keeper, am.bk, genesisState)
 	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the exported genesis state as raw bytes for the supply
 // module.
-func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
-	gs := ExportGenesis(ctx, am.keeper)
-	return cdc.MustMarshalJSON(gs)
+func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
+	return ModuleCdc.MustMarshalJSON(ExportGenesis(ctx, am.keeper))
 }
 
 // BeginBlock returns the begin blocker for the supply module.

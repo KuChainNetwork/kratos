@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/types/coin"
+	params "github.com/KuChainNetwork/kuchain/x/params/types"
 	StakingExported "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
 
@@ -20,6 +21,16 @@ var (
 	KeyGoalBonded          = []byte("GoalBonded")
 	KeyBlocksPerYear       = []byte("BlocksPerYear")
 )
+
+// Params mint parameters
+type Params struct {
+	MintDenom           string  `json:"mint_denom,omitempty"`                               // type of coin to mint
+	InflationRateChange sdk.Dec `json:"inflation_rate_change" yaml:"inflation_rate_change"` // maximum annual change in inflation rate
+	InflationMax        sdk.Dec `json:"inflation_max" yaml:"inflation_max"`                 // maximum inflation rate
+	InflationMin        sdk.Dec `json:"inflation_min" yaml:"inflation_min"`                 // minimum inflation rate
+	GoalBonded          sdk.Dec `json:"goal_bonded" yaml:"goal_bonded"`                     // goal of percent bonded atoms
+	BlocksPerYear       uint64  `json:"blocks_per_year,omitempty" yaml:"blocks_per_year"`   // expected blocks per year
+}
 
 // ParamKeyTable ParamTable for minting module.
 func ParamKeyTable() params.KeyTable {
@@ -111,7 +122,7 @@ func validateMintDenom(i interface{}) error {
 	if strings.TrimSpace(v) == "" {
 		return errors.New("mint denom cannot be blank")
 	}
-	if err := sdk.ValidateDenom(v); err != nil {
+	if err := coin.ValidateDenom(v); err != nil {
 		return err
 	}
 

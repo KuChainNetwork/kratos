@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -63,7 +63,7 @@ $ %s query kustaking validator jack
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			valAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -143,7 +143,7 @@ $ %s query kustaking unbonding-delegations-from jack
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			valAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -185,7 +185,7 @@ $ %s query kustaking redelegations-from jack
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			valSrcAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			valSrcAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -229,12 +229,12 @@ $ %s query kustaking delegation alice jack
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			delAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			delAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
 
-			valAccount, err := chaintype.NewAccountIDFromStr(args[1])
+			valAccount, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return err
 			}
@@ -279,7 +279,7 @@ $ %s query kustaking delegations alice
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			delAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			delAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -324,7 +324,7 @@ $ %s query kustaking delegations-to jack
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			valAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -369,12 +369,12 @@ $ %s query kustaking unbonding-delegation alice jack
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			valAccount, err := chaintype.NewAccountIDFromStr(args[1])
+			valAccount, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return err
 			}
 
-			delAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			delAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -419,7 +419,7 @@ $ %s query kustaking unbonding-delegations alice
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			delegatorAddr, err := chaintype.NewAccountIDFromStr(args[0])
+			delegatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -464,17 +464,17 @@ $ %s query kustaking redelegation alice  jack validator
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			delAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			delAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
 
-			valSrcAccount, err := chaintype.NewAccountIDFromStr(args[1])
+			valSrcAccount, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return err
 			}
 
-			valDstAccount, err := chaintype.NewAccountIDFromStr(args[2])
+			valDstAccount, err := chainTypes.NewAccountIDFromStr(args[2])
 			if err != nil {
 				return err
 			}
@@ -519,7 +519,7 @@ $ %s query kustaking redelegations alice
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			delAddr, err := chaintype.NewAccountIDFromStr(args[0])
+			delAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}

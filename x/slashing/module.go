@@ -2,14 +2,9 @@ package slashing
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 
-	"github.com/gorilla/mux"
-	"github.com/spf13/cobra"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-
+	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/x/slashing/client/cli"
 	"github.com/KuChainNetwork/kuchain/x/slashing/client/rest"
@@ -21,6 +16,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/gorilla/mux"
+	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 var (
@@ -30,7 +28,9 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the slashing module.
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	genesis.ModuleBasicBase
+}
 
 var _ module.AppModuleBasic = AppModuleBasic{}
 
@@ -44,20 +44,10 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	RegisterCodec(cdc)
 }
 
-// DefaultGenesis returns default genesis state as raw bytes for the slashing
-// module.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(DefaultGenesisState())
-}
-
-// ValidateGenesis performs genesis state validation for the slashing module.
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
-	var data GenesisState
-	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
+func NewAppModuleBasic() AppModuleBasic {
+	return AppModuleBasic{
+		ModuleBasicBase: genesis.NewModuleBasicBase(Cdc(), DefaultGenesisState()),
 	}
-
-	return ValidateGenesis(data)
 }
 
 // RegisterRESTRoutes registers the REST routes for the slashing module.
@@ -128,7 +118,7 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 
 // InitGenesis performs genesis initialization for the slashing module. It returns
 // no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
 	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
 	InitGenesis(ctx, am.keeper, am.stakingKeeper, genesisState)
@@ -137,9 +127,9 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data j
 
 // ExportGenesis returns the exported genesis state as raw bytes for the slashing
 // module.
-func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 	gs := ExportGenesis(ctx, am.keeper)
-	return cdc.MustMarshalJSON(gs)
+	return ModuleCdc.MustMarshalJSON(gs)
 }
 
 // BeginBlock returns the begin blocker for the slashing module.

@@ -22,15 +22,15 @@ func AllInvariants(k Keeper) sdk.Invariant {
 // TotalSupply checks that the total supply reflects all the coins held in accounts
 func TotalSupply(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		var expectedTotal sdk.Coins
+		var expectedTotal types.Coins
 		supply := k.GetSupply(ctx)
 
-		k.bk.IterateAllCoins(ctx, func(_ types.AccountID, balance sdk.Coins) bool {
+		k.bk.IterateAllCoins(ctx, func(_ types.AccountID, balance types.Coins) bool {
 			expectedTotal = expectedTotal.Add(balance...)
 			return false
 		})
 
-		k.bk.IterateAllCoinPowers(ctx, func(_ types.AccountID, balance sdk.Coins) bool {
+		k.bk.IterateAllCoinPowers(ctx, func(_ types.AccountID, balance types.Coins) bool {
 			expectedTotal = expectedTotal.Add(balance...)
 			return false
 		})

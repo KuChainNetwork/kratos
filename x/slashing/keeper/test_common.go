@@ -5,7 +5,7 @@ package keeper
 // noalias
 
 import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/slashing/external"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,14 +25,14 @@ func TestParams() types.Params {
 	return params
 }
 
-func NewTestMsgCreateValidator(acc chaintype.AccountID, pubKey crypto.PubKey, amt sdk.Int) external.StakingMsgCreateValidator {
+func NewTestMsgCreateValidator(acc chainTypes.AccountID, pubKey crypto.PubKey, amt sdk.Int) external.StakingMsgCreateValidator {
 	return external.StakingNewMsgCreateValidator(
 		acc, pubKey,
 		external.StakingDescription{}, sdk.ZeroDec(), acc,
 	)
 }
 
-func NewTestMsgDelegate(delAddr chaintype.AccountID, valAddr chaintype.AccountID, delAmount sdk.Int) external.StakingMsgDelegate {
-	amount := sdk.NewCoin(external.DefaultBondDenom, delAmount)
+func NewTestMsgDelegate(delAddr chainTypes.AccountID, valAddr chainTypes.AccountID, delAmount sdk.Int) external.StakingMsgDelegate {
+	amount := chainTypes.NewCoin(external.DefaultBondDenom, delAmount)
 	return external.StakingNewMsgDelegate(delAddr, valAddr, amount)
 }

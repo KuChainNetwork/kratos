@@ -1,21 +1,28 @@
 package types
 
 import (
-	//"bytes"
-
-	"github.com/tendermint/tendermint/crypto"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	//"github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/tendermint/tendermint/crypto"
 )
+
+var _, _, _, _, _ chainTypes.KuMsgData = (*MsgCreateValidator)(nil), (*MsgEditValidator)(nil), (*MsgDelegate)(nil), (*MsgBeginRedelegate)(nil), (*MsgUndelegate)(nil)
+
+// MsgCreateValidator defines an SDK message for creating a new validator.
+type MsgCreateValidator struct {
+	Description      Description `json:"description" yaml:"description"`
+	CommissionRates  Dec         `json:"CommissionRates" yaml:"commission_rate"`
+	ValidatorAccount AccountID   `json:"validator_account" yaml:"validator_account"`
+	DelegatorAccount AccountID   `json:"delegator_account" yaml:"delegator_account"`
+	Pubkey           string      `json:"pubkey,omitempty" yaml:"pubkey"`
+}
 
 // NewMsgCreateValidator creates a new MsgCreateValidator instance.
 // Delegator address and validator address are the same.
 func NewMsgCreateValidator(
-	valAddr chaintype.AccountID, pubKey crypto.PubKey,
-	description Description, commission sdk.Dec, delAcc chaintype.AccountID,
+	valAddr chainTypes.AccountID, pubKey crypto.PubKey,
+	description Description, commission sdk.Dec, delAcc chainTypes.AccountID,
 ) MsgCreateValidator {
 
 	var pkStr string
@@ -36,7 +43,11 @@ func NewMsgCreateValidator(
 func (msg MsgCreateValidator) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface.
-func (MsgCreateValidator) Type() chaintype.Name { return chaintype.MustName("create@validator") }
+func (MsgCreateValidator) Type() chainTypes.Name { return chainTypes.MustName("create@staking") }
+
+func (msg MsgCreateValidator) Sender() AccountID {
+	return msg.ValidatorAccount
+}
 
 // GetSigners implements the sdk.Msg interface. It returns the address(es) that
 // must sign over msg.GetSignBytes().
@@ -87,8 +98,15 @@ func (msg MsgCreateValidator) ValidateBasic() error {
 	return nil
 }
 
+// MsgEditValidator defines an SDK message for editing an existing validator.
+type MsgEditValidator struct {
+	Description      Description `json:"description" yaml:"description"`
+	ValidatorAccount AccountID   `json:"validator_account" yaml:"address"`
+	CommissionRate   *Dec        `json:"commission_rate,omitempty" yaml:"commission_rate"`
+}
+
 // NewMsgEditValidator creates a new MsgEditValidator instance
-func NewMsgEditValidator(valAddr chaintype.AccountID, description Description, newRate *sdk.Dec) MsgEditValidator {
+func NewMsgEditValidator(valAddr chainTypes.AccountID, description Description, newRate *sdk.Dec) MsgEditValidator {
 	return MsgEditValidator{
 		Description:      description,
 		CommissionRate:   newRate,
@@ -100,7 +118,11 @@ func NewMsgEditValidator(valAddr chaintype.AccountID, description Description, n
 func (msg MsgEditValidator) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface.
-func (MsgEditValidator) Type() chaintype.Name { return chaintype.MustName("edit@validator") }
+func (MsgEditValidator) Type() chainTypes.Name { return chainTypes.MustName("edit@staking") }
+
+func (msg MsgEditValidator) Sender() AccountID {
+	return msg.ValidatorAccount
+}
 
 // GetSigners implements the sdk.Msg interface.
 func (msg MsgEditValidator) GetSigners() []sdk.AccAddress {
@@ -131,8 +153,16 @@ func (msg MsgEditValidator) ValidateBasic() error {
 	return nil
 }
 
+// MsgDelegate defines an SDK message for performing a delegation from a
+// delegate to a validator.
+type MsgDelegate struct {
+	DelegatorAccount AccountID `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorAccount AccountID `json:"validator_account" yaml:"validator_account"`
+	Amount           Coin      `json:"amount" yaml:"amount"`
+}
+
 // NewMsgDelegate creates a new MsgDelegate instance.
-func NewMsgDelegate(delAddr chaintype.AccountID, valAddr chaintype.AccountID, amount sdk.Coin) MsgDelegate {
+func NewMsgDelegate(delAddr chainTypes.AccountID, valAddr chainTypes.AccountID, amount chainTypes.Coin) MsgDelegate {
 	return MsgDelegate{
 		DelegatorAccount: delAddr,
 		ValidatorAccount: valAddr,
@@ -144,7 +174,11 @@ func NewMsgDelegate(delAddr chaintype.AccountID, valAddr chaintype.AccountID, am
 func (msg MsgDelegate) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface.
-func (MsgDelegate) Type() chaintype.Name { return chaintype.MustName("delegate") }
+func (MsgDelegate) Type() chainTypes.Name { return chainTypes.MustName("delegate") }
+
+func (msg MsgDelegate) Sender() AccountID {
+	return msg.DelegatorAccount
+}
 
 // GetSigners implements the sdk.Msg interface.
 func (msg MsgDelegate) GetSigners() []sdk.AccAddress {
@@ -172,9 +206,18 @@ func (msg MsgDelegate) ValidateBasic() error {
 	return nil
 }
 
+// MsgBeginRedelegate defines an SDK message for performing a redelegation from
+// a delegate and source validator to a destination validator.
+type MsgBeginRedelegate struct {
+	DelegatorAccount    AccountID `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorSrcAccount AccountID `json:"validator_src_account" yaml:"validator_src_account"`
+	ValidatorDstAccount AccountID `json:"validator_dst_account" yaml:"validator_dst_account"`
+	Amount              Coin      `json:"amount" yaml:"amount"`
+}
+
 // NewMsgBeginRedelegate creates a new MsgBeginRedelegate instance.
 func NewMsgBeginRedelegate(
-	delAddr chaintype.AccountID, valSrcAddr, valDstAddr chaintype.AccountID, amount sdk.Coin,
+	delAddr chainTypes.AccountID, valSrcAddr, valDstAddr chainTypes.AccountID, amount chainTypes.Coin,
 ) MsgBeginRedelegate {
 	return MsgBeginRedelegate{
 		DelegatorAccount:    delAddr,
@@ -188,7 +231,11 @@ func NewMsgBeginRedelegate(
 func (msg MsgBeginRedelegate) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface
-func (MsgBeginRedelegate) Type() chaintype.Name { return chaintype.MustName("beginredelegate") }
+func (MsgBeginRedelegate) Type() chainTypes.Name { return chainTypes.MustName("beginredelegate") }
+
+func (msg MsgBeginRedelegate) Sender() AccountID {
+	return msg.DelegatorAccount
+}
 
 // GetSigners implements the sdk.Msg interface
 func (msg MsgBeginRedelegate) GetSigners() []sdk.AccAddress {
@@ -219,8 +266,16 @@ func (msg MsgBeginRedelegate) ValidateBasic() error {
 	return nil
 }
 
+// MsgUndelegate defines an SDK message for performing an undelegation from a
+// delegate and a validator.
+type MsgUndelegate struct {
+	DelegatorAccount AccountID `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorAccount AccountID `json:"validator_account" yaml:"validator_account"`
+	Amount           Coin      `json:"amount" yaml:"amount"`
+}
+
 // NewMsgUndelegate creates a new MsgUndelegate instance.
-func NewMsgUndelegate(delAddr chaintype.AccountID, valAddr chaintype.AccountID, amount sdk.Coin) MsgUndelegate {
+func NewMsgUndelegate(delAddr chainTypes.AccountID, valAddr chainTypes.AccountID, amount chainTypes.Coin) MsgUndelegate {
 	return MsgUndelegate{
 		DelegatorAccount: delAddr,
 		ValidatorAccount: valAddr,
@@ -232,7 +287,11 @@ func NewMsgUndelegate(delAddr chaintype.AccountID, valAddr chaintype.AccountID, 
 func (msg MsgUndelegate) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface.
-func (MsgUndelegate) Type() chaintype.Name { return chaintype.MustName("beginunbonding") }
+func (MsgUndelegate) Type() chainTypes.Name { return chainTypes.MustName("beginunbonding") }
+
+func (msg MsgUndelegate) Sender() AccountID {
+	return msg.DelegatorAccount
+}
 
 // GetSigners implements the sdk.Msg interface.
 func (msg MsgUndelegate) GetSigners() []sdk.AccAddress {

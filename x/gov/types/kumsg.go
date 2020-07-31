@@ -2,23 +2,20 @@ package types
 
 import (
 	"github.com/KuChainNetwork/kuchain/chain/msg"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
-	RouterKeyName = chaintype.MustName(RouterKey)
+	RouterKeyName = MustName(RouterKey)
 )
 
 type KuMsgSubmitProposal struct {
-	chaintype.KuMsg
+	KuMsg
 	Content Content `json:"content" yaml:"content"`
 }
 
-// FIXME: need review of this msg desgin
-
-func NewKuMsgSubmitProposal(auth sdk.AccAddress, content Content, initialDeposit sdk.Coins, proposer chaintype.AccountID) KuMsgSubmitProposal {
+func NewKuMsgSubmitProposal(auth sdk.AccAddress, content Content, initialDeposit Coins, proposer AccountID) KuMsgSubmitProposal {
 	return KuMsgSubmitProposal{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -57,10 +54,10 @@ func (msg KuMsgSubmitProposal) ValidateBasic() error {
 }
 
 func (msg KuMsgSubmitProposal) GetContent() Content { return msg.Content }
-func (msg KuMsgSubmitProposal) GetInitialDeposit() sdk.Coins {
+func (msg KuMsgSubmitProposal) GetInitialDeposit() Coins {
 	msgData := MsgSubmitProposalBase{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
-		return sdk.Coins{}
+		return Coins{}
 	}
 	return msgData.InitialDeposit
 }
@@ -76,20 +73,20 @@ func (msg KuMsgSubmitProposal) GetProposer() sdk.AccAddress {
 	}
 	return nil
 }
-func (msg KuMsgSubmitProposal) GetProposerAccountID() chaintype.AccountID {
+func (msg KuMsgSubmitProposal) GetProposerAccountID() AccountID {
 	msgData := MsgSubmitProposalBase{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
-		return chaintype.AccountID{}
+		return AccountID{}
 	}
 
 	return msgData.Proposer
 }
 
 type KuMsgDeposit struct {
-	chaintype.KuMsg
+	KuMsg
 }
 
-func NewKuMsgDeposit(auth sdk.AccAddress, depositor chaintype.AccountID, proposalID uint64, amount sdk.Coins) KuMsgDeposit {
+func NewKuMsgDeposit(auth sdk.AccAddress, depositor AccountID, proposalID uint64, amount Coins) KuMsgDeposit {
 	return KuMsgDeposit{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -101,10 +98,10 @@ func NewKuMsgDeposit(auth sdk.AccAddress, depositor chaintype.AccountID, proposa
 }
 
 type KuMsgVote struct {
-	chaintype.KuMsg
+	KuMsg
 }
 
-func NewKuMsgVote(auth sdk.AccAddress, voter chaintype.AccountID, proposalID uint64, option VoteOption) KuMsgVote {
+func NewKuMsgVote(auth sdk.AccAddress, voter AccountID, proposalID uint64, option VoteOption) KuMsgVote {
 	return KuMsgVote{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -115,10 +112,14 @@ func NewKuMsgVote(auth sdk.AccAddress, voter chaintype.AccountID, proposalID uin
 }
 
 type MsgGovUnJail struct {
-	chaintype.KuMsg
+	KuMsg
 }
 
-func NewMsgGovUnjail(auth sdk.AccAddress, validatoraddr chaintype.AccountID) MsgGovUnJail {
+type MsgGovUnjailBase struct {
+	ValidatorAccount AccountID `json:"account_id" yaml:"account_id"`
+}
+
+func NewMsgGovUnjail(auth sdk.AccAddress, validatoraddr AccountID) MsgGovUnJail {
 	return MsgGovUnJail{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -144,7 +145,9 @@ func (msg MsgGovUnjailBase) GetSigners() []sdk.AccAddress {
 	}
 	return []sdk.AccAddress{}
 }
-func (msg MsgGovUnjailBase) Route() string        { return RouterKey }
-func (msg MsgGovUnjailBase) Type() chaintype.Name { return chaintype.MustName("govunjail") }
-
-func (msg MsgGovUnjailBase) GetUnjailValidator() chaintype.AccountID { return msg.ValidatorAccount }
+func (msg MsgGovUnjailBase) Route() string { return RouterKey }
+func (msg MsgGovUnjailBase) Type() Name    { return MustName("govunjail") }
+func (msg MsgGovUnjailBase) Sender() AccountID {
+	return msg.ValidatorAccount
+}
+func (msg MsgGovUnjailBase) GetUnjailValidator() AccountID { return msg.ValidatorAccount }

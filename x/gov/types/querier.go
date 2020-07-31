@@ -1,9 +1,5 @@
 package types
 
-import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
-)
-
 // DONTCOVER
 
 // query endpoints supported by the governance Querier
@@ -58,11 +54,11 @@ func NewQueryProposalVotesParams(proposalID uint64, page, limit int) QueryPropos
 // QueryDepositParams params for query 'custom/gov/deposit'
 type QueryDepositParams struct {
 	ProposalID uint64
-	Depositor  chaintype.AccountID
+	Depositor  AccountID
 }
 
 // NewQueryDepositParams creates a new instance of QueryDepositParams
-func NewQueryDepositParams(proposalID uint64, depositor chaintype.AccountID) QueryDepositParams {
+func NewQueryDepositParams(proposalID uint64, depositor AccountID) QueryDepositParams {
 	return QueryDepositParams{
 		ProposalID: proposalID,
 		Depositor:  depositor,
@@ -72,11 +68,11 @@ func NewQueryDepositParams(proposalID uint64, depositor chaintype.AccountID) Que
 // QueryVoteParams Params for query 'custom/gov/vote'
 type QueryVoteParams struct {
 	ProposalID uint64
-	Voter      chaintype.AccountID
+	Voter      AccountID
 }
 
 // NewQueryVoteParams creates a new instance of QueryVoteParams
-func NewQueryVoteParams(proposalID uint64, voter chaintype.AccountID) QueryVoteParams {
+func NewQueryVoteParams(proposalID uint64, voter AccountID) QueryVoteParams {
 	return QueryVoteParams{
 		ProposalID: proposalID,
 		Voter:      voter,
@@ -87,13 +83,13 @@ func NewQueryVoteParams(proposalID uint64, voter chaintype.AccountID) QueryVoteP
 type QueryProposalsParams struct {
 	Page           int
 	Limit          int
-	Voter          chaintype.AccountID
-	Depositor      chaintype.AccountID
+	Voter          AccountID
+	Depositor      AccountID
 	ProposalStatus ProposalStatus
 }
 
 // NewQueryProposalsParams creates a new instance of QueryProposalsParams
-func NewQueryProposalsParams(page, limit int, status ProposalStatus, voter chaintype.AccountID, depositor chaintype.AccountID) QueryProposalsParams {
+func NewQueryProposalsParams(page, limit int, status ProposalStatus, voter AccountID, depositor AccountID) QueryProposalsParams {
 	return QueryProposalsParams{
 		Page:           page,
 		Limit:          limit,
@@ -104,10 +100,10 @@ func NewQueryProposalsParams(page, limit int, status ProposalStatus, voter chain
 }
 
 type QueryPunishValidatorParams struct {
-	ValidatorAccount chaintype.AccountID
+	ValidatorAccount AccountID
 }
 
-func NewQueryPunishValidatorParams(validatorAccount chaintype.AccountID) QueryPunishValidatorParams {
+func NewQueryPunishValidatorParams(validatorAccount AccountID) QueryPunishValidatorParams {
 	return QueryPunishValidatorParams{
 		ValidatorAccount: validatorAccount,
 	}

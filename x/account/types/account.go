@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"gopkg.in/yaml.v2"
 )
@@ -12,6 +13,13 @@ var _ exported.Account = (*KuAccount)(nil)
 var (
 	RootAuthName = types.MustName("root")
 )
+
+// KuAccount defines a account for kuchain
+type KuAccount struct {
+	Id            AccountID     `json:"id" yaml:"id"`
+	AccountNumber uint64        `json:"account_number,omitempty" yaml:"account_number"`
+	Auths         []AccountAuth `json:"auths" yaml:"auths"`
+}
 
 // NewKuAccount new KuAccount by name
 func NewKuAccount(id types.AccountID) *KuAccount {
@@ -119,6 +127,11 @@ func (m *KuAccount) makeStr(marFunc func(in interface{}) (out []byte, err error)
 func (m KuAccount) MarshalYAML() (interface{}, error) {
 	bz, err := m.makeStr(yaml.Marshal)
 	return string(bz), err
+}
+
+type AccountAuth struct {
+	Name    types.Name     `json:"name" yaml:"name"`
+	Address sdk.AccAddress `json:"address,omitempty" yaml:"address"`
 }
 
 // String - implements exported.Account

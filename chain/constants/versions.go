@@ -3,7 +3,7 @@ package constants
 import (
 	"strconv"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
@@ -25,6 +25,6 @@ func GetFixAssetHeight() int64 {
 }
 
 // IsFixAssetHeight is fix asset
-func IsFixAssetHeight(ctx sdk.Context) bool {
+func IsFixAssetHeight(ctx types.Context) bool {
 	return ctx.BlockHeight() > FixAssetHeightVal
 }

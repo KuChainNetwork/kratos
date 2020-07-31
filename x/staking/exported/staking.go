@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -35,7 +36,7 @@ func TokensToConsensusPower(tokens sdk.Int) int64 {
 
 // TokensFromConsensusPower - convert input power to tokens
 func TokensFromConsensusPower(power int64) sdk.Int {
-	return sdk.NewInt(power).Mul(PowerReduction)
+	return types.NewInt(power).Mul(PowerReduction)
 }
 
 // BondStatus is the status of a validator

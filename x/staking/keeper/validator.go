@@ -250,7 +250,7 @@ func (k Keeper) GetBondedValidatorsByPower(ctx sdk.Context) []types.Validator {
 	i := 0
 	for ; iterator.Valid() && i < int(maxValidators); iterator.Next() {
 		//address := iterator.Value()
-		address := types.AccountID{iterator.Value()}
+		address := NewAccountIDFromByte(iterator.Value())
 		validator := k.mustGetValidator(ctx, address)
 
 		if validator.IsBonded() {
@@ -311,7 +311,7 @@ func (k Keeper) IterateLastValidatorPowers(ctx sdk.Context, handler func(operato
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
 		//	addr := sdk.ValAddress(iter.Key()[len(types.LastValidatorPowerKey):])
-		addr := types.AccountID{iter.Key()[len(types.LastValidatorPowerKey):]}
+		addr := NewAccountIDFromByte(iter.Key()[len(types.LastValidatorPowerKey):])
 		intV := &gogotypes.Int64Value{}
 
 		k.cdc.MustUnmarshalBinaryBare(iter.Value(), intV)
@@ -339,7 +339,7 @@ func (k Keeper) GetLastValidators(ctx sdk.Context) (validators []types.Validator
 		if i >= int(maxValidators) {
 			panic("more validators than maxValidators found")
 		}
-		address := types.AccountID{types.AddressFromLastValidatorPowerKey(iterator.Key())}
+		address := NewAccountIDFromByte(types.AddressFromLastValidatorPowerKey(iterator.Key()))
 		validator := k.mustGetValidator(ctx, address)
 
 		validators[i] = validator

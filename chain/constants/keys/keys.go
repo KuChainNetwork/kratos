@@ -1,7 +1,8 @@
 package keys
 
 const (
-	ChainNameStr     = "kts"
-	ChainMainNameStr = "kratos"
-	DefaultBondDenom = ChainMainNameStr + "/" + ChainNameStr
+	ChainNameStr      = "sys"
+	ChainMainNameStr  = "chain"
+	DefaultBondSymbol = ChainNameStr
+	DefaultBondDenom  = ChainMainNameStr + "/" + DefaultBondSymbol
 )

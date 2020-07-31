@@ -8,12 +8,20 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+type findAccount func(acc chainType.AccountID) bool
+
+var FindAcc findAccount
+
 // Verify interface at compile time
 var _, _, _ sdk.Msg = &MsgSetWithdrawAccountId{}, &MsgWithdrawDelegatorReward{}, &MsgWithdrawValidatorCommission{}
 
 type MsgSetWithdrawAccountIdData struct {
 	DelegatorAccountid chainType.AccountID `protobuf:"bytes,1,opt,name=delegator_accountid,json=delegatorAccountid,proto3" json:"delegator_accountid" yaml:"delegator_accountid"`
 	WithdrawAccountid  chainType.AccountID `protobuf:"bytes,2,opt,name=withdraw_accountid,json=withdrawAccountid,proto3" json:"withdraw_accountid" yaml:"withdraw_accountid"`
+}
+
+func (m MsgSetWithdrawAccountIdData) Sender() AccountID {
+	return m.DelegatorAccountid
 }
 
 func (MsgSetWithdrawAccountIdData) Type() Name { return MustName("withdrawcccid") }
@@ -37,6 +45,25 @@ func (m MsgSetWithdrawAccountId) GetData() (MsgSetWithdrawAccountIdData, error) 
 	}
 	return res, nil
 }
+func (m MsgSetWithdrawAccountId) ValidateBasic() error {
+	data, err := m.GetData()
+	if err == nil {
+		_, ok := data.WithdrawAccountid.ToName()
+		if ok {
+			if data.DelegatorAccountid.Equal(&data.WithdrawAccountid) {
+				return chainType.ErrKuMsgDataSameAccount
+			}
+
+			if FindAcc != nil {
+				if !FindAcc(data.WithdrawAccountid) {
+					return chainType.ErrKuMsgDataNotFindAccount
+				}
+			}
+		}
+	}
+
+	return m.KuMsg.ValidateBasic()
+}
 
 func NewMsgSetWithdrawAccountId(auth AccAddress, delAddr, withdrawAddr AccountID) MsgSetWithdrawAccountId {
 	return MsgSetWithdrawAccountId{
@@ -56,6 +83,10 @@ type MsgWithdrawDelegatorRewardData struct {
 	ValidatorAccountId chainType.AccountID `protobuf:"bytes,2,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address" yaml:"validator_address"`
 }
 
+func (m MsgWithdrawDelegatorRewardData) Sender() AccountID {
+	return m.DelegatorAccountId
+}
+
 func (MsgWithdrawDelegatorRewardData) Type() Name { return MustName("withdrawdelreward") }
 
 func (m MsgWithdrawDelegatorRewardData) Marshal() ([]byte, error) {
@@ -68,6 +99,30 @@ func (m *MsgWithdrawDelegatorRewardData) Unmarshal(b []byte) error {
 
 type MsgWithdrawDelegatorReward struct {
 	KuMsg
+}
+
+func (m MsgWithdrawDelegatorReward) ValidateBasic() error {
+	data, err := m.GetData()
+	if err == nil {
+		_, ok := data.DelegatorAccountId.ToName()
+		if ok {
+			if FindAcc != nil {
+				if !FindAcc(data.DelegatorAccountId) {
+					return chainType.ErrKuMsgDataNotFindAccount
+				}
+			}
+		}
+		_, ok = data.ValidatorAccountId.ToName()
+		if ok {
+			if FindAcc != nil {
+				if !FindAcc(data.ValidatorAccountId) {
+					return chainType.ErrKuMsgDataNotFindAccount
+				}
+			}
+		}
+	}
+
+	return m.KuMsg.ValidateBasic()
 }
 
 func (m MsgWithdrawDelegatorReward) GetData() (MsgWithdrawDelegatorRewardData, error) {
@@ -95,6 +150,10 @@ type MsgWithdrawValidatorCommissionData struct {
 	ValidatorAccountId chainType.AccountID `protobuf:"bytes,1,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address" yaml:"validator_address"`
 }
 
+func (m MsgWithdrawValidatorCommissionData) Sender() AccountID {
+	return m.ValidatorAccountId
+}
+
 func (MsgWithdrawValidatorCommissionData) Type() Name { return MustName("withdrawvalcom") }
 
 func (m MsgWithdrawValidatorCommissionData) Marshal() ([]byte, error) {
@@ -117,6 +176,22 @@ func (m MsgWithdrawValidatorCommission) GetData() (MsgWithdrawValidatorCommissio
 	return res, nil
 }
 
+func (m MsgWithdrawValidatorCommission) ValidateBasic() error {
+	data, err := m.GetData()
+	if err == nil {
+		_, ok := data.ValidatorAccountId.ToName()
+		if ok {
+			if FindAcc != nil {
+				if !FindAcc(data.ValidatorAccountId) {
+					return chainType.ErrKuMsgDataNotFindAccount
+				}
+			}
+		}
+	}
+
+	return m.KuMsg.ValidateBasic()
+}
+
 func NewMsgWithdrawValidatorCommission(auth AccAddress, valAddr AccountID) MsgWithdrawValidatorCommission {
 	return MsgWithdrawValidatorCommission{
 		*msg.MustNewKuMsg(
@@ -136,6 +211,9 @@ type MsgFundCommunityPoolData struct {
 	Depositor AccountID `json:"depositor" yaml:"depositor"`
 }
 
+func (m MsgFundCommunityPoolData) Sender() AccountID {
+	return m.Depositor
+}
 func (MsgFundCommunityPoolData) Type() Name { return MustName("fundcommpool") }
 
 func (m MsgFundCommunityPoolData) Marshal() ([]byte, error) {
@@ -173,18 +251,3 @@ func (m MsgFundCommunityPool) GetData() (MsgFundCommunityPoolData, error) {
 	}
 	return res, nil
 }
-
-/*
-FIXME: support Validate msg
-// ValidateBasic performs basic MsgFundCommunityPool message validation.
-func (msg MsgFundCommunityPool) ValidateBasic() error {
-	if !msg.Amount.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
-	}
-	if msg.Depositor.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Depositor.String())
-	}
-
-	return nil
-}
-*/

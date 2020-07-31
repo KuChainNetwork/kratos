@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -13,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/spf13/cobra"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -75,7 +74,7 @@ func queryTotalSupply(cliCtx context.CLIContext, cdc *codec.Codec) error {
 		return err
 	}
 
-	var totalSupply sdk.Coins
+	var totalSupply types.Coins
 	err = cdc.UnmarshalJSON(res, &totalSupply)
 	if err != nil {
 		return err

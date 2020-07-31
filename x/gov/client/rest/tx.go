@@ -2,15 +2,16 @@ package rest
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	govutils "github.com/KuChainNetwork/kuchain/x/gov/client/utils"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, phs []ProposalRESTHandler) {
@@ -35,13 +36,13 @@ func postProposalHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		deposit, err := sdk.ParseCoins(req.InitialDeposit)
+		deposit, err := chainTypes.ParseCoins(req.InitialDeposit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		proposerAccount, err := chaintype.NewAccountIDFromStr(req.ProposerAcc)
+		proposerAccount, err := chainTypes.NewAccountIDFromStr(req.ProposerAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("proposer account id error, %v", err))
 			return
@@ -84,13 +85,13 @@ func depositHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 			return
 		}
 
-		amount, err := sdk.ParseCoins(req.Amount)
+		amount, err := chainTypes.ParseCoins(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		depositor, err := chaintype.NewAccountIDFromStr(req.Depositor)
+		depositor, err := chainTypes.NewAccountIDFromStr(req.Depositor)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("depositor account id error, %v", err))
 			return
@@ -137,7 +138,7 @@ func voteHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 			return
 		}
 
-		VoterAccount, err := chaintype.NewAccountIDFromStr(req.Voter)
+		VoterAccount, err := chainTypes.NewAccountIDFromStr(req.Voter)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("depositor account id error, %v", err))
 			return

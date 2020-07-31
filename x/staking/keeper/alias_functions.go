@@ -3,7 +3,6 @@ package keeper
 import (
 	"fmt"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -39,7 +38,7 @@ func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index in
 	i := int64(0)
 	for ; iterator.Valid() && i < int64(maxValidators); iterator.Next() {
 		//address := iterator.Value()
-		address := chaintype.AccountID{iterator.Value()}
+		address := NewAccountIDFromByte(iterator.Value())
 		validator := k.mustGetValidator(ctx, address)
 
 		if validator.IsBonded() {
@@ -58,7 +57,7 @@ func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, vali
 	defer iterator.Close()
 	i := int64(0)
 	for ; iterator.Valid(); iterator.Next() {
-		address := chaintype.AccountID{types.AddressFromLastValidatorPowerKey(iterator.Key())}
+		address := NewAccountIDFromByte(types.AddressFromLastValidatorPowerKey(iterator.Key()))
 		validator, found := k.GetValidator(ctx, address)
 		if !found {
 			panic(fmt.Sprintf("validator record not found for address: %v\n", address))

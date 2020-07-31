@@ -96,7 +96,7 @@ func (a AssetKeeper) GetCoinTotalSupply(ctx sdk.Context, creator, symbol types.N
 }
 
 // IterateAllCoins iterate all account 's coins
-func (a AssetKeeper) IterateAllCoins(ctx sdk.Context, cb func(address types.AccountID, balance sdk.Coins) (stop bool)) {
+func (a AssetKeeper) IterateAllCoins(ctx sdk.Context, cb func(address types.AccountID, balance Coins) (stop bool)) {
 	store := ctx.KVStore(a.key)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinStoreKeyPrefix))
 
@@ -119,7 +119,7 @@ func (a AssetKeeper) IterateAllCoins(ctx sdk.Context, cb func(address types.Acco
 }
 
 // IterateAllCoins iterate all account 's coins
-func (a AssetKeeper) IterateAllCoinPowers(ctx sdk.Context, cb func(address types.AccountID, balance sdk.Coins) (stop bool)) {
+func (a AssetKeeper) IterateAllCoinPowers(ctx sdk.Context, cb func(address types.AccountID, balance Coins) (stop bool)) {
 	store := ctx.KVStore(a.key)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinPowerStoreKeyPrefix))
 

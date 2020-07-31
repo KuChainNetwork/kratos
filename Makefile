@@ -7,8 +7,6 @@ COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 
-FixAssetHeight := 160000
-
 export GO111MODULE = on
 
 # process build tags
@@ -50,13 +48,12 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # process linker flags
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=kts \
-		  -X github.com/cosmos/cosmos-sdk/version.ServerName=ktsd \
-		  -X github.com/cosmos/cosmos-sdk/version.ClientName=ktscli \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=kuchain \
+		  -X github.com/cosmos/cosmos-sdk/version.ServerName=kucd \
+		  -X github.com/cosmos/cosmos-sdk/version.ClientName=kucli \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
-      -X github.com/KuChainNetwork/kuchain/chain/constants.FixAssetHeight=$(FixAssetHeight)
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
 
 ifeq ($(WITH_CLEVELDB),yes)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
@@ -71,11 +68,11 @@ all: clear-build build
 
 build: go.sum
 ifeq ($(OS),Windows_NT)
-	go build -mod=readonly $(BUILD_FLAGS) -o build/ktsd.exe ./cmd/kucd
-	go build -mod=readonly $(BUILD_FLAGS) -o build/ktscli.exe ./cmd/kucli
+	go build -mod=readonly $(BUILD_FLAGS) -o build/kucd.exe ./cmd/kucd
+	go build -mod=readonly $(BUILD_FLAGS) -o build/kucli.exe ./cmd/kucli
 else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/ktsd ./cmd/kucd
-	go build -mod=readonly $(BUILD_FLAGS) -o build/ktscli ./cmd/kucli
+	go build -mod=readonly $(BUILD_FLAGS) -o build/kucd ./cmd/kucd
+	go build -mod=readonly $(BUILD_FLAGS) -o build/kucli ./cmd/kucli
 endif
 
 build-linux: go.sum

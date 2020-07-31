@@ -1,7 +1,7 @@
 package external
 
 import (
-	"github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/KuChainNetwork/kuchain/x/params/types"
 )
 
 type ParamsSubspace = types.Subspace

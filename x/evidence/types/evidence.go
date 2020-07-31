@@ -6,7 +6,6 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/x/evidence/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -21,6 +20,15 @@ const (
 
 var _ exported.Evidence = (*Equivocation)(nil)
 
+// Equivocation implements the Evidence interface and defines evidence of double
+// signing misbehavior.
+type Equivocation struct {
+	Height           int64           `json:"height,omitempty" yaml:"height"`
+	Time             time.Time       `json:"time" yaml:"time"`
+	Power            int64           `json:"power,omitempty" yaml:"power"`
+	ConsensusAddress sdk.ConsAddress `json:"consensus_address,omitempty" yaml:"consensus_address"`
+}
+
 // Route returns the Evidence Handler route for an Equivocation type.
 func (e Equivocation) Route() string { return RouteEquivocation }
 
@@ -34,7 +42,7 @@ func (e Equivocation) String() string {
 
 // Hash returns the hash of an Equivocation object.
 func (e Equivocation) Hash() tmbytes.HexBytes {
-	return tmhash.Sum(Evidence_Cdc.Marshaler.MustMarshalBinaryBare(&e))
+	return tmhash.Sum(Evidence_Cdc.amino.MustMarshalBinaryBare(&e))
 }
 
 // ValidateBasic performs basic stateless validation checks on an Equivocation object.
@@ -89,4 +97,51 @@ func ConvertDuplicateVoteEvidence(dupVote abci.Evidence) exported.Evidence {
 		ConsensusAddress: sdk.ConsAddress(dupVote.Validator.Address),
 		Time:             dupVote.Time,
 	}
+}
+
+// Evidence defines the application-level allowed Evidence to be submitted via a
+// MsgSubmitEvidence message.
+type Evidence struct {
+	Sum interface{} `protobuf_oneof:"sum"`
+}
+
+type EvidenceEquivocation struct {
+	Equivocation *Equivocation `json:"equivocation,omitempty" yaml:"equivocation"`
+}
+
+func (m *Evidence) GetEquivocation() *Equivocation {
+	if x, ok := m.Sum.(*EvidenceEquivocation); ok {
+		return x.Equivocation
+	}
+	return nil
+}
+
+func (this *Evidence) GetEvidence() exported.Evidence {
+	if x := this.GetEquivocation(); x != nil {
+		return x
+	}
+	return nil
+}
+
+func (e *Evidence) SetEvidence(value exported.Evidence) error {
+	if value == nil {
+		e.Sum = nil
+		return nil
+	}
+	switch vt := value.(type) {
+	case *Equivocation:
+		e.Sum = &EvidenceEquivocation{vt}
+		return nil
+	case Equivocation:
+		e.Sum = &EvidenceEquivocation{&vt}
+		return nil
+	}
+	return fmt.Errorf("can't encode value of type %T as message Evidence", value)
+}
+
+// MsgSubmitEvidence defines the application-level message type for handling
+// evidence submission.
+type MsgSubmitEvidence struct {
+	Evidence              *Evidence `json:"evidence,omitempty"`
+	MsgSubmitEvidenceBase `json:"base"`
 }

@@ -1,52 +1,54 @@
 package types
 
 import (
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	"encoding/json"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // the address for where distributions rewards are withdrawn to by default
 // this struct is only used at genesis to feed in default withdraw addresses
 type DelegatorWithdrawInfo struct {
-	DelegatorAddress chainType.AccountID `json:"delegator_address" yaml:"delegator_address"`
-	WithdrawAddress  chainType.AccountID `json:"withdraw_address" yaml:"withdraw_address"`
+	DelegatorAddress AccountID `json:"delegator_address" yaml:"delegator_address"`
+	WithdrawAddress  AccountID `json:"withdraw_address" yaml:"withdraw_address"`
 }
 
 // used for import/export via genesis json
 type ValidatorOutstandingRewardsRecord struct {
-	ValidatorAddress   chainType.AccountID `json:"validator_address" yaml:"validator_address"`
-	OutstandingRewards sdk.DecCoins        `json:"outstanding_rewards" yaml:"outstanding_rewards"`
+	ValidatorAddress   AccountID `json:"validator_address" yaml:"validator_address"`
+	OutstandingRewards DecCoins  `json:"outstanding_rewards" yaml:"outstanding_rewards"`
 }
 
 // used for import / export via genesis json
 type ValidatorAccumulatedCommissionRecord struct {
-	ValidatorAddress chainType.AccountID            `json:"validator_address" yaml:"validator_address"`
+	ValidatorAddress AccountID                      `json:"validator_address" yaml:"validator_address"`
 	Accumulated      ValidatorAccumulatedCommission `json:"accumulated" yaml:"accumulated"`
 }
 
 // used for import / export via genesis json
 type ValidatorHistoricalRewardsRecord struct {
-	ValidatorAddress chainType.AccountID        `json:"validator_address" yaml:"validator_address"`
+	ValidatorAddress AccountID                  `json:"validator_address" yaml:"validator_address"`
 	Period           uint64                     `json:"period" yaml:"period"`
 	Rewards          ValidatorHistoricalRewards `json:"rewards" yaml:"rewards"`
 }
 
 // used for import / export via genesis json
 type ValidatorCurrentRewardsRecord struct {
-	ValidatorAddress chainType.AccountID     `json:"validator_address" yaml:"validator_address"`
+	ValidatorAddress AccountID               `json:"validator_address" yaml:"validator_address"`
 	Rewards          ValidatorCurrentRewards `json:"rewards" yaml:"rewards"`
 }
 
 // used for import / export via genesis json
 type DelegatorStartingInfoRecord struct {
-	DelegatorAddress chainType.AccountID   `json:"delegator_address" yaml:"delegator_address"`
-	ValidatorAddress chainType.AccountID   `json:"validator_address" yaml:"validator_address"`
+	DelegatorAddress AccountID             `json:"delegator_address" yaml:"delegator_address"`
+	ValidatorAddress AccountID             `json:"validator_address" yaml:"validator_address"`
 	StartingInfo     DelegatorStartingInfo `json:"starting_info" yaml:"starting_info"`
 }
 
 // used for import / export via genesis json
 type ValidatorSlashEventRecord struct {
-	ValidatorAddress chainType.AccountID `json:"validator_address" yaml:"validator_address"`
+	ValidatorAddress AccountID           `json:"validator_address" yaml:"validator_address"`
 	Height           uint64              `json:"height" yaml:"height"`
 	Period           uint64              `json:"period" yaml:"period"`
 	Event            ValidatorSlashEvent `json:"validator_slash_event" yaml:"validator_slash_event"`
@@ -84,6 +86,17 @@ func NewGenesisState(
 		DelegatorStartingInfos:          dels,
 		ValidatorSlashEvents:            slashes,
 	}
+}
+
+// ValidateGenesis performs basic validation of bank genesis data returning an
+// error for any failed validation criteria.
+func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
+	var data GenesisState
+	if err := Cdc().UnmarshalJSON(bz, &data); err != nil {
+		return sdkerrors.Wrapf(err, "failed to unmarshal %s", ModuleName)
+	}
+
+	return ValidateGenesis(data)
 }
 
 // get raw genesis raw message for testing

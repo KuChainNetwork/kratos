@@ -6,14 +6,56 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/yaml.v2"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"gopkg.in/yaml.v2"
 )
 
 // DefaultStartingProposalID is 1
 const DefaultStartingProposalID uint64 = 1
+
+// ProposalStatus is a type alias that represents a proposal status as a byte
+type ProposalStatus int32
+
+const (
+	// PROPOSAL_STATUS_UNSPECIFIED defines the default propopsal status.
+	StatusNil ProposalStatus = 0
+	// PROPOSAL_STATUS_DEPOSIT_PERIOD defines a proposal status during the deposit period.
+	StatusDepositPeriod ProposalStatus = 1
+	// PROPOSAL_STATUS_VOTING_PERIOD defines a proposal status during the voting period.
+	StatusVotingPeriod ProposalStatus = 2
+	// PROPOSAL_STATUS_PASSED defines a proposal status of a proposal that has passed.
+	StatusPassed ProposalStatus = 3
+	// PROPOSAL_STATUS_REJECTED defines a proposal status of a proposal that has been rejected.
+	StatusRejected ProposalStatus = 4
+	// PROPOSAL_STATUS_FAILED defines a proposal status of a proposal that has failed.
+	StatusFailed ProposalStatus = 5
+)
+
+// ProposalBase defines the core field members of a governance proposal. It includes
+// all static fields (i.e fields excluding the dynamic Content). A full proposal
+// extends the ProposalBase with Content.
+type ProposalBase struct {
+	ProposalID       uint64         `json:"id" yaml:"id"`
+	Status           ProposalStatus `json:"status,omitempty" yaml:"proposal_status"`
+	FinalTallyResult TallyResult    `json:"final_tally_result" yaml:"final_tally_result"`
+	SubmitTime       time.Time      `json:"submit_time" yaml:"submit_time"`
+	DepositEndTime   time.Time      `json:"deposit_end_time" yaml:"deposit_end_time"`
+	TotalDeposit     Coins          `json:"total_deposit" yaml:"total_deposit"`
+	VotingStartTime  time.Time      `json:"voting_start_time" yaml:"voting_start_time"`
+	VotingEndTime    time.Time      `json:"voting_end_time" yaml:"voting_end_time"`
+}
+
+func (p ProposalBase) Equal(other ProposalBase) bool {
+	return p.ProposalID == other.ProposalID &&
+		p.Status == other.Status &&
+		p.FinalTallyResult.Equal(other.FinalTallyResult) &&
+		p.SubmitTime.Equal(other.SubmitTime) &&
+		p.DepositEndTime.Equal(other.DepositEndTime) &&
+		p.TotalDeposit.IsEqual(other.TotalDeposit) &&
+		p.VotingEndTime.Equal(other.VotingEndTime) &&
+		p.VotingEndTime.Equal(other.VotingEndTime)
+}
 
 // Proposal defines a struct used by the governance module to allow for voting
 // on network changes.
@@ -30,7 +72,7 @@ func NewProposal(content Content, id uint64, submitTime, depositEndTime time.Tim
 			ProposalID:       id,
 			Status:           StatusDepositPeriod,
 			FinalTallyResult: EmptyTallyResult(),
-			TotalDeposit:     sdk.NewCoins(),
+			TotalDeposit:     NewCoins(),
 			SubmitTime:       submitTime,
 			DepositEndTime:   depositEndTime,
 		},
@@ -196,6 +238,13 @@ const (
 
 // Implements Content Interface
 var _ Content = TextProposal{}
+
+// TextProposal defines a standard text proposal whose changes need to be
+// manually updated in case of approval
+type TextProposal struct {
+	Title       string `json:"title,omitempty" yaml:"title"`
+	Description string `json:"description,omitempty" yaml:"description"`
+}
 
 // NewTextProposal creates a text proposal Content
 func NewTextProposal(title, description string) Content {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -211,7 +211,7 @@ func redelegationsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		if len(bechDelegatorAddr) != 0 {
 			//delegatorAddr, err := sdk.AccAddressFromBech32(bechDelegatorAddr)
-			delegatorAddr, _ := chaintype.NewAccountIDFromStr(bechDelegatorAddr)
+			delegatorAddr, _ := chainTypes.NewAccountIDFromStr(bechDelegatorAddr)
 			// if err != nil {
 			// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			// 	return
@@ -225,7 +225,7 @@ func redelegationsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			// 	return
 			// }
-			srcValidatorAddr, _ := chaintype.NewAccountIDFromStr(bechSrcValidatorAddr)
+			srcValidatorAddr, _ := chainTypes.NewAccountIDFromStr(bechSrcValidatorAddr)
 			params.SrcValidatorAddr = srcValidatorAddr
 		}
 
@@ -235,7 +235,7 @@ func redelegationsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			// 	return
 			// }
-			dstValidatorAddr, _ := chaintype.NewAccountIDFromStr(bechDstValidatorAddr)
+			dstValidatorAddr, _ := chainTypes.NewAccountIDFromStr(bechDstValidatorAddr)
 			params.DstValidatorAddr = dstValidatorAddr
 		}
 
@@ -321,7 +321,7 @@ func validatorDelegationsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 // HTTP request handler to query all unbonding delegations from a validator
 func validatorUnbondingDelegationsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
-	return queryValidator(cliCtx, fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryDelegatorUnbondingDelegations))
+	return queryValidator(cliCtx, fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryValidatorUnbondingDelegations))
 }
 
 // HTTP request handler to query historical info at a given height

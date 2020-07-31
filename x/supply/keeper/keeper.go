@@ -67,3 +67,7 @@ func (k Keeper) ValidatePermissions(macc supplyExported.ModuleAccountI) error {
 
 	return nil
 }
+
+func (k Keeper) GetStoreKey() sdk.StoreKey {
+	return k.storeKey
+}

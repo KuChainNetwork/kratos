@@ -2,24 +2,24 @@ package types
 
 import (
 	"github.com/KuChainNetwork/kuchain/chain/msg"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )
 
 var (
-	RouterKeyName = chaintype.MustName(RouterKey)
+	RouterKeyName = chainTypes.MustName(RouterKey)
 )
 
 type KuMsgCreateValidator struct {
-	chaintype.KuMsg
+	chainTypes.KuMsg
 }
 
-//func (KuMsgCreateValidator) Type() chaintype.Name { return types.MustName("createvalidator") }
+//func (KuMsgCreateValidator) Type() chainTypes.Name { return types.MustName("createvalidator") }
 
 // NewMsgCreate new create coin msg
-func NewKuMsgCreateValidator(auth sdk.AccAddress, valAddr chaintype.AccountID, pubKey crypto.PubKey,
-	description Description, commission sdk.Dec, delAcc chaintype.AccountID) KuMsgCreateValidator {
+func NewKuMsgCreateValidator(auth sdk.AccAddress, valAddr chainTypes.AccountID, pubKey crypto.PubKey,
+	description Description, commission sdk.Dec, delAcc chainTypes.AccountID) KuMsgCreateValidator {
 
 	var pkStr string
 	if pubKey != nil {
@@ -41,16 +41,16 @@ func NewKuMsgCreateValidator(auth sdk.AccAddress, valAddr chaintype.AccountID, p
 }
 
 type KuMsgDelegate struct {
-	chaintype.KuMsg
+	chainTypes.KuMsg
 }
 
 // NewKuMsgDelegate create kuMsgDelegate
-func NewKuMsgDelegate(auth sdk.AccAddress, delAddr chaintype.AccountID, valAddr chaintype.AccountID, amount sdk.Coin) KuMsgDelegate {
+func NewKuMsgDelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr chainTypes.AccountID, amount chainTypes.Coin) KuMsgDelegate {
 	return KuMsgDelegate{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
 			msg.WithAuth(auth),
-			msg.WithTransfer(delAddr, ModuleAccountID, sdk.Coins{amount}),
+			msg.WithTransfer(delAddr, ModuleAccountID, chainTypes.Coins{amount}),
 			msg.WithData(Cdc(), &MsgDelegate{
 				DelegatorAccount: delAddr,
 				ValidatorAccount: valAddr,
@@ -61,10 +61,10 @@ func NewKuMsgDelegate(auth sdk.AccAddress, delAddr chaintype.AccountID, valAddr 
 }
 
 type KuMsgEditValidator struct {
-	chaintype.KuMsg
+	chainTypes.KuMsg
 }
 
-func NewKuMsgEditValidator(auth sdk.AccAddress, valAddr chaintype.AccountID, description Description, newRate *sdk.Dec) KuMsgEditValidator {
+func NewKuMsgEditValidator(auth sdk.AccAddress, valAddr chainTypes.AccountID, description Description, newRate *sdk.Dec) KuMsgEditValidator {
 
 	return KuMsgEditValidator{
 		*msg.MustNewKuMsg(
@@ -80,10 +80,10 @@ func NewKuMsgEditValidator(auth sdk.AccAddress, valAddr chaintype.AccountID, des
 }
 
 type KuMsgRedelegate struct {
-	chaintype.KuMsg
+	chainTypes.KuMsg
 }
 
-func NewKuMsgRedelegate(auth sdk.AccAddress, delAddr chaintype.AccountID, valSrcAddr, valDstAddr chaintype.AccountID, amount sdk.Coin) KuMsgRedelegate {
+func NewKuMsgRedelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valSrcAddr, valDstAddr chainTypes.AccountID, amount chainTypes.Coin) KuMsgRedelegate {
 
 	return KuMsgRedelegate{
 		*msg.MustNewKuMsg(
@@ -100,10 +100,10 @@ func NewKuMsgRedelegate(auth sdk.AccAddress, delAddr chaintype.AccountID, valSrc
 }
 
 type KuMsgUnbond struct {
-	chaintype.KuMsg
+	chainTypes.KuMsg
 }
 
-func NewKuMsgUnbond(auth sdk.AccAddress, delAddr chaintype.AccountID, valAddr chaintype.AccountID, amount sdk.Coin) KuMsgUnbond {
+func NewKuMsgUnbond(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr chainTypes.AccountID, amount chainTypes.Coin) KuMsgUnbond {
 
 	return KuMsgUnbond{
 		*msg.MustNewKuMsg(

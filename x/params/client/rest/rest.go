@@ -2,14 +2,15 @@ package rest
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/params/external"
 	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"net/http"
 )
 
 type PostProposalParamsReq struct {
@@ -40,14 +41,14 @@ func postProposalParamsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		ProposalAccount, err := chaintype.NewAccountIDFromStr(req.ProposerAcc)
+		ProposalAccount, err := chainTypes.NewAccountIDFromStr(req.ProposerAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("proposer account id error, %v", err))
 			return
 		}
 
 		content := proposal.NewParameterChangeProposal(req.Title, req.Description, req.ParamChanges)
-		deposit, err := sdk.ParseCoins(req.InitialDeposit)
+		deposit, err := chainTypes.ParseCoins(req.InitialDeposit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

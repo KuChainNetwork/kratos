@@ -2,9 +2,9 @@ package mint
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/x/mint/client/cli"
 	"github.com/KuChainNetwork/kuchain/x/mint/client/rest"
 	"github.com/KuChainNetwork/kuchain/x/mint/simulation"
@@ -26,7 +26,15 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the mint module.
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	genesis.ModuleBasicBase
+}
+
+func NewAppModuleBasic() AppModuleBasic {
+	return AppModuleBasic{
+		ModuleBasicBase: genesis.NewModuleBasicBase(Cdc(), DefaultGenesisState()),
+	}
+}
 
 var _ module.AppModuleBasic = AppModuleBasic{}
 
@@ -37,22 +45,6 @@ func (AppModuleBasic) Name() string {
 
 // RegisterCodec registers the mint module's types for the given codec.
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {}
-
-// DefaultGenesis returns default genesis state as raw bytes for the mint
-// module.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(DefaultGenesisState())
-}
-
-// ValidateGenesis performs genesis state validation for the mint module.
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
-	var data GenesisState
-	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
-	}
-
-	return ValidateGenesis(data)
-}
 
 // RegisterRESTRoutes registers the REST routes for the mint module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
@@ -112,9 +104,9 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 
 // InitGenesis performs genesis initialization for the mint module. It returns
 // no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
-	cdc.MustUnmarshalJSON(data, &genesisState)
+	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
 
 	InitGenesis(ctx, am.keeper, am.supplyKeeper, genesisState)
 
@@ -123,9 +115,8 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data j
 
 // ExportGenesis returns the exported genesis state as raw bytes for the mint
 // module.
-func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
-	gs := ExportGenesis(ctx, am.keeper)
-	return cdc.MustMarshalJSON(gs)
+func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
+	return ModuleCdc.MustMarshalJSON(ExportGenesis(ctx, am.keeper))
 }
 
 // BeginBlock returns the begin blocker for the mint module.

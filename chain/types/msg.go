@@ -17,6 +17,17 @@ const (
 	KuMsgMaxLen = (KuMsgMaxAuth+4)*32 + KuMsgMaxDataLen + 64 // TODO: use fix coins imp
 )
 
+// KuMsg is the base msg for token transfer msg
+type KuMsg struct {
+	Auth   []sdk.AccAddress `json:"auth,omitempty" yaml:"auth"`
+	From   AccountID        `json:"from" yaml:"from"`
+	To     AccountID        `json:"to" yaml:"to"`
+	Amount Coins            `json:"amount" yaml:"amount"`
+	Router Name             `json:"router" yaml:"router"`
+	Action Name             `json:"action" yaml:"action"`
+	Data   []byte           `json:"data,omitempty" yaml:"data"`
+}
+
 // Route Implements Msg.
 func (msg KuMsg) Route() string { return msg.Router.String() }
 
@@ -70,15 +81,23 @@ func (msg KuMsg) ValidateBasic() error {
 	if msg.Router.Empty() {
 		return ErrKuMsgMissingRouter
 	}
+
 	if len(msg.Data) > 0 && msg.Action.Empty() {
 		return ErrKuMsgMissingType
 	}
+
 	if len(msg.GetSigners()) == 0 {
 		return ErrKuMsgMissingAuth
 	}
+
 	if len(msg.Data) > KuMsgMaxDataLen {
 		return ErrKuMsgDataTooLarge
 	}
+
+	if msg.Amount.IsAnyNegative() {
+		return ErrTransfNoEnough
+	}
+
 	return nil
 }
 

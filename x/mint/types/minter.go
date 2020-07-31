@@ -3,8 +3,15 @@ package types
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+// Minter represents the minting state.
+type Minter struct {
+	Inflation        sdk.Dec `json:"inflation"`                                  // current annual inflation rate
+	AnnualProvisions sdk.Dec `json:"annual_provisions" yaml:"annual_provisions"` // current annual expected provisions
+}
 
 // NewMinter returns a new Minter object with the given inflation and annual
 // provisions values.
@@ -19,7 +26,7 @@ func NewMinter(inflation, annualProvisions sdk.Dec) Minter {
 func InitialMinter(inflation sdk.Dec) Minter {
 	return NewMinter(
 		inflation,
-		sdk.NewDec(0),
+		types.NewDec(0),
 	)
 }
 
@@ -52,7 +59,7 @@ func (m Minter) NextInflationRate(params Params, bondedRatio sdk.Dec) sdk.Dec {
 	inflationRateChangePerYear := sdk.OneDec().
 		Sub(bondedRatio.Quo(params.GoalBonded)).
 		Mul(params.InflationRateChange)
-	inflationRateChange := inflationRateChangePerYear.Quo(sdk.NewDec(int64(params.BlocksPerYear)))
+	inflationRateChange := inflationRateChangePerYear.Quo(types.NewDec(int64(params.BlocksPerYear)))
 
 	// adjust the new annual inflation for this next cycle
 	inflation := m.Inflation.Add(inflationRateChange) // note inflationRateChange may be negative
@@ -74,7 +81,7 @@ func (m Minter) NextAnnualProvisions(_ Params, totalSupply sdk.Int) sdk.Dec {
 
 // BlockProvision returns the provisions for a block based on the annual
 // provisions rate.
-func (m Minter) BlockProvision(params Params) sdk.Coin {
-	provisionAmt := m.AnnualProvisions.QuoInt(sdk.NewInt(int64(params.BlocksPerYear)))
-	return sdk.NewCoin(params.MintDenom, provisionAmt.TruncateInt())
+func (m Minter) BlockProvision(params Params) types.Coin {
+	provisionAmt := m.AnnualProvisions.QuoInt(types.NewInt(int64(params.BlocksPerYear)))
+	return types.NewCoin(params.MintDenom, provisionAmt.TruncateInt())
 }

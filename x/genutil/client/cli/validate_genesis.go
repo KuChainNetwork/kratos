@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/spf13/cobra"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // Validate genesis command takes
@@ -41,7 +40,7 @@ func ValidateGenesisCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicM
 				return fmt.Errorf("error unmarshalling genesis doc %s: %s", genesis, err.Error())
 			}
 
-			if err = mbm.ValidateGenesis(cdc, genState); err != nil {
+			if err = mbm.ValidateGenesis(genState); err != nil {
 				return fmt.Errorf("error validating genesis file %s: %s", genesis, err.Error())
 			}
 

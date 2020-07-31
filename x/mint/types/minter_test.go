@@ -4,15 +4,15 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNextInflation(t *testing.T) {
 	minter := DefaultInitialMinter()
 	params := DefaultParams()
-	blocksPerYr := sdk.NewDec(int64(params.BlocksPerYear))
+	blocksPerYr := chainTypes.NewDec(int64(params.BlocksPerYear))
 
 	// Governing Mechanism:
 	//    inflationRateChangePerYear = (1- BondedRatio/ GoalBonded) * MaxInflationRateChange
@@ -31,7 +31,6 @@ func TestNextInflation(t *testing.T) {
 		// 50% bonded, starting at 10% inflation and being increased
 		{sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(10, 2),
 			sdk.OneDec().Sub(sdk.NewDecWithPrec(5, 1).Quo(params.GoalBonded)).Mul(params.InflationRateChange).Quo(blocksPerYr)},
-
 
 		//test 6% minimum stop (testing with 100% bonded)
 		{sdk.OneDec(), sdk.NewDecWithPrec(6, 2), sdk.ZeroDec()},
@@ -66,16 +65,16 @@ func TestBlockProvision(t *testing.T) {
 		expProvisions    int64
 	}{
 		{secondsPerYear / 3, 1},
-		{secondsPerYear/ 3 + 1, 1},
+		{secondsPerYear/3 + 1, 1},
 		{(secondsPerYear / 3) * 2, 2},
 		{(secondsPerYear / 3) / 2, 0},
 	}
 	for i, tc := range tests {
-		minter.AnnualProvisions = sdk.NewDec(tc.annualProvisions)
+		minter.AnnualProvisions = chainTypes.NewDec(tc.annualProvisions)
 		provisions := minter.BlockProvision(params)
 
-		expProvisions := sdk.NewCoin(params.MintDenom,
-			sdk.NewInt(tc.expProvisions))
+		expProvisions := chainTypes.NewCoin(params.MintDenom,
+			chainTypes.NewInt(tc.expProvisions))
 
 		require.True(t, expProvisions.IsEqual(provisions),
 			"test: %v\n\tExp: %v\n\tGot: %v\n",
@@ -95,7 +94,7 @@ func BenchmarkBlockProvision(b *testing.B) {
 
 	s1 := rand.NewSource(100)
 	r1 := rand.New(s1)
-	minter.AnnualProvisions = sdk.NewDec(r1.Int63n(1000000))
+	minter.AnnualProvisions = chainTypes.NewDec(r1.Int63n(1000000))
 
 	// run the BlockProvision function b.N times
 	for n := 0; n < b.N; n++ {
@@ -122,7 +121,7 @@ func BenchmarkNextInflation(b *testing.B) {
 func BenchmarkNextAnnualProvisions(b *testing.B) {
 	minter := InitialMinter(sdk.NewDecWithPrec(1, 1))
 	params := DefaultParams()
-	totalSupply := sdk.NewInt(100000000000000)
+	totalSupply := chainTypes.NewInt(100000000000000)
 
 	// run the NextAnnualProvisions function b.N times
 	for n := 0; n < b.N; n++ {

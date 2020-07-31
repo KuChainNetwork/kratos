@@ -1,9 +1,8 @@
 package mint_test
 
 import (
+	"github.com/KuChainNetwork/kuchain/test/simapp"
 	"github.com/KuChainNetwork/kuchain/x/mint"
-	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/abci/types"
 	"testing"
@@ -20,6 +19,6 @@ func TestItCreatesModuleAccountOnInitBlock(t *testing.T) {
 		},
 	)
 
-	acc := app.AccountKeeper.GetAccount(ctx, supply.NewModuleAddress(mint.ModuleName))
+	acc := app.SupplyKeeper().GetModuleAccount(ctx, mint.ModuleName).GetID()
 	require.NotNil(t, acc)
 }

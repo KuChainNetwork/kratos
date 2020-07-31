@@ -1,23 +1,21 @@
 package types
 
 import (
-	"gopkg.in/yaml.v2"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gopkg.in/yaml.v2"
 )
 
 // ValidatorGovInfo used for tallying
 type ValidatorGovInfo struct {
-	Address             chaintype.AccountID // address of the validator operator
-	BondedTokens        sdk.Int             // Power of a Validator
-	DelegatorShares     sdk.Dec             // Total outstanding delegator shares
-	DelegatorDeductions sdk.Dec             // Delegator deductions from validator's delegators voting independently
-	Vote                VoteOption          // Vote of the validator
+	Address             AccountID  // address of the validator operator
+	BondedTokens        sdk.Int    // Power of a Validator
+	DelegatorShares     sdk.Dec    // Total outstanding delegator shares
+	DelegatorDeductions sdk.Dec    // Delegator deductions from validator's delegators voting independently
+	Vote                VoteOption // Vote of the validator
 }
 
 // NewValidatorGovInfo creates a ValidatorGovInfo instance
-func NewValidatorGovInfo(address chaintype.AccountID, bondedTokens sdk.Int, delegatorShares,
+func NewValidatorGovInfo(address AccountID, bondedTokens sdk.Int, delegatorShares,
 	delegatorDeductions sdk.Dec, vote VoteOption) ValidatorGovInfo {
 
 	return ValidatorGovInfo{
@@ -27,6 +25,18 @@ func NewValidatorGovInfo(address chaintype.AccountID, bondedTokens sdk.Int, dele
 		DelegatorDeductions: delegatorDeductions,
 		Vote:                vote,
 	}
+}
+
+// TallyResult defines a standard tally for a proposal
+type TallyResult struct {
+	Yes        sdk.Int `json:"yes" yaml:"yes"`
+	Abstain    sdk.Int `json:"abstain" yaml:"abstain"`
+	No         sdk.Int `json:"no" yaml:"no"`
+	NoWithVeto sdk.Int `json:"no_with_veto" yaml:"no_with_veto"`
+}
+
+func (t TallyResult) Equal(other TallyResult) bool {
+	return t.Yes.Equal(other.Yes) && t.No.Equal(other.No) && t.Abstain.Equal(other.Abstain) && t.NoWithVeto.Equal(other.NoWithVeto)
 }
 
 // NewTallyResult creates a new TallyResult instance

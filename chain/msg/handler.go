@@ -1,7 +1,6 @@
 package msg
 
 import (
-	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/plugins"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,7 +48,7 @@ func onHandlerKuMsg(ctx Context, k AssetTransfer, msg KuTransfMsg) error {
 	to := msg.GetTo()
 	amount := msg.GetAmount()
 
-	if from.Empty() || to.Empty() || amount.IsZero() || (constants.IsFixAssetHeight(ctx.Context()) && from.Eq(to)) {
+	if from.Empty() || to.Empty() || amount.IsZero() || from.Eq(to) {
 		return nil
 	}
 

@@ -11,10 +11,10 @@ import (
 func TestNewAccountID(t *testing.T) {
 	config.SealChainConfig()
 
-	nameStr1 := "ktsvcdf2322a3"
+	nameStr1 := "kuchainvcdf2322a3"
 	nameStr2 := "k"
 
-	accAddressStr := "kts1srwn4v9smgquglhx4rpl5j93ka4j7hs0wxhy8a"
+	accAddressStr := "kuchain1xmc2z728py4gtwpc7jgytsan0282ww883qtv07"
 	accAddress, _ := sdk.AccAddressFromBech32(accAddressStr)
 
 	Convey("test new accountID from empty", t, func() {

@@ -4,16 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
-
-	"github.com/gorilla/mux"
-
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/gorilla/mux"
 )
 
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, queryRoute string) {
@@ -142,13 +138,13 @@ func delegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext, queryRoute stri
 // ValidatorDistInfo defines the properties of
 // validator distribution information response.
 type ValidatorDistInfo struct {
-	OperatorAddress     chainType.AccountID                  `json:"operator_account" yaml:"operator_account"`
-	SelfBondRewards     sdk.DecCoins                         `json:"self_bond_rewards" yaml:"self_bond_rewards"`
+	OperatorAddress     chainTypes.AccountID                 `json:"operator_account" yaml:"operator_account"`
+	SelfBondRewards     chainTypes.DecCoins                  `json:"self_bond_rewards" yaml:"self_bond_rewards"`
 	ValidatorCommission types.ValidatorAccumulatedCommission `json:"val_commission" yaml:"val_commission"`
 }
 
 // NewValidatorDistInfo creates a new instance of ValidatorDistInfo.
-func NewValidatorDistInfo(operatorAddr chainType.AccountID, rewards sdk.DecCoins,
+func NewValidatorDistInfo(operatorAddr chainTypes.AccountID, rewards chainTypes.DecCoins,
 	commission types.ValidatorAccumulatedCommission) ValidatorDistInfo {
 	return ValidatorDistInfo{
 		OperatorAddress:     operatorAddr,
@@ -190,7 +186,7 @@ func validatorInfoHandlerFn(cliCtx context.CLIContext, queryRoute string) http.H
 			return
 		}
 
-		var rewards sdk.DecCoins
+		var rewards chainTypes.DecCoins
 		if err := cliCtx.Codec.UnmarshalJSON(bz, &rewards); err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -265,7 +261,7 @@ func communityPoolHandler(cliCtx context.CLIContext, queryRoute string) http.Han
 			return
 		}
 
-		var result sdk.DecCoins
+		var result chainTypes.DecCoins
 		if err := cliCtx.Codec.UnmarshalJSON(res, &result); err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

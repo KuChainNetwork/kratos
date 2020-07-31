@@ -6,21 +6,48 @@ import (
 	"strings"
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // Implements Delegation interface
 var _ exported.DelegationI = Delegation{}
 
+// DVPair is struct that just has a delegator-validator pair with no other data.
+// It is intended to be used as a marshalable pointer. For example, a DVPair can
+// be used to construct the key to getting an UnbondingDelegation from state.
+type DVPair struct {
+	DelegatorAccount AccountID `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorAccount AccountID `json:"validator_account" yaml:"validator_account"`
+}
+
+// DVPairs defines an array of DVPair objects.
+type DVPairs struct {
+	Pairs []DVPair `json:"pairs" yaml:"pairs"`
+}
+
 // String implements the Stringer interface for a DVPair object.
 func (dv DVPair) String() string {
 	out, _ := yaml.Marshal(dv)
 	return string(out)
+}
+
+// DVVTriplet is struct that just has a delegator-validator-validator triplet
+// with no other data. It is intended to be used as a marshalable pointer. For
+// example, a DVVTriplet can be used to construct the key to getting a
+// Redelegation from state.
+type DVVTriplet struct {
+	DelegatorAccount    AccountID `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorSrcAccount AccountID `json:"validator_src_account" yaml:"validator_src_account"`
+	ValidatorDstAccount AccountID `json:"validator_dst_account" yaml:"validator_dst_account"`
+}
+
+// DVVTriplets defines an array of DVVTriplet objects.
+type DVVTriplets struct {
+	Triplets []DVVTriplet `json:"triplets" yaml:"triplets"`
 }
 
 // String implements the Stringer interface for a DVVTriplet object.
@@ -29,8 +56,17 @@ func (dvv DVVTriplet) String() string {
 	return string(out)
 }
 
+// Delegation represents the bond with tokens held by an account. It is
+// owned by one delegator, and is associated with the voting power of one
+// validator.
+type Delegation struct {
+	DelegatorAccount AccountID `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorAccount AccountID `json:"validator_account" yaml:"validator_account"`
+	Shares           Dec       `json:"shares" yaml:"shares"`
+}
+
 // NewDelegation creates a new delegation object
-func NewDelegation(delegatorAddr chaintype.AccountID, validatorAddr chaintype.AccountID, shares sdk.Dec) Delegation {
+func NewDelegation(delegatorAddr chainTypes.AccountID, validatorAddr chainTypes.AccountID, shares sdk.Dec) Delegation {
 	return Delegation{
 		DelegatorAccount: delegatorAddr,
 		ValidatorAccount: validatorAddr,
@@ -60,8 +96,8 @@ func UnmarshalDelegation(cdc *codec.Codec, value []byte) (delegation Delegation,
 }
 
 // nolint - for Delegation
-func (d Delegation) GetDelegatorAccountID() chaintype.AccountID { return d.DelegatorAccount }
-func (d Delegation) GetValidatorAccountID() chaintype.AccountID { return d.ValidatorAccount }
+func (d Delegation) GetDelegatorAccountID() chainTypes.AccountID { return d.DelegatorAccount }
+func (d Delegation) GetValidatorAccountID() chainTypes.AccountID { return d.ValidatorAccount }
 func (d Delegation) GetDelegatorAddr() sdk.AccAddress {
 	delegatorAccAddr, _ := d.DelegatorAccount.ToAccAddress()
 	return delegatorAccAddr
@@ -110,7 +146,7 @@ func (e UnbondingDelegationEntry) IsMature(currentTime time.Time) bool {
 
 // NewUnbondingDelegation - create a new unbonding delegation object
 func NewUnbondingDelegation(
-	delegatorAddr chaintype.AccountID, validatorAddr chaintype.AccountID,
+	delegatorAddr chainTypes.AccountID, validatorAddr chainTypes.AccountID,
 	creationHeight int64, minTime time.Time, balance sdk.Int,
 ) UnbondingDelegation {
 
@@ -154,6 +190,14 @@ func UnmarshalUBD(cdc *codec.Codec, value []byte) (ubd UnbondingDelegation, err 
 	return ubd, err
 }
 
+// UnbondingDelegation stores all of a single delegator's unbonding bonds
+// for a single validator in an time-ordered list
+type UnbondingDelegation struct {
+	DelegatorAccount AccountID                  `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorAccount AccountID                  `json:"validator_account" yaml:"validator_account"`
+	Entries          []UnbondingDelegationEntry `json:"entries" yaml:"entries"`
+}
+
 // String returns a human readable string representation of an UnbondingDelegation.
 func (ubd UnbondingDelegation) String() string {
 	out := fmt.Sprintf(`Unbonding Delegations between:
@@ -180,6 +224,22 @@ func (ubds UnbondingDelegations) String() (out string) {
 	return strings.TrimSpace(out)
 }
 
+// UnbondingDelegationEntry defines an unbonding object with relevant metadata.
+type UnbondingDelegationEntry struct {
+	CreationHeight int64     `json:"creation_height,omitempty" yaml:"creation_height"`
+	CompletionTime time.Time `json:"completion_time" yaml:"completion_time"`
+	InitialBalance sdk.Int   `json:"initial_balance" yaml:"initial_balance"`
+	Balance        sdk.Int   `json:"balance" yaml:"balance"`
+}
+
+// RedelegationEntry defines a redelegation object with relevant metadata.
+type RedelegationEntry struct {
+	CreationHeight int64     `json:"creation_height,omitempty" yaml:"creation_height"`
+	CompletionTime time.Time `json:"completion_time" yaml:"completion_time"`
+	InitialBalance sdk.Int   `json:"initial_balance" yaml:"initial_balance"`
+	SharesDst      sdk.Dec   `json:"shares_dst" yaml:"shares_dst"`
+}
+
 func NewRedelegationEntry(creationHeight int64, completionTime time.Time, balance sdk.Int, sharesDst sdk.Dec) RedelegationEntry {
 	return RedelegationEntry{
 		CreationHeight: creationHeight,
@@ -200,8 +260,17 @@ func (e RedelegationEntry) IsMature(currentTime time.Time) bool {
 	return !e.CompletionTime.After(currentTime)
 }
 
+// Redelegation contains the list of a particular delegator's redelegating bonds
+// from a particular source validator to a particular destination validator.
+type Redelegation struct {
+	DelegatorAccount    AccountID           `json:"delegator_account" yaml:"delegator_account"`
+	ValidatorSrcAccount AccountID           `json:"validator_src_account" yaml:"validator_src_account"`
+	ValidatorDstAccount AccountID           `json:"validator_dst_account" yaml:"validator_dst_account"`
+	Entries             []RedelegationEntry `json:"entries" yaml:"entries"`
+}
+
 func NewRedelegation(
-	delegatorAddr chaintype.AccountID, validatorSrcAddr, validatorDstAddr chaintype.AccountID,
+	delegatorAddr chainTypes.AccountID, validatorSrcAddr, validatorDstAddr chainTypes.AccountID,
 	creationHeight int64, minTime time.Time, balance sdk.Int, sharesDst sdk.Dec,
 ) Redelegation {
 
@@ -287,12 +356,12 @@ func (d Redelegations) String() (out string) {
 // in addition to shares which is more suitable for client responses.
 type DelegationResponse struct {
 	Delegation
-	Balance sdk.Coin `json:"balance" yaml:"balance"`
+	Balance chainTypes.Coin `json:"balance" yaml:"balance"`
 }
 
 // NewDelegationResp creates a new DelegationResponse instance
 func NewDelegationResp(
-	delegatorAddr chaintype.AccountID, validatorAddr chaintype.AccountID, shares sdk.Dec, balance sdk.Coin,
+	delegatorAddr chainTypes.AccountID, validatorAddr chainTypes.AccountID, shares sdk.Dec, balance chainTypes.Coin,
 ) DelegationResponse {
 	return DelegationResponse{
 		Delegation: NewDelegation(delegatorAddr, validatorAddr, shares),
@@ -340,7 +409,7 @@ type RedelegationResponse struct {
 
 // NewRedelegationResponse crates a new RedelegationEntryResponse instance.
 func NewRedelegationResponse(
-	delegatorAddr chaintype.AccountID, validatorSrc, validatorDst chaintype.AccountID, entries []RedelegationEntryResponse,
+	delegatorAddr chainTypes.AccountID, validatorSrc, validatorDst chainTypes.AccountID, entries []RedelegationEntryResponse,
 ) RedelegationResponse {
 	return RedelegationResponse{
 		Redelegation: Redelegation{

@@ -4,13 +4,14 @@ import (
 	"errors"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/transaction/helpers"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	kuSim "github.com/KuChainNetwork/kuchain/test/simulation"
 	"github.com/KuChainNetwork/kuchain/x/slashing/external"
 	"github.com/KuChainNetwork/kuchain/x/slashing/keeper"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -81,7 +82,7 @@ func SimulateMsgUnjail(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Kee
 		account := ak.GetAccount(ctx, validator.GetOperatorAccountID())
 		spendable := bk.SpendableCoins(ctx, account.GetID())
 
-		fees, err := simulation.RandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}

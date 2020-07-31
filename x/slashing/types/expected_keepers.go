@@ -20,7 +20,7 @@ type AccountKeeper interface {
 type BankKeeper interface {
 	chainTypes.AssetTransfer
 
-	SpendableCoins(ctx sdk.Context, addr chainTypes.AccountID) sdk.Coins
+	SpendableCoins(ctx sdk.Context, addr chainTypes.AccountID) chainTypes.Coins
 }
 
 // ParamSubspace defines the expected Subspace interfacace

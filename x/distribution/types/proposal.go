@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 const (
@@ -21,8 +20,16 @@ func init() {
 	GovTypesRegisterProposalTypeCodec(CommunityPoolSpendProposal{}, "kucosmos-sdk/CommunityPoolSpendProposal")
 }
 
+// CommunityPoolSpendProposal spends from the community pool
+type CommunityPoolSpendProposal struct {
+	Title       string    `json:"title,omitempty" yaml:"title"`
+	Description string    `json:"description,omitempty" yaml:"description"`
+	Recipient   AccountID `json:"recipient" yaml:"recipient"`
+	Amount      Coins     `json:"amount" yaml:"amount"`
+}
+
 // NewCommunityPoolSpendProposal creates a new community pool spend proposal.
-func NewCommunityPoolSpendProposal(title, description string, recipient chainType.AccountID, amount sdk.Coins) CommunityPoolSpendProposal {
+func NewCommunityPoolSpendProposal(title, description string, recipient types.AccountID, amount Coins) CommunityPoolSpendProposal {
 	return CommunityPoolSpendProposal{title, description, recipient, amount}
 }
 

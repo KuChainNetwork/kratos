@@ -1,11 +1,16 @@
 package types
 
 import (
-	"gopkg.in/yaml.v2"
-
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gopkg.in/yaml.v2"
 )
+
+type CoinDescription struct {
+	Symbol      Name   `json:"symbol" yaml:"symbol"`                     // Symbol coin symbol name
+	Creator     Name   `json:"creator" yaml:"creator"`                   // Creator coin creator account name
+	Description []byte `json:"description,omitempty" yaml:"description"` // Description coin description info
+}
 
 // NewCoinDescription create coin description
 func NewCoinDescription(creator, symbol Name, desc []byte) CoinDescription {
@@ -21,13 +26,26 @@ func (m CoinDescription) String() string {
 	return string(res)
 }
 
+// CoinStat state for a coin type
+type CoinStat struct {
+	Symbol        Name  `json:"symbol" yaml:"symbol"`   // Symbol coin symbol name
+	Creator       Name  `json:"creator" yaml:"creator"` // Creator coin creator account name
+	CreateHeight  int64 `json:"create_height,omitempty" yaml:"create_height"`
+	Supply        Coin  `json:"supply" yaml:"supply"`         // Supply coin current supply
+	MaxSupply     Coin  `json:"max_supply" yaml:"max_supply"` // MaxSupply coin max supply limit
+	CanIssue      bool  `json:"can_issue,omitempty" yaml:"can_issue"`
+	CanLock       bool  `json:"can_lock,omitempty" yaml:"can_lock"`
+	IssueToHeight int64 `json:"issue_to_height,omitempty" yaml:"issue_to_height"`
+	InitSupply    Coin  `json:"init_supply" yaml:"init_supply"` // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+}
+
 // NewCoinStat creates a Coin status
 func NewCoinStat(ctx sdk.Context, creator, symbol Name, maxSupply Coin) CoinStat {
 	return CoinStat{
 		Creator:      creator,
 		Symbol:       symbol,
 		CreateHeight: ctx.BlockHeight(),
-		Supply:       NewCoin(maxSupply.GetDenom(), sdk.NewInt(0)),
+		Supply:       NewCoin(maxSupply.Denom, types.NewInt(0)),
 		MaxSupply:    maxSupply,
 	}
 }

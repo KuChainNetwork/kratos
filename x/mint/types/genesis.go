@@ -1,5 +1,10 @@
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // GenesisState - minter state
 type GenesisState struct {
 	Minter Minter `json:"minter" yaml:"minter"` // minter object
@@ -20,6 +25,17 @@ func DefaultGenesisState() GenesisState {
 		Minter: DefaultInitialMinter(),
 		Params: DefaultParams(),
 	}
+}
+
+// ValidateGenesis performs basic validation of bank genesis data returning an
+// error for any failed validation criteria.
+func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
+	gs := DefaultGenesisState()
+	if err := Cdc().UnmarshalJSON(bz, &gs); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
+	}
+
+	return ValidateGenesis(gs)
 }
 
 // ValidateGenesis validates the provided genesis state to ensure the

@@ -8,5 +8,4 @@ var (
 	ErrAccountCannotCreateSysAccount = sdkerrors.Register(ModuleName, 3, "cannot create system account by create")
 	ErrAccountNameInvalid            = sdkerrors.Register(ModuleName, 4, "account name is invalid")
 	ErrAccountNameLenInvalid         = sdkerrors.Register(ModuleName, 5, "account name length is invalid")
-	ErrAuthNoChanged                 = sdkerrors.Register(ModuleName, 6, "update account auth is equal")
 )

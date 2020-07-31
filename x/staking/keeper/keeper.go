@@ -4,13 +4,11 @@ import (
 	"container/list"
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/external"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 const aminoCacheSize = 500
@@ -87,22 +85,22 @@ func (k Keeper) GetLastTotalPower(ctx sdk.Context) sdk.Int {
 		return sdk.ZeroInt()
 	}
 
-	ip := sdk.IntProto{}
+	ip := sdk.Int{}
 	k.cdc.MustUnmarshalBinaryBare(bz, &ip)
-	return ip.Int
+	return ip
 }
 
 // Set the last total validator power.
 func (k Keeper) SetLastTotalPower(ctx sdk.Context, power sdk.Int) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryBare(&sdk.IntProto{Int: power})
+	bz := k.cdc.MustMarshalBinaryBare(power)
 	store.Set(types.LastTotalPowerKey, bz)
 }
 
-func (k Keeper) ValidatorAccount(ctx sdk.Context, id chaintype.AccountID) bool {
-	if k.accountKeeper.GetAccount(ctx, id) != nil {
-		return true
-	}
+func (k Keeper) ValidatorAccount(ctx sdk.Context, id AccountID) bool {
+	return k.accountKeeper.GetAccount(ctx, id) != nil
+}
 
-	return false
+func (k Keeper) GetStoreKey() sdk.StoreKey {
+	return k.storeKey
 }

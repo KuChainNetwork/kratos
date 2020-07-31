@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	gcutils "github.com/KuChainNetwork/kuchain/x/gov/client/utils"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -110,13 +110,13 @@ $ %s query kugov proposals --page=2 --limit=100
 
 			var proposalStatus types.ProposalStatus
 
-			var voterAccountID chaintype.AccountID
-			var depositorAccountID chaintype.AccountID
+			var voterAccountID chainTypes.AccountID
+			var depositorAccountID chainTypes.AccountID
 
 			params := types.NewQueryProposalsParams(page, limit, proposalStatus, voterAccountID, depositorAccountID)
 
 			if len(bechDepositorAddr) != 0 {
-				depositorAccount, err := chaintype.NewAccountIDFromStr(bechDepositorAddr)
+				depositorAccount, err := chainTypes.NewAccountIDFromStr(bechDepositorAddr)
 				if err != nil {
 					return err
 				}
@@ -124,7 +124,7 @@ $ %s query kugov proposals --page=2 --limit=100
 			}
 
 			if len(bechVoterAddr) != 0 {
-				voterAccount, err := chaintype.NewAccountIDFromStr(bechVoterAddr)
+				voterAccount, err := chainTypes.NewAccountIDFromStr(bechVoterAddr)
 				if err != nil {
 					return err
 				}
@@ -205,7 +205,7 @@ $ %s query kugov vote 1 validator
 				return fmt.Errorf("failed to fetch proposal-id %d: %s", proposalID, err)
 			}
 
-			voterAccountID, err := chaintype.NewAccountIDFromStr(args[1])
+			voterAccountID, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return err
 			}
@@ -339,7 +339,7 @@ $ %s query kugov deposit 1 validator
 				return fmt.Errorf("failed to fetch proposal-id %d: %s", proposalID, err)
 			}
 
-			depositorAccount, err := chaintype.NewAccountIDFromStr(args[1])
+			depositorAccount, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return err
 			}
@@ -659,7 +659,7 @@ $ %s query kugov punish-validator validator
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			validatorAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			validatorAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}

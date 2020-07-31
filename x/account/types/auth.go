@@ -7,6 +7,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type Auth struct {
+	Name      Name           `json:"name" yaml:"name"`
+	Address   sdk.AccAddress `json:"address,omitempty" yaml:"address"`
+	PublicKey []byte         `json:"public_key,omitempty" yaml:"public_key"`
+	Number    uint64         `json:"number,omitempty" yaml:"number"`
+	Sequence  uint64         `json:"sequence,omitempty" yaml:"sequence"`
+}
+
 func NewAuth(address sdk.AccAddress) Auth {
 	return Auth{
 		Address:  address,

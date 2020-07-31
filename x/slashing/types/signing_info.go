@@ -5,9 +5,23 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+// ValidatorSigningInfo defines the signing info for a validator
+type ValidatorSigningInfo struct {
+	Address sdk.ConsAddress `json:"address,omitempty"`
+	// height at which validator was first a candidate OR was unjailed
+	StartHeight int64 `json:"start_height,omitempty" yaml:"start_height"`
+	// index offset into signed block bit array
+	IndexOffset int64 `json:"index_offset,omitempty" yaml:"index_offset"`
+	// timestamp validator cannot be unjailed until
+	JailedUntil time.Time `json:"jailed_until" yaml:"jailed_until"`
+	// whether or not a validator has been tombstoned (killed out of validator set)
+	Tombstoned bool `json:"tombstoned,omitempty"`
+	// missed blocks counter (to avoid scanning the array every time)
+	MissedBlocksCounter int64 `json:"missed_blocks_counter,omitempty" yaml:"missed_blocks_counter"`
+}
 
 // NewValidatorSigningInfo creates a new ValidatorSigningInfo instance
 func NewValidatorSigningInfo(
@@ -39,7 +53,7 @@ func (i ValidatorSigningInfo) String() string {
 }
 
 // unmarshal a validator signing info from a store value
-func UnmarshalValSigningInfo(cdc codec.Marshaler, value []byte) (signingInfo ValidatorSigningInfo, err error) {
+func UnmarshalValSigningInfo(cdc *codec.Codec, value []byte) (signingInfo ValidatorSigningInfo, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &signingInfo)
 	return signingInfo, err
 }

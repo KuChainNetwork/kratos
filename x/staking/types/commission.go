@@ -3,10 +3,21 @@ package types
 import (
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	yaml "gopkg.in/yaml.v2"
 )
+
+// CommissionRates defines the initial commission rates to be used for creating
+// a validator.
+type CommissionRates struct {
+	Rate          Dec `json:"rate" yaml:"rate"`
+	MaxRate       Dec `json:"max_rate" yaml:"max_rate"`
+	MaxChangeRate Dec `json:"max_change_rate" yaml:"max_change_rate"`
+}
+
+func (c CommissionRates) Equal(other CommissionRates) bool {
+	return c.Rate.Equal(other.Rate) && c.MaxRate.Equal(other.MaxRate) && c.MaxChangeRate.Equal(other.MaxChangeRate)
+}
 
 // NewCommissionRates returns an initialized validator commission rates.
 func NewCommissionRates(rate, maxRate, maxChangeRate sdk.Dec) CommissionRates {
@@ -15,6 +26,12 @@ func NewCommissionRates(rate, maxRate, maxChangeRate sdk.Dec) CommissionRates {
 		MaxRate:       maxRate,
 		MaxChangeRate: maxChangeRate,
 	}
+}
+
+// Commission defines a commission parameters for a given validator.
+type Commission struct {
+	CommissionRates `json:"commission_rates" yaml:"commission_rates"`
+	UpdateTime      time.Time `json:"update_time" yaml:"update_time"`
 }
 
 // NewCommission returns an initialized validator commission.
@@ -32,6 +49,10 @@ func NewCommissionWithTime(rate, maxRate, maxChangeRate sdk.Dec, updatedAt time.
 		CommissionRates: NewCommissionRates(rate, maxRate, maxChangeRate),
 		UpdateTime:      updatedAt,
 	}
+}
+
+func (c Commission) Equal(other Commission) bool {
+	return c.CommissionRates.Equal(other.CommissionRates) && c.UpdateTime.Equal(other.UpdateTime)
 }
 
 // String implements the Stringer interface for a Commission object.

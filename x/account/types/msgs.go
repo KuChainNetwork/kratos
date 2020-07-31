@@ -3,12 +3,13 @@ package types
 import (
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // RouterKey is they name of the bank module
 const RouterKey = ModuleName
+
+var _, _ types.KuMsgData = (*MsgCreateAccountData)(nil), (*MsgUpdateAccountAuthData)(nil)
 
 // MsgCreateAccountData the data struct of MsgCreateAccount
 type MsgCreateAccountData struct {
@@ -19,12 +20,8 @@ type MsgCreateAccountData struct {
 
 func (MsgCreateAccountData) Type() types.Name { return types.MustName("create@account") }
 
-func (m MsgCreateAccountData) Marshal() ([]byte, error) {
-	return ModuleCdc.MarshalJSON(m)
-}
-
-func (m *MsgCreateAccountData) Unmarshal(b []byte) error {
-	return ModuleCdc.UnmarshalJSON(b, m)
+func (msg MsgCreateAccountData) Sender() AccountID {
+	return msg.Creator
 }
 
 // MsgCreateAccount create account msg
@@ -37,7 +34,7 @@ func NewMsgCreateAccount(auth types.AccAddress, creator types.AccountID, name ty
 		*msg.MustNewKuMsg(
 			types.MustName(RouterKey),
 			msg.WithAuth(auth),
-			msg.WithTransfer(creator, types.NewAccountIDFromName(name), sdk.Coins{}), // TODO: with first coin
+			msg.WithTransfer(creator, types.NewAccountIDFromName(name), Coins{}), // TODO: with first coin
 			msg.WithData(Cdc(), &MsgCreateAccountData{
 				Creator: creator,
 				Name:    name,
@@ -55,6 +52,27 @@ func (msg MsgCreateAccount) GetData() (MsgCreateAccountData, error) {
 	return res, nil
 }
 
+func (msg MsgCreateAccount) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Creator.Empty() {
+		return types.ErrKuMsgAccountIDNil
+	}
+
+	if data.Name.Empty() {
+		return types.ErrNameNilString
+	}
+
+	return nil
+}
+
 // MsgUpdateAccountAuthData the data struct of MsgCreateAccount
 type MsgUpdateAccountAuthData struct {
 	Name types.Name       `json:"name" yaml:"name"`
@@ -62,6 +80,10 @@ type MsgUpdateAccountAuthData struct {
 }
 
 func (MsgUpdateAccountAuthData) Type() types.Name { return types.MustName("updateauth") }
+
+func (msg MsgUpdateAccountAuthData) Sender() AccountID {
+	return NewAccountIDFromName(msg.Name)
+}
 
 // MsgUpdateAccountAuth create account msg
 type MsgUpdateAccountAuth struct {
@@ -80,4 +102,29 @@ func NewMsgUpdateAccountAuth(auth types.AccAddress, name types.Name, accountAuth
 			}),
 		),
 	}
+}
+
+func (msg MsgUpdateAccountAuth) GetData() (MsgUpdateAccountAuthData, error) {
+	res := MsgUpdateAccountAuthData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgUpdateAccountAuthData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgUpdateAccountAuth) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Name.Empty() {
+		return types.ErrNameNilString
+	}
+
+	return nil
 }

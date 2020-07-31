@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"math/rand"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/transaction/helpers"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	kuSim "github.com/KuChainNetwork/kuchain/test/simulation"
 	"github.com/KuChainNetwork/kuchain/x/staking/keeper"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -101,7 +102,7 @@ func SimulateMsgCreateValidator(ak types.AccountKeeper, bk types.BankKeeper, k k
 
 		simAccount, _ := simulation.RandomAcc(r, accs)
 		//	address := sdk.ValAddress(simAccount.Address)
-		address := chaintype.NewAccountIDFromAccAdd(simAccount.Address)
+		address := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 
 		// ensure the validator doesn't exist already
 		_, found := k.GetValidator(ctx, address)
@@ -111,7 +112,7 @@ func SimulateMsgCreateValidator(ak types.AccountKeeper, bk types.BankKeeper, k k
 
 		denom := k.GetParams(ctx).BondDenom
 
-		balance := bk.GetBalance(ctx, chaintype.NewAccountIDFromAdd(simAccount.Address), denom).Amount
+		balance := bk.GetBalance(ctx, chainTypes.NewAccountIDFromAdd(simAccount.Address), denom).Amount
 		if !balance.IsPositive() {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
@@ -121,17 +122,17 @@ func SimulateMsgCreateValidator(ak types.AccountKeeper, bk types.BankKeeper, k k
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
-		selfDelegation := sdk.NewCoin(denom, amount)
+		selfDelegation := chainTypes.NewCoin(denom, amount)
 
-		id := chaintype.NewAccountIDFromAdd(simAccount.Address)
+		id := chainTypes.NewAccountIDFromAdd(simAccount.Address)
 
 		account := ak.GetAccount(ctx, id)
 		spendable := bk.SpendableCoins(ctx, id)
 
-		var fees sdk.Coins
-		coins, hasNeg := spendable.SafeSub(sdk.Coins{selfDelegation})
+		var fees chainTypes.Coins
+		coins, hasNeg := spendable.SafeSub(chainTypes.Coins{selfDelegation})
 		if !hasNeg {
-			fees, err = simulation.RandomFees(r, ctx, coins)
+			fees, err = kuSim.RandomFees(r, ctx, coins)
 			if err != nil {
 				return simulation.NoOpMsg(types.ModuleName), nil, err
 			}
@@ -147,7 +148,7 @@ func SimulateMsgCreateValidator(ak types.AccountKeeper, bk types.BankKeeper, k k
 
 		maxCommission := sdk.NewDecWithPrec(int64(simulation.RandIntBetween(r, 0, 100)), 2)
 
-		simAccountID := chaintype.NewAccountIDFromAccAdd(simAccount.Address)
+		simAccountID := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 		msg := types.NewKuMsgCreateValidator(simAccount.Address, address, simAccount.PubKey,
 			description, simulation.RandomDecAmount(r, maxCommission), simAccountID)
 
@@ -200,12 +201,12 @@ func SimulateMsgEditValidator(ak types.AccountKeeper, bk types.BankKeeper, k kee
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", val.GetOperator())
 		}
 
-		id := chaintype.NewAccountIDFromAdd(simAccount.Address)
+		id := chainTypes.NewAccountIDFromAdd(simAccount.Address)
 
 		account := ak.GetAccount(ctx, id)
 		spendable := bk.SpendableCoins(ctx, id)
 
-		fees, err := simulation.RandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
@@ -263,7 +264,7 @@ func SimulateMsgDelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper.K
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
 
-		amount := bk.GetBalance(ctx, chaintype.NewAccountIDFromAdd(simAccount.Address), denom).Amount
+		amount := bk.GetBalance(ctx, chainTypes.NewAccountIDFromAdd(simAccount.Address), denom).Amount
 		if !amount.IsPositive() {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
@@ -273,23 +274,23 @@ func SimulateMsgDelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper.K
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
-		bondAmt := sdk.NewCoin(denom, amount)
+		bondAmt := chainTypes.NewCoin(denom, amount)
 
-		id := chaintype.NewAccountIDFromAdd(simAccount.Address)
+		id := chainTypes.NewAccountIDFromAdd(simAccount.Address)
 
 		account := ak.GetAccount(ctx, id)
 		spendable := bk.SpendableCoins(ctx, id)
 
-		var fees sdk.Coins
-		coins, hasNeg := spendable.SafeSub(sdk.Coins{bondAmt})
+		var fees chainTypes.Coins
+		coins, hasNeg := spendable.SafeSub(chainTypes.Coins{bondAmt})
 		if !hasNeg {
-			fees, err = simulation.RandomFees(r, ctx, coins)
+			fees, err = kuSim.RandomFees(r, ctx, coins)
 			if err != nil {
 				return simulation.NoOpMsg(types.ModuleName), nil, err
 			}
 		}
 
-		msg := types.NewKuMsgDelegate(simAccount.Address, chaintype.NewAccountIDFromAccAdd(simAccount.Address), val.GetOperatorAccountID(), bondAmt)
+		msg := types.NewKuMsgDelegate(simAccount.Address, chainTypes.NewAccountIDFromAccAdd(simAccount.Address), val.GetOperatorAccountID(), bondAmt)
 
 		tx := helpers.GenTx(
 			[]sdk.Msg{msg},
@@ -349,7 +350,7 @@ func SimulateMsgUndelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper
 		}
 		delAccAddress, _ := delAddr.ToAccAddress()
 		msg := types.NewKuMsgUnbond(delAccAddress,
-			delAddr, valAddr, sdk.NewCoin(k.BondDenom(ctx), unbondAmt),
+			delAddr, valAddr, chainTypes.NewCoin(k.BondDenom(ctx), unbondAmt),
 		)
 
 		// need to retrieve the simulation account associated with delegation to retrieve PrivKey
@@ -369,7 +370,7 @@ func SimulateMsgUndelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper
 		account := ak.GetAccount(ctx, delAddr)
 		spendable := bk.SpendableCoins(ctx, delAddr)
 
-		fees, err := simulation.RandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
@@ -473,14 +474,14 @@ func SimulateMsgBeginRedelegate(ak types.AccountKeeper, bk types.BankKeeper, k k
 		account := ak.GetAccount(ctx, delAddr)
 		spendable := bk.SpendableCoins(ctx, delAddr)
 
-		fees, err := simulation.RandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
 		msg := types.NewKuMsgRedelegate(
 			delAccAddress, delAddr, srcAddr, destAddr,
-			sdk.NewCoin(k.BondDenom(ctx), redAmt),
+			chainTypes.NewCoin(k.BondDenom(ctx), redAmt),
 		)
 
 		tx := helpers.GenTx(

@@ -11,6 +11,13 @@ type (
 	AccountID = types.AccountID
 )
 
+type (
+	Coins    = types.Coins
+	Coin     = types.Coin
+	DecCoins = types.DecCoins
+	DecCoin  = types.DecCoin
+)
+
 var (
 	MustName             = types.MustName
 	NewAccountIDFromName = types.NewAccountIDFromName

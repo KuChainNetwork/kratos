@@ -42,8 +42,8 @@ func main() {
 	// with the cdc
 
 	rootCmd := &cobra.Command{
-		Use:   "ktscli",
-		Short: "Command line interface for interacting with ktsd",
+		Use:   "kucli",
+		Short: "Command line interface for interacting with kucd",
 	}
 
 	// Add --chain-id to persistent flags and mark it required

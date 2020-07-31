@@ -80,7 +80,7 @@ func TransferRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		amount, err := sdk.ParseCoins(req.Amount)
+		amount, err := chainTypes.ParseCoins(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -121,7 +121,7 @@ func CreateRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		maxSupply, err := sdk.ParseCoin(req.MaxSupply)
+		maxSupply, err := chainTypes.ParseCoin(req.MaxSupply)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -135,21 +135,21 @@ func CreateRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		initSupply, err := sdk.ParseCoin(req.InitSupply)
+		initSupply, err := chainTypes.ParseCoin(req.InitSupply)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("init supply parse error, %s", err.Error()))
 			return
 		}
 
-		if chainTypes.CoinDenom(creator, symbol) != maxSupply.GetDenom() {
+		if chainTypes.CoinDenom(creator, symbol) != maxSupply.Denom {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("coin denom should equal %s != %s",
-				chainTypes.CoinDenom(creator, symbol), maxSupply.GetDenom()))
+				chainTypes.CoinDenom(creator, symbol), maxSupply.Denom))
 			return
 		}
 
-		if maxSupply.GetDenom() != initSupply.GetDenom() {
+		if maxSupply.Denom != initSupply.Denom {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("init coin denom should equal %s != %s",
-				initSupply.GetDenom(), maxSupply.GetDenom()))
+				initSupply.Denom, maxSupply.Denom))
 			return
 		}
 
@@ -193,15 +193,15 @@ func IssueRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		amount, err := sdk.ParseCoin(req.Amount)
+		amount, err := chainTypes.ParseCoin(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		if chainTypes.CoinDenom(creator, symbol) != amount.GetDenom() {
+		if chainTypes.CoinDenom(creator, symbol) != amount.Denom {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("coin denom should equal %s != %s",
-				chainTypes.CoinDenom(creator, symbol), amount.GetDenom()))
+				chainTypes.CoinDenom(creator, symbol), amount.Denom))
 			return
 		}
 
@@ -231,7 +231,7 @@ func LockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		amount, err := sdk.ParseCoins(req.Amount)
+		amount, err := chainTypes.ParseCoins(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("amount parse error, %s", err.Error()))
 			return
@@ -264,7 +264,7 @@ func UnlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		amount, err := sdk.ParseCoins(req.Amount)
+		amount, err := chainTypes.ParseCoins(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("amount parse error, %s", err.Error()))
 			return

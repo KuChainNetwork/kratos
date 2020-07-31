@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/pkg/errors"
 	"github.com/tendermint/tendermint/libs/math"
 )
 
@@ -22,6 +23,16 @@ const (
 
 // AccountID will imp the cosmos Address interface
 var _ sdk.Address = &AccountID{}
+
+// AccountID a id for the entity which can own asset, now the accountID will be a AccAddress or a name for a account
+type AccountID struct {
+	Value []byte `json:"value,omitempty" yaml:"value"`
+}
+
+// AccountIDes defines a repeated set of AccountIDes.
+type AccountIDes struct {
+	Addresses []AccountID `json:"addresses"`
+}
 
 // NewAccountIDFromName create AccountID from Name
 func NewAccountIDFromName(n Name) (res AccountID) {
@@ -91,6 +102,16 @@ func NewAccountIDFromStr(str string) (AccountID, error) {
 	}
 
 	return NewAccountIDFromAccAdd(accAdd), nil
+}
+
+// MustAccountID new accountID from string, if error then panic
+func MustAccountID(str string) AccountID {
+	res, err := NewAccountIDFromStr(str)
+	if err != nil {
+		panic(errors.Wrapf(err, "must accountID %s", str))
+	}
+
+	return res
 }
 
 // Equals if is same byte
@@ -245,6 +266,10 @@ func (a AccountID) String() string {
 	}
 
 	return ""
+}
+
+func (a AccountID) Marshal() ([]byte, error) {
+	return a.Value, nil
 }
 
 // Format imp Address interface

@@ -19,10 +19,11 @@ var (
 )
 
 var (
-	NewAssetKeeper  = keeper.NewAssetKeeper
-	NewGenesisState = types.NewGenesisState
-	NewGenesisCoin  = types.NewGenesisCoin
-	NewGenesisAsset = types.NewGenesisAsset
+	NewAssetKeeper      = keeper.NewAssetKeeper
+	NewGenesisState     = types.NewGenesisState
+	NewGenesisCoin      = types.NewGenesisCoin
+	NewGenesisAsset     = types.NewGenesisAsset
+	DefaultGenesisState = types.DefaultGenesisState
 )
 
 type (

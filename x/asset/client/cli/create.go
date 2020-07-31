@@ -46,7 +46,7 @@ func Create(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			maxSupply, err := sdk.ParseCoin(args[2])
+			maxSupply, err := chainTypes.ParseCoin(args[2])
 			if err != nil {
 				return err
 			}
@@ -58,19 +58,19 @@ func Create(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			initSupply, err := sdk.ParseCoin(args[6])
+			initSupply, err := chainTypes.ParseCoin(args[6])
 			if err != nil {
 				return errors.Wrap(err, "init supply parse error")
 			}
 
-			if chainTypes.CoinDenom(creator, symbol) != maxSupply.GetDenom() {
+			if chainTypes.CoinDenom(creator, symbol) != maxSupply.Denom {
 				return fmt.Errorf("coin denom should equal %s != %s",
-					chainTypes.CoinDenom(creator, symbol), maxSupply.GetDenom())
+					chainTypes.CoinDenom(creator, symbol), maxSupply.Denom)
 			}
 
-			if maxSupply.GetDenom() != initSupply.GetDenom() {
+			if maxSupply.Denom != initSupply.Denom {
 				return fmt.Errorf("init coin denom should equal %s != %s",
-					initSupply.GetDenom(), maxSupply.GetDenom())
+					initSupply.Denom, maxSupply.Denom)
 			}
 
 			desc := args[7]

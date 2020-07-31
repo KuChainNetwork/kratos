@@ -4,12 +4,12 @@ import (
 	"os"
 )
 
-const appName = "KratosApp"
+const appName = "KuchainApp"
 
 var (
-	// DefaultCLIHome default home directories for ktscli
-	DefaultCLIHome = os.ExpandEnv("$HOME/.ktscli")
+	// DefaultCLIHome default home directories for kucli
+	DefaultCLIHome = os.ExpandEnv("$HOME/.kucli")
 
-	// DefaultNodeHome default home directories for ktsd
-	DefaultNodeHome = os.ExpandEnv("$HOME/.ktsd")
+	// DefaultNodeHome default home directories for kucd
+	DefaultNodeHome = os.ExpandEnv("$HOME/.kucd")
 )

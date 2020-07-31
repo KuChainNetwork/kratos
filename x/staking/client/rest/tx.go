@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
-
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/gorilla/mux"
 )
 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
@@ -68,18 +67,18 @@ func postDelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		amount, err := sdk.ParseCoin(req.Amount)
+		amount, err := chainTypes.ParseCoin(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("amount parse error, %v", err))
 			return
 		}
 
-		delAccountID, err := chaintype.NewAccountIDFromStr(req.DelegatorAcc)
+		delAccountID, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("delegate accountID error, %v", err))
 			return
 		}
-		valAccountID, err := chaintype.NewAccountIDFromStr(req.ValidatorAcc)
+		valAccountID, err := chainTypes.NewAccountIDFromStr(req.ValidatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("validator accountID error, %v", err))
 			return
@@ -111,25 +110,25 @@ func postRedelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		delAccountID, err := chaintype.NewAccountIDFromStr(req.DelegatorAcc)
+		delAccountID, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("delegate acccount error, %v", err))
 			return
 		}
 
-		valSrcAccID, err := chaintype.NewAccountIDFromStr(req.ValidatorSrcAcc)
+		valSrcAccID, err := chainTypes.NewAccountIDFromStr(req.ValidatorSrcAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("src-validator error, %v", err))
 			return
 		}
 
-		valDstAccID, err := chaintype.NewAccountIDFromStr(req.ValidatorDstAcc)
+		valDstAccID, err := chainTypes.NewAccountIDFromStr(req.ValidatorDstAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("dst-validator error, %v", err))
 			return
 		}
 
-		amount, err := sdk.ParseCoin(req.Amount)
+		amount, err := chainTypes.ParseCoin(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -160,19 +159,19 @@ func postUnbondingDelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerF
 
 		req.BaseReq = req.BaseReq.Sanitize()
 
-		delAccountID, err := chaintype.NewAccountIDFromStr(req.DelegatorAcc)
+		delAccountID, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("delegate account id error, %v", err))
 			return
 		}
 
-		amount, err := sdk.ParseCoin(req.Amount)
+		amount, err := chainTypes.ParseCoin(req.Amount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("parse amount error, %v", err))
 			return
 		}
 
-		valAddr, err := chaintype.NewAccountIDFromStr(req.ValidatorAcc)
+		valAddr, err := chainTypes.NewAccountIDFromStr(req.ValidatorAcc)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("val account id error, %v", err))
 			return

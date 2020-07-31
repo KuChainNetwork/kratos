@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"encoding/json"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -72,8 +72,8 @@ func queryValidatorOutstandingRewards(ctx sdk.Context, path []string, req abci.R
 
 	ctx.Logger().Debug("1 queryValidatorOutstandingRewards:", rewards)
 
-	if rewards.GetRewards() == nil {
-		rewards.Rewards = sdk.DecCoins{}
+	if rewards.Rewards == nil {
+		rewards.Rewards = chainTypes.DecCoins{}
 	}
 
 	bz, err := codec.MarshalJSONIndent(k.cdc, rewards)
@@ -95,7 +95,7 @@ func queryValidatorCommission(ctx sdk.Context, path []string, req abci.RequestQu
 
 	commission := k.GetValidatorAccumulatedCommission(ctx, params.ValidatorAddress)
 	if commission.Commission == nil {
-		commission.Commission = sdk.DecCoins{}
+		commission.Commission = chainTypes.DecCoins{}
 	}
 
 	bz, err := codec.MarshalJSONIndent(k.cdc, commission)
@@ -159,7 +159,7 @@ func queryDelegationRewards(ctx sdk.Context, _ []string, req abci.RequestQuery, 
 	rewards := k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
 	ctx.Logger().Debug("queryDelegationRewards:", rewards, "err:", err)
 	if rewards == nil {
-		rewards = sdk.DecCoins{}
+		rewards = chainTypes.DecCoins{}
 	}
 
 	bz, err := codec.MarshalJSONIndent(k.cdc, rewards)
@@ -182,7 +182,7 @@ func queryDelegatorTotalRewards(ctx sdk.Context, _ []string, req abci.RequestQue
 	// cache-wrap context as to not persist state changes during querying
 	ctx, _ = ctx.CacheContext()
 
-	total := sdk.DecCoins{}
+	total := chainTypes.DecCoins{}
 	var delRewards []types.DelegationDelegatorReward
 
 	k.stakingKeeper.IterateDelegations(
@@ -262,7 +262,7 @@ func queryDelegatorWithdrawAddress(ctx sdk.Context, _ []string, req abci.Request
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
 
-	info := types.NewWithDrawAddrInfo(withdrawAddr, chaintype.EmptyAccountID(), params.DelegatorAddress)
+	info := types.NewWithDrawAddrInfo(withdrawAddr, chainTypes.EmptyAccountID(), params.DelegatorAddress)
 	infoBz, err := codec.MarshalJSONIndent(k.cdc, info)
 	ctx.Logger().Debug("queryDelegatorWithdrawAddress:", infoBz, "err:", err)
 
@@ -273,7 +273,7 @@ func queryCommunityPool(ctx sdk.Context, _ []string, req abci.RequestQuery, k Ke
 	pool := k.GetFeePoolCommunityCoins(ctx)
 	ctx.Logger().Debug("queryDelegatorWithdrawAddress:", pool)
 	if pool == nil {
-		pool = sdk.DecCoins{}
+		pool = chainTypes.DecCoins{}
 	}
 
 	bz, err := k.cdc.MarshalJSON(pool)

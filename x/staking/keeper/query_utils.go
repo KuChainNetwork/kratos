@@ -1,14 +1,13 @@
 package keeper
 
 import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Return all validators that a delegator is bonded to. If maxRetrieve is supplied, the respective amount will be returned.
 func (k Keeper) GetDelegatorValidators(
-	ctx sdk.Context, delegatorAddr chaintype.AccountID, maxRetrieve uint32,
+	ctx sdk.Context, delegatorAddr AccountID, maxRetrieve uint32,
 ) []types.Validator {
 
 	validators := make([]types.Validator, maxRetrieve)
@@ -36,7 +35,7 @@ func (k Keeper) GetDelegatorValidators(
 
 // return a validator that a delegator is bonded to
 func (k Keeper) GetDelegatorValidator(
-	ctx sdk.Context, delegatorAddr chaintype.AccountID, validatorAddr chaintype.AccountID,
+	ctx sdk.Context, delegatorAddr AccountID, validatorAddr AccountID,
 ) (validator types.Validator, err error) {
 
 	delegation, found := k.GetDelegation(ctx, delegatorAddr, validatorAddr)
@@ -55,7 +54,7 @@ func (k Keeper) GetDelegatorValidator(
 //_____________________________________________________________________________________
 
 // return all delegations for a delegator
-func (k Keeper) GetAllDelegatorDelegations(ctx sdk.Context, delegator chaintype.AccountID) []types.Delegation {
+func (k Keeper) GetAllDelegatorDelegations(ctx sdk.Context, delegator AccountID) []types.Delegation {
 	delegations := make([]types.Delegation, 0)
 
 	store := ctx.KVStore(k.storeKey)
@@ -74,7 +73,7 @@ func (k Keeper) GetAllDelegatorDelegations(ctx sdk.Context, delegator chaintype.
 }
 
 // return all unbonding-delegations for a delegator
-func (k Keeper) GetAllUnbondingDelegations(ctx sdk.Context, delegator chaintype.AccountID) []types.UnbondingDelegation {
+func (k Keeper) GetAllUnbondingDelegations(ctx sdk.Context, delegator AccountID) []types.UnbondingDelegation {
 	unbondingDelegations := make([]types.UnbondingDelegation, 0)
 
 	store := ctx.KVStore(k.storeKey)
@@ -93,7 +92,7 @@ func (k Keeper) GetAllUnbondingDelegations(ctx sdk.Context, delegator chaintype.
 
 // return all redelegations for a delegator
 func (k Keeper) GetAllRedelegations(
-	ctx sdk.Context, delegator chaintype.AccountID, srcValAddress, dstValAddress chaintype.AccountID,
+	ctx sdk.Context, delegator AccountID, srcValAddress, dstValAddress AccountID,
 ) []types.Redelegation {
 
 	store := ctx.KVStore(k.storeKey)

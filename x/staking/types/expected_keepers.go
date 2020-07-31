@@ -1,7 +1,7 @@
 package types
 
 import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	accountExported "github.com/KuChainNetwork/kuchain/x/account/exported"
 	stakingexported "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/external"
@@ -11,20 +11,20 @@ import (
 
 // DistributionKeeper expected distribution keeper (noalias)
 type DistributionKeeper interface {
-	GetFeePoolCommunityCoins(ctx sdk.Context) sdk.DecCoins
-	GetValidatorOutstandingRewardsCoins(ctx sdk.Context, val chaintype.AccountID) sdk.DecCoins
+	GetFeePoolCommunityCoins(ctx sdk.Context) chainTypes.DecCoins
+	GetValidatorOutstandingRewardsCoins(ctx sdk.Context, val chainTypes.AccountID) chainTypes.DecCoins
 }
 
 // AccountKeeper defines the expected account keeper (noalias)
 type AccountKeeper interface {
-	chaintype.AccountAuther
+	chainTypes.AccountAuther
 	IterateAccounts(ctx sdk.Context, process func(accountExported.Account) (stop bool))
-	GetAccount(sdk.Context, chaintype.AccountID) accountExported.Account // only used for simulation
+	GetAccount(sdk.Context, chainTypes.AccountID) accountExported.Account // only used for simulation
 }
 
 // AccountStatKeeper is interface for other modules to get account state.
 type AccountStatKeeper interface {
-	GetAccount(sdk.Context, chaintype.AccountID) external.Account // can return nil.
+	GetAccount(sdk.Context, chainTypes.AccountID) external.Account // can return nil.
 	IterateAccounts(ctx sdk.Context, cb func(account external.Account) (stop bool))
 
 	GetNextAccountNumber(ctx sdk.Context) uint64
@@ -32,11 +32,11 @@ type AccountStatKeeper interface {
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
 type BankKeeper interface {
-	chaintype.AssetTransfer
-	GetBalance(ctx sdk.Context, addr chaintype.AccountID, denom string) sdk.Coin
-	GetCoinPowers(ctx sdk.Context, account chaintype.AccountID) sdk.Coins
-	GetCoinPowerByDenomd(ctx sdk.Context, account chaintype.AccountID, denomd string) sdk.Coin
-	SpendableCoins(ctx sdk.Context, addr chaintype.AccountID) sdk.Coins
+	chainTypes.AssetTransfer
+	GetBalance(ctx sdk.Context, addr chainTypes.AccountID, denom string) Coin
+	GetCoinPowers(ctx sdk.Context, account chainTypes.AccountID) Coins
+	GetCoinPowerByDenomd(ctx sdk.Context, account chainTypes.AccountID, denomd string) Coin
+	SpendableCoins(ctx sdk.Context, addr chainTypes.AccountID) Coins
 }
 
 // SupplyKeeper defines the expected supply Keeper (noalias)
@@ -50,11 +50,11 @@ type SupplyKeeper interface {
 	// TODO remove with genesis 2-phases refactor https://github.com/cosmos/cosmos-sdk/issues/2862
 	SetModuleAccount(sdk.Context, supplyexported.ModuleAccountI)
 
-	SendCoinsFromModuleToModule(ctx sdk.Context, senderPool, recipientPool string, amt sdk.Coins) error
-	UndelegateCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr AccountID, amt sdk.Coins) error
-	DelegateCoinsFromAccountToModule(ctx sdk.Context, recipientModule string, amt sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx sdk.Context, senderPool, recipientPool string, amt Coins) error
+	UndelegateCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr AccountID, amt Coins) error
+	DelegateCoinsFromAccountToModule(ctx sdk.Context, recipientModule string, amt Coins) error
 
-	BurnCoins(ctx sdk.Context, name chaintype.AccountID, amt sdk.Coins) error
+	BurnCoins(ctx sdk.Context, name chainTypes.AccountID, amt Coins) error
 }
 
 // ValidatorSet expected properties for the set of all validators (noalias)

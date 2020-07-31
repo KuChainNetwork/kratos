@@ -3,24 +3,23 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
-
 	"github.com/KuChainNetwork/kuchain/x/params/types"
 	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 // Keeper of the global paramstore
 type Keeper struct {
-	cdc    codec.Marshaler
+	cdc    *codec.Codec
 	key    sdk.StoreKey
 	tkey   sdk.StoreKey
 	spaces map[string]*types.Subspace
 }
 
 // NewKeeper constructs a params keeper
-func NewKeeper(cdc codec.Marshaler, key, tkey sdk.StoreKey) Keeper {
+func NewKeeper(cdc *codec.Codec, key, tkey sdk.StoreKey) Keeper {
 	return Keeper{
 		cdc:    cdc,
 		key:    key,

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
@@ -104,7 +103,7 @@ func NonNegativePowerInvariant(k Keeper) sdk.Invariant {
 		iterator := k.ValidatorsPowerStoreIterator(ctx)
 
 		for ; iterator.Valid(); iterator.Next() {
-			address := chaintype.AccountID{iterator.Value()}
+			address := NewAccountIDFromByte(iterator.Value())
 			validator, found := k.GetValidator(ctx, address)
 			if !found {
 				panic(fmt.Sprintf("validator record not found for address: %X\n", iterator.Value()))

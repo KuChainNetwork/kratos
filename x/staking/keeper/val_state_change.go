@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"sort"
 
-	gogotypes "github.com/gogo/protobuf/types"
-	abci "github.com/tendermint/tendermint/abci/types"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	gogotypes "github.com/gogo/protobuf/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // Calculate the ValidatorUpdates for the current block
@@ -108,7 +106,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) (updates []ab
 		// part of the bonded validator set
 
 		//valAddr := sdk.ValAddress(iterator.Value())
-		valAccount := chaintype.AccountID{iterator.Value()}
+		valAccount := NewAccountIDFromByte(iterator.Value())
 		validator := k.mustGetValidator(ctx, valAccount)
 
 		if validator.Jailed {
@@ -152,17 +150,16 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) (updates []ab
 		delete(last, valAddrBytes)
 
 		count++
-		totalPower = totalPower.Add(sdk.NewInt(newPower))
+		totalPower = totalPower.Add(NewInt(newPower))
 	}
 
 	noLongerBonded := sortNoLongerBonded(last)
 	for _, valAddrBytes := range noLongerBonded {
-
-		validator := k.mustGetValidator(ctx, chaintype.AccountID{valAddrBytes})
-		validator = k.bondedToUnbonding(ctx, validator)
-		amtFromBondedToNotBonded = amtFromBondedToNotBonded.Add(validator.GetTokens())
-		k.DeleteLastValidatorPower(ctx, validator.GetOperatorAccountID())
-		updates = append(updates, validator.ABCIValidatorUpdateZero())
+		validatorNoLonger := k.mustGetValidator(ctx, NewAccountIDFromByte(valAddrBytes))
+		validatorNoLonger = k.bondedToUnbonding(ctx, validatorNoLonger)
+		amtFromBondedToNotBonded = amtFromBondedToNotBonded.Add(validatorNoLonger.GetTokens())
+		k.DeleteLastValidatorPower(ctx, validatorNoLonger.GetOperatorAccountID())
+		updates = append(updates, validatorNoLonger.ABCIValidatorUpdateZero())
 	}
 
 	// Update the pools based on the recent updates in the validator set:

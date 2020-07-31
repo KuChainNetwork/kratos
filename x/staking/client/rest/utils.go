@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -53,8 +53,8 @@ func queryBonds(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
 		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		// 	return
 		// }
-		delegatorAddr, _ := chaintype.NewAccountIDFromStr(bech32delegator)
-		validatorAddr, _ := chaintype.NewAccountIDFromStr(bech32validator)
+		delegatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32delegator)
+		validatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32validator)
 
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -90,7 +90,7 @@ func queryDelegator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		// 	return
 		// }
-		delegatorAddr, _ := chaintype.NewAccountIDFromStr(bech32delegator)
+		delegatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32delegator)
 
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -126,7 +126,7 @@ func queryValidator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		// 	return
 		// }
-		validatorAddr, _ := chaintype.NewAccountIDFromStr(bech32validatorAddr)
+		validatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32validatorAddr)
 
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {

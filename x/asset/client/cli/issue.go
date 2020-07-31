@@ -44,14 +44,14 @@ func Issue(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			amount, err := sdk.ParseCoin(args[2])
+			amount, err := chainTypes.ParseCoin(args[2])
 			if err != nil {
 				return err
 			}
 
-			if chainTypes.CoinDenom(creator, symbol) != amount.GetDenom() {
+			if chainTypes.CoinDenom(creator, symbol) != amount.Denom {
 				return fmt.Errorf("coin denom should equal %s != %s",
-					chainTypes.CoinDenom(creator, symbol), amount.GetDenom())
+					chainTypes.CoinDenom(creator, symbol), amount.Denom)
 			}
 
 			msg := types.NewMsgIssue(auth, creator, symbol, amount)

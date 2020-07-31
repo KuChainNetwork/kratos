@@ -2,19 +2,18 @@ package types
 
 import (
 	"github.com/KuChainNetwork/kuchain/chain/msg"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
-	RouterKeyName = chaintype.MustName(RouterKey)
+	RouterKeyName = MustName(RouterKey)
 )
 
 type KuMsgUnjail struct {
-	chaintype.KuMsg
+	KuMsg
 }
 
-func NewKuMsgUnjail(auth sdk.AccAddress, validatorAddr chaintype.AccountID) KuMsgUnjail {
+func NewKuMsgUnjail(auth sdk.AccAddress, validatorAddr AccountID) KuMsgUnjail {
 	return KuMsgUnjail{
 		*msg.MustNewKuMsg(
 			RouterKeyName,

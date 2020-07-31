@@ -4,13 +4,23 @@ import (
 	"fmt"
 
 	"gopkg.in/yaml.v2"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// Deposit defines an amount deposited by an account address to an active proposal
+type Deposit struct {
+	ProposalID uint64    `json:"proposal_id,omitempty" yaml:"proposal_id"`
+	Depositor  AccountID `json:"depositor" yaml:"depositor"`
+	Amount     Coins     `json:"amount" yaml:"amount"`
+}
+
+func (d Deposit) Equal(other Deposit) bool {
+	return d.ProposalID == other.ProposalID &&
+		d.Depositor.Eq(other.Depositor) &&
+		d.Amount.IsEqual(other.Amount)
+}
+
 // NewDeposit creates a new Deposit instance
-func NewDeposit(proposalID uint64, depositor chaintype.AccountID, amount sdk.Coins) Deposit {
+func NewDeposit(proposalID uint64, depositor AccountID, amount Coins) Deposit {
 	return Deposit{proposalID, depositor, amount}
 }
 

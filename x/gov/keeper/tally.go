@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/gov/external"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,7 +10,7 @@ import (
 
 // Tally iterates over the votes and updates the tally of a proposal based on the voting power of the
 // voters
-func (keeper Keeper) Tally(ctx sdk.Context, proposal types.Proposal) (passes bool, burnDeposits bool, tallyResults types.TallyResult, punishBp []chaintype.AccountID, punish bool, vetobp []chaintype.AccountID) {
+func (keeper Keeper) Tally(ctx sdk.Context, proposal types.Proposal) (passes bool, burnDeposits bool, tallyResults types.TallyResult, punishBp []AccountID, punish bool, vetobp []AccountID) {
 	results := make(map[types.VoteOption]sdk.Dec)
 	results[types.OptionYes] = sdk.ZeroDec()
 	results[types.OptionAbstain] = sdk.ZeroDec()
@@ -45,7 +44,7 @@ func (keeper Keeper) Tally(ctx sdk.Context, proposal types.Proposal) (passes boo
 		return false
 	})
 
-	var punishValidators []chaintype.AccountID
+	var punishValidators []AccountID
 	// iterate over the validators again to tally their voting power
 	for _, val := range currValidators {
 		if val.Vote == types.OptionEmpty {
@@ -161,19 +160,19 @@ func (keeper Keeper) EmergencyPass(ctx sdk.Context, proposalID uint64) (passes b
 }
 
 //add jail information
-func (keeper Keeper) Jail(ctx sdk.Context, validatorAccount chaintype.AccountID, proposalID uint64) {
+func (keeper Keeper) Jail(ctx sdk.Context, validatorAccount AccountID, proposalID uint64) {
 	punishValdator := types.NewPunishValidator(validatorAccount, ctx.BlockHeader().Height, ctx.BlockHeader().Time.Add(keeper.DowntimeJailDuration(ctx)), proposalID)
 	keeper.SetPunishValidator(ctx, punishValdator)
 	keeper.sk.JailByAccount(ctx, validatorAccount)
 }
 
 //delete jail information
-func (keeper Keeper) UnJail(ctx sdk.Context, validatorAccount chaintype.AccountID) error {
+func (keeper Keeper) UnJail(ctx sdk.Context, validatorAccount AccountID) error {
 	punishValidator, found := keeper.GetPunishValidator(ctx, validatorAccount)
 	if !found {
 		return types.ErrValidatorNoPunish
 	}
-	if punishValidator.GetJailedUntil().After(ctx.BlockHeader().Time) {
+	if punishValidator.JailedUntil.After(ctx.BlockHeader().Time) {
 		return types.ErrValidatorJailed
 	}
 	keeper.sk.UnjailByAccount(ctx, validatorAccount)
@@ -181,7 +180,7 @@ func (keeper Keeper) UnJail(ctx sdk.Context, validatorAccount chaintype.AccountI
 	return nil
 }
 
-func (keeper Keeper) SlashValidator(ctx sdk.Context, validatorAccount chaintype.AccountID) {
+func (keeper Keeper) SlashValidator(ctx sdk.Context, validatorAccount AccountID) {
 	keeper.sk.SlashByValidatorAccount(ctx, validatorAccount, ctx.BlockHeader().Height, keeper.GetSlashFraction(ctx))
 }
 

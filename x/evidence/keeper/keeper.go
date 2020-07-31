@@ -3,22 +3,20 @@ package keeper
 import (
 	"fmt"
 
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	"github.com/tendermint/tendermint/libs/log"
-
 	"github.com/KuChainNetwork/kuchain/x/evidence/exported"
 	"github.com/KuChainNetwork/kuchain/x/evidence/external"
 	"github.com/KuChainNetwork/kuchain/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 // Keeper defines the evidence module's keeper. The keeper is responsible for
 // managing persistence, state transitions and query handling for the evidence
 // module.
 type Keeper struct {
-	cdc            types.Codec
 	storeKey       sdk.StoreKey
 	paramSpace     external.ParamsSubspace
 	router         types.Router
@@ -37,7 +35,6 @@ func NewKeeper(
 	}
 
 	return &Keeper{
-		cdc:            types.Evidence_Cdc,
 		storeKey:       storeKey,
 		paramSpace:     paramSpace,
 		stakingKeeper:  stakingKeeper,

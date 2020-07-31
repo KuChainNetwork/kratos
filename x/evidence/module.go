@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/genesis"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset/keeper"
 	"github.com/KuChainNetwork/kuchain/x/evidence/client"
 	"github.com/KuChainNetwork/kuchain/x/evidence/client/cli"
@@ -12,13 +15,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
-
-	"github.com/KuChainNetwork/kuchain/chain/msg"
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 var (
@@ -35,12 +34,14 @@ var (
 
 // AppModuleBasic implements the AppModuleBasic interface for the evidence module.
 type AppModuleBasic struct {
+	genesis.ModuleBasicBase
 	evidenceHandlers []client.EvidenceHandler // client evidence submission handlers
 }
 
-func NewAppModuleBasic(evidenceHandlers ...client.EvidenceHandler) AppModuleBasic {
+func NewAppModuleBasic() AppModuleBasic {
 	return AppModuleBasic{
-		evidenceHandlers: evidenceHandlers,
+		ModuleBasicBase:  genesis.NewModuleBasicBase(ModuleCdc, DefaultGenesisState()),
+		evidenceHandlers: make([]client.EvidenceHandler, 0),
 	}
 }
 
@@ -52,21 +53,6 @@ func (AppModuleBasic) Name() string {
 // RegisterCodec registers the evidence module's types to the provided codec.
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	RegisterCodec(cdc)
-}
-
-// DefaultGenesis returns the evidence module's default genesis state.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(DefaultGenesisState())
-}
-
-// ValidateGenesis performs genesis state validation for the evidence module.
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
-	var gs GenesisState
-	if err := cdc.UnmarshalJSON(bz, &gs); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
-	}
-
-	return gs.Validate()
 }
 
 // RegisterRESTRoutes registers the evidence module's REST service handlers.
@@ -148,9 +134,9 @@ func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {}
 
 // InitGenesis performs the evidence module's genesis initialization It returns
 // no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, bz json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, bz json.RawMessage) []abci.ValidatorUpdate {
 	var gs GenesisState
-	err := cdc.UnmarshalJSON(bz, &gs)
+	err := ModuleCdc.UnmarshalJSON(bz, &gs)
 	if err != nil {
 		panic(fmt.Sprintf("failed to unmarshal %s genesis state: %s", ModuleName, err))
 	}
@@ -160,8 +146,8 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, bz jso
 }
 
 // ExportGenesis returns the evidence module's exported genesis state as raw JSON bytes.
-func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, am.keeper))
+func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
+	return ModuleCdc.MustMarshalJSON(ExportGenesis(ctx, am.keeper))
 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the evidence module.

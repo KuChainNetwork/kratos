@@ -1,12 +1,11 @@
 package types
 
 import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/KuChainNetwork/kuchain/x/gov/external"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"time"
 
 	accountExported "github.com/KuChainNetwork/kuchain/x/account/exported"
-	"time"
+	"github.com/KuChainNetwork/kuchain/x/gov/external"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // ParamSubspace defines the expected Subspace interface for parameters (noalias)
@@ -23,10 +22,10 @@ type SupplyKeeper interface {
 	// TODO remove with genesis 2-phases refactor https://github.com/cosmos/cosmos-sdk/issues/2862
 	SetModuleAccount(sdk.Context, external.SupplyModuleAccount)
 
-	ModuleCoinsToPower(ctx sdk.Context, recipientModule string, amt sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr chaintype.AccountID, amt sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr chaintype.AccountID, recipientModule string, amt sdk.Coins) error
-	BurnCoins(ctx sdk.Context, name chaintype.AccountID, amt sdk.Coins) error
+	ModuleCoinsToPower(ctx sdk.Context, recipientModule string, amt Coins) error
+	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr AccountID, amt Coins) error
+	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr AccountID, recipientModule string, amt Coins) error
+	BurnCoins(ctx sdk.Context, name AccountID, amt Coins) error
 }
 
 // StakingKeeper expected staking keeper (Validator and Delegator sets) (noalias)
@@ -38,28 +37,28 @@ type StakingKeeper interface {
 
 	TotalBondedTokens(sdk.Context) sdk.Int // total bonded tokens within the validator set
 	IterateDelegations(
-		ctx sdk.Context, delegator chaintype.AccountID,
+		ctx sdk.Context, delegator AccountID,
 		fn func(index int64, delegation external.StakingDelegationI) (stop bool),
 	)
 
-	Validator(sdk.Context, chaintype.AccountID) external.StakingValidatorI
-	JailByAccount(ctx sdk.Context, account chaintype.AccountID)
-	UnjailByAccount(ctx sdk.Context, account chaintype.AccountID)
-	SlashByValidatorAccount(ctx sdk.Context, valAccount chaintype.AccountID, infractionHeight int64, slashFactor sdk.Dec)
+	Validator(sdk.Context, AccountID) external.StakingValidatorI
+	JailByAccount(ctx sdk.Context, account AccountID)
+	UnjailByAccount(ctx sdk.Context, account AccountID)
+	SlashByValidatorAccount(ctx sdk.Context, valAccount AccountID, infractionHeight int64, slashFactor sdk.Dec)
 }
 
 // AccountKeeper defines the expected account keeper (noalias)
 type AccountKeeper interface {
-	chaintype.AccountAuther
-	GetAccount(sdk.Context, chaintype.AccountID) accountExported.Account
+	AccountAuther
+	GetAccount(sdk.Context, AccountID) accountExported.Account
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.
 type BankKeeper interface {
-	chaintype.AssetTransfer
-	GetAllBalances(ctx sdk.Context, addr chaintype.AccountID) sdk.Coins
-	GetCoinPowers(ctx sdk.Context, account chaintype.AccountID) sdk.Coins
-	SpendableCoins(ctx sdk.Context, account chaintype.AccountID) sdk.Coins
+	AssetTransfer
+	GetAllBalances(ctx sdk.Context, addr AccountID) Coins
+	GetCoinPowers(ctx sdk.Context, account AccountID) Coins
+	SpendableCoins(ctx sdk.Context, account AccountID) Coins
 }
 
 type DistributionKeeper interface {

@@ -1,6 +1,7 @@
 package exported
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -18,8 +19,8 @@ type ModuleAccountI interface {
 // SupplyI defines an inflationary supply interface for modules that handle
 // token supply.
 type SupplyI interface {
-	GetTotal() sdk.Coins
-	SetTotal(total sdk.Coins)
+	GetTotal() types.Coins
+	SetTotal(total types.Coins)
 
 	String() string
 	ValidateBasic() error

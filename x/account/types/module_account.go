@@ -5,17 +5,23 @@ import (
 	"errors"
 	"fmt"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
+	"gopkg.in/yaml.v2"
 )
 
 var (
 	_ exported.GenesisAccount = (*ModuleAccount)(nil)
+	_ exported.Account        = (*ModuleAccount)(nil)
 )
+
+// ModuleAccount defines an account for modules that holds coins on a pool
+type ModuleAccount struct {
+	KuAccount
+	Permissions []string `json:"permissions,omitempty"`
+}
 
 // NewModuleAddress creates an AccAddress from the hash of the module's name
 func NewModuleAddress(name string) sdk.AccAddress {
@@ -112,8 +118,13 @@ func (ma ModuleAccount) String() string {
 
 // MarshalYAML returns the YAML representation of a ModuleAccount.
 func (ma ModuleAccount) MarshalYAML() (interface{}, error) {
+	add := types.AccAddress{}
+	if len(ma.Auths) > 0 {
+		add = ma.GetAuth()
+	}
+
 	bs, err := yaml.Marshal(moduleAccountPretty{
-		Address:       ma.GetAuth(),
+		Address:       add,
 		PubKey:        "",
 		AccountNumber: ma.AccountNumber,
 		Name:          ma.Id.String(),
@@ -129,8 +140,12 @@ func (ma ModuleAccount) MarshalYAML() (interface{}, error) {
 
 // MarshalJSON returns the JSON representation of a ModuleAccount.
 func (ma ModuleAccount) MarshalJSON() ([]byte, error) {
+	add := types.AccAddress{}
+	if len(ma.Auths) > 0 {
+		add = ma.GetAuth()
+	}
 	return json.Marshal(moduleAccountPretty{
-		Address:       ma.GetAuth(),
+		Address:       add,
 		PubKey:        "",
 		AccountNumber: ma.AccountNumber,
 		Name:          ma.Id.String(),

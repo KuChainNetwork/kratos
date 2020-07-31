@@ -1,9 +1,10 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -30,7 +31,14 @@ func DefaultGenesisState() GenesisState {
 
 // ValidateGenesis performs basic validation of bank genesis data returning an
 // error for any failed validation criteria.
-func (g GenesisState) ValidateGenesis() error { return nil }
+func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
+	gs := DefaultGenesisState()
+	if err := ModuleCdc.UnmarshalJSON(bz, &gs); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
+	}
+
+	return nil
+}
 
 // GenesisAsset gensis asset for accountID
 type GenesisAsset interface {
@@ -100,11 +108,11 @@ func (g BaseGensisAssetCoin) Validate() error {
 
 	denom := CoinDenom(g.Creator, g.Symbol)
 
-	if denom != g.MaxSupply.GetDenom() {
+	if denom != g.MaxSupply.Denom {
 		return fmt.Errorf("genesis max supply coin denom error")
 	}
 
-	if err := sdk.ValidateDenom(denom); err != nil {
+	if err := coin.ValidateDenom(denom); err != nil {
 		return sdkerrors.Wrapf(ErrAssetDenom, "denom %s", denom)
 	}
 

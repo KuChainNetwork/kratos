@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -52,6 +53,17 @@ func (data GenesisState) IsEmpty() bool {
 	return data.Equal(GenesisState{})
 }
 
+// ValidateGenesis performs basic validation of bank genesis data returning an
+// error for any failed validation criteria.
+func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
+	gs := DefaultGenesisState()
+	if err := ModuleCdc.UnmarshalJSON(bz, &gs); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
+	}
+
+	return ValidateGenesis(gs)
+}
+
 // ValidateGenesis checks if parameters are within valid ranges
 func ValidateGenesis(data GenesisState) error {
 	threshold := data.TallyParams.Threshold
@@ -67,7 +79,7 @@ func ValidateGenesis(data GenesisState) error {
 	}
 
 	if !data.DepositParams.MinDeposit.IsValid() {
-		return fmt.Errorf("governance deposit amount must be a valid sdk.Coins amount, is %s",
+		return fmt.Errorf("governance deposit amount must be a valid Coins amount, is %s",
 			data.DepositParams.MinDeposit.String())
 	}
 

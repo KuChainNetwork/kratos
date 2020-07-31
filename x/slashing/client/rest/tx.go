@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -40,7 +40,7 @@ func unjailRequestHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 		if !req.BaseReq.ValidateBasic(w) {
 			return
 		}
-		valAccountID, err := chaintype.NewAccountIDFromStr(req.ValidatorAcc)
+		valAccountID, err := chainTypes.NewAccountIDFromStr(req.ValidatorAcc)
 
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())

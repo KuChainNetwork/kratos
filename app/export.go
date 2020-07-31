@@ -23,12 +23,12 @@ func (app *KuchainApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhite
 		app.prepForZeroHeightGenesis(ctx, jailWhiteList)
 	}
 
-	genState := app.mm.ExportGenesis(ctx, app.cdc)
+	genState := app.mm.ExportGenesis(ctx)
 	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
 		return nil, nil, err
 	}
-	validators = staking.WriteValidators(ctx, app.kustakingKeeper)
+	validators = staking.WriteValidators(ctx, app.stakingKeeper)
 	return appState, validators, nil
 }
 
@@ -59,20 +59,20 @@ func (app *KuchainApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList [
 
 	/* Handle staking state. */
 	// iterate through redelegations, reset creation height
-	app.kustakingKeeper.IterateRedelegations(ctx, func(_ int64, red staking.Redelegation) (stop bool) {
+	app.stakingKeeper.IterateRedelegations(ctx, func(_ int64, red staking.Redelegation) (stop bool) {
 		for i := range red.Entries {
 			red.Entries[i].CreationHeight = 0
 		}
-		app.kustakingKeeper.SetRedelegation(ctx, red)
+		app.stakingKeeper.SetRedelegation(ctx, red)
 		return false
 	})
 
 	// iterate through unbonding delegations, reset creation height
-	app.kustakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd staking.UnbondingDelegation) (stop bool) {
+	app.stakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd staking.UnbondingDelegation) (stop bool) {
 		for i := range ubd.Entries {
 			ubd.Entries[i].CreationHeight = 0
 		}
-		app.kustakingKeeper.SetUnbondingDelegation(ctx, ubd)
+		app.stakingKeeper.SetUnbondingDelegation(ctx, ubd)
 		return false
 	})
 
@@ -85,7 +85,7 @@ func (app *KuchainApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList [
 	for ; iter.Valid(); iter.Next() {
 		addr := sdk.ValAddress(iter.Key()[1:])
 		accountID := types.NewAccountIDFromAccAdd(sdk.AccAddress(addr))
-		validator, found := app.kustakingKeeper.GetValidator(ctx, accountID)
+		validator, found := app.stakingKeeper.GetValidator(ctx, accountID)
 		if !found {
 			panic("expected validator, not found")
 		}
@@ -95,11 +95,11 @@ func (app *KuchainApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList [
 			validator.Jailed = true
 		}
 
-		app.kustakingKeeper.SetValidator(ctx, validator)
+		app.stakingKeeper.SetValidator(ctx, validator)
 		counter++
 	}
 
 	iter.Close()
 
-	_ = app.kustakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	_ = app.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 }

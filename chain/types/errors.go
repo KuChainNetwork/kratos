@@ -29,14 +29,17 @@ var (
 )
 
 var (
-	ErrKuMsgAuthCountTooLarge = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 1), fmt.Sprintf("KuMsg Auth Count should less then %d", KuMsgMaxAuth))
-	ErrKuMsgMissingFrom       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 2), "KuMsg missing from accountID")
-	ErrKuMsgMissingTo         = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 3), "KuMsg missing to accountID")
-	ErrKuMsgMissingRouter     = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 4), "KuMsg missing router name")
-	ErrKuMsgMissingType       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 5), "KuMsg missing type name")
-	ErrKuMsgMissingAuth       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 6), "KuMsg missing auth for msg")
-	ErrKuMsgDataTooLarge      = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 7), fmt.Sprintf("KuMsg msg data should <= %d", KuMsgMaxDataLen))
-	ErrKuMsgDataUnmarshal     = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 8), "KuMsg msg data unmarshal error")
+	ErrKuMsgAuthCountTooLarge  = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 1), fmt.Sprintf("KuMsg Auth Count should less then %d", KuMsgMaxAuth))
+	ErrKuMsgMissingFrom        = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 2), "KuMsg missing from accountID")
+	ErrKuMsgMissingTo          = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 3), "KuMsg missing to accountID")
+	ErrKuMsgMissingRouter      = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 4), "KuMsg missing router name")
+	ErrKuMsgMissingType        = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 5), "KuMsg missing type name")
+	ErrKuMsgMissingAuth        = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 6), "KuMsg missing auth for msg")
+	ErrKuMsgDataTooLarge       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 7), fmt.Sprintf("KuMsg msg data should <= %d", KuMsgMaxDataLen))
+	ErrKuMsgDataUnmarshal      = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 8), "KuMsg msg data unmarshal error")
+	ErrKuMsgDataSameAccount    = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 9), "KuMsg msg same account error")
+	ErrKuMsgDataNotFindAccount = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 10), "KuMsg msg can not find account error")
+	ErrKuMsgAccountIDNil       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 11), "KuMsg msg account id should not be nil")
 )
 
 var (

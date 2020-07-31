@@ -15,7 +15,7 @@ import (
 
 const (
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
-	Bech32MainPrefix = keys.ChainNameStr
+	Bech32MainPrefix = keys.ChainMainNameStr
 
 	// Will Set For https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 	CoinType = 23808

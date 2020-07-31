@@ -5,13 +5,34 @@ import (
 	"fmt"
 
 	"gopkg.in/yaml.v2"
-
-	//sdk "github.com/cosmos/cosmos-sdk/types"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 )
 
+// VoteOption defines a vote option
+type VoteOption int32
+
+const (
+	// VOTE_OPTION_UNSPECIFIED defines a no-op vote option.
+	OptionEmpty VoteOption = 0
+	// VOTE_OPTION_YES defines a yes vote option.
+	OptionYes VoteOption = 1
+	// VOTE_OPTION_ABSTAIN defines an abstain vote option.
+	OptionAbstain VoteOption = 2
+	// VOTE_OPTION_NO defines a no vote option.
+	OptionNo VoteOption = 3
+	// VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
+	OptionNoWithVeto VoteOption = 4
+)
+
+// Vote defines a vote on a governance proposal. A vote corresponds to a proposal
+// ID, the voter, and the vote option.
+type Vote struct {
+	ProposalID uint64     `json:"proposal_id,omitempty" yaml:"proposal_id"`
+	Voter      AccountID  `json:"voter" yaml:"voter"`
+	Option     VoteOption `json:"option,omitempty"`
+}
+
 // NewVote creates a new Vote instance
-func NewVote(proposalID uint64, voter chaintype.AccountID, option VoteOption) Vote {
+func NewVote(proposalID uint64, voter AccountID, option VoteOption) Vote {
 	return Vote{proposalID, voter, option}
 }
 
@@ -52,6 +73,10 @@ func (v Votes) String() string {
 // Empty returns whether a vote is empty.
 func (v Vote) Empty() bool {
 	return v.Equal(Vote{})
+}
+
+func (v Vote) Equal(other Vote) bool {
+	return v.Option == other.Option && v.ProposalID == other.ProposalID && v.Voter.Eq(other.Voter)
 }
 
 // VoteOptionFromString returns a VoteOption from a string. It returns an error

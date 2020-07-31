@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/multisig"
-	yaml "gopkg.in/yaml.v2"
-
+	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/multisig"
+	yaml "gopkg.in/yaml.v2"
 )
 
 var (
@@ -49,14 +49,21 @@ func (tx StdTx) ValidateBasic() error {
 	if tx.Fee.Gas > maxGasWanted {
 		return errors.Wrapf(ErrGasOverflow, "%d > %d", tx.Fee.Gas, maxGasWanted)
 	}
+
 	if tx.Fee.Amount.IsAnyNegative() {
 		return errors.Wrapf(ErrInsufficientFee, "%s amount provided", tx.Fee.Amount)
 	}
+
 	if len(stdSigs) == 0 {
 		return ErrNoSignatures
 	}
+
 	if len(stdSigs) != len(tx.GetSigners()) {
 		return ErrUnauthorized
+	}
+
+	if len(tx.Memo) > keys.DefaultMaxMemoCharacters {
+		return sdkerrors.ErrMemoTooLarge
 	}
 
 	return nil
@@ -140,7 +147,7 @@ func (tx StdTx) PrettifyJSON(cdc *codec.Codec) ([]byte, error) {
 func (tx StdTx) GetGas() uint64 { return tx.Fee.Gas }
 
 // GetFee returns the FeeAmount in StdFee
-func (tx StdTx) GetFee() sdk.Coins { return tx.Fee.Amount }
+func (tx StdTx) GetFee() Coins { return tx.Fee.Amount }
 
 func (tx StdTx) FeePayer() AccountID {
 	if !tx.Fee.Payer.Empty() {
@@ -161,13 +168,13 @@ func (tx StdTx) FeePayer() AccountID {
 // gas to be used by the transaction. The ratio yields an effective "gasprice",
 // which must be above some miminum to be accepted into the mempool.
 type StdFee struct {
-	Amount sdk.Coins `json:"amount" yaml:"amount"`
+	Amount Coins     `json:"amount" yaml:"amount"`
 	Gas    uint64    `json:"gas" yaml:"gas"`
 	Payer  AccountID `json:"payer" yaml:"payer"`
 }
 
 // NewStdFee returns a new instance of StdFee
-func NewStdFee(gas uint64, payer AccountID, amount sdk.Coins) StdFee {
+func NewStdFee(gas uint64, payer AccountID, amount Coins) StdFee {
 	return StdFee{
 		Amount: amount,
 		Gas:    gas,
@@ -182,7 +189,7 @@ func (fee StdFee) Bytes() []byte {
 	// (in the lcd_test, client side its null,
 	// server side its [])
 	if len(fee.Amount) == 0 {
-		fee.Amount = sdk.NewCoins()
+		fee.Amount = NewCoins()
 	}
 	bz, err := ModuleCdc.MarshalJSON(fee) // TODO
 	if err != nil {
@@ -196,8 +203,8 @@ func (fee StdFee) Bytes() []byte {
 // NOTE: The gas prices returned are not the true gas prices that were
 // originally part of the submitted transaction because the fee is computed
 // as fee = ceil(gasWanted * gasPrices).
-func (fee StdFee) GasPrices() sdk.DecCoins {
-	return sdk.NewDecCoinsFromCoins(fee.Amount...).QuoDec(sdk.NewDec(int64(fee.Gas)))
+func (fee StdFee) GasPrices() DecCoins {
+	return NewDecCoinsFromCoins(fee.Amount...).QuoDec(NewDec(int64(fee.Gas)))
 }
 
 //__________________________________________________________

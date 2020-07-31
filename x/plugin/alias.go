@@ -11,7 +11,8 @@ const (
 )
 
 var (
-	ModuleCdc = types.ModuleCdc
+	ModuleCdc           = types.ModuleCdc
+	DefaultGenesisState = types.DefaultGenesisState
 )
 
 var (

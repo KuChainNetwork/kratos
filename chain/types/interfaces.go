@@ -30,6 +30,7 @@ var _ KuTransfMsg = &KuMsg{}
 
 type KuMsgData interface {
 	Type() Name
+	Sender() AccountID
 }
 
 // Prettifier a type can prettify a byte

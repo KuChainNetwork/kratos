@@ -3,14 +3,13 @@ package keeper
 import (
 	"fmt"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // GetDeposit gets the deposit of a specific depositor on a specific proposal
-func (keeper Keeper) GetDeposit(ctx sdk.Context, proposalID uint64, depositorAddr chaintype.AccountID) (deposit types.Deposit, found bool) {
+func (keeper Keeper) GetDeposit(ctx sdk.Context, proposalID uint64, depositorAddr AccountID) (deposit types.Deposit, found bool) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get(types.DepositKey(proposalID, depositorAddr))
 	if bz == nil {
@@ -95,7 +94,7 @@ func (keeper Keeper) IterateDeposits(ctx sdk.Context, proposalID uint64, cb func
 
 // AddDeposit adds or updates a deposit of a specific depositor on a specific proposal
 // Activates voting period when appropriate
-func (keeper Keeper) AddDeposit(ctx sdk.Context, proposalID uint64, depositorAddr chaintype.AccountID, depositAmount sdk.Coins) (bool, error) {
+func (keeper Keeper) AddDeposit(ctx sdk.Context, proposalID uint64, depositorAddr AccountID, depositAmount Coins) (bool, error) {
 	// Checks to see if proposal exists
 	proposal, ok := keeper.GetProposal(ctx, proposalID)
 	if !ok {

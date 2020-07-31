@@ -41,6 +41,8 @@ var (
 	KeyInflationMin        = types.KeyInflationMin
 	KeyGoalBonded          = types.KeyGoalBonded
 	KeyBlocksPerYear       = types.KeyBlocksPerYear
+
+	Cdc = types.Cdc
 )
 
 type (

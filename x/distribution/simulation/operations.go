@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"math/rand"
 
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/transaction/helpers"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	kuSim "github.com/KuChainNetwork/kuchain/test/simulation"
 	"github.com/KuChainNetwork/kuchain/x/distribution/keeper"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	stakingKeeper "github.com/KuChainNetwork/kuchain/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation" //fuck bugs by cancer
@@ -90,18 +91,18 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeperAccountID, bk types.Ban
 		simAccount, _ := types.SimulationRandomAcc(r, accs)
 		simToAccount, _ := types.SimulationRandomAcc(r, accs)
 
-		simAId := chainType.NewAccountIDFromAccAdd(simAccount.Address)
+		simAId := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 		account := ak.GetAccount(ctx, simAId)
 
-		aId := chainType.NewAccountIDFromAccAdd(account.GetAuth())
+		aId := chainTypes.NewAccountIDFromAccAdd(account.GetAuth())
 		spendable := bk.SpendableCoins(ctx, aId)
 
-		fees, err := types.SimulationRandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return types.SimulationNoOpMsg(types.ModuleName), nil, err
 		}
 
-		simToAccountId := chainType.NewAccountIDFromAccAdd(simToAccount.Address)
+		simToAccountId := chainTypes.NewAccountIDFromAccAdd(simToAccount.Address)
 		msg := types.NewMsgSetWithdrawAccountId(account.GetAuth(), simAId, simToAccountId)
 
 		tx := helpers.GenTx(
@@ -129,7 +130,7 @@ func SimulateMsgWithdrawDelegatorReward(ak types.AccountKeeperAccountID, bk type
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []types.SimulationAccount, chainID string,
 	) (types.SimulationOperationMsg, []types.SimulationFutureOperation, error) {
 		simAccount, _ := types.SimulationRandomAcc(r, accs)
-		delAccAddress := chainType.NewAccountIDFromAccAdd(simAccount.Address)
+		delAccAddress := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 		delegations := sk.GetAllDelegatorDelegations(ctx, delAccAddress)
 		if len(delegations) == 0 {
 			return types.SimulationNoOpMsg(types.ModuleName), nil, nil
@@ -143,13 +144,13 @@ func SimulateMsgWithdrawDelegatorReward(ak types.AccountKeeperAccountID, bk type
 			return types.SimulationNoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", delegation.GetValidatorAddr())
 		}
 
-		simAccountId := chainType.NewAccountIDFromAccAdd(simAccount.Address)
+		simAccountId := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 		account := ak.GetAccount(ctx, simAccountId)
 
-		accountId := chainType.NewAccountIDFromAccAdd(account.GetAuth())
+		accountId := chainTypes.NewAccountIDFromAccAdd(account.GetAuth())
 		spendable := bk.SpendableCoins(ctx, accountId)
 
-		fees, err := types.SimulationRandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return types.SimulationNoOpMsg(types.ModuleName), nil, err
 		}
@@ -197,18 +198,18 @@ func SimulateMsgWithdrawValidatorCommission(ak types.AccountKeeperAccountID, bk 
 			return types.SimulationNoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", validator.GetOperator())
 		}
 
-		simAccountId := chainType.NewAccountIDFromAccAdd(simAccount.Address)
+		simAccountId := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
 		account := ak.GetAccount(ctx, simAccountId)
 
-		accountId := chainType.NewAccountIDFromAccAdd(account.GetAuth())
+		accountId := chainTypes.NewAccountIDFromAccAdd(account.GetAuth())
 		spendable := bk.SpendableCoins(ctx, accountId)
 
-		fees, err := types.SimulationRandomFees(r, ctx, spendable)
+		fees, err := kuSim.RandomFees(r, ctx, spendable)
 		if err != nil {
 			return types.SimulationNoOpMsg(types.ModuleName), nil, err
 		}
 
-		valId, _ := chainType.NewAccountIDFromStr(string(validator.GetOperator())) //bugs, staking interface
+		valId, _ := chainTypes.NewAccountIDFromStr(string(validator.GetOperator())) //bugs, staking interface
 		msg := types.NewMsgWithdrawValidatorCommission(account.GetAuth(), valId)
 
 		tx := helpers.GenTx(
@@ -239,25 +240,25 @@ func SimulateMsgFundCommunityPool(ak types.AccountKeeperAccountID, bk types.Bank
 
 		funder, _ := types.SimulationRandomAcc(r, accs)
 
-		funderId := chainType.NewAccountIDFromAccAdd(funder.Address)
+		funderId := chainTypes.NewAccountIDFromAccAdd(funder.Address)
 		account := ak.GetAccount(ctx, funderId)
 
-		accountId := chainType.NewAccountIDFromAccAdd(account.GetAuth())
+		accountId := chainTypes.NewAccountIDFromAccAdd(account.GetAuth())
 		spendable := bk.SpendableCoins(ctx, accountId)
 
-		fundAmount := types.SimulationRandSubsetCoins(r, spendable)
+		fundAmount := kuSim.RandSubsetCoins(r, spendable)
 		if fundAmount.Empty() {
 			return types.SimulationNoOpMsg(types.ModuleName), nil, nil
 		}
 
 		var (
-			fees sdk.Coins
+			fees chainTypes.Coins
 			err  error
 		)
 
 		coins, hasNeg := spendable.SafeSub(fundAmount)
 		if !hasNeg {
-			fees, err = types.SimulationRandomFees(r, ctx, coins)
+			fees, err = kuSim.RandomFees(r, ctx, coins)
 			if err != nil {
 				return types.SimulationNoOpMsg(types.ModuleName), nil, err
 			}

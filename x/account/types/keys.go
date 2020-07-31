@@ -17,13 +17,13 @@ const (
 
 var (
 	// AddressStoreKeyPrefix prefix for account-by-address store
-	AddressStoreKeyPrefix = []byte{0x01}
+	AddressStoreKeyPrefix = []byte{0x0A}
 
 	// AuthSeqStoreKeyPerfix seq num store prefix
-	AuthSeqStoreKeyPerfix = []byte{0x02}
+	AuthSeqStoreKeyPerfix = []byte{0x0B}
 
 	// Auth - Accounts store prefix
-	AuthAccountsStoreKeyPerfix = []byte{0x03}
+	AuthAccountsStoreKeyPerfix = []byte{0x0C}
 
 	// GlobalAccountNumberKey param key for global account number
 	GlobalAccountNumberKey = types.MustName("g.account.number").Value

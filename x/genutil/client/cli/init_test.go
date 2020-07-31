@@ -2,137 +2,146 @@ package cli
 
 import (
 	"bytes"
-	"io"
-	"os"
-	"testing"
-	"time"
-
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
+	"github.com/KuChainNetwork/kuchain/test/simapp"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
+	stakingtypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/mock"
-	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/require"
 	abciServer "github.com/tendermint/tendermint/abci/server"
 	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
+	"io"
+	"os"
+	"testing"
+	"time"
 )
 
 var testMbm = module.NewBasicManager(genutil.AppModuleBasic{})
 
 func TestInitCmd(t *testing.T) {
-	// remove test dir
-	defer server.SetupViper(t)()
-	defer setupClientHome(t)()
-	home, cleanup := tests.NewTestCaseDir(t)
-	defer cleanup()
+	Convey("TestInitCmd", t, func() {
+		defer setupClientHome(t)()
+		home, cleanup := simapp.NewTestCaseDir(t)
+		defer cleanup()
+		viper.Set(cli.HomeFlag, home)
 
-	logger := log.NewNopLogger()
-	cfg, err := tcmd.ParseConfig()
-	require.Nil(t, err)
+		logger := log.NewNopLogger()
+		cfg, err := tcmd.ParseConfig()
+		So(err, ShouldBeNil)
 
-	ctx := server.NewContext(cfg, logger)
-	cdc := makeCodec()
-	cmd := InitCmd(ctx, cdc, testMbm, home)
+		ctx := server.NewContext(cfg, logger)
+		cdc := makeCodec()
+		cmd := InitCmd(ctx, cdc, testMbm, home)
 
-	require.NoError(t, cmd.RunE(nil, []string{"kuchain-test"}))
+		err = cmd.RunE(nil, []string{"kuchain-test"})
+		So(err, ShouldBeNil)
+	})
 }
 
 func setupClientHome(t *testing.T) func() {
-	clientDir, cleanup := tests.NewTestCaseDir(t)
+	clientDir, cleanup := simapp.NewTestCaseDir(t)
 	viper.Set(flagClientHome, clientDir)
 	return cleanup
 }
 
 func TestEmptyState(t *testing.T) {
-	defer server.SetupViper(t)()
-	defer setupClientHome(t)()
+	Convey("TestEmptyState", t, func() {
+		defer setupClientHome(t)()
+		home, cleanup := simapp.NewTestCaseDir(t)
+		defer cleanup()
+		viper.Set(cli.HomeFlag, home)
 
-	home, cleanup := tests.NewTestCaseDir(t)
-	defer cleanup()
+		logger := log.NewNopLogger()
+		cfg, err := tcmd.ParseConfig()
+		So(err, ShouldBeNil)
 
-	logger := log.NewNopLogger()
-	cfg, err := tcmd.ParseConfig()
-	require.Nil(t, err)
+		ctx := server.NewContext(cfg, logger)
+		cdc := makeCodec()
 
-	ctx := server.NewContext(cfg, logger)
-	cdc := makeCodec()
+		cmd := InitCmd(ctx, cdc, testMbm, home)
+		err = cmd.RunE(nil, []string{"kuchain-test"})
+		So(err, ShouldBeNil)
 
-	cmd := InitCmd(ctx, cdc, testMbm, home)
-	require.NoError(t, cmd.RunE(nil, []string{"kuchain-test"}))
+		old := os.Stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+		cmd = server.ExportCmd(ctx, cdc, nil)
 
-	old := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-	cmd = server.ExportCmd(ctx, cdc, nil)
+		err = cmd.RunE(nil, nil)
+		So(err, ShouldBeNil)
 
-	err = cmd.RunE(nil, nil)
-	require.NoError(t, err)
+		outC := make(chan string)
+		go func() {
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			outC <- buf.String()
+		}()
 
-	outC := make(chan string)
-	go func() {
-		var buf bytes.Buffer
-		io.Copy(&buf, r)
-		outC <- buf.String()
-	}()
+		w.Close()
+		os.Stdout = old
+		out := <-outC
 
-	w.Close()
-	os.Stdout = old
-	out := <-outC
-
-	require.Contains(t, out, "genesis_time")
-	require.Contains(t, out, "chain_id")
-	require.Contains(t, out, "consensus_params")
-	require.Contains(t, out, "app_hash")
-	require.Contains(t, out, "app_state")
+		So(out, ShouldContainSubstring, "genesis_time")
+		So(out, ShouldContainSubstring, "chain_id")
+		So(out, ShouldContainSubstring, "consensus_params")
+		So(out, ShouldContainSubstring, "app_hash")
+		So(out, ShouldContainSubstring, "app_state")
+	})
 }
 
 func TestStartStandAlone(t *testing.T) {
-	home, cleanup := tests.NewTestCaseDir(t)
-	defer cleanup()
-	viper.Set(cli.HomeFlag, home)
-	defer setupClientHome(t)()
+	Convey("TestStartStandAlone", t, func() {
+		home, cleanup := simapp.NewTestCaseDir(t)
+		defer cleanup()
+		viper.Set(cli.HomeFlag, home)
+		defer setupClientHome(t)()
 
-	logger := log.NewNopLogger()
-	cfg, err := tcmd.ParseConfig()
-	require.Nil(t, err)
-	ctx := server.NewContext(cfg, logger)
-	cdc := makeCodec()
-	initCmd := InitCmd(ctx, cdc, testMbm, home)
-	require.NoError(t, initCmd.RunE(nil, []string{"kuchain-test"}))
+		logger := log.NewNopLogger()
+		cfg, err := tcmd.ParseConfig()
+		So(err, ShouldBeNil)
+		ctx := server.NewContext(cfg, logger)
+		cdc := makeCodec()
+		initCmd := InitCmd(ctx, cdc, testMbm, home)
+		err = initCmd.RunE(nil, []string{"kuchain-test"})
+		So(err, ShouldBeNil)
 
-	app, err := mock.NewApp(home, logger)
-	require.Nil(t, err)
-	svrAddr, _, err := server.FreeTCPAddr()
-	require.Nil(t, err)
-	svr, err := abciServer.NewServer(svrAddr, "socket", app)
-	require.Nil(t, err, "error creating listener")
-	svr.SetLogger(logger.With("module", "abci-server"))
-	svr.Start()
+		app, err := mock.NewApp(home, logger)
+		So(err, ShouldBeNil)
+		svrAddr, _, err := server.FreeTCPAddr()
+		So(err, ShouldBeNil)
+		svr, err := abciServer.NewServer(svrAddr, "socket", app)
+		So(err, ShouldBeNil)
+		svr.SetLogger(logger.With("module", "abci-server"))
+		svr.Start()
 
-	timer := time.NewTimer(time.Duration(2) * time.Second)
-	select {
-	case <-timer.C:
-		svr.Stop()
-	}
+		timer := time.NewTimer(time.Duration(2) * time.Second)
+		select {
+		case <-timer.C:
+			svr.Stop()
+		}
+	})
 }
 
 func TestInitNodeValidatorFiles(t *testing.T) {
-	home, cleanup := tests.NewTestCaseDir(t)
-	defer cleanup()
-	viper.Set(cli.HomeFlag, home)
-	viper.Set(flags.FlagName, "moniker")
-	cfg, err := tcmd.ParseConfig()
-	require.Nil(t, err)
-	nodeID, valPubKey, err := genutil.InitializeNodeValidatorFiles(cfg)
-	require.Nil(t, err)
-	require.NotEqual(t, "", nodeID)
-	require.NotEqual(t, 0, len(valPubKey.Bytes()))
+	Convey("TestInitNodeValidatorFiles", t, func() {
+		home, cleanup := simapp.NewTestCaseDir(t)
+		defer cleanup()
+		viper.Set(cli.HomeFlag, home)
+		viper.Set(flags.FlagName, "moniker")
+		cfg, err := tcmd.ParseConfig()
+		So(err, ShouldBeNil)
+		nodeID, valPubKey, err := genutil.InitializeNodeValidatorFiles(cfg)
+		So(err, ShouldBeNil)
+		So(nodeID, ShouldNotEqual, "")
+		So(len(valPubKey.Bytes()), ShouldNotEqual, 0)
+	})
 }
 
 // custom tx codec
@@ -140,5 +149,6 @@ func makeCodec() *codec.Codec {
 	var cdc = codec.New()
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
+	stakingtypes.RegisterCodec(cdc)
 	return cdc
 }

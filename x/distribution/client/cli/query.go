@@ -6,13 +6,12 @@ import (
 	"strings"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 )
@@ -83,12 +82,12 @@ $ %s query kudistribution validator-outstanding-rewards validatorName
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			valAddr, err := chainType.NewAccountIDFromStr(args[0])
+			valAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
 
-			//acc := chainType.NewAccountIDFromValAdd(valAddr)
+			//acc := chainTypes.NewAccountIDFromValAdd(valAddr)
 			params := types.NewQueryValidatorOutstandingRewardsParams(valAddr)
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
@@ -134,12 +133,12 @@ $ %s query kudistribution commission validatorName
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			validatorAddr, err := chainType.NewAccountIDFromStr(args[0])
+			validatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
 
-			//acc := chainType.NewAccountIDFromValAdd(validatorAddr)
+			//acc := chainTypes.NewAccountIDFromValAdd(validatorAddr)
 			res, err := common.QueryValidatorCommission(cliCtx, queryRoute, validatorAddr)
 			if err != nil {
 				return err
@@ -170,7 +169,7 @@ $ %s query kudistribution slashes validatorName 0 100
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			validatorAddr, err := chainType.NewAccountIDFromStr(args[0])
+			validatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
@@ -185,7 +184,7 @@ $ %s query kudistribution slashes validatorName 0 100
 				return fmt.Errorf("end-height %s not a valid uint, please input a valid end-height", args[2])
 			}
 
-			//acc := chainType.NewAccountIDFromValAdd(validatorAddr)
+			//acc := chainTypes.NewAccountIDFromValAdd(validatorAddr)
 			params := types.NewQueryValidatorSlashesParams(validatorAddr, startHeight, endHeight)
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
@@ -230,7 +229,7 @@ $ %s query kudistribution rewards jack validatorName
 					return err
 				}
 
-				var result sdk.DecCoins
+				var result chainTypes.DecCoins
 				if err = cdc.UnmarshalJSON(resp, &result); err != nil {
 					return fmt.Errorf("failed to unmarshal response: %w", err)
 				}
@@ -238,7 +237,7 @@ $ %s query kudistribution rewards jack validatorName
 				return cliCtx.PrintOutput(result)
 			}
 
-			delegatorAddr, err := chainType.NewAccountIDFromStr(args[0])
+			delegatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 
 			//delegatorAddr, err := sdk.AccAddressFromBech32(args[0])
 			fmt.Println(delegatorAddr, err)
@@ -246,7 +245,7 @@ $ %s query kudistribution rewards jack validatorName
 				return err
 			}
 
-			//acc := chainType.NewAccountIDFromAccAdd(delegatorAddr)
+			//acc := chainTypes.NewAccountIDFromAccAdd(delegatorAddr)
 			params := types.NewQueryDelegatorParams(delegatorAddr)
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
@@ -293,7 +292,7 @@ $ %s query kudistribution community-pool
 				return err
 			}
 
-			var result sdk.DecCoins
+			var result chainTypes.DecCoins
 			cdc.MustUnmarshalJSON(res, &result)
 			return cliCtx.PrintOutput(result)
 		},
@@ -318,7 +317,7 @@ $ %s query whithdraw-addr jack --from jack
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-			valAddr, err := chainType.NewAccountIDFromStr(args[0])
+			valAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}

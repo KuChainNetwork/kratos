@@ -44,10 +44,10 @@ func NonNegativeOutstandingInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		var msg string
 		var count int
-		var outstanding sdk.DecCoins
+		var outstanding chainTypes.DecCoins
 
 		k.IterateValidatorOutstandingRewards(ctx, func(addr AccountID, rewards types.ValidatorOutstandingRewards) (stop bool) {
-			outstanding = rewards.GetRewards()
+			outstanding = rewards.Rewards
 			if outstanding.IsAnyNegative() {
 				count++
 				msg += fmt.Sprintf("\t%v has negative outstanding coins: %v\n", addr, outstanding)
@@ -68,7 +68,7 @@ func CanWithdrawInvariant(k Keeper) sdk.Invariant {
 		// cache, we don't want to write changes
 		ctx, _ = ctx.CacheContext()
 
-		var remaining sdk.DecCoins
+		var remaining chainTypes.DecCoins
 
 		valDelegationAddrs := make(map[string][]sdk.AccAddress)
 		for _, del := range k.stakingKeeper.GetAllSDKDelegations(ctx) {
@@ -140,7 +140,7 @@ func ReferenceCountInvariant(k Keeper) sdk.Invariant {
 func ModuleAccountInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 
-		var expectedCoins sdk.DecCoins
+		var expectedCoins chainTypes.DecCoins
 		k.IterateValidatorOutstandingRewards(ctx, func(_ AccountID, rewards types.ValidatorOutstandingRewards) (stop bool) {
 			expectedCoins = expectedCoins.Add(rewards.Rewards...)
 			return false

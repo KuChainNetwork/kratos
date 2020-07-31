@@ -10,15 +10,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
@@ -29,6 +20,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
+	"github.com/spf13/viper"
+	cfg "github.com/tendermint/tendermint/config"
+	"github.com/tendermint/tendermint/crypto"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // StakingMsgBuildingHelpers helpers for message building gen-tx command
@@ -46,7 +45,7 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 	stakingFuncManager types.StakingFuncManager) *cobra.Command {
 
 	ipDefault, _ := server.ExternalIP()
-	fsCreateValidator, flagNodeID, flagPubKey, flagAmount, defaultsDesc := smbh.CreateValidatorMsgHelpers(ipDefault)
+	fsCreateValidator, flagNodeID, flagPubKey, _, defaultsDesc := smbh.CreateValidatorMsgHelpers(ipDefault)
 
 	cmd := &cobra.Command{
 		Use:   "gentx [validator-operator-account]",
@@ -88,7 +87,7 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 				return errors.Wrap(err, "failed to unmarshal genesis state")
 			}
 
-			if err = mbm.ValidateGenesis(cdc, genesisState); err != nil {
+			if err = mbm.ValidateGenesis(genesisState); err != nil {
 				return errors.Wrap(err, "failed to validate genesis state")
 			}
 
@@ -111,18 +110,6 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 			viper.Set(flags.FlagHome, viper.GetString(flagClientHome))
 			smbh.PrepareFlagsForTxCreateValidator(config, nodeID, genDoc.ChainID, valPubKey)
 
-			// Fetch the amount of coins staked
-			amount := viper.GetString(flagAmount)
-			coins, err := sdk.ParseCoins(amount)
-			if err != nil {
-				return errors.Wrap(err, "failed to parse coins")
-			}
-
-			err = genutil.ValidateAccountInGenesis(genesisState, genBalIterator, key.GetAddress(), coins, cdc, stakingFuncManager)
-			if err != nil {
-				return errors.Wrap(err, "failed to validate account in genesis")
-			}
-
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
@@ -144,17 +131,17 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 				return errors.Wrap(err, "failed to build create-validator message")
 			}
 
+			// set payer in gentx
+			txBldr = txBldr.WithPayer(args[0])
+
 			if key.GetType() == keys.TypeOffline || key.GetType() == keys.TypeMulti {
 				fmt.Println("Offline key passed in. Use `tx sign` command to sign:")
-				return txutil.PrintUnsignedStdTx(txBldr, cliCtx, []sdk.Msg{msg})
+				return txutil.PrintUnsignedStdTx(txBldr, cliCtx, []sdk.Msg{msg, msgdelegator})
 			}
 
 			// write the unsigned transaction to the buffer
 			w := bytes.NewBuffer([]byte{})
 			cliCtx = cliCtx.WithOutput(w)
-
-			fmt.Printf("cdc %v\n\n", cliCtx.Codec)
-			txBldr = txBldr.WithPayer(args[0])
 
 			if err = txutil.PrintUnsignedStdTx(txBldr, cliCtx, []sdk.Msg{msg, msgdelegator}); err != nil {
 				return errors.Wrap(err, "failed to print unsigned std tx")

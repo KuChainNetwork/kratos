@@ -3,8 +3,8 @@ package types
 import (
 	"fmt"
 
+	params "github.com/KuChainNetwork/kuchain/x/params/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
 
@@ -24,6 +24,14 @@ var (
 // ParamKeyTable returns the parameter key table.
 func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&Params{})
+}
+
+// Params defines the set of distribution parameters.
+type Params struct {
+	CommunityTax        Dec  `json:"community_tax" yaml:"community_tax"`
+	BaseProposerReward  Dec  `json:"base_proposer_reward" yaml:"base_proposer_reward"`
+	BonusProposerReward Dec  `json:"bonus_proposer_reward" yaml:"bonus_proposer_reward"`
+	WithdrawAddrEnabled bool `json:"withdraw_addr_enabled,omitempty" yaml:"withdraw_addr_enabled"`
 }
 
 // DefaultParams returns default distribution parameters

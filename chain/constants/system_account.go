@@ -10,6 +10,7 @@ var (
 	FeeSystemAccountStr = GetSystemAccount("fee")
 	FeeSystemAccount    = types.MustName(FeeSystemAccountStr)
 	SystemAccount       = ChainMainName
+	SystemAccountID     = types.NewAccountIDFromName(SystemAccount)
 )
 
 func IsSystemAccount(name types.Name) bool {

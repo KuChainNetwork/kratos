@@ -7,19 +7,19 @@ import (
 )
 
 // IssueCoinPower add coin power to account, if a account has coin power, it can gen coins by power
-func (a AssetKeeper) IssueCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.Coins) (sdk.Coins, error) {
+func (a AssetKeeper) IssueCoinPower(ctx sdk.Context, id types.AccountID, amt Coins) (Coins, error) {
 	for _, c := range amt {
 		if err := a.issueCoinStat(ctx, c); err != nil {
-			return sdk.Coins{}, sdkerrors.Wrapf(err, "issue %s state error", c)
+			return Coins{}, sdkerrors.Wrapf(err, "issue %s state error", c)
 		}
 	}
 	return a.addCoinPower(ctx, id, amt)
 }
 
-func (a AssetKeeper) addCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.Coins) (sdk.Coins, error) {
+func (a AssetKeeper) addCoinPower(ctx sdk.Context, id types.AccountID, amt Coins) (Coins, error) {
 	coins, err := a.getCoinsPower(ctx, id)
 	if err != nil {
-		return sdk.Coins{}, sdkerrors.Wrapf(err, "get %s coins powers error", id)
+		return Coins{}, sdkerrors.Wrapf(err, "get %s coins powers error", id)
 	}
 
 	if amt.IsZero() {
@@ -29,26 +29,26 @@ func (a AssetKeeper) addCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.C
 	added := coins.Add(amt...)
 
 	if err := a.setCoinsPower(ctx, id, added); err != nil {
-		return sdk.Coins{}, sdkerrors.Wrapf(err, "set coins powers in add %s error", id)
+		return Coins{}, sdkerrors.Wrapf(err, "set coins powers in add %s error", id)
 	}
 
 	return added, nil
 }
 
 // BurnCoinPower sub coin power from account, if has no power return error
-func (a AssetKeeper) BurnCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.Coins) (sdk.Coins, error) {
+func (a AssetKeeper) BurnCoinPower(ctx sdk.Context, id types.AccountID, amt Coins) (Coins, error) {
 	for _, c := range amt {
 		if err := a.burnCoinStat(ctx, c); err != nil {
-			return sdk.Coins{}, sdkerrors.Wrapf(err, "burn %s state error", c)
+			return Coins{}, sdkerrors.Wrapf(err, "burn %s state error", c)
 		}
 	}
 	return a.subCoinPower(ctx, id, amt)
 }
 
-func (a AssetKeeper) subCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.Coins) (sdk.Coins, error) {
+func (a AssetKeeper) subCoinPower(ctx sdk.Context, id types.AccountID, amt Coins) (Coins, error) {
 	coins, err := a.getCoinsPower(ctx, id)
 	if err != nil {
-		return sdk.Coins{}, sdkerrors.Wrapf(err, "get %s coins powers error", id)
+		return Coins{}, sdkerrors.Wrapf(err, "get %s coins powers error", id)
 	}
 
 	if amt.IsZero() {
@@ -57,22 +57,27 @@ func (a AssetKeeper) subCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.C
 
 	subed, hasNeg := coins.SafeSub(amt)
 	if hasNeg {
-		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrAssetCoinNoEnough, "sub coin power error no enough")
+		return Coins{}, sdkerrors.Wrapf(types.ErrAssetCoinNoEnough, "sub coin power error no enough")
 	}
 
 	if subed == nil {
-		subed = sdk.Coins{sdk.NewInt64Coin(amt[0].Denom, 0)}
+		subed = Coins{NewInt64Coin(amt[0].Denom, 0)}
 	}
 
 	if err := a.setCoinsPower(ctx, id, subed); err != nil {
-		return sdk.Coins{}, sdkerrors.Wrapf(err, "set coins powers in add %s error", id)
+		return Coins{}, sdkerrors.Wrapf(err, "set coins powers in add %s error", id)
 	}
 
 	return subed, nil
 }
 
 // SendCoinPower sub coin power from account, if has no power return error
-func (a AssetKeeper) SendCoinPower(ctx sdk.Context, from, to types.AccountID, amt sdk.Coins) error {
+func (a AssetKeeper) SendCoinPower(ctx sdk.Context, from, to types.AccountID, amt Coins) error {
+	// just return if from == to
+	if from.Eq(to) {
+		return nil
+	}
+
 	if _, err := a.subCoinPower(ctx, from, amt); err != nil {
 		return sdkerrors.Wrapf(err, "get %s coins powers in send error", from)
 	}
@@ -89,7 +94,7 @@ func (a AssetKeeper) SendCoinPower(ctx sdk.Context, from, to types.AccountID, am
 }
 
 // CoinsToPower accounts coins to coin power, so that it can be send to module account
-func (a AssetKeeper) CoinsToPower(ctx sdk.Context, from, to types.AccountID, amt sdk.Coins) error {
+func (a AssetKeeper) CoinsToPower(ctx sdk.Context, from, to types.AccountID, amt Coins) error {
 	if amt.IsZero() {
 		return nil
 	}
@@ -121,8 +126,8 @@ func (a AssetKeeper) CoinsToPower(ctx sdk.Context, from, to types.AccountID, amt
 }
 
 // ExerciseCoinPower exercise coin power to get coins to account
-func (a AssetKeeper) ExerciseCoinPower(ctx sdk.Context, id types.AccountID, amt sdk.Coin) error {
-	if _, err := a.subCoinPower(ctx, id, sdk.Coins{amt}); err != nil {
+func (a AssetKeeper) ExerciseCoinPower(ctx sdk.Context, id types.AccountID, amt types.Coin) error {
+	if _, err := a.subCoinPower(ctx, id, Coins{amt}); err != nil {
 		return sdkerrors.Wrapf(err, "get %s coins powers in exercise error", id)
 	}
 

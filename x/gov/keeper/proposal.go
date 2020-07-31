@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/x/gov/govcodec"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -57,7 +58,7 @@ func (keeper Keeper) GetProposal(ctx sdk.Context, proposalID uint64) (types.Prop
 		return types.Proposal{}, false
 	}
 
-	proposal, err := keeper.cdc.UnmarshalProposal(bz)
+	proposal, err := govcodec.UnmarshalProposal(types.ModuleCdc, bz)
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +70,7 @@ func (keeper Keeper) GetProposal(ctx sdk.Context, proposalID uint64) (types.Prop
 func (keeper Keeper) SetProposal(ctx sdk.Context, proposal types.Proposal) {
 	store := ctx.KVStore(keeper.storeKey)
 
-	bz, err := keeper.cdc.MarshalProposal(proposal)
+	bz, err := govcodec.MarshalProposal(types.ModuleCdc, proposal)
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +98,7 @@ func (keeper Keeper) IterateProposals(ctx sdk.Context, cb func(proposal types.Pr
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		proposal, err := keeper.cdc.UnmarshalProposal(iterator.Value())
+		proposal, err := govcodec.UnmarshalProposal(types.ModuleCdc, iterator.Value())
 		if err != nil {
 			panic(err)
 		}

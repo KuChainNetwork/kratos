@@ -12,7 +12,7 @@ import (
 // SendCoinsFromModuleToAccount transfers coins from a ModuleAccount to an AccAddress.
 // It will panic if the module account does not exist.
 func (k Keeper) SendCoinsFromModuleToAccount(
-	ctx sdk.Context, senderModule string, recipient types.AccountID, amt sdk.Coins,
+	ctx sdk.Context, senderModule string, recipient types.AccountID, amt Coins,
 ) error {
 
 	senderAcc := k.GetModuleAccount(ctx, senderModule)
@@ -31,7 +31,7 @@ func (k Keeper) SendCoinsFromModuleToAccount(
 // SendCoinsFromModuleToModule transfers coins from a ModuleAccount to another.
 // It will panic if either module account does not exist.
 func (k Keeper) SendCoinsFromModuleToModule(
-	ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins,
+	ctx sdk.Context, senderModule, recipientModule string, amt Coins,
 ) error {
 
 	senderAcc := k.GetModuleAccount(ctx, senderModule)
@@ -55,7 +55,7 @@ func (k Keeper) SendCoinsFromModuleToModule(
 // SendCoinsFromAccountToModule transfers coins from an AccAddress to a ModuleAccount.
 // It will panic if the module account does not exist.
 func (k Keeper) SendCoinsFromAccountToModule(
-	ctx sdk.Context, sender types.AccountID, recipientModule string, amt sdk.Coins,
+	ctx sdk.Context, sender types.AccountID, recipientModule string, amt Coins,
 ) error {
 	recipientAcc := k.GetModuleAccount(ctx, recipientModule)
 	if recipientAcc == nil {
@@ -76,7 +76,7 @@ func (k Keeper) SendCoinsFromAccountToModule(
 // delegator account to a module account. It will panic if the module account
 // does not exist or is unauthorized.
 func (k Keeper) DelegateCoinsFromAccountToModule(
-	ctx sdk.Context, recipientModule string, amt sdk.Coins,
+	ctx sdk.Context, recipientModule string, amt Coins,
 ) error {
 	recipientAcc := k.GetModuleAccount(ctx, recipientModule)
 	if recipientAcc == nil {
@@ -100,7 +100,7 @@ func (k Keeper) DelegateCoinsFromAccountToModule(
 // them from a module account to the delegator account. It will panic if the
 // module account does not exist or is unauthorized.
 func (k Keeper) UndelegateCoinsFromModuleToAccount(
-	ctx sdk.Context, senderModule string, recipientAcc types.AccountID, amt sdk.Coins,
+	ctx sdk.Context, senderModule string, recipientAcc types.AccountID, amt Coins,
 ) error {
 
 	acc := k.GetModuleAccount(ctx, senderModule)
@@ -123,7 +123,7 @@ func (k Keeper) UndelegateCoinsFromModuleToAccount(
 
 // MintCoins creates new coins from thin air and adds it to the module account.
 // It will panic if the module account does not exist or is unauthorized.
-func (k Keeper) MintCoins(ctx sdk.Context, moduleName string, amt *sdk.Coins) error {
+func (k Keeper) MintCoins(ctx sdk.Context, moduleName string, amt *Coins) error {
 	acc := k.GetModuleAccount(ctx, moduleName)
 	if acc == nil {
 		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", moduleName))
@@ -145,7 +145,7 @@ func (k Keeper) MintCoins(ctx sdk.Context, moduleName string, amt *sdk.Coins) er
 
 // BurnCoins burns coins deletes coins from the balance of the module account.
 // It will panic if the module account does not exist or is unauthorized.
-func (k Keeper) BurnCoins(ctx sdk.Context, moduleName types.AccountID, amt sdk.Coins) error {
+func (k Keeper) BurnCoins(ctx sdk.Context, moduleName types.AccountID, amt Coins) error {
 	acc := k.GetModuleAccount(ctx, moduleName.String())
 	if acc == nil {
 		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", moduleName))
@@ -165,7 +165,7 @@ func (k Keeper) BurnCoins(ctx sdk.Context, moduleName types.AccountID, amt sdk.C
 	return nil
 }
 
-func (k Keeper) ModuleCoinsToPower(ctx sdk.Context, recipientModule string, amt sdk.Coins) error {
+func (k Keeper) ModuleCoinsToPower(ctx sdk.Context, recipientModule string, amt Coins) error {
 	recipientAcc := k.GetModuleAccount(ctx, recipientModule)
 	if recipientAcc == nil {
 		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", recipientModule))

@@ -32,7 +32,7 @@ func GenGensisCoinCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			creator, symbol, err := types.CoinAccountsFromDenom(maxSupply.GetDenom())
+			creator, symbol, err := types.CoinAccountsFromDenom(maxSupply.Denom)
 			if err != nil {
 				return err
 			}

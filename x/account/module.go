@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/client/cli"
@@ -14,13 +15,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
-
-	// TODO: account module sim
-	"github.com/cosmos/cosmos-sdk/x/auth/simulation"
 )
 
 var (
@@ -30,7 +29,16 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the account module.
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	genesis.ModuleBasicBase
+}
+
+// NewAppModuleBasic new app module basic
+func NewAppModuleBasic() AppModuleBasic {
+	return AppModuleBasic{
+		ModuleBasicBase: genesis.NewModuleBasicBase(ModuleCdc, DefaultGenesisState()),
+	}
+}
 
 // Name returns the account module's name.
 func (AppModuleBasic) Name() string {
@@ -41,16 +49,6 @@ func (AppModuleBasic) Name() string {
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	txutil.RegisterCodec(cdc)
 	types.RegisterCodec(cdc)
-}
-
-// DefaultGenesis returns default genesis state as raw bytes for the account module.
-func (AppModuleBasic) DefaultGenesis(codec.JSONMarshaler) json.RawMessage {
-	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
-}
-
-// ValidateGenesis performs genesis state validation for the account module.
-func (AppModuleBasic) ValidateGenesis(codec.JSONMarshaler, json.RawMessage) error {
-	return nil
 }
 
 // RegisterRESTRoutes registers the REST routes for the account module.
@@ -81,7 +79,7 @@ type AppModule struct {
 // NewAppModule creates a new AppModule object
 func NewAppModule(accountKeeper Keeper, assetTransfer chainTypes.AssetTransfer) AppModule {
 	return AppModule{
-		AppModuleBasic: AppModuleBasic{},
+		AppModuleBasic: NewAppModuleBasic(),
 		accountKeeper:  accountKeeper,
 		assetTransfer:  assetTransfer,
 	}
@@ -114,17 +112,14 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 }
 
 // InitGenesis performs genesis initialization for the account module. It returns no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
-	var genesisState GenesisState
-	types.ModuleCdc.MustUnmarshalJSON(data, &genesisState)
-	InitGenesis(ctx, am.accountKeeper, genesisState)
+func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
+	InitGenesis(ctx, am.accountKeeper, data)
 	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the exported genesis state as raw bytes for the account module.
-func (am AppModule) ExportGenesis(ctx sdk.Context, _ codec.JSONMarshaler) json.RawMessage {
-	gs := ExportGenesis(ctx, am.accountKeeper)
-	return types.ModuleCdc.MustMarshalJSON(gs)
+func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
+	return types.ModuleCdc.MustMarshalJSON(ExportGenesis(ctx, am.accountKeeper))
 }
 
 // BeginBlock returns the begin blocker for the account module.

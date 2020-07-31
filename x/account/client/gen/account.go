@@ -23,10 +23,10 @@ func GenGensisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 		Use:   "add-account",
 		Short: "Add a genesis account to chain",
 		Args:  cobra.ExactArgs(2),
-		Long: fmt.Sprintf(`This command add a genesis account to chain'.
+		Long: `This command add a genesis account to chain'.
 
 		It creates a genesis account which contains a name and auth, then put the data to genesis.json
-	`),
+	`,
 
 		RunE: func(_ *cobra.Command, args []string) error {
 			config := ctx.Config
@@ -68,10 +68,10 @@ func GenGensisAddAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Comman
 		Use:   "add-address",
 		Short: "Add a genesis account to chain",
 		Args:  cobra.ExactArgs(1),
-		Long: fmt.Sprintf(`This command add a genesis account to chain'.
+		Long: `This command add a genesis account to chain'.
 
 		It creates a genesis account which contains a name and auth, then put the data to genesis.json
-	`),
+	`,
 
 		RunE: func(_ *cobra.Command, args []string) error {
 			config := ctx.Config

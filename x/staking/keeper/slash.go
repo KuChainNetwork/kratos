@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
-	types "github.com/KuChainNetwork/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -148,7 +148,7 @@ func (k Keeper) Jail(ctx sdk.Context, consAddr sdk.ConsAddress) {
 	logger.Info(fmt.Sprintf("validator %s jailed", consAddr))
 }
 
-func (k Keeper) JailByAccount(ctx sdk.Context, account chaintype.AccountID) {
+func (k Keeper) JailByAccount(ctx sdk.Context, account AccountID) {
 	validator := k.mustGetValidator(ctx, account)
 	k.jailValidator(ctx, validator)
 	logger := k.Logger(ctx)
@@ -163,7 +163,7 @@ func (k Keeper) Unjail(ctx sdk.Context, consAddr sdk.ConsAddress) {
 	logger.Info(fmt.Sprintf("validator %s unjailed", consAddr))
 }
 
-func (k Keeper) UnjailByAccount(ctx sdk.Context, account chaintype.AccountID) {
+func (k Keeper) UnjailByAccount(ctx sdk.Context, account AccountID) {
 	validator := k.mustGetValidator(ctx, account)
 	k.unjailValidator(ctx, validator)
 	logger := k.Logger(ctx)
@@ -302,7 +302,7 @@ func (k Keeper) SlashRedelegation(ctx sdk.Context, srcValidator types.Validator,
 	return totalSlashAmount
 }
 
-func (k Keeper) SlashByValidatorAccount(ctx sdk.Context, valAccount chaintype.AccountID, infractionHeight int64, slashFactor sdk.Dec) {
+func (k Keeper) SlashByValidatorAccount(ctx sdk.Context, valAccount AccountID, infractionHeight int64, slashFactor sdk.Dec) {
 	logger := k.Logger(ctx)
 
 	if slashFactor.IsNegative() {

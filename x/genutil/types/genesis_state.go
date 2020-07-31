@@ -14,6 +14,8 @@ import (
 // GenesisState defines the raw genesis transaction in JSON
 type GenesisState struct {
 	GenTxs []json.RawMessage `json:"gentxs" yaml:"gentxs"`
+
+	stakingFuncManager StakingFuncManager
 }
 
 // NewGenesisState creates a new GenesisState object
@@ -28,10 +30,22 @@ func NewGenesisState(genTxs []json.RawMessage) GenesisState {
 }
 
 // DefaultGenesisState returns the genutil module's default genesis state.
-func DefaultGenesisState() GenesisState {
+func DefaultGenesisState(stakingFuncManager StakingFuncManager) GenesisState {
 	return GenesisState{
-		GenTxs: []json.RawMessage{},
+		GenTxs:             []json.RawMessage{},
+		stakingFuncManager: stakingFuncManager,
 	}
+}
+
+// ValidateGenesis performs basic validation of bank genesis data returning an
+// error for any failed validation criteria.
+func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
+	gs := DefaultGenesisState(g.stakingFuncManager)
+	if err := ModuleCdc.UnmarshalJSON(bz, &gs); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
+	}
+
+	return ValidateGenesis(gs, g.stakingFuncManager)
 }
 
 // NewGenesisStateFromStdTx creates a new GenesisState object

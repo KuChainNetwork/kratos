@@ -197,6 +197,8 @@ var (
 	KeyMaxValidators                 = types.KeyMaxValidators
 	KeyMaxEntries                    = types.KeyMaxEntries
 	KeyBondDenom                     = types.KeyBondDenom
+
+	ValidateGenesis = types.ValidateGenesis
 )
 
 type (

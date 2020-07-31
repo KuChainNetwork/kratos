@@ -1,8 +1,7 @@
 package types
 
 import (
-	//sdk "github.com/cosmos/cosmos-sdk/types"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
 // query endpoints supported by the staking Querier
@@ -30,10 +29,10 @@ const (
 // - 'custom/staking/delegatorRedelegations'
 // - 'custom/staking/delegatorValidators'
 type QueryDelegatorParams struct {
-	DelegatorAddr chaintype.AccountID
+	DelegatorAddr types.AccountID
 }
 
-func NewQueryDelegatorParams(delegatorAddr chaintype.AccountID) QueryDelegatorParams {
+func NewQueryDelegatorParams(delegatorAddr types.AccountID) QueryDelegatorParams {
 	return QueryDelegatorParams{
 		DelegatorAddr: delegatorAddr,
 	}
@@ -45,10 +44,10 @@ func NewQueryDelegatorParams(delegatorAddr chaintype.AccountID) QueryDelegatorPa
 // - 'custom/staking/validatorUnbondingDelegations'
 // - 'custom/staking/validatorRedelegations'
 type QueryValidatorParams struct {
-	ValidatorAddr chaintype.AccountID
+	ValidatorAddr types.AccountID
 }
 
-func NewQueryValidatorParams(validatorAddr chaintype.AccountID) QueryValidatorParams {
+func NewQueryValidatorParams(validatorAddr types.AccountID) QueryValidatorParams {
 	return QueryValidatorParams{
 		ValidatorAddr: validatorAddr,
 	}
@@ -59,11 +58,11 @@ func NewQueryValidatorParams(validatorAddr chaintype.AccountID) QueryValidatorPa
 // - 'custom/staking/unbondingDelegation'
 // - 'custom/staking/delegatorValidator'
 type QueryBondsParams struct {
-	DelegatorAddr chaintype.AccountID
-	ValidatorAddr chaintype.AccountID
+	DelegatorAddr types.AccountID
+	ValidatorAddr types.AccountID
 }
 
-func NewQueryBondsParams(delegatorAddr chaintype.AccountID, validatorAddr chaintype.AccountID) QueryBondsParams {
+func NewQueryBondsParams(delegatorAddr types.AccountID, validatorAddr types.AccountID) QueryBondsParams {
 	return QueryBondsParams{
 		DelegatorAddr: delegatorAddr,
 		ValidatorAddr: validatorAddr,
@@ -73,13 +72,13 @@ func NewQueryBondsParams(delegatorAddr chaintype.AccountID, validatorAddr chaint
 // defines the params for the following queries:
 // - 'custom/staking/redelegation'
 type QueryRedelegationParams struct {
-	DelegatorAddr    chaintype.AccountID
-	SrcValidatorAddr chaintype.AccountID
-	DstValidatorAddr chaintype.AccountID
+	DelegatorAddr    types.AccountID
+	SrcValidatorAddr types.AccountID
+	DstValidatorAddr types.AccountID
 }
 
-func NewQueryRedelegationParams(delegatorAddr chaintype.AccountID,
-	srcValidatorAddr, dstValidatorAddr chaintype.AccountID) QueryRedelegationParams {
+func NewQueryRedelegationParams(delegatorAddr types.AccountID,
+	srcValidatorAddr, dstValidatorAddr types.AccountID) QueryRedelegationParams {
 
 	return QueryRedelegationParams{
 		DelegatorAddr:    delegatorAddr,

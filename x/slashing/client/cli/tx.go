@@ -5,7 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -46,7 +46,7 @@ $ <appcli> tx kuslashing unjail validator --from validator
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
-			valAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "validator acccount error")
 			}

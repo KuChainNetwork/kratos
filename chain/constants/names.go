@@ -8,14 +8,16 @@ import (
 )
 
 const (
-	ChainNameStr     = keys.ChainNameStr
-	ChainMainNameStr = keys.ChainMainNameStr
-	DefaultBondDenom = keys.DefaultBondDenom
+	ChainNameStr      = keys.ChainNameStr
+	ChainMainNameStr  = keys.ChainMainNameStr
+	DefaultBondDenom  = keys.DefaultBondDenom
+	DefaultBondSymbol = keys.DefaultBondSymbol
 )
 
 var (
 	// ChainMainName chain main name, as chain name for all symbol
-	ChainMainName = types.MustName(ChainMainNameStr)
+	ChainMainName         = types.MustName(ChainMainNameStr)
+	DefaultBondSymbolName = types.MustName(DefaultBondSymbol)
 )
 
 // GetSystemAccount get system account name string

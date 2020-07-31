@@ -7,11 +7,10 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -71,16 +70,16 @@ func RandomizedGenState(simState *module.SimulationState) {
 			maxCommission,
 			simulation.RandomDecAmount(simState.Rand, maxCommission),
 		)
-		valAccountID := chaintype.NewAccountIDFromAccAdd(sdk.AccAddress(valAddr))
+		valAccountID := chainTypes.NewAccountIDFromAccAdd(sdk.AccAddress(valAddr))
 
 		validator := types.NewValidator(valAccountID, simState.Accounts[i].PubKey, types.Description{})
-		validator.Tokens = sdk.NewInt(simState.InitialStake)
-		validator.DelegatorShares = sdk.NewDec(simState.InitialStake)
+		validator.Tokens = chainTypes.NewInt(simState.InitialStake)
+		validator.DelegatorShares = chainTypes.NewDec(simState.InitialStake)
 		validator.Commission = commission
 
-		delAccountID := chaintype.NewAccountIDFromAccAdd(simState.Accounts[i].Address)
+		delAccountID := chainTypes.NewAccountIDFromAccAdd(simState.Accounts[i].Address)
 
-		delegation := types.NewDelegation(delAccountID, valAccountID, sdk.NewDec(simState.InitialStake))
+		delegation := types.NewDelegation(delAccountID, valAccountID, chainTypes.NewDec(simState.InitialStake))
 		validators = append(validators, validator)
 		delegations = append(delegations, delegation)
 	}

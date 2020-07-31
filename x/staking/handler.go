@@ -3,10 +3,6 @@ package staking
 import (
 	"time"
 
-	gogotypes "github.com/gogo/protobuf/types"
-	tmstrings "github.com/tendermint/tendermint/libs/strings"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
@@ -14,6 +10,9 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	gogotypes "github.com/gogo/protobuf/types"
+	tmstrings "github.com/tendermint/tendermint/libs/strings"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 func NewHandler(k keeper.Keeper) msg.Handler {
@@ -204,7 +203,7 @@ func handleMsgDelegate(ctx chainTypes.Context, msg types.MsgDelegate, k keeper.K
 		return nil, ErrNoValidatorFound
 	}
 
-	if err := ctx.RequireTransfer(types.ModuleAccountID, sdk.Coins{msg.Amount}); err != nil {
+	if err := ctx.RequireTransfer(types.ModuleAccountID, chainTypes.Coins{msg.Amount}); err != nil {
 		return nil, sdkerrors.Wrapf(err, "msg delegate required transfer no enough")
 	}
 

@@ -7,17 +7,16 @@ import (
 	"strings"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto"
-	tmtypes "github.com/tendermint/tendermint/types"
-	yaml "gopkg.in/yaml.v2"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto"
+	tmtypes "github.com/tendermint/tendermint/types"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // nolint
@@ -32,7 +31,28 @@ const (
 
 var _ exported.ValidatorI = Validator{}
 
-func NewValidator(operator chaintype.AccountID, pubKey crypto.PubKey, description Description) Validator {
+// Validator defines the total amount of bond shares and their exchange rate to
+// coins. Slashing results in a decrease in the exchange rate, allowing correct
+// calculation of future undelegations without iterating over delegators.
+// When coins are delegated to this validator, the validator is credited with a
+// delegation whose number of bond shares is based on the amount of coins
+// delegated divided by the current exchange rate. Voting power can be
+// calculated as total bonded shares multiplied by exchange rate.
+type Validator struct {
+	OperatorAccount   AccountID                `json:"operator_account" yaml:"operator_account"`
+	ConsensusPubkey   string                   `json:"consensus_pubkey,omitempty" yaml:"consensus_pubkey"`
+	Jailed            bool                     `json:"jailed,omitempty" yaml:"jailed"`
+	Status            stakingexport.BondStatus `json:"status,omitempty" yaml:"status"`
+	Tokens            sdk.Int                  `json:"tokens" yaml:"tokens"`
+	DelegatorShares   Dec                      `json:"delegator_shares" yaml:"delegator_shares"`
+	Description       Description              `json:"description" yaml:"description"`
+	UnbondingHeight   int64                    `json:"unbonding_height,omitempty" yaml:"unbonding_height"`
+	UnbondingTime     time.Time                `json:"unbonding_time" yaml:"unbonding_time"`
+	Commission        Commission               `json:"commission" yaml:"commission"`
+	MinSelfDelegation sdk.Int                  `json:"min_self_delegation" yaml:"min_self_delegation"`
+}
+
+func NewValidator(operator types.AccountID, pubKey crypto.PubKey, description Description) Validator {
 	var pkStr string
 	if pubKey != nil {
 		pkStr = sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, pubKey)
@@ -145,6 +165,15 @@ func (v Validator) IsUnbonding() bool {
 
 // constant used in flags to indicate that description field should not be updated
 const DoNotModifyDesc = "[do-not-modify]"
+
+// Description defines a validator description.
+type Description struct {
+	Moniker         string `json:"moniker,omitempty" yaml:"moniker"`
+	Identity        string `json:"identity,omitempty" yaml:"identity"`
+	Website         string `json:"website,omitempty" yaml:"website"`
+	SecurityContact string `json:"security_contact,omitempty" yaml:"security_contact"`
+	Details         string `json:"details,omitempty" yaml:"details"`
+}
 
 func NewDescription(moniker, identity, website, securityContact, details string) Description {
 	return Description{
@@ -391,10 +420,10 @@ func (v Validator) MinEqual(other Validator) bool {
 }
 
 // nolint - for ValidatorI
-func (v Validator) IsJailed() bool                            { return v.Jailed }
-func (v Validator) GetMoniker() string                        { return v.Description.Moniker }
-func (v Validator) GetStatus() stakingexport.BondStatus       { return v.Status }
-func (v Validator) GetOperatorAccountID() chaintype.AccountID { return v.OperatorAccount }
+func (v Validator) IsJailed() bool                        { return v.Jailed }
+func (v Validator) GetMoniker() string                    { return v.Description.Moniker }
+func (v Validator) GetStatus() stakingexport.BondStatus   { return v.Status }
+func (v Validator) GetOperatorAccountID() types.AccountID { return v.OperatorAccount }
 func (v Validator) GetOperator() sdk.ValAddress {
 	operatorAccAddress, _ := v.OperatorAccount.ToAccAddress()
 	return sdk.ValAddress(operatorAccAddress)

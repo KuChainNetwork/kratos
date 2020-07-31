@@ -1,11 +1,10 @@
 package types
 
 import (
-	"gopkg.in/yaml.v2"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"gopkg.in/yaml.v2"
 )
 
 // Governance message types and routes
@@ -15,6 +14,8 @@ const (
 	TypeMsgSubmitProposal = "submitproposal"
 )
 
+var _, _, _, _ chainType.KuMsgData = (*MsgSubmitProposalBase)(nil), (*MsgDeposit)(nil), (*MsgVote)(nil), (*MsgSubmitProposal)(nil)
+
 // MsgSubmitProposalI defines the specific interface a concrete message must
 // implement in order to process governance proposals. The concrete MsgSubmitProposal
 // must be defined at the application-level.
@@ -22,13 +23,25 @@ type MsgSubmitProposalI interface {
 	sdk.Msg
 
 	GetContent() Content
-	GetInitialDeposit() sdk.Coins
+	GetInitialDeposit() Coins
 	GetProposer() sdk.AccAddress
-	GetProposerAccountID() chaintype.AccountID
+	GetProposerAccountID() AccountID
+}
+
+// MsgSubmitProposalBase defines an sdk.Msg type that supports submitting arbitrary
+// proposal Content.
+//
+// Note, this message type provides the basis for which a true MsgSubmitProposal
+// can be constructed. Since the Content submitted in the message can be arbitrary,
+// assuming it fulfills the Content interface, it must be defined at the
+// application-level and extend MsgSubmitProposalBase.
+type MsgSubmitProposalBase struct {
+	InitialDeposit Coins     `json:"initial_deposit" yaml:"initial_deposit"`
+	Proposer       AccountID `json:"proposer" yaml:"proposer"`
 }
 
 // NewMsgSubmitProposalBase creates a new MsgSubmitProposalBase.
-func NewMsgSubmitProposalBase(initialDeposit sdk.Coins, proposer chaintype.AccountID) MsgSubmitProposalBase {
+func NewMsgSubmitProposalBase(initialDeposit Coins, proposer AccountID) MsgSubmitProposalBase {
 	return MsgSubmitProposalBase{
 		InitialDeposit: initialDeposit,
 		Proposer:       proposer,
@@ -39,8 +52,12 @@ func NewMsgSubmitProposalBase(initialDeposit sdk.Coins, proposer chaintype.Accou
 func (msg MsgSubmitProposalBase) Route() string { return RouterKey }
 
 // Type implements Msg
-func (msg MsgSubmitProposalBase) Type() chaintype.Name {
-	return chaintype.MustName(TypeMsgSubmitProposal)
+func (msg MsgSubmitProposalBase) Type() Name {
+	return MustName(TypeMsgSubmitProposal)
+}
+
+func (msg MsgSubmitProposalBase) Sender() AccountID {
+	return msg.Proposer
 }
 
 // ValidateBasic implements Msg
@@ -79,8 +96,15 @@ func (msg MsgSubmitProposalBase) String() string {
 	return string(out)
 }
 
+// MsgDeposit defines a message to submit a deposit to an existing proposal
+type MsgDeposit struct {
+	ProposalID uint64    `json:"proposal_id" yaml:"proposal_id"`
+	Depositor  AccountID `json:"depositor" yaml:"depositor"`
+	Amount     Coins     `json:"amount" yaml:"amount"`
+}
+
 // NewMsgDeposit creates a new MsgDeposit instance
-func NewMsgDeposit(depositor chaintype.AccountID, proposalID uint64, amount sdk.Coins) MsgDeposit {
+func NewMsgDeposit(depositor AccountID, proposalID uint64, amount Coins) MsgDeposit {
 	return MsgDeposit{proposalID, depositor, amount}
 }
 
@@ -88,7 +112,11 @@ func NewMsgDeposit(depositor chaintype.AccountID, proposalID uint64, amount sdk.
 func (msg MsgDeposit) Route() string { return RouterKey }
 
 // Type implements Msg
-func (msg MsgDeposit) Type() chaintype.Name { return chaintype.MustName(TypeMsgDeposit) }
+func (msg MsgDeposit) Type() Name { return MustName(TypeMsgDeposit) }
+
+func (msg MsgDeposit) Sender() AccountID {
+	return msg.Depositor
+}
 
 // ValidateBasic implements Msg
 func (msg MsgDeposit) ValidateBasic() error {
@@ -126,8 +154,15 @@ func (msg MsgDeposit) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{}
 }
 
+// MsgVote defines a message to cast a vote
+type MsgVote struct {
+	ProposalID uint64     `json:"proposal_id" yaml:"proposal_id"`
+	Voter      AccountID  `json:"voter" yaml:"voter"`
+	Option     VoteOption `json:"option" yaml:"option"`
+}
+
 // NewMsgVote creates a message to cast a vote on an active proposal
-func NewMsgVote(voter chaintype.AccountID, proposalID uint64, option VoteOption) MsgVote {
+func NewMsgVote(voter AccountID, proposalID uint64, option VoteOption) MsgVote {
 	return MsgVote{proposalID, voter, option}
 }
 
@@ -135,7 +170,11 @@ func NewMsgVote(voter chaintype.AccountID, proposalID uint64, option VoteOption)
 func (msg MsgVote) Route() string { return RouterKey }
 
 // Type implements Msg
-func (msg MsgVote) Type() chaintype.Name { return chaintype.MustName(TypeMsgVote) }
+func (msg MsgVote) Type() Name { return MustName(TypeMsgVote) }
+
+func (msg MsgVote) Sender() AccountID {
+	return msg.Voter
+}
 
 // ValidateBasic implements Msg
 func (msg MsgVote) ValidateBasic() error {
@@ -181,15 +220,15 @@ func (msg MsgVote) GetSigners() []sdk.AccAddress {
 //
 // TODO: Remove once client-side Protobuf migration has been completed.
 type MsgSubmitProposal struct {
-	Content        Content             `json:"content" yaml:"content"`
-	InitialDeposit sdk.Coins           `json:"initial_deposit" yaml:"initial_deposit"` //  Initial deposit paid by sender. Must be strictly positive
-	Proposer       chaintype.AccountID `json:"proposer" yaml:"proposer"`               //  Address of the proposer
+	Content        Content   `json:"content" yaml:"content"`
+	InitialDeposit Coins     `json:"initial_deposit" yaml:"initial_deposit"` //  Initial deposit paid by sender. Must be strictly positive
+	Proposer       AccountID `json:"proposer" yaml:"proposer"`               //  Address of the proposer
 }
 
 // NewMsgSubmitProposal returns a (deprecated) MsgSubmitProposal message.
 //
 // TODO: Remove once client-side Protobuf migration has been completed.
-func NewMsgSubmitProposal(content Content, initialDeposit sdk.Coins, proposer chaintype.AccountID) MsgSubmitProposal {
+func NewMsgSubmitProposal(content Content, initialDeposit Coins, proposer AccountID) MsgSubmitProposal {
 	return MsgSubmitProposal{content, initialDeposit, proposer}
 }
 
@@ -228,10 +267,11 @@ func (msg MsgSubmitProposal) GetSigners() []sdk.AccAddress {
 	}
 	return []sdk.AccAddress{}
 }
-func (msg MsgSubmitProposal) Route() string                { return RouterKey }
-func (msg MsgSubmitProposal) Type() string                 { return TypeMsgSubmitProposal }
-func (msg MsgSubmitProposal) GetContent() Content          { return msg.Content }
-func (msg MsgSubmitProposal) GetInitialDeposit() sdk.Coins { return msg.InitialDeposit }
+func (msg MsgSubmitProposal) Route() string            { return RouterKey }
+func (msg MsgSubmitProposal) Type() Name               { return MustName(TypeMsgSubmitProposal) }
+func (msg MsgSubmitProposal) Sender() AccountID        { return msg.Proposer }
+func (msg MsgSubmitProposal) GetContent() Content      { return msg.Content }
+func (msg MsgSubmitProposal) GetInitialDeposit() Coins { return msg.InitialDeposit }
 func (msg MsgSubmitProposal) GetProposer() sdk.AccAddress {
 	proposerAccAddress, ok := msg.Proposer.ToAccAddress()
 	if ok {
@@ -239,7 +279,7 @@ func (msg MsgSubmitProposal) GetProposer() sdk.AccAddress {
 	}
 	return nil
 }
-func (msg MsgSubmitProposal) GetProposerAccountID() chaintype.AccountID { return msg.Proposer }
+func (msg MsgSubmitProposal) GetProposerAccountID() AccountID { return msg.Proposer }
 
 func (msg MsgSubmitProposal) Marshal() (dAtA []byte, err error) {
 	bz := ModuleCdc.MustMarshalJSON(msg)

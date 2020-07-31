@@ -8,7 +8,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -55,7 +55,7 @@ func GetCmdCreateValidator(cdc *codec.Codec) *cobra.Command {
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
-			validatorAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			validatorAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "validator account id error")
 			}
@@ -104,7 +104,7 @@ func GetCmdEditValidator(cdc *codec.Codec) *cobra.Command {
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
-			valAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "validator operator accountID error")
 			}
@@ -170,16 +170,16 @@ $ %s tx kustaking delegate jack validator 1000stake --from jack
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
-			amount, err := sdk.ParseCoin(args[2])
+			amount, err := chainTypes.ParseCoin(args[2])
 			if err != nil {
 				return sdkerrors.Wrap(err, "amount parse error")
 			}
 
-			delAccountID, err := chaintype.NewAccountIDFromStr(args[0])
+			delAccountID, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "delegate accountID error")
 			}
-			valAccountID, err := chaintype.NewAccountIDFromStr(args[1])
+			valAccountID, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return sdkerrors.Wrap(err, "validator accountID error")
 			}
@@ -219,22 +219,22 @@ $ %s tx kustaking redelegate jack validator1 validator2 100stake --from jack
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
-			delAccountID, err := chaintype.NewAccountIDFromStr(args[0])
+			delAccountID, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "delegate acccount error")
 			}
 
-			valSrcAccID, err := chaintype.NewAccountIDFromStr(args[1])
+			valSrcAccID, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return sdkerrors.Wrap(err, "src-validator error")
 			}
 
-			valDstAccID, err := chaintype.NewAccountIDFromStr(args[2])
+			valDstAccID, err := chainTypes.NewAccountIDFromStr(args[2])
 			if err != nil {
 				return sdkerrors.Wrap(err, "dst-validator error")
 			}
 
-			amount, err := sdk.ParseCoin(args[3])
+			amount, err := chainTypes.ParseCoin(args[3])
 			if err != nil {
 				return err
 			}
@@ -272,17 +272,17 @@ $ %s tx kustaking unbond jack validator 100stake --from jack
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
-			delAccountID, err := chaintype.NewAccountIDFromStr(args[0])
+			delAccountID, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "delegate account id error")
 			}
 
-			amount, err := sdk.ParseCoin(args[2])
+			amount, err := chainTypes.ParseCoin(args[2])
 			if err != nil {
 				return err
 			}
 
-			valAddr, err := chaintype.NewAccountIDFromStr(args[1])
+			valAddr, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
 				return sdkerrors.Wrap(err, "val account id error")
 			}
@@ -380,7 +380,7 @@ func PrepareFlagsForTxCreateValidator(
 }
 
 // BuildCreateValidatorMsg makes a new MsgCreateValidator.
-func BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, valAddr chaintype.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error) {
+func BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, valAddr chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error) {
 	delAddr := cliCtx.GetAccountID()
 	pkStr := viper.GetString(FlagPubKey)
 
@@ -420,10 +420,10 @@ func BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder
 	return txBldr, msg, nil
 }
 
-func BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, delAccountID chaintype.AccountID, valAccountID chaintype.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
+func BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
 
 	amounstStr := viper.GetString(FlagAmount)
-	amount, err := sdk.ParseCoin(amounstStr)
+	amount, err := chainTypes.ParseCoin(amounstStr)
 	if err != nil {
 		return txBldr, nil, err
 	}

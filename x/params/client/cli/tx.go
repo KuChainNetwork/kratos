@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	paramscutils "github.com/KuChainNetwork/kuchain/x/params/client/utils"
 	"github.com/KuChainNetwork/kuchain/x/params/external"
 	paramproposal "github.com/KuChainNetwork/kuchain/x/params/types/proposal"
@@ -16,6 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/spf13/cobra"
 )
 
 // GetCmdSubmitProposal implements a command handler for submitting a parameter
@@ -49,7 +48,7 @@ Where proposal.json contains:
       }
     }
   ],
-  "deposit": "1000kratos/kts"
+  "deposit": "1000kuchain/kcs"
 }
 `,
 				version.ClientName,
@@ -64,13 +63,13 @@ Where proposal.json contains:
 			if err != nil {
 				return err
 			}
-			ProposalAccount, err := chaintype.NewAccountIDFromStr(args[0])
+			ProposalAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return sdkerrors.Wrap(err, "depositor account id error")
 			}
 
 			content := paramproposal.NewParameterChangeProposal(proposal.Title, proposal.Description, proposal.Changes.ToParamChanges())
-			deposit, err := sdk.ParseCoins(proposal.Deposit)
+			deposit, err := chainTypes.ParseCoins(proposal.Deposit)
 			if err != nil {
 				return err
 			}

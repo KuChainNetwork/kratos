@@ -20,7 +20,7 @@ func InitGenesis(ctx sdk.Context, bk types.BankKeeper, supplyKeeper types.Supply
 		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
 	}
 
-	var totalDeposits sdk.Coins
+	var totalDeposits types.Coins
 	for _, deposit := range data.Deposits {
 		k.SetDeposit(ctx, deposit)
 		totalDeposits = totalDeposits.Add(deposit.Amount...)

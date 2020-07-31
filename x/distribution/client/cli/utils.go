@@ -1,21 +1,20 @@
 package cli
 
 import (
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"io/ioutil"
 
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type (
 	// CommunityPoolSpendProposalJSON defines a CommunityPoolSpendProposal with a deposit
 	CommunityPoolSpendProposalJSON struct {
-		Title       string              `json:"title" yaml:"title"`
-		Description string              `json:"description" yaml:"description"`
-		Recipient   chainType.AccountID `json:"recipient" yaml:"recipient"`
-		Amount      sdk.Coins           `json:"amount" yaml:"amount"`
-		Deposit     sdk.Coins           `json:"deposit" yaml:"deposit"`
+		Title       string          `json:"title" yaml:"title"`
+		Description string          `json:"description" yaml:"description"`
+		Recipient   types.AccountID `json:"recipient" yaml:"recipient"`
+		Amount      types.Coins     `json:"amount" yaml:"amount"`
+		Deposit     types.Coins     `json:"deposit" yaml:"deposit"`
 	}
 )
 

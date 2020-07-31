@@ -6,10 +6,10 @@ import (
 )
 
 // SpendableCoins return account spendable coins
-func (a AssetKeeper) SpendableCoins(ctx sdk.Context, ID types.AccountID) sdk.Coins {
+func (a AssetKeeper) SpendableCoins(ctx sdk.Context, ID types.AccountID) Coins {
 	res, err := a.getCoins(ctx, ID)
 	if err != nil {
-		return sdk.Coins{}
+		return Coins{}
 	}
 
 	lockeds, err := a.getCoinsLocked(ctx, ID)
@@ -19,7 +19,7 @@ func (a AssetKeeper) SpendableCoins(ctx sdk.Context, ID types.AccountID) sdk.Coi
 
 	spendable, isNegative := res.SafeSub(lockeds)
 	if isNegative {
-		return sdk.Coins{}
+		return Coins{}
 	}
 
 	return spendable

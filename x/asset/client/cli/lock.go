@@ -37,7 +37,7 @@ func LockCoin(cdc *codec.Codec) *cobra.Command {
 				return sdkerrors.Wrapf(err, "unlock block height parse error")
 			}
 
-			amount, err := sdk.ParseCoins(args[2])
+			amount, err := chainTypes.ParseCoins(args[2])
 			if err != nil {
 				return err
 			}
@@ -75,7 +75,7 @@ func UnlockCoin(cdc *codec.Codec) *cobra.Command {
 				return sdkerrors.Wrapf(err, "account id %s parse error", args[0])
 			}
 
-			amount, err := sdk.ParseCoins(args[1])
+			amount, err := chainTypes.ParseCoins(args[1])
 			if err != nil {
 				return err
 			}

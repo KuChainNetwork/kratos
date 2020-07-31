@@ -31,16 +31,6 @@ func SetGenTxsInAppGenesisState(
 	return SetGenesisStateInAppState(cdc, appGenesisState, genesisState), nil
 }
 
-// ValidateAccountInGenesis checks that the provided account has a sufficient
-// balance in the set of genesis accounts.
-func ValidateAccountInGenesis(
-	appGenesisState map[string]json.RawMessage, genBalIterator types.GenesisBalancesIterator,
-	addr sdk.Address, coins sdk.Coins, cdc *codec.Codec, stakingFuncManager types.StakingFuncManager,
-) error {
-	// FIXME: Just allow so that will use account module, until staking module use account module
-	return nil
-}
-
 type deliverTxfn func(abci.RequestDeliverTx) abci.ResponseDeliverTx
 
 // DeliverGenTxs iterates over all genesis txs, decodes each into a StdTx and

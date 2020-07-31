@@ -13,13 +13,13 @@ func (a AssetKeeper) BlacklistedAddr(addr sdk.AccAddress) bool {
 }
 
 // GetAllBalances get all coins for a account
-func (a AssetKeeper) GetAllBalances(ctx sdk.Context, ID types.AccountID) sdk.Coins {
+func (a AssetKeeper) GetAllBalances(ctx sdk.Context, ID types.AccountID) Coins {
 	res, _ := a.GetCoins(ctx, ID)
 	return res
 }
 
 // GetBalance get coins balance for account
-func (a AssetKeeper) GetBalance(ctx sdk.Context, ID types.AccountID, denom string) sdk.Coin {
+func (a AssetKeeper) GetBalance(ctx sdk.Context, ID types.AccountID, denom string) Coin {
 	creator, symbol, err := types.CoinAccountsFromDenom(denom)
 	if err != nil {
 		panic(err)

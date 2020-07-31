@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/KuChainNetwork/kuchain/x/evidence/external"
+	"gopkg.in/yaml.v2"
 )
 
 // DONTCOVER
@@ -31,6 +30,12 @@ var (
 // ParamKeyTable returns the parameter key table.
 func ParamKeyTable() external.ParamsKeyTable {
 	return external.ParamNewKeyTable().RegisterParamSet(&Params{})
+}
+
+// Params defines the total set of parameters for the evidence module
+type Params struct {
+	MaxEvidenceAge         time.Duration `json:"max_evidence_age" yaml:"max_evidence_age"`
+	DoubleSignJailDuration time.Duration `json:"double_sign_jail_duration" yaml:"double_sign_jail_duration"`
 }
 
 func (p Params) String() string {

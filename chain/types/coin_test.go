@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -14,7 +14,7 @@ func TestCoinDemond(t *testing.T) {
 
 		denomd := CoinDenom(account, symbol)
 
-		So(sdk.ValidateDenom(denomd), ShouldEqual, nil)
+		So(coin.ValidateDenom(denomd), ShouldEqual, nil)
 
 		Printf("denomd %s", denomd)
 	})
@@ -27,15 +27,15 @@ func TestCoinDemondCoin(t *testing.T) {
 
 		denomd := CoinDenom(account, symbol)
 
-		So(sdk.ValidateDenom(denomd), ShouldBeNil)
+		So(coin.ValidateDenom(denomd), ShouldBeNil)
 
 		//Printf("denomd %s\n", denomd)
 
-		acoin := sdk.NewCoin(denomd, sdk.NewInt(111111))
+		acoin := NewCoin(denomd, NewInt(111111))
 
 		//Printf("coin %s\n", acoin.String())
 
-		_, err := sdk.ParseCoin(acoin.String())
+		_, err := ParseCoin(acoin.String())
 
 		So(err, ShouldBeNil)
 

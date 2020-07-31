@@ -1,16 +1,16 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/KuChainNetwork/kuchain/chain/constants"
 )
 
 // Some internal implements for asset keeper
 
 func (a AssetKeeper) issueCoinStat(ctx sdk.Context, amount types.Coin) error {
-	creator, symbol, err := CoinAccountsFromDenom(amount.GetDenom())
+	creator, symbol, err := CoinAccountsFromDenom(amount.Denom)
 	if err != nil {
 		return sdkerrors.Wrap(err, "issue coin error")
 	}
@@ -30,11 +30,11 @@ func (a AssetKeeper) issueCoinStat(ctx sdk.Context, amount types.Coin) error {
 
 	// check denom
 	denom := types.CoinDenom(creator, symbol)
-	if err := sdk.ValidateDenom(denom); err != nil {
+	if err := coin.ValidateDenom(denom); err != nil {
 		return sdkerrors.Wrapf(types.ErrAssetDenom, "denom %s", denom)
 	}
 
-	if denom != amount.GetDenom() {
+	if denom != amount.Denom {
 		return sdkerrors.Wrap(types.ErrAssetDenom, "amount denom error")
 	}
 
@@ -55,7 +55,7 @@ func (a AssetKeeper) issueCoinStat(ctx sdk.Context, amount types.Coin) error {
 }
 
 func (a AssetKeeper) burnCoinStat(ctx sdk.Context, amount types.Coin) error {
-	creator, symbol, err := CoinAccountsFromDenom(amount.GetDenom())
+	creator, symbol, err := CoinAccountsFromDenom(amount.Denom)
 	if err != nil {
 		return sdkerrors.Wrap(err, "issue coin error")
 	}
@@ -75,11 +75,11 @@ func (a AssetKeeper) burnCoinStat(ctx sdk.Context, amount types.Coin) error {
 
 	// check denom
 	denom := types.CoinDenom(creator, symbol)
-	if err := sdk.ValidateDenom(denom); err != nil {
+	if err := coin.ValidateDenom(denom); err != nil {
 		return sdkerrors.Wrapf(types.ErrAssetDenom, "denom %s", denom)
 	}
 
-	if denom != amount.GetDenom() {
+	if denom != amount.Denom {
 		return sdkerrors.Wrap(types.ErrAssetDenom, "amount denom error")
 	}
 
@@ -141,10 +141,7 @@ func (a AssetKeeper) getStat(ctx sdk.Context, creator, symbol types.Name) (*type
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.CoinStatStoreKey(creator, symbol))
 	if bz == nil {
-		if constants.IsFixAssetHeight(ctx) {
-			return nil, types.ErrAssetCoinNoExit
-		}
-		return nil, nil
+		return nil, types.ErrAssetCoinNoExit
 	}
 
 	var stat types.CoinStat
@@ -170,10 +167,7 @@ func (a AssetKeeper) getDescription(ctx sdk.Context, creator, symbol types.Name)
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.CoinDescStoreKey(creator, symbol))
 	if bz == nil {
-		if constants.IsFixAssetHeight(ctx) {
-			return nil, types.ErrAssetCoinNoExit
-		}
-		return nil, nil
+		return nil, types.ErrAssetCoinNoExit
 	}
 
 	var res types.CoinDescription

@@ -47,7 +47,7 @@ func newPrintInfo(moniker, chainID, nodeID, genTxsDir string,
 	}
 }
 
-func displayInfo(cdc codec.JSONMarshaler, info printInfo) error {
+func displayInfo(cdc *codec.Codec, info printInfo) error {
 	out, err := codec.MarshalJSONIndent(cdc, info)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func displayInfo(cdc codec.JSONMarshaler, info printInfo) error {
 
 // InitCmd returns a command that initializes all files needed for Tendermint
 // and the respective application.
-func InitCmd(ctx *server.Context, cdc codec.JSONMarshaler, mbm module.BasicManager,
+func InitCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager,
 	defaultNodeHome string) *cobra.Command { // nolint: golint
 	cmd := &cobra.Command{
 		Use:   "init [moniker]",
@@ -86,7 +86,7 @@ func InitCmd(ctx *server.Context, cdc codec.JSONMarshaler, mbm module.BasicManag
 			if !viper.GetBool(flagOverwrite) && tmos.FileExists(genFile) {
 				return fmt.Errorf("genesis.json file already exists: %v", genFile)
 			}
-			appState, err := codec.MarshalJSONIndent(cdc, mbm.DefaultGenesis(cdc))
+			appState, err := codec.MarshalJSONIndent(cdc, mbm.DefaultGenesis())
 			if err != nil {
 				return errors.Wrap(err, "Failed to marshall default genesis state")
 			}

@@ -1,19 +1,19 @@
 package keeper
 
 import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	"time"
+
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
 )
 
 func (keeper Keeper) SetPunishValidator(ctx sdk.Context, validator_to_punish types.PunishValidator) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := keeper.cdc.MustMarshalBinaryBare(&validator_to_punish)
-	store.Set(types.GetValidatorKey(validator_to_punish.GetValidatorAccount()), bz)
+	store.Set(types.GetValidatorKey(validator_to_punish.ValidatorAccount), bz)
 }
 
-func (keeper Keeper) GetPunishValidator(ctx sdk.Context, validatorAccount chaintype.AccountID) (punishValidator types.PunishValidator, found bool) {
+func (keeper Keeper) GetPunishValidator(ctx sdk.Context, validatorAccount AccountID) (punishValidator types.PunishValidator, found bool) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get(types.GetValidatorKey(validatorAccount))
 	if bz == nil {
@@ -23,7 +23,7 @@ func (keeper Keeper) GetPunishValidator(ctx sdk.Context, validatorAccount chaint
 	return punishValidator, true
 }
 
-func (keeper Keeper) deletePunishValidator(ctx sdk.Context, validatorAccount chaintype.AccountID) {
+func (keeper Keeper) deletePunishValidator(ctx sdk.Context, validatorAccount AccountID) {
 	store := ctx.KVStore(keeper.storeKey)
 	store.Delete(types.GetValidatorKey(validatorAccount))
 }

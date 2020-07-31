@@ -3,7 +3,6 @@ package msg
 import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type Option interface {
@@ -38,7 +37,7 @@ func WithData(cdc *codec.Codec, data KuMsgData) Option {
 type withTransfer struct {
 	From   AccountID
 	To     AccountID
-	Amount sdk.Coins
+	Amount Coins
 }
 
 func (k withTransfer) Op(msg *KuMsg) error {
@@ -49,7 +48,7 @@ func (k withTransfer) Op(msg *KuMsg) error {
 }
 
 // WithTransfer create kumsg with transfer message
-func WithTransfer(from, to AccountID, amount sdk.Coins) Option {
+func WithTransfer(from, to AccountID, amount Coins) Option {
 	return withTransfer{
 		From:   from,
 		To:     to,

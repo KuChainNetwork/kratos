@@ -3,13 +3,12 @@ package staking
 import (
 	"fmt"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	statkingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // InitGenesis sets the pool and parameters for the provided keeper.  For each
@@ -90,8 +89,8 @@ func InitGenesis(
 		}
 	}
 
-	bondedCoins := sdk.NewCoins(sdk.NewCoin(data.Params.BondDenom, bondedTokens))
-	notBondedCoins := sdk.NewCoins(sdk.NewCoin(data.Params.BondDenom, notBondedTokens))
+	bondedCoins := chainTypes.NewCoins(chainTypes.NewCoin(data.Params.BondDenom, bondedTokens))
+	notBondedCoins := chainTypes.NewCoins(chainTypes.NewCoin(data.Params.BondDenom, notBondedTokens))
 
 	// check if the unbonded and bonded pools accounts exists
 	bondedPool := keeper.GetBondedPool(ctx)
@@ -125,7 +124,7 @@ func InitGenesis(
 	// don't need to run Tendermint updates if we exported
 	if data.Exported {
 		for _, lv := range data.LastValidatorPowers {
-			valAccountID := chaintype.NewAccountIDFromAccAdd(sdk.AccAddress(lv.Address))
+			valAccountID := chainTypes.NewAccountIDFromAccAdd(sdk.AccAddress(lv.Address))
 			keeper.SetLastValidatorPower(ctx, valAccountID, lv.Power)
 			validator, found := keeper.GetValidator(ctx, valAccountID)
 			if !found {
@@ -161,7 +160,7 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 		return false
 	})
 	var lastValidatorPowers []types.LastValidatorPower
-	keeper.IterateLastValidatorPowers(ctx, func(addr chaintype.AccountID, power int64) (stop bool) {
+	keeper.IterateLastValidatorPowers(ctx, func(addr chainTypes.AccountID, power int64) (stop bool) {
 		accAddr, _ := addr.ToAccAddress()
 		lastValidatorPowers = append(lastValidatorPowers, types.LastValidatorPower{Address: sdk.ValAddress(accAddr), Power: power})
 		return false
@@ -190,43 +189,6 @@ func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []tmtypes.GenesisVali
 
 		return false
 	})
-
-	return
-}
-
-// ValidateGenesis validates the provided staking genesis state to ensure the
-// expected invariants holds. (i.e. params in correct bounds, no duplicate validators)
-func ValidateGenesis(data types.GenesisState) error {
-	err := validateGenesisStateValidators(data.Validators)
-	if err != nil {
-		return err
-	}
-	err = data.Params.Validate()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func validateGenesisStateValidators(validators []types.Validator) (err error) {
-	addrMap := make(map[string]bool, len(validators))
-	for i := 0; i < len(validators); i++ {
-		val := validators[i]
-		strKey := string(val.GetConsPubKey().Bytes())
-
-		if _, ok := addrMap[strKey]; ok {
-			return fmt.Errorf("duplicate validator in genesis state: moniker %v, address %v", val.Description.Moniker, val.GetConsAddr())
-		}
-		if val.Jailed && val.IsBonded() {
-			return fmt.Errorf("validator is bonded and jailed in genesis state: moniker %v, address %v", val.Description.Moniker, val.GetConsAddr())
-		}
-		if val.DelegatorShares.IsZero() && !val.IsUnbonding() {
-			return fmt.Errorf("bonded/unbonded genesis validator cannot have zero delegator shares, validator: %v", val)
-		}
-
-		addrMap[strKey] = true
-	}
 
 	return
 }

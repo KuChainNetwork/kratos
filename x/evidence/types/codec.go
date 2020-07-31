@@ -7,8 +7,6 @@ import (
 
 // Codec defines the interface required to serialize evidence
 type Codec interface {
-	codec.Marshaler
-
 	MarshalEvidence(exported.Evidence) ([]byte, error)
 	UnmarshalEvidence([]byte) (exported.Evidence, error)
 	MarshalEvidenceJSON(exported.Evidence) ([]byte, error)
@@ -16,15 +14,11 @@ type Codec interface {
 }
 
 type EvidenceCdc struct {
-	codec.Marshaler
-
-	// Keep reference to the amino codec to allow backwards compatibility along
-	// with type, and interface registration.
 	amino *codec.Codec
 }
 
 func NewEveidenceCodec(amino *codec.Codec) *EvidenceCdc {
-	return &EvidenceCdc{Marshaler: codec.NewHybridCodec(amino), amino: amino}
+	return &EvidenceCdc{amino: amino}
 }
 
 // MarshalEvidence marshals an Evidence interface. If the given type implements
@@ -36,7 +30,7 @@ func (c *EvidenceCdc) MarshalEvidence(evidenceI exported.Evidence) ([]byte, erro
 		return nil, err
 	}
 
-	return c.Marshaler.MarshalBinaryBare(evidence)
+	return c.amino.MarshalBinaryBare(evidence)
 }
 
 // UnmarshalEvidence returns an Evidence interface from raw encoded evidence
@@ -44,7 +38,7 @@ func (c *EvidenceCdc) MarshalEvidence(evidenceI exported.Evidence) ([]byte, erro
 // failure.
 func (c *EvidenceCdc) UnmarshalEvidence(bz []byte) (exported.Evidence, error) {
 	evidence := &Evidence{}
-	if err := c.Marshaler.UnmarshalBinaryBare(bz, evidence); err != nil {
+	if err := c.amino.UnmarshalBinaryBare(bz, evidence); err != nil {
 		return nil, err
 	}
 
@@ -54,13 +48,13 @@ func (c *EvidenceCdc) UnmarshalEvidence(bz []byte) (exported.Evidence, error) {
 // MarshalEvidenceJSON JSON encodes an evidence object implementing the Evidence
 // interface.
 func (c *EvidenceCdc) MarshalEvidenceJSON(evidence exported.Evidence) ([]byte, error) {
-	return c.Marshaler.MarshalJSON(evidence)
+	return c.amino.MarshalJSON(evidence)
 }
 
 // UnmarshalEvidenceJSON returns an Evidence from JSON encoded bytes
 func (c *EvidenceCdc) UnmarshalEvidenceJSON(bz []byte) (exported.Evidence, error) {
 	evidence := &Evidence{}
-	if err := c.Marshaler.UnmarshalJSON(bz, evidence); err != nil {
+	if err := c.amino.UnmarshalJSON(bz, evidence); err != nil {
 		return nil, err
 	}
 
@@ -76,7 +70,7 @@ func RegisterCodec(cdc *codec.Codec) {
 }
 
 var (
-	amino = codec.New()
+	ModuleCdc = codec.New()
 
 	// ModuleCdc references the global x/evidence module codec. Note, the codec should
 	// ONLY be used in certain instances of tests and for JSON encoding as Amino is
@@ -84,11 +78,11 @@ var (
 	//
 	// The actual codec used for serialization should be provided to x/evidence and
 	// defined at the application level.
-	Evidence_Cdc = NewEveidenceCodec(amino)
+	Evidence_Cdc = NewEveidenceCodec(ModuleCdc)
 )
 
 func init() {
-	RegisterCodec(amino)
-	codec.RegisterCrypto(amino)
-	amino.Seal()
+	RegisterCodec(ModuleCdc)
+	codec.RegisterCrypto(ModuleCdc)
+	ModuleCdc.Seal()
 }

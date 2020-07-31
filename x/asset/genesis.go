@@ -1,14 +1,21 @@
 package asset
 
 import (
+	"encoding/json"
+
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis account genesis init
-func InitGenesis(ctx sdk.Context, ak Keeper, data GenesisState) {
+func InitGenesis(ctx sdk.Context, ak Keeper, bz json.RawMessage) {
 	logger := ak.Logger(ctx)
+
+	var data GenesisState
+	ModuleCdc.MustUnmarshalJSON(bz, &data)
+
+	logger.Debug("init genesis", "module", ModuleName, "data", data)
 
 	for _, a := range data.GenesisCoins {
 		logger.Info("init genesis asset coin", "accountID", a.GetCreator(), "coins", a.GetSymbol(), "maxsupply:", a.GetMaxSupply())

@@ -10,7 +10,7 @@ import (
 
 // add server commands
 func AddCommands(
-	ctx *server.Context, cdc codec.JSONMarshaler,
+	ctx *server.Context, cdc *codec.Codec,
 	rootCmd *cobra.Command,
 	appCreator server.AppCreator, appExport server.AppExporter) {
 

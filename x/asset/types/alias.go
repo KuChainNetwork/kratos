@@ -21,5 +21,5 @@ var (
 	MustName              = types.MustName
 	NewAccountIDFromName  = types.NewAccountIDFromName
 	NewAccountIDFromStr   = types.NewAccountIDFromStr
-	NewInt                = sdk.NewInt
+	NewInt                = types.NewInt
 )

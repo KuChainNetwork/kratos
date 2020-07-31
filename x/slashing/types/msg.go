@@ -1,23 +1,30 @@
 package types
 
 import (
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // verify interface at compile time
 //var _ sdk.Msg = &MsgUnjail{}
+var _ chainType.KuMsgData = (*MsgUnjail)(nil)
+
+// MsgUnjail - struct for unjailing jailed validator
+type MsgUnjail struct {
+	ValidatorAddr AccountID `json:"address" yaml:"address"`
+}
 
 // NewMsgUnjail creates a new MsgUnjail instance
-func NewMsgUnjail(validatorAddr chaintype.AccountID) MsgUnjail {
+func NewMsgUnjail(validatorAddr AccountID) MsgUnjail {
 	return MsgUnjail{
 		ValidatorAddr: validatorAddr,
 	}
 }
 
 //nolint
-func (msg MsgUnjail) Route() string        { return RouterKey }
-func (msg MsgUnjail) Type() chaintype.Name { return chaintype.MustName("unjail") }
+func (msg MsgUnjail) Route() string     { return RouterKey }
+func (msg MsgUnjail) Type() Name        { return MustName("unjail") }
+func (msg MsgUnjail) Sender() AccountID { return msg.ValidatorAddr }
 func (msg MsgUnjail) GetSigners() []sdk.AccAddress {
 	valAccAddress, ok := msg.ValidatorAddr.ToAccAddress()
 	if ok {

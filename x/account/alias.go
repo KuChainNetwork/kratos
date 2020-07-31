@@ -23,5 +23,6 @@ var (
 	NewQuerier          = keeper.NewQuerier
 	NewKuAccount        = types.NewKuAccount
 	DefaultGenesisState = types.DefaultGenesisState
+	NewGenesisState     = types.NewGenesisState
 	ModuleCdc           = types.ModuleCdc
 )

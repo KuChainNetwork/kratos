@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -38,7 +37,7 @@ const flagInvCheckPeriod = "inv-check-period"
 var invCheckPeriod uint
 
 func main() {
-	cdc := codecstd.MakeCodec(app.ModuleBasics)
+	cdc := app.MakeCodec()
 	genCdc := genTypes.ModuleCdc
 
 	chainCfg.SealChainConfig()
@@ -46,8 +45,8 @@ func main() {
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
-		Use:               "ktsd",
-		Short:             "kratos Daemon (server)",
+		Use:               "kucd",
+		Short:             "kuchain Daemon (server)",
 		PersistentPreRunE: kuLog.PersistentPreRunEFn(ctx),
 	}
 
@@ -100,7 +99,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	return app.NewKuchainApp(
 		logger, db, traceStore, true, invCheckPeriod,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
-		baseapp.SetMinGasPrices(miniGasPrice),
+		//baseapp.SetMinGasPrices(miniGasPrice), FIXME: min gas
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
 		baseapp.SetInterBlockCache(cache),

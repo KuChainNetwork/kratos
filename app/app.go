@@ -3,11 +3,22 @@ package app
 import (
 	"io"
 
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/version"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/KuChainNetwork/kuchain/chain/ante"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/fee"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/test/simapp"
 	"github.com/KuChainNetwork/kuchain/x/account"
 	"github.com/KuChainNetwork/kuchain/x/asset"
 	distr "github.com/KuChainNetwork/kuchain/x/distribution"
@@ -15,28 +26,13 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/genutil"
 	"github.com/KuChainNetwork/kuchain/x/gov"
 	"github.com/KuChainNetwork/kuchain/x/mint"
+	"github.com/KuChainNetwork/kuchain/x/params"
+	paramsclient "github.com/KuChainNetwork/kuchain/x/params/client"
+	paramproposal "github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/KuChainNetwork/kuchain/x/plugin"
 	"github.com/KuChainNetwork/kuchain/x/slashing"
-	kustaking "github.com/KuChainNetwork/kuchain/x/staking"
-
-	"github.com/KuChainNetwork/kuchain/x/gov/govcodec"
-	kuparams "github.com/KuChainNetwork/kuchain/x/params"
-	kuparamsclient "github.com/KuChainNetwork/kuchain/x/params/client"
-	paramproposal "github.com/KuChainNetwork/kuchain/x/params/types/proposal"
+	"github.com/KuChainNetwork/kuchain/x/staking"
 	"github.com/KuChainNetwork/kuchain/x/supply"
-	bam "github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
-	"github.com/cosmos/cosmos-sdk/simapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/cosmos/cosmos-sdk/x/params"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	dbm "github.com/tendermint/tm-db"
 )
 
 var (
@@ -45,29 +41,29 @@ var (
 	// and genesis verification.
 	ModuleBasics = module.NewBasicManager(
 		genutil.AppModuleBasic{},
-		account.AppModuleBasic{},
-		asset.AppModuleBasic{},
+		account.NewAppModuleBasic(),
+		asset.NewAppModuleBasic(),
 		params.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		supply.AppModuleBasic{},
-		kustaking.AppModuleBasic{},
-		kustaking.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		gov.NewAppModuleBasic(kuparamsclient.ProposalHandler, distr.ProposalHandler),
-		mint.AppModuleBasic{},
-		kuparams.AppModuleBasic{},
+		distr.NewAppModuleBasic(),
+		supply.NewAppModuleBasic(),
+		staking.NewAppModuleBasic(),
+		slashing.NewAppModuleBasic(),
+		evidence.NewAppModuleBasic(),
+		gov.NewAppModuleBasic(paramsclient.ProposalHandler, distr.ProposalHandler),
+		mint.NewAppModuleBasic(),
+		params.NewAppModuleBasic(),
+		plugin.NewAppModuleBasic(),
 	)
 
 	// maccPerms module account permissions
 	maccPerms = map[string][]string{
-		fee.CollectorName:           nil,
-		distr.ModuleName:            nil,
-		supply.BlackHole:            nil,
-		kustaking.BondedPoolName:    {supply.Burner, supply.Staking},
-		kustaking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		gov.ModuleName:              {supply.Burner},
-		mint.ModuleName:             {supply.Minter},
+		fee.CollectorName:         nil,
+		distr.ModuleName:          nil,
+		supply.BlackHole:          nil,
+		staking.BondedPoolName:    {supply.Burner, supply.Staking},
+		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
+		gov.ModuleName:            {supply.Burner},
+		mint.ModuleName:           {supply.Minter},
 	}
 	allowedReceivingModAcc = map[string]bool{
 		distr.ModuleName: true,
@@ -89,24 +85,19 @@ type KuchainApp struct {
 	tKeys map[string]*sdk.TransientStoreKey
 
 	// subspaces
-	subspaces   map[string]params.Subspace
-	kusubspaces map[string]kuparams.Subspace
+	subspaces map[string]params.Subspace
 
 	// keepers
-	accountKeeper account.Keeper
-	assetKeeper   asset.Keeper
-	supplyKeeper  supply.Keeper
-
-	distrKeeper  distr.Keeper
-	mintKeeper   mint.Keeper
-	paramsKeeper params.Keeper
-
-	kuparamsKeeper kuparams.Keeper
-
-	kustakingKeeper kustaking.Keeper
-	slashingKeeper  slashing.Keeper
-	evidenceKeeper  evidence.Keeper
-	govKeeper       gov.Keeper
+	accountKeeper  account.Keeper
+	assetKeeper    asset.Keeper
+	supplyKeeper   supply.Keeper
+	distrKeeper    distr.Keeper
+	mintKeeper     mint.Keeper
+	paramsKeeper   params.Keeper
+	stakingKeeper  staking.Keeper
+	slashingKeeper slashing.Keeper
+	evidenceKeeper evidence.Keeper
+	govKeeper      gov.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -115,7 +106,7 @@ type KuchainApp struct {
 	sm *module.SimulationManager
 
 	// function manager
-	stakingFuncManager kustaking.FuncManager
+	stakingFuncManager staking.FuncManager
 }
 
 // custom tx codec
@@ -139,16 +130,16 @@ func NewKuchainApp(
 	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
 ) *KuchainApp {
 	cdc := MakeCodec()
-	appCodec := codecstd.NewAppCodec(cdc)
 
 	bApp := bam.NewBaseApp(appName, logger, db, txutil.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
+
 	keys := sdk.NewKVStoreKeys(
-		bam.MainStoreKey, kustaking.StoreKey, slashing.StoreKey, evidence.StoreKey, gov.StoreKey,
-		account.StoreKey, asset.StoreKey, supply.StoreKey, params.StoreKey, mint.StoreKey, distr.StoreKey, kuparams.StoreKey,
+		bam.MainStoreKey, staking.StoreKey, slashing.StoreKey, evidence.StoreKey, gov.StoreKey,
+		account.StoreKey, asset.StoreKey, supply.StoreKey, params.StoreKey, mint.StoreKey, distr.StoreKey, params.StoreKey,
 	)
-	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey, kustaking.TStoreKey, kuparams.TStoreKey)
+	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey, staking.TStoreKey, params.TStoreKey)
 
 	app := &KuchainApp{
 		BaseApp:        bApp,
@@ -157,19 +148,17 @@ func NewKuchainApp(
 		keys:           keys,
 		tKeys:          tKeys,
 		subspaces:      make(map[string]params.Subspace),
-		kusubspaces:    make(map[string]kuparams.Subspace),
 	}
 
 	// init params keeper and subspaces
-	app.paramsKeeper = params.NewKeeper(appCodec, keys[params.StoreKey], tKeys[params.TStoreKey])
+	app.paramsKeeper = params.NewKeeper(cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
 	app.subspaces[account.ModuleName] = app.paramsKeeper.Subspace(account.DefaultParamspace)
 	app.subspaces[distr.ModuleName] = app.paramsKeeper.Subspace(distr.DefaultParamspace)
-	app.subspaces[kustaking.ModuleName] = app.paramsKeeper.Subspace(kustaking.DefaultParamspace)
+	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
 	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
 	app.subspaces[mint.ModuleName] = app.paramsKeeper.Subspace(mint.DefaultParamspace)
-	app.kuparamsKeeper = kuparams.NewKeeper(appCodec, keys[kuparams.StoreKey], tKeys[kuparams.TStoreKey])
-	app.kusubspaces[gov.ModuleName] = app.kuparamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
+	app.subspaces[gov.ModuleName] = app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 
 	// add keepers
 	app.accountKeeper = account.NewAccountKeeper(cdc, keys[account.StoreKey])
@@ -178,27 +167,27 @@ func NewKuchainApp(
 		cdc, keys[supply.StoreKey], app.accountKeeper, app.assetKeeper, maccPerms,
 	)
 
-	kustakingKeeper := kustaking.NewKeeper(
-		app.cdc, keys[kustaking.StoreKey], app.assetKeeper, app.supplyKeeper, app.subspaces[kustaking.ModuleName], app.accountKeeper,
+	stakingKeeper := staking.NewKeeper(
+		app.cdc, keys[staking.StoreKey], app.assetKeeper, app.supplyKeeper, app.subspaces[staking.ModuleName], app.accountKeeper,
 	)
-	app.stakingFuncManager = kustaking.NewFuncManager()
+	app.stakingFuncManager = staking.NewFuncManager()
 
 	app.distrKeeper = distr.NewKeeper(
-		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName],
+		cdc, keys[distr.StoreKey], app.subspaces[distr.ModuleName],
 		app.assetKeeper,
-		&app.kustakingKeeper,
+		&app.stakingKeeper,
 		app.supplyKeeper,
 		app.accountKeeper,
 		fee.CollectorName,
 		app.ModuleAccountAddrs())
 
 	app.slashingKeeper = slashing.NewKeeper(
-		appCodec, keys[slashing.StoreKey], &kustakingKeeper, app.subspaces[slashing.ModuleName],
+		cdc, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName],
 	)
 
 	// create evidence keeper with evidence router
 	evidenceKeeper := evidence.NewKeeper(
-		keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &kustakingKeeper, app.slashingKeeper,
+		keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.slashingKeeper,
 	)
 	evidenceRouter := evidence.NewRouter()
 
@@ -207,23 +196,22 @@ func NewKuchainApp(
 	// register the proposal types
 	govRouter := gov.NewRouter()
 	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, kuparams.NewParamChangeProposalHandler(app.kuparamsKeeper))
-	app.govKeeper = gov.NewKeeper(govcodec.Gov_Cdc,
-		keys[gov.StoreKey], app.kusubspaces[gov.ModuleName],
-		app.supplyKeeper, &kustakingKeeper, app.distrKeeper, govRouter,
+		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper))
+	app.govKeeper = gov.NewKeeper(cdc,
+		keys[gov.StoreKey], app.subspaces[gov.ModuleName],
+		app.supplyKeeper, &stakingKeeper, app.distrKeeper, govRouter,
 	)
 
 	// register the staking hooks
-	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.kustakingKeeper = *kustakingKeeper.SetHooks(
-		kustaking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
+	app.stakingKeeper = *stakingKeeper.SetHooks(
+		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
 	// TODO: register evidence routes
 	evidenceKeeper.SetRouter(evidenceRouter)
 	app.mintKeeper = mint.NewKeeper(
-		appCodec, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &app.kustakingKeeper,
+		cdc, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &app.stakingKeeper,
 		app.supplyKeeper, constants.FeeSystemAccountStr,
 	)
 
@@ -231,12 +219,12 @@ func NewKuchainApp(
 	// must be passed by reference here.
 	app.mm = module.NewManager(
 		account.NewAppModule(app.accountKeeper, app.assetKeeper),
-		genutil.NewAppModule(app.accountKeeper, app.kustakingKeeper, app.BaseApp.DeliverTx, app.stakingFuncManager),
+		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, app.stakingFuncManager),
 		asset.NewAppModule(app.accountKeeper, app.assetKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.assetKeeper, app.accountKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.kustakingKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.assetKeeper, app.kustakingKeeper),
-		kustaking.NewAppModule(app.kustakingKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.stakingKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.assetKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper, app.supplyKeeper),
 		evidence.NewAppModule(app.evidenceKeeper, app.accountKeeper, app.assetKeeper),
 		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
@@ -245,7 +233,7 @@ func NewKuchainApp(
 
 	// plugin.ModuleName MUST be the last
 	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName, evidence.ModuleName, plugin.ModuleName)
-	app.mm.SetOrderEndBlockers(kustaking.ModuleName, gov.ModuleName, plugin.ModuleName)
+	app.mm.SetOrderEndBlockers(staking.ModuleName, gov.ModuleName, plugin.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -253,7 +241,7 @@ func NewKuchainApp(
 		account.ModuleName,
 		asset.ModuleName,
 		distr.ModuleName,
-		kustaking.ModuleName,
+		staking.ModuleName,
 		slashing.ModuleName, evidence.ModuleName, gov.ModuleName,
 		supply.ModuleName,
 		genutil.ModuleName,
@@ -269,9 +257,9 @@ func NewKuchainApp(
 	app.sm = module.NewSimulationManager(
 		account.NewAppModule(app.accountKeeper, app.assetKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.assetKeeper, app.accountKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.kustakingKeeper),
-		kustaking.NewAppModule(app.kustakingKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.assetKeeper, app.kustakingKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.assetKeeper, app.stakingKeeper),
 		mint.NewAppModule(app.mintKeeper, app.supplyKeeper),
 		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
 	)
@@ -319,8 +307,7 @@ func (app *KuchainApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abc
 func (app *KuchainApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState simapp.GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-
-	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
+	return app.mm.InitGenesis(ctx, genesisState)
 }
 
 // LoadHeight loads a particular height

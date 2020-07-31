@@ -27,7 +27,7 @@ func TestCoinStoreKey2AccountID(t *testing.T) {
 func TestCoinStoreKey2AccountIDInAdd(t *testing.T) {
 	config.SealChainConfig()
 
-	accAddressStr := "kts1xmc2z728py4gtwpc7jgytsan0282ww883qtv07"
+	accAddressStr := "kuchain1xmc2z728py4gtwpc7jgytsan0282ww883qtv07"
 	accAddress, _ := sdk.AccAddressFromBech32(accAddressStr)
 	accID := chainTypes.NewAccountIDFromAccAdd(accAddress)
 	key := genCoinStoreKey(CoinStatStoreKeyPrefix, accID.Value)

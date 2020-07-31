@@ -1,21 +1,28 @@
 package account
 
 import (
+	"encoding/json"
+
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis account genesis init
-func InitGenesis(ctx sdk.Context, ak Keeper, data GenesisState) {
+func InitGenesis(ctx sdk.Context, ak Keeper, data json.RawMessage) {
 	logger := ak.Logger(ctx)
 
-	for _, a := range data.Accounts {
+	var genesisState GenesisState
+	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
+
+	for _, a := range genesisState.Accounts {
 		logger.Info("init genesis account", "name", a.GetName(), "auth", a.GetAuth())
 		ak.SetAccount(ctx, ak.NewAccount(ctx, a))
 
 		// ensure auth init
 		ak.EnsureAuthInited(ctx, a.GetAuth())
-		ak.AddAccountByAuth(ctx, a.GetAuth(), a.GetName().String())
+		if _, ok := a.GetID().ToName(); ok {
+			ak.AddAccountByAuth(ctx, a.GetAuth(), a.GetName().String())
+		}
 	}
 }
 

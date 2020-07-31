@@ -7,11 +7,6 @@ import (
 type (
 	KuMsg       = types.KuMsg
 	KuMsgData   = types.KuMsgData
-	AccountID   = types.AccountID
-	AccAddress  = types.AccAddress
-	Name        = types.Name
-	Coin        = types.Coin
-	Context     = types.Context
 	KuTransfMsg = types.KuTransfMsg
 )
 

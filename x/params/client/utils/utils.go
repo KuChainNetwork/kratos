@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	chaintype "github.com/KuChainNetwork/kuchain/chain/types"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -37,12 +37,12 @@ type (
 	ParamChangeProposalReq struct {
 		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
 
-		Title           string              `json:"title" yaml:"title"`
-		Description     string              `json:"description" yaml:"description"`
-		Changes         ParamChangesJSON    `json:"changes" yaml:"changes"`
-		Proposer        sdk.AccAddress      `json:"proposer" yaml:"proposer"`
-		Deposit         sdk.Coins           `json:"deposit" yaml:"deposit"`
-		ProposerAccount chaintype.AccountID `json:"proposal_account" yaml:"proposal_account"`
+		Title           string               `json:"title" yaml:"title"`
+		Description     string               `json:"description" yaml:"description"`
+		Changes         ParamChangesJSON     `json:"changes" yaml:"changes"`
+		Proposer        sdk.AccAddress       `json:"proposer" yaml:"proposer"`
+		Deposit         chainTypes.Coins     `json:"deposit" yaml:"deposit"`
+		ProposerAccount chainTypes.AccountID `json:"proposal_account" yaml:"proposal_account"`
 	}
 )
 

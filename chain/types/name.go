@@ -38,6 +38,10 @@ const (
 	CharValueUnderline byte = 50 // _
 )
 
+type Name struct {
+	Value []byte `json:"value,omitempty" yaml:"value"`
+}
+
 // NewName create Name by string
 func NewName(str string) (Name, error) {
 	if !VerifyNameString(str) {

@@ -32,15 +32,19 @@ func NewHandler(k keeper.Keeper) msg.Handler {
 
 // These functions assume everything has been authenticated (ValidateBasic passed, and signatures checked)
 func handleMsgModifyWithdrawAccountId(ctx chainTypes.Context, msg types.MsgSetWithdrawAccountId, k keeper.Keeper) (*sdk.Result, error) {
-	dataMsg, _ := msg.GetData()
-	ctx.RequireAuth(dataMsg.DelegatorAccountid)
-
-	ExistOk := true
-	_, ok := dataMsg.WithdrawAccountid.ToName()
-	if ok {
-		ExistOk = k.AccKeeper.IsAccountExist(ctx.Context(), dataMsg.WithdrawAccountid)
+	checkAcc := func(acc AccountID) bool {
+		_, ok := acc.ToName()
+		if ok {
+			return k.AccKeeper.IsAccountExist(ctx.Context(), acc)
+		}
+		return false
 	}
 
+	types.FindAcc = checkAcc
+
+	dataMsg, _ := msg.GetData()
+	ctx.RequireAuth(dataMsg.DelegatorAccountid)
+	ExistOk := checkAcc(dataMsg.WithdrawAccountid)
 	if ExistOk {
 		err := k.SetWithdrawAddr(ctx.Context(), dataMsg.DelegatorAccountid, dataMsg.WithdrawAccountid)
 		if err != nil {

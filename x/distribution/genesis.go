@@ -9,7 +9,7 @@ import (
 
 // InitGenesis sets distribution information for genesis
 func InitGenesis(ctx sdk.Context, bk types.BankKeeperAccountID, supplyKeeper types.SupplyKeeperAccountID, keeper Keeper, data types.GenesisState) {
-	var moduleHoldings sdk.DecCoins
+	var moduleHoldings types.DecCoins
 
 	keeper.SetFeePool(ctx, data.FeePool)
 	keeper.SetParams(ctx, data.Params)

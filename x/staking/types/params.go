@@ -6,12 +6,11 @@ import (
 	"strings"
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
-
+	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/external"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	yaml "gopkg.in/yaml.v2"
 )
 
 // Staking params default values
@@ -42,6 +41,15 @@ var (
 )
 
 var _ external.ParamsSet = (*Params)(nil)
+
+// Params defines the parameters for the staking module.
+type Params struct {
+	UnbondingTime     time.Duration `json:"unbonding_time" yaml:"unbonding_time"`
+	MaxValidators     uint32        `json:"max_validators,omitempty" yaml:"max_validators"`
+	MaxEntries        uint32        `json:"max_entries,omitempty" yaml:"max_entries"`
+	HistoricalEntries uint32        `json:"historical_entries,omitempty" yaml:"historical_entries"`
+	BondDenom         string        `json:"bond_denom,omitempty" yaml:"bond_denom"`
+}
 
 // NewParams creates a new Params instance
 func NewParams(
@@ -178,7 +186,7 @@ func validateBondDenom(i interface{}) error {
 	if strings.TrimSpace(v) == "" {
 		return errors.New("bond denom cannot be blank")
 	}
-	if err := sdk.ValidateDenom(v); err != nil {
+	if err := coin.ValidateDenom(v); err != nil {
 		return err
 	}
 
