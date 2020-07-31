@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"bytes"
 	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/external"
@@ -191,4 +192,12 @@ func validateBondDenom(i interface{}) error {
 	}
 
 	return nil
+}
+
+// Equal returns a boolean determining if two Param types are identical.
+// TODO: This is slower than comparing struct fields directly
+func (p Params) Equal(p2 Params) bool {
+	bz1 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&p)
+	bz2 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&p2)
+	return bytes.Equal(bz1, bz2)
 }

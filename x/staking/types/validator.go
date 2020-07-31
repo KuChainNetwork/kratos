@@ -411,7 +411,7 @@ func (v Validator) RemoveDelShares(delShares sdk.Dec) (Validator, sdk.Int) {
 // validators.
 func (v Validator) MinEqual(other Validator) bool {
 	return v.ConsensusPubkey == other.ConsensusPubkey &&
-		bytes.Equal(v.OperatorAccount.Value, other.OperatorAccount.Value) &&
+		bytes.Equal(v.OperatorAccount.Bytes(), other.OperatorAccount.Bytes()) &&
 		v.Status.Equal(other.Status) &&
 		v.Tokens.Equal(other.Tokens) &&
 		v.DelegatorShares.Equal(other.DelegatorShares) &&

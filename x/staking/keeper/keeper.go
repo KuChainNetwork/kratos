@@ -77,6 +77,11 @@ func (k *Keeper) SetHooks(sh types.StakingHooks) *Keeper {
 	return k
 }
 
+func (k *Keeper) EmptyHooks() *Keeper {
+	k.hooks = nil
+	return k
+}
+
 // Load the last total validator power.
 func (k Keeper) GetLastTotalPower(ctx sdk.Context) sdk.Int {
 	store := ctx.KVStore(k.storeKey)

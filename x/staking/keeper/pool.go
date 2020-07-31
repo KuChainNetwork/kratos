@@ -60,6 +60,12 @@ func (k Keeper) TotalBondedTokens(ctx sdk.Context) sdk.Int {
 	return k.bankKeeper.GetCoinPowerByDenomd(ctx, bondedPool.GetID(), k.BondDenom(ctx)).Amount
 }
 
+// TotalBondedTokens total staking tokens supply which is bonded
+func (k Keeper) TotalNotBondedTokens(ctx sdk.Context) sdk.Int {
+	notBondedPool := k.GetNotBondedPool(ctx)
+	return k.bankKeeper.GetCoinPowerByDenomd(ctx, notBondedPool.GetID(), k.BondDenom(ctx)).Amount
+}
+
 // StakingTokenSupply staking tokens from the total supply
 func (k Keeper) StakingTokenSupply(ctx sdk.Context) sdk.Int {
 	return k.supplyKeeper.GetSupply(ctx).GetTotal().AmountOf(k.BondDenom(ctx))
