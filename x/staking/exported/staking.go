@@ -9,7 +9,7 @@ import (
 )
 
 // staking constants
-const (
+var (
 
 	// default bond denomination
 	DefaultBondDenom = constants.DefaultBondDenom
