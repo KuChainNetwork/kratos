@@ -227,12 +227,18 @@ func TestStakingHandler(t *testing.T) {
 		//alice D jack 50000000
 		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, delegateAmount, true)
 		So(err, ShouldBeNil)
-
+		//wrong coin delegate
+		wrongAmount := types.Coin{Denom:constants.DefaultBondDenom, Amount:sdk.NewInt(-5000000)}
+		err = delegationValidator(t, wallet, app, addValidator, accValidator, accJack, wrongAmount, false)
+		So(err, ShouldNotBeNil)
 		// coin not enought
 		err = delegationValidator(t, wallet, app, addValidator, accValidator, accJack, delegateAmount, false)
 		So(err, ShouldNotBeNil)
 		// not exist validator
 		err = delegationValidator(t, wallet, app, addAlice, accAlice, accValidator, delegateAmount, false)
+		So(err, ShouldNotBeNil)
+		//wrong coin redelegate
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, wrongAmount, false)
 		So(err, ShouldNotBeNil)
 		//right   alice R jack T alice 50000
 		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, smallAmount, true)
@@ -252,6 +258,9 @@ func TestStakingHandler(t *testing.T) {
 		//alice U jack 50000
 		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
+		//wrong coin unbond
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, wrongAmount, false)
+		So(err, ShouldNotBeNil)
 		//alice U jack 50000000
 		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, bigAmount, false)
 		So(err, ShouldNotBeNil)
