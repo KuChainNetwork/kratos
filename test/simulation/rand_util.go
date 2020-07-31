@@ -104,7 +104,7 @@ func RandSubsetCoins(r *rand.Rand, coins types.Coins) types.Coins {
 	if err != nil {
 		return types.Coins{}
 	}
-	subset := types.Coins{types.NewCoin(coin.Denom, amt)}
+	subset := types.NewCoins(types.NewCoin(coin.Denom, amt))
 	for i, c := range coins {
 		// skip denom that we already chose earlier
 		if i == denomIdx {
