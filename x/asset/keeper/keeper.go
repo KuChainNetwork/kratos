@@ -135,12 +135,12 @@ func (a AssetKeeper) Burn(ctx sdk.Context, id types.AccountID, amount types.Coin
 		return sdkerrors.Wrap(err, "burn get coins")
 	}
 
-	newCoins, isNegative := coins.SafeSub(types.Coins{amount})
+	newCoins, isNegative := coins.SafeSub(NewCoins(amount))
 	if isNegative {
 		return sdkerrors.Wrap(types.ErrAssetCoinNoEnough, "burn coins error")
 	}
 
-	if err := a.checkIsCanUseCoins(ctx, id, types.Coins{amount}, coins); err != nil {
+	if err := a.checkIsCanUseCoins(ctx, id, NewCoins(amount), coins); err != nil {
 		return sdkerrors.Wrap(err, "burn")
 	}
 

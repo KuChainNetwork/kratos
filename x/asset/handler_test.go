@@ -37,14 +37,14 @@ var (
 )
 
 func createAppForTest() (*simapp.SimApp, sdk.Context) {
-	asset1 := types.Coins{
+	asset1 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 10000000),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
-	asset2 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
-	asset3 := types.Coins{
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+	asset2 := types.NewCoins(
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+	asset3 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 100),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
 
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),
@@ -135,9 +135,9 @@ func issueCoin(t *testing.T, app *simapp.SimApp, isSuccess bool,
 
 func TestSendAddressNotEnoughBalance(t *testing.T) {
 	Convey("TestSendAddressNotEnoughBalance", t, func() {
-		asset1 := types.Coins{
+		asset1 := types.NewCoins(
 			types.NewInt64Coin("foo/coin", 67),
-			types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+			types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
 		genAcc := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 
 		genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc)
@@ -156,8 +156,8 @@ func TestSendAddressNotEnoughBalance(t *testing.T) {
 
 		ctxCheck.Logger().Info("auth nums", "seq", origAuthSeq, "num", origAuthNum)
 
-		msg := assetTypes.NewMsgTransfer(addr1, account1, addAccount1, types.Coins{types.NewInt64Coin("foo/coin", 100)})
-		fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100000)}
+		msg := assetTypes.NewMsgTransfer(addr1, account1, addAccount1, types.NewInt64Coins("foo/coin", 100))
+		fee := types.NewInt64Coins(constants.DefaultBondDenom, 100000)
 
 		header := abci.Header{Height: app.LastBlockHeight() + 1}
 		_, _, err = simapp.SignCheckDeliver(t, app.Codec(), app.BaseApp,
@@ -462,7 +462,7 @@ func TestLockCoins(t *testing.T) {
 	Convey("test lock core coins", t, func() {
 		ctx := app.NewTestContext()
 
-		lockedCoins := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000000)}
+		lockedCoins := types.NewInt64Coins(constants.DefaultBondDenom, 1000000000)
 		lockedBlockNum := app.LastBlockHeight() + 1 + 5
 
 		msgLock := assetTypes.NewMsgLockCoin(addr4, account4, lockedCoins, lockedBlockNum)
@@ -492,7 +492,7 @@ func TestLockCoins(t *testing.T) {
 		currCoinsBeforeFailedTransferCoins := app.AssetKeeper().GetAllBalances(app.NewTestContext(), account4)
 
 		// when locked, coins cannot be transfer
-		err = transfer(t, app, false, account4, account1, types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100)}, account4)
+		err = transfer(t, app, false, account4, account1, types.NewInt64Coins(constants.DefaultBondDenom, 100), account4)
 		So(err, simapp.ShouldErrIs, assetTypes.ErrAssetCoinsLocked)
 
 		currCoins = app.AssetKeeper().GetAllBalances(app.NewTestContext(), account4)
@@ -513,7 +513,7 @@ func TestLockCoins(t *testing.T) {
 
 		var (
 			ctx            = app.NewTestContext()
-			lockedCoins    = types.Coins{types.NewInt64Coin(denom, 100)}
+			lockedCoins    = types.NewInt64Coins(denom, 100)
 			lockedBlockNum = app.LastBlockHeight() + 1 + 5
 		)
 
@@ -535,7 +535,7 @@ func TestLockCoins(t *testing.T) {
 
 		// lock many coins
 		var (
-			lockedCoins2    = types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100)}
+			lockedCoins2    = types.NewInt64Coins(constants.DefaultBondDenom, 100)
 			lockedBlockNum2 = app.LastBlockHeight() + 100
 		)
 
@@ -576,7 +576,7 @@ func TestLockCoinsError(t *testing.T) {
 		So(issueCoin(t, app, true, account2, symbol, issueAmt), ShouldBeNil)
 
 		msgLock := assetTypes.NewMsgLockCoin(
-			addr2, account2, types.Coins{types.NewInt64Coin("aaa/coin", 100)}, 10)
+			addr2, account2, types.NewInt64Coins("aaa/coin", 100), 10)
 		tx := simapp.NewTxForTest(
 			account2,
 			[]sdk.Msg{
@@ -599,7 +599,7 @@ func TestLockCoinsError(t *testing.T) {
 		// no issue, so account2 no have this coin
 
 		msgLock := assetTypes.NewMsgLockCoin(
-			addr2, account2, types.Coins{types.NewInt64Coin(denom, 100)}, 10)
+			addr2, account2, types.NewInt64Coins(denom, 100), 10)
 		tx := simapp.NewTxForTest(
 			account2,
 			[]sdk.Msg{
@@ -625,7 +625,7 @@ func TestLockCoinsError(t *testing.T) {
 		simapp.AfterBlockCommitted(app, 2)
 
 		msgLock := assetTypes.NewMsgLockCoin(
-			addr2, account2, types.Coins{types.NewInt64Coin(denom, 100)}, 2) // 2 has already passed
+			addr2, account2, types.NewInt64Coins(denom, 100), 2) // 2 has already passed
 		tx := simapp.NewTxForTest(
 			account2,
 			[]sdk.Msg{
@@ -652,7 +652,7 @@ func TestLockCoinsError(t *testing.T) {
 		So(issueCoin(t, app, true, account2, symbol, lockAmt), ShouldBeNil)
 
 		msgLock := assetTypes.NewMsgLockCoin(
-			addr2, account2, types.Coins{types.NewInt64Coin(denom, 100)}, 100) // 2 has already passed
+			addr2, account2, types.NewInt64Coins(denom, 100), 100) // 2 has already passed
 		tx := simapp.NewTxForTest(
 			account2,
 			[]sdk.Msg{
@@ -663,7 +663,7 @@ func TestLockCoinsError(t *testing.T) {
 			simapp.ShouldErrIs, assetTypes.ErrAssetCoinCannotBeLock)
 
 		// for multiple coins test
-		locks := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 10)}.Add(lockAmt)
+		locks := types.NewInt64Coins(constants.DefaultBondDenom, 10).Add(lockAmt)
 		msgLock2 := assetTypes.NewMsgLockCoin(addr2, account2, locks, 100)
 		tx2 := simapp.NewTxForTest(
 			account2,

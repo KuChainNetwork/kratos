@@ -22,6 +22,8 @@ type (
 )
 
 var (
-	NewDec       = types.NewDec
-	NewInt64Coin = types.NewInt64Coin
+	NewDec        = types.NewDec
+	NewCoins      = types.NewCoins
+	NewInt64Coin  = types.NewInt64Coin
+	NewInt64Coins = types.NewInt64Coins
 )
