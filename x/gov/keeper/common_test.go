@@ -1,28 +1,34 @@
+// nolint
 package keeper_test // noalias
+
+// DONTCOVER
 
 import (
 	"bytes"
 	"encoding/hex"
-	"math/rand"
-	"strconv"
-	"testing"
-
-	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/KuChainNetwork/kuchain/test/simapp"
-
-	"github.com/KuChainNetwork/kuchain/chain/config"
-	"github.com/KuChainNetwork/kuchain/chain/constants"
+	govKeeper "github.com/KuChainNetwork/kuchain/x/gov/keeper"
+	govTypes "github.com/KuChainNetwork/kuchain/x/gov/types"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
+	"strconv"
 
-	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
+	"github.com/KuChainNetwork/kuchain/x/staking"
+	stakeTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
+
+	"github.com/KuChainNetwork/kuchain/chain/config"
+	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/test/simapp"
+	"github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"github.com/KuChainNetwork/kuchain/x/supply"
+	. "github.com/smartystreets/goconvey/convey"
+	"testing"
 )
 
-// dummy addresses used for testing
-// nolint:unused, deadcode
 var (
 	Addrs  = createTestAddrs(500)
 	PKs    = createTestPubKeys(500)
@@ -40,6 +46,48 @@ var (
 		sdk.ValAddress(Addrs[5]),
 		sdk.ValAddress(Addrs[6]),
 	}
+)
+
+// dummy addresses used for testing
+var (
+	accAlice     = types.MustAccountID("alice@ok")
+	accJack      = types.MustAccountID("jack@ok")
+	accValidator = types.MustAccountID("validator@ok")
+
+	delPk1   = PKs[1]
+	delPk2   = PKs[2]
+	delPk3   = PKs[3]
+	delAddr1 = accAlice
+	delAddr2 = accJack
+	delAddr3 = accValidator
+
+	valOpPk1    = PKs[4]
+	valOpPk2    = PKs[5]
+	valOpPk3    = PKs[6]
+	valOpAddr1  = accAlice
+	valOpAddr2  = accJack
+	valOpAddr3  = accValidator
+	valAccAddr1 = accAlice
+	valAccAddr2 = accJack
+	valAccAddr3 = accValidator
+
+	TestAddrs = []types.AccountID{
+		delAddr1, delAddr2, delAddr3,
+		valAccAddr1, valAccAddr2, valAccAddr3,
+	}
+
+	powers = []int64{1, 2, 3}
+
+	emptyDelAddr sdk.AccAddress
+	emptyValAddr sdk.ValAddress
+	emptyPubkey  crypto.PubKey
+)
+
+// TODO: remove dependency with staking
+var (
+	TestProposal        = govTypes.NewTextProposal("Test", "description")
+	TestDescription     = staking.NewDescription("T", "E", "S", "T", "Z")
+	TestCommissionRates = staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
 )
 
 // Hogpodge of all sorts of input required for testing.
@@ -92,6 +140,17 @@ func NewTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccA
 	So(accountValidator, ShouldNotBeNil)
 	So(genValidator.GetID().Eq(accountValidator.GetID()), ShouldBeTrue)
 	So(genValidator.GetAuth().Equals(accountValidator.GetAuth()), ShouldBeTrue)
+
+	ModuleName, _ := govTypes.ModuleAccountID.ToName()
+	StakeModuleName, _ := stakeTypes.ModuleAccountID.ToName()
+
+	test0Name, _ := TestAddrs[0].ToName()
+	test1Name, _ := TestAddrs[1].ToName()
+	app.AssetKeeper().Issue(ctxCheck, StakeModuleName, StakeModuleName, types.NewCoin(app.StakeKeeper().BondDenom(ctxCheck), exported.TokensFromConsensusPower(1000000)))
+	app.AssetKeeper().Issue(ctxCheck, ModuleName, ModuleName, types.NewCoin(app.StakeKeeper().BondDenom(ctxCheck), exported.TokensFromConsensusPower(1000000)))
+	app.AssetKeeper().Issue(ctxCheck, test0Name, test0Name, types.NewCoin(app.StakeKeeper().BondDenom(ctxCheck), exported.TokensFromConsensusPower(1000000)))
+	app.AssetKeeper().Issue(ctxCheck, test1Name, test1Name, types.NewCoin(app.StakeKeeper().BondDenom(ctxCheck), exported.TokensFromConsensusPower(1000000)))
+	app.AssetKeeper().IssueCoinPower(ctxCheck, govTypes.ModuleAccountID, types.NewCoins(types.NewCoin(app.StakeKeeper().BondDenom(ctxCheck), exported.TokensFromConsensusPower(1000000))))
 
 	return addAlice, addJack, addValidator, accAlice, accJack, accValidator, app
 }
@@ -181,54 +240,49 @@ func createTestPubKeys(numPubKeys int) []crypto.PubKey {
 	return publicKeys
 }
 
-//_____________________________________________________________________________________
+func makeTestCodec() *codec.Codec {
+	var cdc = codec.New()
+	auth.RegisterCodec(cdc)
+	types.RegisterCodec(cdc)
+	supply.RegisterCodec(cdc)
+	staking.RegisterCodec(cdc)
+	sdk.RegisterCodec(cdc)
+	codec.RegisterCrypto(cdc)
 
-// does a certain by-power index record exist
-// func ValidatorByPowerIndexExists(ctx sdk.Context, keeper Keeper, power []byte) bool {
-// 	store := ctx.KVStore(keeper.storeKey)
-// 	return store.Has(power)
-// }
-
-// update validator for testing
-func TestingUpdateValidator(app *simapp.SimApp, ctx sdk.Context, validator stakingTypes.Validator, apply bool) stakingTypes.Validator {
-	keeper := app.StakeKeeper()
-	keeper.SetValidator(ctx, validator)
-
-	keeper.SetValidatorByPowerIndex(ctx, validator)
-	if apply {
-		keeper.ApplyAndReturnValidatorSetUpdates(ctx)
-		validator, found := keeper.GetValidator(ctx, validator.OperatorAccount)
-		if !found {
-			panic("validator expected but not found")
-		}
-		return validator
-	}
-	cachectx, _ := ctx.CacheContext()
-	keeper.ApplyAndReturnValidatorSetUpdates(cachectx)
-	validator, found := keeper.GetValidator(cachectx, validator.OperatorAccount)
-	if !found {
-		panic("validator expected but not found")
-	}
-	return validator
+	return cdc
 }
 
-// nolint:deadcode, unused
-func validatorByPowerIndexExists(app *simapp.SimApp, ctx sdk.Context, power []byte) bool {
-	storkey := sdk.NewKVStoreKey(stakingTypes.StoreKey)
-	store := ctx.KVStore(storkey)
-	return store.Has(power)
+// ProposalEqual checks if two proposals are equal (note: slow, for tests only)
+func ProposalEqual(keeper *govKeeper.Keeper, proposalA govTypes.Proposal, proposalB govTypes.Proposal) bool {
+	return bytes.Equal(keeper.MustMarshalProposal(proposalA),
+		keeper.MustMarshalProposal(proposalB))
 }
 
-// RandomValidator returns a random validator given access to the keeper and ctx
-func RandomValidator(r *rand.Rand, app *simapp.SimApp, ctx sdk.Context) (val stakingTypes.Validator, ok bool) {
-	keeper := app.StakeKeeper()
-	vals := keeper.GetAllValidators(ctx)
-	if len(vals) == 0 {
-		return stakingTypes.Validator{}, false
-	}
+func createValidators(app *simapp.SimApp, ctx sdk.Context, sk *staking.Keeper, powers []int64) {
+	val1 := staking.NewValidator(valOpAddr1, valOpPk1, staking.Description{})
+	val2 := staking.NewValidator(valOpAddr2, valOpPk2, staking.Description{})
+	val3 := staking.NewValidator(valOpAddr3, valOpPk3, staking.Description{})
 
-	i := r.Intn(len(vals))
-	return vals[i], true
+	sk.SetValidator(ctx, val1)
+	sk.SetValidator(ctx, val2)
+	sk.SetValidator(ctx, val3)
+	sk.SetValidatorByConsAddr(ctx, val1)
+	sk.SetValidatorByConsAddr(ctx, val2)
+	sk.SetValidatorByConsAddr(ctx, val3)
+	sk.SetNewValidatorByPowerIndex(ctx, val1)
+	sk.SetNewValidatorByPowerIndex(ctx, val2)
+	sk.SetNewValidatorByPowerIndex(ctx, val3)
+
+	_, _ = sk.Delegate(ctx, valAccAddr1, exported.TokensFromConsensusPower(powers[0]), exported.Unbonded, val1, true)
+	_, _ = sk.Delegate(ctx, valAccAddr2, exported.TokensFromConsensusPower(powers[1]), exported.Unbonded, val2, true)
+	_, _ = sk.Delegate(ctx, valAccAddr3, exported.TokensFromConsensusPower(powers[2]), exported.Unbonded, val3, true)
+
+	notBondedPool := sk.GetNotBondedPool(ctx)
+	app.AssetKeeper().IssueCoinPower(ctx, notBondedPool.GetID(), types.NewCoins(types.NewCoin(sk.BondDenom(ctx), exported.TokensFromConsensusPower(powers[0]))))
+	app.AssetKeeper().IssueCoinPower(ctx, notBondedPool.GetID(), types.NewCoins(types.NewCoin(sk.BondDenom(ctx), exported.TokensFromConsensusPower(powers[1]))))
+	app.AssetKeeper().IssueCoinPower(ctx, notBondedPool.GetID(), types.NewCoins(types.NewCoin(sk.BondDenom(ctx), exported.TokensFromConsensusPower(powers[2]))))
+
+	_ = staking.EndBlocker(ctx, *sk)
 }
 
 func TestInit(t *testing.T) {
