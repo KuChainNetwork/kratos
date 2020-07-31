@@ -71,8 +71,7 @@ func TestEnsureAccount(t *testing.T) {
 }
 
 func TestIterateAccount(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc1 := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAcc2 := simapp.NewSimGenesisAccount(account2, addr1).WithAsset(asset1)
 	genAcc3 := simapp.NewSimGenesisAccount(types.NewAccountIDFromAccAdd(addr1), addr1).WithAsset(asset1)
@@ -123,8 +122,7 @@ func TestIterateAccount(t *testing.T) {
 }
 
 func TestAccountExist(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc1 := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAcc2 := simapp.NewSimGenesisAccount(account2, addr1).WithAsset(asset1)
 	genAcc3 := simapp.NewSimGenesisAccount(types.NewAccountIDFromAccAdd(addr1), addr1).WithAsset(asset1)

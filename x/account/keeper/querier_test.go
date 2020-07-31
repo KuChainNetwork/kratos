@@ -18,8 +18,7 @@ import (
 )
 
 func TestQueryAccount(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc1 := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAcc2 := simapp.NewSimGenesisAccount(types.NewAccountIDFromAccAdd(addr2), addr2).WithAsset(asset1)
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc1, genAcc2)
@@ -156,8 +155,7 @@ func TestQueryAccount(t *testing.T) {
 }
 
 func TestQueryAuth(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc1 := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAcc2 := simapp.NewSimGenesisAccount(types.NewAccountIDFromAccAdd(addr2), addr2).WithAsset(asset1)
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc1, genAcc2)
@@ -250,8 +248,7 @@ func TestQueryAuth(t *testing.T) {
 }
 
 func TestQueryAccountsByAuth(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),
