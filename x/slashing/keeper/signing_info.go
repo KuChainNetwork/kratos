@@ -58,14 +58,13 @@ func (k Keeper) IterateValidatorSigningInfos(ctx sdk.Context,
 func (k Keeper) GetValidatorMissedBlockBitArray(ctx sdk.Context, address sdk.ConsAddress, index int64) bool {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetValidatorMissedBlockBitArrayKey(address, index))
-	var missed gogotypes.BoolValue
+	var missed bool
 	if bz == nil {
 		// lazy: treat empty key as not missed
 		return false
 	}
-	k.cdc.MustUnmarshalBinaryBare(bz, &missed)
-
-	return missed.Value
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &missed)
+	return missed
 }
 
 // IterateValidatorMissedBlockBitArray iterates over the signed blocks window
@@ -132,7 +131,7 @@ func (k Keeper) IsTombstoned(ctx sdk.Context, consAddr sdk.ConsAddress) bool {
 // missed a block in the current window
 func (k Keeper) SetValidatorMissedBlockBitArray(ctx sdk.Context, address sdk.ConsAddress, index int64, missed bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshalBinaryBare(&gogotypes.BoolValue{Value: missed})
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(missed)
 	store.Set(types.GetValidatorMissedBlockBitArrayKey(address, index), bz)
 }
 
