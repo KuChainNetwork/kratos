@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"github.com/stretchr/testify/require"
 
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
@@ -18,10 +19,11 @@ func TestKeeper(t *testing.T) {
 		ctx := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 		expParams := types.DefaultParams()
 		resParams := keeper.GetParams(ctx)
-		So(expParams.Equal(resParams), ShouldBeTrue)
+		require.Equal(t, expParams, resParams)
 		expParams.MaxValidators = 777
 		keeper.SetParams(ctx, expParams)
 		resParams = keeper.GetParams(ctx)
-		So(expParams.Equal(resParams), ShouldBeTrue)
+		require.Equal(t, expParams, resParams)
+
 	})
 }

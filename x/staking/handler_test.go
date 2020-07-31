@@ -15,9 +15,11 @@ import (
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/tendermint/tendermint/crypto"
+	"encoding/hex"
+	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
-func NewTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccAddress, accAlice, accJack, accValidator types.AccountID, app *simapp.SimApp) {
+func newTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccAddress, accAlice, accJack, accValidator types.AccountID, app *simapp.SimApp) {
 	addAlice = wallet.NewAccAddress()
 	addJack = wallet.NewAccAddress()
 	addValidator = wallet.NewAccAddress()
@@ -67,7 +69,7 @@ func NewTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccA
 	return addAlice, addJack, addValidator, accAlice, accJack, accValidator, app
 }
 
-func CreateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, rate sdk.Dec, pk crypto.PubKey, passed bool) error {
+func createValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, rate sdk.Dec, pk crypto.PubKey, passed bool) error {
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -86,11 +88,11 @@ func CreateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, ad
 		header, accAlice, fee,
 		[]sdk.Msg{msg}, []uint64{origAuthNum}, []uint64{origAuthSeq},
 		passed, passed, wallet.PrivKey(addAlice))
-	ctxCheck.Logger().Info("CreateValidator error log", "err", err)
+	ctxCheck.Logger().Info("createValidator error log", "err", err)
 	return err
 }
 
-func ExitValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, rate sdk.Dec, passed bool) error {
+func exitValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, rate sdk.Dec, passed bool) error {
 	//auth sdk.AccAddress, valAddr chainTypes.AccountID, description Description, newRate *sdk.Dec
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
@@ -104,11 +106,11 @@ func ExitValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addA
 		header, accAlice, fee,
 		[]sdk.Msg{msg}, []uint64{origAuthNum}, []uint64{origAuthSeq},
 		passed, passed, wallet.PrivKey(addAlice))
-	ctxCheck.Logger().Info("ExitValidator error log", "err", err)
+	ctxCheck.Logger().Info("exitValidator error log", "err", err)
 	return err
 }
 
-func DelegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accValidator types.AccountID, amount types.Coin, passed bool) error {
+func delegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accValidator types.AccountID, amount types.Coin, passed bool) error {
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -120,12 +122,12 @@ func DelegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp
 		header, accAlice, fee,
 		[]sdk.Msg{msg}, []uint64{origAuthNum}, []uint64{origAuthSeq},
 		passed, passed, wallet.PrivKey(addAlice))
-	ctxCheck.Logger().Info("ExitValidator error log", "err", err)
+	ctxCheck.Logger().Info("exitValidator error log", "err", err)
 
 	return err
 }
 
-func RedelegateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack, accValidator types.AccountID, amount types.Coin, passed bool) error {
+func redelegateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack, accValidator types.AccountID, amount types.Coin, passed bool) error {
 	//NewKuMsgRedelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valSrcAddr, valDstAddr chainTypes.AccountID, amount chainTypes.Coin)
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
@@ -138,12 +140,12 @@ func RedelegateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp
 		header, accAlice, fee,
 		[]sdk.Msg{msg}, []uint64{origAuthNum}, []uint64{origAuthSeq},
 		passed, passed, wallet.PrivKey(addAlice))
-	ctxCheck.Logger().Info("ExitValidator error log", "err", err)
+	ctxCheck.Logger().Info("exitValidator error log", "err", err)
 
 	return err
 }
 
-func UnbondValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack types.AccountID, amount types.Coin, passed bool) error {
+func unbondValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack types.AccountID, amount types.Coin, passed bool) error {
 	//NewKuMsgUnbond(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr chainTypes.AccountID, amount chainTypes.Coin)
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
@@ -156,8 +158,19 @@ func UnbondValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, ad
 		header, accAlice, fee,
 		[]sdk.Msg{msg}, []uint64{origAuthNum}, []uint64{origAuthSeq},
 		passed, passed, wallet.PrivKey(addAlice))
-	ctxCheck.Logger().Info("UnbondValidator error log", "err", err)
+	ctxCheck.Logger().Info("unbondValidator error log", "err", err)
 	return err
+}
+
+func newPubKey(pk string) (res crypto.PubKey) {
+	pkBytes, err := hex.DecodeString(pk)
+	if err != nil {
+		panic(err)
+	}
+	//res, err = crypto.PubKeyFromBytes(pkBytes)
+	var pkEd ed25519.PubKeyEd25519
+	copy(pkEd[:], pkBytes)
+	return pkEd
 }
 
 func TestStakingHandler(t *testing.T) {
@@ -165,142 +178,142 @@ func TestStakingHandler(t *testing.T) {
 		config.SealChainConfig()
 		wallet := simapp.NewWallet()
 
-		addAlice, addJack, _, accAlice, accJack, _, app := NewTestApp(wallet)
+		addAlice, addJack, _, accAlice, accJack, _, app := newTestApp(wallet)
 		wrongrate, _ := sdk.NewDecFromStr("1.1")
-		pk, _ := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, "kuchainvalconspub1zcjduepqn4usdx22zdntysj7n795xj77wrc62sytheeevr7zlna4yhwppdrs8mpds3")
+		pk := newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF100")
+		Newpk := newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF200")
 		//wrong rate
-		err := CreateValidator(t, wallet, app, addAlice, accAlice, wrongrate, pk, false)
+		err := createValidator(t, wallet, app, addAlice, accAlice, wrongrate, pk, false)
 		So(err, ShouldNotBeNil)
 		//right
 		rightRate, _ := sdk.NewDecFromStr("0.65")
-		err = CreateValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, true)
+		err = createValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, true)
 		So(err, ShouldBeNil)
 		//pubkey and account already exist
-		err = CreateValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, false)
+		err = createValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, false)
 		So(err, ShouldNotBeNil)
 		//account  already exist
-		Newpk, _ := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, "kuchainvalconspub1zcjduepq0cm4j2wtny3x435zuc53zffk9fndj7f37xjkxv4lqdx4w4z3mayqmf9aef")
-		err = CreateValidator(t, wallet, app, addAlice, accAlice, rightRate, Newpk, false)
+		err = createValidator(t, wallet, app, addAlice, accAlice, rightRate, Newpk, false)
 		So(err, ShouldNotBeNil)
 		//pubkey already exist
-		err = CreateValidator(t, wallet, app, addJack, accJack, rightRate, pk, false)
+		err = createValidator(t, wallet, app, addJack, accJack, rightRate, pk, false)
 		So(err, ShouldNotBeNil)
 		//right
-		err = CreateValidator(t, wallet, app, addJack, accJack, rightRate, Newpk, true)
+		err = createValidator(t, wallet, app, addJack, accJack, rightRate, Newpk, true)
 		So(err, ShouldBeNil)
 		//wrong not 24 hour
-		err = ExitValidator(t, wallet, app, addJack, accJack, rightRate, false)
+		err = exitValidator(t, wallet, app, addJack, accJack, rightRate, false)
 		So(err, ShouldNotBeNil)
 		//wrong not 24 hour
-		err = ExitValidator(t, wallet, app, addJack, accJack, wrongrate, false)
+		err = exitValidator(t, wallet, app, addJack, accJack, wrongrate, false)
 		So(err, ShouldNotBeNil)
 	})
 	Convey("TestDelegateHandler", t, func() {
 		//config.SealChainConfig() 	//just once
 		wallet := simapp.NewWallet()
-		addAlice, addJack, addValidator, accAlice, accJack, accValidator, app := NewTestApp(wallet)
+		addAlice, addJack, addValidator, accAlice, accJack, accValidator, app := newTestApp(wallet)
 		rightRate, _ := sdk.NewDecFromStr("0.65")
-		pk, _ := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, "kuchainvalconspub1zcjduepqn4usdx22zdntysj7n795xj77wrc62sytheeevr7zlna4yhwppdrs8mpds3")
-		Newpk, _ := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, "kuchainvalconspub1zcjduepq0cm4j2wtny3x435zuc53zffk9fndj7f37xjkxv4lqdx4w4z3mayqmf9aef")
-		err := CreateValidator(t, wallet, app, addJack, accJack, rightRate, Newpk, true)
+		pk := newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF100")
+		Newpk := newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF200")
+		err := createValidator(t, wallet, app, addJack, accJack, rightRate, Newpk, true)
 		So(err, ShouldBeNil)
-		err = CreateValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, true)
+		err = createValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, true)
 		So(err, ShouldBeNil)
 		//right delegate
 		delegateAmount := types.NewInt64Coin(constants.DefaultBondDenom, 50000000)
 		smallAmount := types.NewInt64Coin(constants.DefaultBondDenom, 50000)
 		bigAmount := types.NewInt64Coin(constants.DefaultBondDenom, 2100000000000000000)
 		//alice D jack 50000000
-		err = DelegationValidator(t, wallet, app, addAlice, accAlice, accJack, delegateAmount, true)
+		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, delegateAmount, true)
 		So(err, ShouldBeNil)
 
 		// coin not enought
-		err = DelegationValidator(t, wallet, app, addValidator, accValidator, accJack, delegateAmount, false)
+		err = delegationValidator(t, wallet, app, addValidator, accValidator, accJack, delegateAmount, false)
 		So(err, ShouldNotBeNil)
 		// not exist validator
-		err = DelegationValidator(t, wallet, app, addAlice, accAlice, accValidator, delegateAmount, false)
+		err = delegationValidator(t, wallet, app, addAlice, accAlice, accValidator, delegateAmount, false)
 		So(err, ShouldNotBeNil)
 		//right   alice R jack T alice 50000
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, smallAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, smallAmount, true)
 		So(err, ShouldBeNil)
 		//invalid shares amount
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, bigAmount, false)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, bigAmount, false)
 		So(err, ShouldNotBeNil)
 		//redelegation destination validator not found
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accValidator, smallAmount, false)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accValidator, smallAmount, false)
 		So(err, ShouldNotBeNil)
 		//src validator does not exist
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accValidator, accJack, smallAmount, false)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accValidator, accJack, smallAmount, false)
 		So(err, ShouldNotBeNil)
 		// //because not bonded   alice R alice jack 50000
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accAlice, accJack, smallAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
 		//alice U jack 50000
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
 		//alice U jack 50000000
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, bigAmount, false)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, bigAmount, false)
 		So(err, ShouldNotBeNil)
 		// unbond 7 times
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, true)
 		So(err, ShouldBeNil)
-		err = UnbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, false)
+		err = unbondValidator(t, wallet, app, addAlice, accAlice, accJack, smallAmount, false)
 		So(err, ShouldNotBeNil)
 		// jack U jack
-		err = UnbondValidator(t, wallet, app, addJack, accJack, accJack, smallAmount, false)
+		err = unbondValidator(t, wallet, app, addJack, accJack, accJack, smallAmount, false)
 		So(err, ShouldNotBeNil)
 		// jack U Validator
-		err = UnbondValidator(t, wallet, app, addJack, accJack, accValidator, smallAmount, false)
+		err = unbondValidator(t, wallet, app, addJack, accJack, accValidator, smallAmount, false)
 		So(err, ShouldNotBeNil)
 	})
 	Convey("TestReDelegateHandler", t, func() {
 		wallet := simapp.NewWallet()
-		addAlice, addJack, _, accAlice, accJack, _, app := NewTestApp(wallet)
+		addAlice, addJack, _, accAlice, accJack, _, app := newTestApp(wallet)
 		rightRate, _ := sdk.NewDecFromStr("0.65")
-		pk, _ := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, "kuchainvalconspub1zcjduepqn4usdx22zdntysj7n795xj77wrc62sytheeevr7zlna4yhwppdrs8mpds3")
-		Newpk, _ := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, "kuchainvalconspub1zcjduepq0cm4j2wtny3x435zuc53zffk9fndj7f37xjkxv4lqdx4w4z3mayqmf9aef")
-		err := CreateValidator(t, wallet, app, addJack, accJack, rightRate, Newpk, true)
+		pk := newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF100")
+		Newpk := newPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF200")
+		err := createValidator(t, wallet, app, addJack, accJack, rightRate, Newpk, true)
 		So(err, ShouldBeNil)
-		err = CreateValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, true)
+		err = createValidator(t, wallet, app, addAlice, accAlice, rightRate, pk, true)
 		So(err, ShouldBeNil)
 		bigAmount := types.NewInt64Coin(constants.DefaultBondDenom, 2100000000000000000)
 		//alice D jack
-		err = DelegationValidator(t, wallet, app, addAlice, accAlice, accJack, bigAmount, true)
+		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, bigAmount, true)
 		So(err, ShouldBeNil)
 		//jack D alice
-		err = DelegationValidator(t, wallet, app, addJack, accJack, accAlice, bigAmount, true)
+		err = delegationValidator(t, wallet, app, addJack, accJack, accAlice, bigAmount, true)
 		So(err, ShouldBeNil)
 		delegateAmount := types.NewInt64Coin(constants.DefaultBondDenom, 50000000)
 		// alice R jack ->alice
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
 		So(err, ShouldBeNil)
 		// alice R alice ->jack
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accAlice, accJack, delegateAmount, false)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accAlice, accJack, delegateAmount, false)
 		So(err, ShouldNotBeNil)
 		//  alice R jack ->alice 7 times
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
 		So(err, ShouldBeNil)
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
 		So(err, ShouldBeNil)
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
 		So(err, ShouldBeNil)
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
 		So(err, ShouldBeNil)
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
 		So(err, ShouldBeNil)
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, true)
 		So(err, ShouldBeNil)
-		err = RedelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, false)
+		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, delegateAmount, false)
 		So(err, ShouldNotBeNil)
 		//
 	})
