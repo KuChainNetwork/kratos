@@ -31,6 +31,7 @@ type (
 var (
 	NewEmptyModuleAccount    = accountTypes.NewEmptyModuleAccount
 	NewPermissionsForAddress = accountTypes.NewPermissionsForAddress
+	NewModuleAccount         = accountTypes.NewModuleAccount
 )
 
 const (

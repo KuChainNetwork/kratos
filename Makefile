@@ -7,6 +7,9 @@ COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 
+MAIN_SYMBOL := 'kuchain'
+CORE_SYMBOL := 'sys'
+
 export GO111MODULE = on
 
 # process build tags
@@ -48,12 +51,14 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # process linker flags
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=kuchain \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(MAIN_SYMBOL) \
 		  -X github.com/cosmos/cosmos-sdk/version.ServerName=kucd \
 		  -X github.com/cosmos/cosmos-sdk/version.ClientName=kucli \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+		  -X github.com/KuChainNetwork/kuchain/chain/constants/keys.ChainNameStr=$(CORE_SYMBOL) \
+		  -X github.com/KuChainNetwork/kuchain/chain/constants/keys.ChainMainNameStr=$(MAIN_SYMBOL)
 
 ifeq ($(WITH_CLEVELDB),yes)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb

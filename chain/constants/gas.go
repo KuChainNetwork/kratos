@@ -4,7 +4,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
-const (
+var (
 	MinGasPriceString        = "0.01" + DefaultBondDenom
 	GasTxSizePrice    uint64 = 5
 )

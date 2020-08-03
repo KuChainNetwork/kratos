@@ -33,11 +33,15 @@ func newTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccA
 	if !succ {
 		resInt = sdk.NewInt(10000000000000000)
 	}
+	otherCoinDenom := types.CoinDenom(types.MustName("foo"), types.MustName("coin"))
 	initAsset := types.NewCoin(constants.DefaultBondDenom, resInt)
-	asset1 := types.NewCoins(types.NewInt64Coin("foo/coin", 67), initAsset)
+
+	asset1 := types.NewCoins(
+		types.NewInt64Coin(otherCoinDenom, 67),
+		initAsset)
 
 	asset2 := types.NewCoins(
-		types.NewInt64Coin("foo/coin", 67),
+		types.NewInt64Coin(otherCoinDenom, 67),
 		types.NewInt64Coin(constants.DefaultBondDenom, 10000000))
 
 	genAlice := simapp.NewSimGenesisAccount(accAlice, addAlice).WithAsset(asset1)

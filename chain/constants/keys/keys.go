@@ -1,6 +1,6 @@
 package keys
 
-const (
+var (
 	ChainNameStr      = "sys"
 	ChainMainNameStr  = "kuchain"
 	DefaultBondSymbol = ChainNameStr
