@@ -41,6 +41,9 @@ func NewKuMsgCreateValidator(auth sdk.AccAddress, valAddr chainTypes.AccountID, 
 }
 
 func (msg KuMsgCreateValidator) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
 	msgData := MsgCreateValidator{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
@@ -69,6 +72,9 @@ func NewKuMsgDelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr
 }
 
 func (msg KuMsgDelegate) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
 	msgData := MsgDelegate{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
@@ -96,6 +102,9 @@ func NewKuMsgEditValidator(auth sdk.AccAddress, valAddr chainTypes.AccountID, de
 }
 
 func (msg KuMsgEditValidator) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
 	msgData := MsgEditValidator{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
@@ -124,6 +133,9 @@ func NewKuMsgRedelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valSr
 }
 
 func (msg KuMsgRedelegate) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
 	msgData := MsgBeginRedelegate{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
@@ -151,6 +163,9 @@ func NewKuMsgUnbond(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr c
 }
 
 func (msg KuMsgUnbond) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
 	msgData := MsgUndelegate{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
