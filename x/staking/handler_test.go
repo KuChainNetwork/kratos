@@ -9,13 +9,14 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"encoding/hex"
+
 	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/tendermint/tendermint/crypto"
-	"encoding/hex"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
@@ -33,13 +34,11 @@ func newTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccA
 		resInt = sdk.NewInt(10000000000000000)
 	}
 	initAsset := types.NewCoin(constants.DefaultBondDenom, resInt)
-	asset1 := types.Coins{
-		types.NewInt64Coin("foo/coin", 67),
-		initAsset}
+	asset1 := types.NewCoins(types.NewInt64Coin("foo/coin", 67), initAsset)
 
-	asset2 := types.Coins{
+	asset2 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 67),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000)}
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000))
 
 	genAlice := simapp.NewSimGenesisAccount(accAlice, addAlice).WithAsset(asset1)
 	genJack := simapp.NewSimGenesisAccount(accJack, addJack).WithAsset(asset1)
@@ -100,7 +99,7 @@ func exitValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addA
 	So(err, ShouldBeNil)
 	description := stakingTypes.NewDescription("Newmoniker", "Newidentity", "Newwebsite", "NewsecurityContact", "Newdetails")
 	msg := stakingTypes.NewKuMsgEditValidator(addAlice, accAlice, description, &rate)
-	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000)}
+	fee := types.NewInt64Coins(constants.DefaultBondDenom, 1000000)
 	header := abci.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simapp.SignCheckDeliver(t, app.Codec(), app.BaseApp,
 		header, accAlice, fee,
@@ -116,7 +115,7 @@ func delegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
 	So(err, ShouldBeNil)
 	msg := stakingTypes.NewKuMsgDelegate(addAlice, accAlice, accValidator, amount)
-	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000)}
+	fee := types.NewInt64Coins(constants.DefaultBondDenom, 1000000)
 	header := abci.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simapp.SignCheckDeliver(t, app.Codec(), app.BaseApp,
 		header, accAlice, fee,
