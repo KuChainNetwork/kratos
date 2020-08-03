@@ -133,11 +133,11 @@ func TestEnsureMempoolFees(t *testing.T) {
 
 		atomPrice := types.NewDecCoinFromDec(constants.DefaultBondDenom,
 			types.NewDec(200).Quo(types.NewDec(100000))) // 200 coin
-		highGasPrice := types.DecCoins{atomPrice}
+		highGasPrice := types.NewDecCoins(atomPrice)
 
 		atomPrice = types.NewDecCoinFromDec(constants.DefaultBondDenom,
 			types.NewDec(0).Quo(types.NewDec(100000)))
-		lowGasPrice := types.DecCoins{atomPrice}
+		lowGasPrice := types.NewDecCoins(atomPrice)
 
 		Convey("Decorator should have error on too low fee for local gasPrice", func() {
 			// Set high gas price so standard test fee fails

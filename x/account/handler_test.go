@@ -51,7 +51,7 @@ func TestCreateNormalAccount(t *testing.T) {
 				constants.SystemAccountID,
 				name1,
 				addr1)
-			fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100000)}
+			fee := types.NewInt64Coins(constants.DefaultBondDenom, 100000)
 
 			header := abci.Header{Height: app.LastBlockHeight() + 1}
 			_, _, err := simapp.SignCheckDeliver(
@@ -93,7 +93,7 @@ func testAccountCreate(
 	creator types.AccountID, name types.Name, auth types.AccAddress) error {
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 	creatorAuth := app.AccountKeeper().GetAccount(ctxCheck, creator).GetAuth()
-	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100000)}
+	fee := types.NewInt64Coins(constants.DefaultBondDenom, 100000)
 	msg := accountTypes.NewMsgCreateAccount(
 		creatorAuth,
 		creator,
@@ -114,8 +114,7 @@ func testAccountCreate(
 }
 
 func TestCreateAccountNameCheck(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc)
 	app := simapp.SetupWithGenesisAccounts(genAccs)
@@ -154,8 +153,7 @@ func TestCreateAccountNameCheck(t *testing.T) {
 }
 
 func TestCreateAccountDoubleTimes(t *testing.T) {
-	assets := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	assets := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAccs := simapp.NewGenesisAccounts(
 		wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(assets),
@@ -178,8 +176,7 @@ func TestCreateAccountDoubleTimes(t *testing.T) {
 }
 
 func TestUpdateAccountAuth(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc)
 	app := simapp.SetupWithGenesisAccounts(genAccs)
@@ -195,7 +192,7 @@ func TestUpdateAccountAuth(t *testing.T) {
 			addr1,
 			name1,
 			newAuth)
-		fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100000)}
+		fee := types.NewInt64Coins(constants.DefaultBondDenom, 100000)
 
 		header := abci.Header{Height: app.LastBlockHeight() + 1}
 		_, _, err = simapp.SignCheckDeliver(
@@ -230,8 +227,7 @@ func TestUpdateAccountAuth(t *testing.T) {
 }
 
 func TestUpdateAccountAuthErrReturn(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc)
 	app := simapp.SetupWithGenesisAccounts(genAccs)
@@ -247,7 +243,7 @@ func TestUpdateAccountAuthErrReturn(t *testing.T) {
 			addr1,
 			types.MustName("noexitaccount"),
 			newAuth)
-		fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100000)}
+		fee := types.NewInt64Coins(constants.DefaultBondDenom, 100000)
 
 		header := abci.Header{Height: app.LastBlockHeight() + 1}
 		_, _, err = simapp.SignCheckDeliver(
@@ -296,8 +292,7 @@ func checkAuthSequenceByQuery(app *simapp.SimApp, ctx sdk.Context, addr types.Ac
 }
 
 func TestAuthIsNoWithAccount(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc)
 	app := simapp.SetupWithGenesisAccounts(genAccs)
@@ -324,7 +319,7 @@ func TestAuthIsNoWithAccount(t *testing.T) {
 			addr1,
 			name1,
 			addr)
-		fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100000)}
+		fee := types.NewInt64Coins(constants.DefaultBondDenom, 100000)
 
 		header := abci.Header{Height: app.LastBlockHeight() + 1}
 		_, _, err = simapp.SignCheckDeliver(
@@ -342,8 +337,7 @@ func TestAuthIsNoWithAccount(t *testing.T) {
 }
 
 func TestAuthForTwoAccount(t *testing.T) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),

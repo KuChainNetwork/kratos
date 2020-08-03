@@ -2,18 +2,14 @@ package keeper_test
 
 import (
 	"encoding/json"
-	"strings"
-
-	//"fmt"
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/supply/exported"
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	//authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
-	//authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/ghodss/yaml"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"gopkg.in/yaml.v2"
+	"strings"
 	"testing"
 )
 
@@ -32,7 +28,7 @@ func TestModuleAccountMarshalYAML(t *testing.T) {
 	bs, err := yaml.Marshal(moduleAcc)
 	require.NoError(t, err)
 
-	want:="account_number: 0\naddress: cosmos1vdhhxmt0wvcns7psvakhwmn209cnzuthn4xfwn\nname: test\npermissions:\n- minter\n- burner\n- staking\npublic_key: \"\"\n"
+	want := "account_number: 0\naddress: cosmos1vdhhxmt0wvcns7psvakhwmn209cnzuthn4xfwn\nname: test\npermissions:\n- minter\n- burner\n- staking\npublic_key: \"\"\n"
 
 	require.Equal(t, want, string(bs))
 }
@@ -99,9 +95,9 @@ func TestModuleAccountJSON(t *testing.T) {
 	bz, err := json.Marshal(mAccI)
 	require.NoError(t, err)
 
-	require.NotEqual(t, strings.Index(string(bz),mAccI.GetAddress().String()),-1)
-	require.NotEqual(t, strings.Index(string(bz),mAccI.GetID().String()),-1)
-	require.NotEqual(t, strings.Index(string(bz),mAccI.GetPermissions()[0]),-1)
+	require.NotEqual(t, strings.Index(string(bz), mAccI.GetAddress().String()), -1)
+	require.NotEqual(t, strings.Index(string(bz), mAccI.GetID().String()), -1)
+	require.NotEqual(t, strings.Index(string(bz), mAccI.GetPermissions()[0]), -1)
 
 	var a types.ModuleAccount
 	require.NoError(t, json.Unmarshal(bz, &a))

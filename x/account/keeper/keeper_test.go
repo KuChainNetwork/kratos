@@ -28,8 +28,7 @@ var (
 )
 
 func createTestApp() (*simapp.SimApp, sdk.Context) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 	genAcc := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc)
 	app := simapp.SetupWithGenesisAccounts(genAccs)

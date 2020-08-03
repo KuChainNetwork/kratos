@@ -25,6 +25,7 @@ var (
 	NewDecCoinsFromCoins = coin.NewDecCoinsFromCoins
 	NewDecCoinFromDec    = coin.NewDecCoinFromDec
 	NewInt64Coin         = coin.NewInt64Coin
+	NewInt64Coins        = coin.NewInt64Coins
 	NewInt               = coin.NewInt
 	ParseCoin            = coin.ParseCoin
 	ParseCoins           = coin.ParseCoins

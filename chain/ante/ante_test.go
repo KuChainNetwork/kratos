@@ -44,15 +44,15 @@ var (
 )
 
 func createAppForTest() (*simapp.SimApp, sdk.Context) {
-	asset1 := types.Coins{
+	asset1 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 1000000000000000),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
-	asset2 := types.Coins{
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+	asset2 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 1000000000000000),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
-	asset3 := types.Coins{
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+	asset3 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 1000000000000000),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
 
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),
@@ -78,7 +78,7 @@ func testStdTx(app *simapp.SimApp, ids ...types.AccountID) types.StdTx {
 			from = id
 			addr = wallet.GetAuth(id)
 			to   = account1
-			amt  = types.Coins{types.NewCoin("foo/coin", types.NewInt(10))}
+			amt  = types.NewCoins(types.NewCoin("foo/coin", types.NewInt(10)))
 		)
 
 		// a createMsg

@@ -193,7 +193,7 @@ func GenSequenceOfTxs(payer types.AccountID, msgs []sdk.Msg, accNums []uint64, i
 	for i := 0; i < numToGenerate; i++ {
 		txs[i] = helpers.GenTx(
 			msgs,
-			types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 200000)},
+			types.NewInt64Coins(constants.DefaultBondDenom, 200000),
 			helpers.DefaultGenTxGas,
 			payer,
 			"",

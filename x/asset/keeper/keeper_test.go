@@ -28,8 +28,7 @@ var (
 )
 
 func createTestApp() (*simapp.SimApp, sdk.Context) {
-	asset1 := types.Coins{
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000)}
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
 
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),
@@ -48,8 +47,7 @@ func TestAssetTransfer(t *testing.T) {
 	app, ctx := createTestApp()
 
 	Convey("test transfer in keeper", t, func() {
-		amt := types.Coins{
-			types.NewInt64Coin(constants.DefaultBondDenom, 100)}
+		amt := types.NewInt64Coins(constants.DefaultBondDenom, 100)
 		addr := wallet.NewAccAddress()
 		err := app.AssetKeeper().Transfer(ctx, account1, types.NewAccountIDFromAccAdd(addr), amt)
 		So(err, ShouldBeNil)

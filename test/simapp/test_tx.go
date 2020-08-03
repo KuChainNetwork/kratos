@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	DefaultTestFee = types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 100000)}
+	DefaultTestFee = types.NewInt64Coins(constants.DefaultBondDenom, 100000)
 )
 
 type TestTx struct {

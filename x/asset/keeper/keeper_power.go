@@ -61,7 +61,7 @@ func (a AssetKeeper) subCoinPower(ctx sdk.Context, id types.AccountID, amt Coins
 	}
 
 	if subed == nil {
-		subed = Coins{NewInt64Coin(amt[0].Denom, 0)}
+		subed = NewInt64Coins(amt[0].Denom, 0)
 	}
 
 	if err := a.setCoinsPower(ctx, id, subed); err != nil {
