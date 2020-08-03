@@ -254,6 +254,12 @@ func TestGovHandler(t *testing.T) {
 		//deposit
 		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
+		//wrong coins
+		depositCoins := types.Coins{depositAsset}
+		initCoins := types.Coins{initdepost}
+		wrongCoin,_ := initCoins.SafeSub(depositCoins)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, wrongCoin, false)
+		So(err, ShouldNotBeNil)
 		//deposit after proposal have enough coin
 		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)

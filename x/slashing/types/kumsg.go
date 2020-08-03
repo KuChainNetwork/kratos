@@ -24,3 +24,14 @@ func NewKuMsgUnjail(auth sdk.AccAddress, validatorAddr AccountID) KuMsgUnjail {
 		),
 	}
 }
+
+func (msg KuMsgUnjail) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+	msgData := MsgUnjail{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
+}

@@ -30,6 +30,9 @@ func NewKuMsgSubmitProposal(auth sdk.AccAddress, content Content, initialDeposit
 }
 
 func (msg KuMsgSubmitProposal) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
 	if msg.Content == nil {
 		return sdkerrors.Wrap(ErrInvalidProposalContent, "missing content")
 	}
@@ -97,6 +100,17 @@ func NewKuMsgDeposit(auth sdk.AccAddress, depositor AccountID, proposalID uint64
 	}
 }
 
+func (msg KuMsgDeposit) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+	msgData := MsgDeposit{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
+}
+
 type KuMsgVote struct {
 	KuMsg
 }
@@ -109,6 +123,17 @@ func NewKuMsgVote(auth sdk.AccAddress, voter AccountID, proposalID uint64, optio
 			msg.WithData(Cdc(), &MsgVote{proposalID, voter, option}),
 		),
 	}
+}
+
+func (msg KuMsgVote) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+	msgData := MsgVote{}
+	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
+		return err
+	}
+ 	return msgData.ValidateBasic()
 }
 
 type MsgGovUnJail struct {
