@@ -28,7 +28,7 @@ func TestModuleAccountMarshalYAML(t *testing.T) {
 	bs, err := yaml.Marshal(moduleAcc)
 	require.NoError(t, err)
 
-	want := "account_number: 0\naddress: cosmos1vdhhxmt0wvcns7psvakhwmn209cnzuthn4xfwn\nname: test\npermissions:\n- minter\n- burner\n- staking\npublic_key: \"\"\n"
+	want := "|\n  address: cosmos1vdhhxmt0wvcns7psvakhwmn209cnzuthn4xfwn\n  public_key: \"\"\n  account_number: 0\n  name: test\n  permissions:\n  - minter\n  - burner\n  - staking\n"
 
 	require.Equal(t, want, string(bs))
 }

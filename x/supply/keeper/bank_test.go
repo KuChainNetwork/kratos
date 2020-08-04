@@ -121,7 +121,7 @@ func TestSendCoins(t *testing.T) {
 
 	holderAccCoins := getCoinsByName(ctx, *app.SupplyKeeper(), holderAcc.GetName().String(), *app.AssetKeeper())
 	fmt.Println(holderAccCoins.String())
-	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, chainType.NewInt(0))}, holderAccCoins)
+	require.Equal(t, chainType.Coins{}, holderAccCoins)
 
 	BurnerAccCoins := getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
 	require.Equal(t, initCoins, BurnerAccCoins)
@@ -129,7 +129,7 @@ func TestSendCoins(t *testing.T) {
 	err = app.SupplyKeeper().SendCoinsFromModuleToAccount(ctx, types.Burner, bAcc, initCoins)
 	require.NoError(t, err)
 	BurnerAccCoins = getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
-	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, chainType.NewInt(0))}, BurnerAccCoins)
+	require.Equal(t, chainType.Coins{}, BurnerAccCoins)
 
 	BAccCoins := app.AssetKeeper().GetCoinPowers(ctx, baseAcc.GetID())
 	require.Equal(t, chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, initTokens.Mul(sdk.NewInt(3)))), BAccCoins)
@@ -242,7 +242,7 @@ func TestBurnCoins(t *testing.T) {
 	require.NoError(t, err)
 
 	bAccCoins = getCoinsByName(ctx, keeper, types.Burner, *app.AssetKeeper())
-	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(0))}, bAccCoins)
+	require.Equal(t, chainType.Coins{}, bAccCoins)
 	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(200000000))}, keeper.GetSupply(ctx).GetTotal())
 
 	// test same functionality on module account with multiple permissions
@@ -256,6 +256,6 @@ func TestBurnCoins(t *testing.T) {
 	require.NoError(t, err)
 
 	multiPermAccCoins := getCoinsByName(ctx, keeper, multiPermAcc.GetName().String(), *app.AssetKeeper())
-	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(0))}, multiPermAccCoins)
+	require.Equal(t, chainType.Coins{}, multiPermAccCoins)
 	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(300000000))}, keeper.GetSupply(ctx).GetTotal())
 }
