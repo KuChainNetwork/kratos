@@ -62,7 +62,7 @@ func (m MsgSetWithdrawAccountId) ValidateBasic() error {
 		}
 	}
 
-	return m.KuMsg.ValidateBasic()
+	return m.KuMsg.ValidateTransfer()
 }
 
 func NewMsgSetWithdrawAccountId(auth AccAddress, delAddr, withdrawAddr AccountID) MsgSetWithdrawAccountId {
@@ -122,7 +122,7 @@ func (m MsgWithdrawDelegatorReward) ValidateBasic() error {
 		}
 	}
 
-	return m.KuMsg.ValidateBasic()
+	return m.KuMsg.ValidateTransfer()
 }
 
 func (m MsgWithdrawDelegatorReward) GetData() (MsgWithdrawDelegatorRewardData, error) {
@@ -189,7 +189,7 @@ func (m MsgWithdrawValidatorCommission) ValidateBasic() error {
 		}
 	}
 
-	return m.KuMsg.ValidateBasic()
+	return m.KuMsg.ValidateTransfer()
 }
 
 func NewMsgWithdrawValidatorCommission(auth AccAddress, valAddr AccountID) MsgWithdrawValidatorCommission {

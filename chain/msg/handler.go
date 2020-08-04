@@ -53,7 +53,7 @@ func onHandlerKuMsg(ctx Context, k AssetTransfer, msg KuTransfMsg) error {
 	}
 
 	// check validate for safe
-	if err := msg.ValidateBasic(); err != nil {
+	if err := msg.ValidateTransfer(); err != nil {
 		return err
 	}
 

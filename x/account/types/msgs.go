@@ -53,7 +53,7 @@ func (msg MsgCreateAccount) GetData() (MsgCreateAccountData, error) {
 }
 
 func (msg MsgCreateAccount) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 
@@ -113,7 +113,7 @@ func (msg MsgUpdateAccountAuth) GetData() (MsgUpdateAccountAuthData, error) {
 }
 
 func (msg MsgUpdateAccountAuth) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 

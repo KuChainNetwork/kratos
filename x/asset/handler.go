@@ -16,8 +16,6 @@ import (
 func NewHandler(k keeper.AssetCoinsKeeper) msg.Handler {
 	return func(ctx chainTypes.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
-		case *types.KuMsg:
-			return handleKuMsg(ctx)
 		case *types.MsgTransfer:
 			return handleMsgTransfer(ctx, k, msg)
 		case *types.MsgCreateCoin:
