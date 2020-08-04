@@ -17,6 +17,7 @@ func RegisterCodec(cdc *codec.Codec) {
 
 	cdc.RegisterConcrete(&KuMsg{}, "kuchain/msg", nil)
 
+	cdc.RegisterConcrete(&MsgTransfer{}, "asset/transfer", nil)
 	cdc.RegisterConcrete(&MsgCreateCoinData{}, "asset/createData", nil)
 	cdc.RegisterConcrete(&MsgCreateCoin{}, "asset/create", nil)
 	cdc.RegisterConcrete(&MsgIssueCoinData{}, "asset/issueData", nil)

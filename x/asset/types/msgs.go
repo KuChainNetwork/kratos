@@ -12,21 +12,36 @@ import (
 const RouterKey = ModuleName
 
 var (
-	RouterKeyName                 = types.MustName(RouterKey)
-	_, _, _, _, _ types.KuMsgData = (*MsgCreateCoinData)(nil), (*MsgIssueCoinData)(nil), (*MsgBurnCoinData)(nil), (*MsgLockCoinData)(nil), (*MsgUnlockCoinData)(nil)
+	RouterKeyName                    = types.MustName(RouterKey)
+	_, _, _, _, _    types.KuMsgData = (*MsgCreateCoinData)(nil), (*MsgIssueCoinData)(nil), (*MsgBurnCoinData)(nil), (*MsgLockCoinData)(nil), (*MsgUnlockCoinData)(nil)
+	_, _, _, _, _, _ types.Msg       = (*MsgTransfer)(nil), (*MsgCreateCoin)(nil), (*MsgIssueCoin)(nil), (*MsgBurnCoin)(nil), (*MsgLockCoin)(nil), (*MsgUnlockCoin)(nil)
 )
 
 type (
 	KuMsg = types.KuMsg
 )
 
+type MsgTransfer struct {
+	types.KuMsg
+}
+
 // NewMsgTransfer create msg transfer
-func NewMsgTransfer(auth types.AccAddress, from types.AccountID, to types.AccountID, amount Coins) KuMsg {
-	return *msg.MustNewKuMsg(
-		RouterKeyName,
-		msg.WithAuth(auth),
-		msg.WithTransfer(from, to, amount),
-	)
+func NewMsgTransfer(auth types.AccAddress, from types.AccountID, to types.AccountID, amount Coins) MsgTransfer {
+	return MsgTransfer{
+		*msg.MustNewKuMsg(
+			RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithTransfer(from, to, amount),
+		),
+	}
+}
+
+func (msg MsgTransfer) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type MsgCreateCoin struct {

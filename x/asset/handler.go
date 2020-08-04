@@ -17,7 +17,9 @@ func NewHandler(k keeper.AssetCoinsKeeper) msg.Handler {
 	return func(ctx chainTypes.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
 		case *types.KuMsg:
-			return handleMsgTransfer(ctx)
+			return handleKuMsg(ctx)
+		case *types.MsgTransfer:
+			return handleMsgTransfer(ctx, k, msg)
 		case *types.MsgCreateCoin:
 			return handleMsgCreate(ctx, k, msg)
 		case *types.MsgIssueCoin:
@@ -34,8 +36,14 @@ func NewHandler(k keeper.AssetCoinsKeeper) msg.Handler {
 	}
 }
 
-// handleMsgTransfer Handle KuMsg for transfer.
-func handleMsgTransfer(ctx chainTypes.Context) (*sdk.Result, error) {
+// handleKuMsg Handle KuMsg.
+func handleKuMsg(ctx chainTypes.Context) (*sdk.Result, error) {
+	// no need process transfer
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}
+
+// handleMsgTransfer Handle for transfer.
+func handleMsgTransfer(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types.MsgTransfer) (*sdk.Result, error) {
 	// no need process transfer
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
