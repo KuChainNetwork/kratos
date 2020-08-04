@@ -52,6 +52,11 @@ func onHandlerKuMsg(ctx Context, k AssetTransfer, msg KuTransfMsg) error {
 		return nil
 	}
 
+	// check validate for safe
+	if err := msg.ValidateBasic(); err != nil {
+		return err
+	}
+
 	ctx.RequireAuth(msg.GetFrom())
 
 	if err := k.Transfer(ctx.Context(), from, to, amount); err != nil {
