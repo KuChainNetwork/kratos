@@ -20,8 +20,6 @@ func NewHandler(k Keeper) msg.Handler {
 			return handleKuMsgDeposit(ctx, k, msg)
 		case types.KuMsgVote:
 			return handleKuMsgVote(ctx, k, msg)
-		case types.MsgGovUnJail:
-			return handleMsgGovUnJail(ctx, k, msg)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
@@ -122,24 +120,3 @@ func handleMsgVote(ctx sdk.Context, keeper Keeper, msg MsgVote) (*sdk.Result, er
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgGovUnJail(ctx chainTypes.Context, keeper Keeper, msg types.MsgGovUnJail) (*sdk.Result, error) {
-	msgData := types.MsgGovUnjailBase{}
-	if err := msg.UnmarshalData(types.Cdc(), &msgData); err != nil {
-		return nil, sdkerrors.Wrapf(err, "msg MsgGovUnJail  data unmarshal error")
-	}
-	ctx.RequireAuth(msgData.GetUnjailValidator())
-	err := keeper.UnJail(ctx.Context(), msgData.GetUnjailValidator())
-	if err != nil {
-		return nil, err
-	}
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msgData.GetUnjailValidator().String()),
-		),
-	)
-
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-}

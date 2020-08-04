@@ -166,20 +166,6 @@ func (keeper Keeper) Jail(ctx sdk.Context, validatorAccount AccountID, proposalI
 	keeper.sk.JailByAccount(ctx, validatorAccount)
 }
 
-//delete jail information
-func (keeper Keeper) UnJail(ctx sdk.Context, validatorAccount AccountID) error {
-	punishValidator, found := keeper.GetPunishValidator(ctx, validatorAccount)
-	if !found {
-		return types.ErrValidatorNoPunish
-	}
-	if punishValidator.JailedUntil.After(ctx.BlockHeader().Time) {
-		return types.ErrValidatorJailed
-	}
-	keeper.sk.UnjailByAccount(ctx, validatorAccount)
-	keeper.deletePunishValidator(ctx, validatorAccount)
-	return nil
-}
-
 func (keeper Keeper) SlashValidator(ctx sdk.Context, validatorAccount AccountID) {
 	keeper.sk.SlashByValidatorAccount(ctx, validatorAccount, ctx.BlockHeader().Height, keeper.GetSlashFraction(ctx))
 }

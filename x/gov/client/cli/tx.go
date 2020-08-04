@@ -70,7 +70,6 @@ func GetTxCmd(storeKey string, cdc *codec.Codec, pcmds []*cobra.Command) *cobra.
 	govTxCmd.AddCommand(flags.PostCommands(
 		GetCmdDeposit(cdc),
 		GetCmdVote(cdc),
-		GetCmdUnJail(cdc),
 		cmdSubmitProp,
 	)...)
 
@@ -262,45 +261,6 @@ $ %s tx kugov vote jack 1 yes --from mykey
 				return err
 			}
 			cliCtx = cliCtx.WithFromAccount(VoterAccount)
-			if txBldr.FeePayer().Empty() {
-				txBldr = txBldr.WithPayer(args[0])
-			}
-			return txutil.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
-
-// GetCmdVote implements creating a new vote command.
-func GetCmdUnJail(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "unjail [validator-account]",
-		Args:  cobra.ExactArgs(1),
-		Short: "unjail validator previously jailed for downtime",
-		Long: `unjail a jailed validator:
-
-$ <appcli> tx kugov unjail validator --from validator
-`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			inBuf := bufio.NewReader(cmd.InOrStdin())
-			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
-
-			ValidatorAccount, err := chainTypes.NewAccountIDFromStr(args[0])
-			if err != nil {
-				return sdkerrors.Wrap(err, "depositor account id error")
-			}
-			// Get unjail address
-			ValidatorAccAddress, err := txutil.QueryAccountAuth(cliCtx, ValidatorAccount)
-			if err != nil {
-				return sdkerrors.Wrapf(err, "query account %s auth error", ValidatorAccount)
-			}
-			// Build unjail message and run basic validation
-			msg := types.NewMsgGovUnjail(ValidatorAccAddress, ValidatorAccount)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-			cliCtx = cliCtx.WithFromAccount(ValidatorAccount)
 			if txBldr.FeePayer().Empty() {
 				txBldr = txBldr.WithPayer(args[0])
 			}

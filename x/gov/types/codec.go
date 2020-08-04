@@ -17,7 +17,6 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(KuMsgSubmitProposal{}, "kuchain/kuMsgSubmitProposal", nil)
 	cdc.RegisterConcrete(KuMsgDeposit{}, "kuchain/kuMsgDeposit", nil)
 	cdc.RegisterConcrete(KuMsgVote{}, "kuchain/kuMsgVote", nil)
-	cdc.RegisterConcrete(MsgGovUnJail{}, "kuchain/MsgGovUnJail", nil)
 }
 
 // RegisterProposalTypeCodec registers an external proposal content type defined
