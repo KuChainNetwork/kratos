@@ -21,9 +21,6 @@ func NewHandler(k keeper.Keeper) msg.Handler {
 		case types.MsgWithdrawValidatorCommission:
 			return handleMsgWithdrawValidatorCommission(ctx, msg, k)
 
-		case types.MsgFundCommunityPool:
-			return handleMsgFundCommunityPool(ctx, msg, k)
-
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized distribution message type: %T", msg)
 		}
@@ -102,33 +99,6 @@ func handleMsgWithdrawValidatorCommission(ctx chainTypes.Context, msg types.MsgW
 			sdk.EventTypeMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeySender, dataMsg.ValidatorAccountId.String()),
-		),
-	)
-
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-}
-
-func handleMsgFundCommunityPool(ctx chainTypes.Context, msg types.MsgFundCommunityPool, k keeper.Keeper) (*sdk.Result, error) {
-	msgData, err := msg.GetData()
-	ctx.RequireAuth(msgData.Depositor)
-
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "msg create account data unmarshal error")
-	}
-
-	if err := ctx.RequireTransfer(types.ModuleAccountID, msgData.Amount); err != nil {
-		return nil, sdkerrors.Wrap(err, "fund community pool no transfer enough")
-	}
-
-	if err := k.FundCommunityPool(ctx.Context(), msgData.Amount, msgData.Depositor); err != nil {
-		return nil, sdkerrors.Wrap(err, "fund community pool error")
-	}
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, msgData.Depositor.String()),
 		),
 	)
 
