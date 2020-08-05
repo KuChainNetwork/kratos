@@ -98,7 +98,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		miniGasPrice = constants.MinGasPriceString
 	}
 
-	miniGasPriceCoins, err := types.ParseCoins(miniGasPrice)
+	miniGasPriceCoins, err := types.ParseDecCoins(miniGasPrice)
 	if err != nil {
 		panic(err)
 	}

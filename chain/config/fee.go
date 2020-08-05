@@ -1,16 +1,19 @@
 package config
 
-import "github.com/KuChainNetwork/kuchain/chain/types"
-
-var (
-	feePriceMiniLimit types.Coins
+import (
+	"github.com/KuChainNetwork/kuchain/chain/types/coin"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func SetFeePriceMiniLimit(f types.Coins) {
+var (
+	feePriceMiniLimit coin.DecCoins
+)
+
+func SetFeePriceMiniLimit(f coin.DecCoins) {
 	feePriceMiniLimit = f
 }
 
 // GetFeeMiniLimit get fee gas price mini limit
-func GetFeePriceMiniLimit() types.Coins {
-	return feePriceMiniLimit
+func GetFeePriceMiniLimit() sdk.DecCoins {
+	return feePriceMiniLimit.ToSDK()
 }

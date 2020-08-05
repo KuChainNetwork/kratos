@@ -3,6 +3,7 @@ package ante
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -40,6 +41,7 @@ func (sud SetUpContextDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	}
 
 	newCtx = SetGasMeter(simulate, ctx, gasTx.GetGas())
+	newCtx = newCtx.WithMinGasPrices(config.GetFeePriceMiniLimit())
 
 	// Decorator will catch an OutOfGasPanic caused in the next antehandler
 	// AnteHandlers must have their own defer/recover in order for the BaseApp
