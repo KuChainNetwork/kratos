@@ -26,8 +26,10 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/KuChainNetwork/kuchain/app"
+	"github.com/KuChainNetwork/kuchain/chain/config"
 	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	kuLog "github.com/KuChainNetwork/kuchain/utils/log"
 	genTypes "github.com/KuChainNetwork/kuchain/x/genutil/types"
 )
@@ -95,6 +97,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if miniGasPrice == "" {
 		miniGasPrice = constants.MinGasPriceString
 	}
+
+	miniGasPriceCoins, err := types.ParseCoins(miniGasPrice)
+	if err != nil {
+		panic(err)
+	}
+	config.SetFeePriceMiniLimit(miniGasPriceCoins)
 
 	return app.NewKuchainApp(
 		logger, db, traceStore, true, invCheckPeriod,
