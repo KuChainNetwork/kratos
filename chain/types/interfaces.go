@@ -5,6 +5,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type (
+	Msg = sdk.Msg
+)
+
 // AssetTransfer a interface for asset coins transfer
 type AssetTransfer interface {
 	Transfer(ctx sdk.Context, from, to AccountID, amount Coins) error
