@@ -40,6 +40,7 @@ var (
 	ErrKuMsgDataSameAccount    = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 9), "KuMsg msg same account error")
 	ErrKuMsgDataNotFindAccount = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 10), "KuMsg msg can not find account error")
 	ErrKuMsgAccountIDNil       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 11), "KuMsg msg account id should not be nil")
+	ErrKuMsgInconsistentAmount = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 12), "KuMsg msg amount and data amount are inconsistent")
 )
 
 var (

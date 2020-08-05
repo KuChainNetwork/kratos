@@ -1,8 +1,6 @@
 package types
 
 import (
-	"math"
-
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -121,7 +119,7 @@ func (msg MsgCreateCoin) ValidateBasic() error {
 	}
 
 	if err := CheckCoinStatOpts(
-		math.MaxInt64, // no check this
+		0, // no check this
 		data.CanIssue, data.CanLock,
 		data.IssueToHeight,
 		data.InitSupply, data.MaxSupply); err != nil {

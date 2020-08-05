@@ -79,6 +79,11 @@ func (msg KuMsgDelegate) ValidateBasic() error {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
+
+	if (!msg.GetAmount().IsEqual(chainTypes.Coins{msgData.Amount})) {
+		return chainTypes.ErrKuMsgInconsistentAmount
+	}
+
 	return msgData.ValidateBasic()
 }
 

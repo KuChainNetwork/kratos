@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/KuChainNetwork/kuchain/chain/msg"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -39,6 +40,9 @@ func (msg KuMsgSubmitProposal) ValidateBasic() error {
 	msgData := MsgSubmitProposalBase{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
+	}
+	if !msg.GetAmount().IsEqual(msgData.InitialDeposit) {
+		return chainTypes.ErrKuMsgInconsistentAmount
 	}
 	if msgData.Proposer.Empty() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msgData.Proposer.String())
@@ -81,7 +85,6 @@ func (msg KuMsgSubmitProposal) GetProposerAccountID() AccountID {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return AccountID{}
 	}
-
 	return msgData.Proposer
 }
 
@@ -108,6 +111,11 @@ func (msg KuMsgDeposit) ValidateBasic() error {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
+
+	if !msg.GetAmount().IsEqual(msgData.Amount) {
+		return chainTypes.ErrKuMsgInconsistentAmount
+	}
+
 	return msgData.ValidateBasic()
 }
 
