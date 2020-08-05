@@ -77,7 +77,7 @@ func (msg KuMsg) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic does a simple validation check that doesn't require access to any other information.
-func (msg KuMsg) ValidateBasic() error {
+func (msg KuMsg) ValidateTransfer() error {
 	if msg.Router.Empty() {
 		return ErrKuMsgMissingRouter
 	}

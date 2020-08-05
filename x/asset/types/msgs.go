@@ -35,7 +35,7 @@ func NewMsgTransfer(auth types.AccAddress, from types.AccountID, to types.Accoun
 }
 
 func (msg MsgTransfer) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 
@@ -92,7 +92,7 @@ func (msg MsgCreateCoin) GetData() (MsgCreateCoinData, error) {
 }
 
 func (msg MsgCreateCoin) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 
@@ -170,7 +170,7 @@ func (msg MsgIssueCoin) GetData() (MsgIssueCoinData, error) {
 }
 
 func (msg MsgIssueCoin) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 
@@ -234,7 +234,7 @@ func (msg MsgBurnCoin) GetData() (MsgBurnCoinData, error) {
 }
 
 func (msg MsgBurnCoin) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 
@@ -300,7 +300,7 @@ func (msg MsgLockCoin) GetData() (MsgLockCoinData, error) {
 }
 
 func (msg MsgLockCoin) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 
@@ -370,7 +370,7 @@ func (msg MsgUnlockCoin) GetData() (MsgUnlockCoinData, error) {
 }
 
 func (msg MsgUnlockCoin) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 

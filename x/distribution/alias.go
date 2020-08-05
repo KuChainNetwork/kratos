@@ -77,8 +77,6 @@ var (
 	NewMsgSetWithdrawAccountId                 = types.NewMsgSetWithdrawAccountId
 	NewMsgWithdrawDelegatorReward              = types.NewMsgWithdrawDelegatorReward
 	NewMsgWithdrawValidatorCommission          = types.NewMsgWithdrawValidatorCommission
-	MsgFundCommunityPool                       = types.NewMsgFundCommunityPool
-	NewCommunityPoolSpendProposal              = types.NewCommunityPoolSpendProposal
 	NewQueryValidatorOutstandingRewardsParams  = types.NewQueryValidatorOutstandingRewardsParams
 	NewQueryValidatorCommissionParams          = types.NewQueryValidatorCommissionParams
 	NewQueryValidatorSlashesParams             = types.NewQueryValidatorSlashesParams

@@ -31,7 +31,7 @@ func NewKuMsgSubmitProposal(auth sdk.AccAddress, content Content, initialDeposit
 }
 
 func (msg KuMsgSubmitProposal) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 	if msg.Content == nil {
@@ -104,16 +104,18 @@ func NewKuMsgDeposit(auth sdk.AccAddress, depositor AccountID, proposalID uint64
 }
 
 func (msg KuMsgDeposit) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 	msgData := MsgDeposit{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
+
 	if !msg.GetAmount().IsEqual(msgData.Amount) {
 		return chainTypes.ErrKuMsgInconsistentAmount
 	}
+
 	return msgData.ValidateBasic()
 }
 
@@ -132,7 +134,7 @@ func NewKuMsgVote(auth sdk.AccAddress, voter AccountID, proposalID uint64, optio
 }
 
 func (msg KuMsgVote) ValidateBasic() error {
-	if err := msg.KuMsg.ValidateBasic(); err != nil {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
 	msgData := MsgVote{}

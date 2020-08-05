@@ -21,13 +21,15 @@ type AccountAuther interface {
 
 // KuTransfMsg ku Msg
 type KuTransfMsg interface {
-	sdk.Msg
-
+	Route() string
+	Type() string
+	GetSignBytes() []byte
+	GetSigners() []AccAddress
 	GetFrom() AccountID
 	GetTo() AccountID
 	GetAmount() Coins
-	Type() string
 	GetData() []byte
+	ValidateTransfer() error
 }
 
 var _ KuTransfMsg = &KuMsg{}

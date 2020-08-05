@@ -207,44 +207,6 @@ func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 	}
 }
 
-func fundCommunityPoolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var req fundCommunityPoolReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
-			return
-		}
-
-		req.BaseReq = req.BaseReq.Sanitize()
-
-		amount, err := chainTypes.ParseCoins(req.Amount)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		depositor, err := chainTypes.NewAccountIDFromStr(req.DepositorAcc)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(depositor)
-		auth, err := txutil.QueryAccountAuth(ctx, depositor)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		msg := types.NewMsgFundCommunityPool(auth, amount, depositor)
-		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		txutil.WriteGenerateStdTxResponse(w, txutil.NewKuCLICtx(cliCtx), req.BaseReq, []sdk.Msg{msg})
-	}
-}
-
 func checkDelegatorAddressVar(w http.ResponseWriter, r *http.Request) (chainTypes.AccountID, bool) {
 	accID, err := chainTypes.NewAccountIDFromStr(mux.Vars(r)["delegatorAddr"])
 	if err != nil {
@@ -256,7 +218,6 @@ func checkDelegatorAddressVar(w http.ResponseWriter, r *http.Request) (chainType
 }
 
 func checkValidatorAddressVar(w http.ResponseWriter, r *http.Request) (chainTypes.AccountID, bool) {
-	// FIXME: support accountID
 	addr, err := chainTypes.NewAccountIDFromStr(mux.Vars(r)["validatorAddr"])
 	if err != nil {
 		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

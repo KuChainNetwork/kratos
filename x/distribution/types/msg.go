@@ -62,7 +62,7 @@ func (m MsgSetWithdrawAccountId) ValidateBasic() error {
 		}
 	}
 
-	return m.KuMsg.ValidateBasic()
+	return m.KuMsg.ValidateTransfer()
 }
 
 func NewMsgSetWithdrawAccountId(auth AccAddress, delAddr, withdrawAddr AccountID) MsgSetWithdrawAccountId {
@@ -122,7 +122,7 @@ func (m MsgWithdrawDelegatorReward) ValidateBasic() error {
 		}
 	}
 
-	return m.KuMsg.ValidateBasic()
+	return m.KuMsg.ValidateTransfer()
 }
 
 func (m MsgWithdrawDelegatorReward) GetData() (MsgWithdrawDelegatorRewardData, error) {
@@ -189,7 +189,7 @@ func (m MsgWithdrawValidatorCommission) ValidateBasic() error {
 		}
 	}
 
-	return m.KuMsg.ValidateBasic()
+	return m.KuMsg.ValidateTransfer()
 }
 
 func NewMsgWithdrawValidatorCommission(auth AccAddress, valAddr AccountID) MsgWithdrawValidatorCommission {
@@ -222,32 +222,4 @@ func (m MsgFundCommunityPoolData) Marshal() ([]byte, error) {
 
 func (m *MsgFundCommunityPoolData) Unmarshal(b []byte) error {
 	return ModuleCdc.UnmarshalJSON(b, m)
-}
-
-type MsgFundCommunityPool struct {
-	KuMsg
-}
-
-// NewMsgFundCommunityPool returns a new MsgFundCommunityPool with a sender and
-// a funding amount.
-func NewMsgFundCommunityPool(auth AccAddress, amount Coins, depositor AccountID) MsgFundCommunityPool {
-	return MsgFundCommunityPool{
-		*msg.MustNewKuMsg(
-			MustName(RouterKey),
-			msg.WithAuth(auth),
-			msg.WithTransfer(depositor, ModuleAccountID, amount),
-			msg.WithData(Cdc(), &MsgFundCommunityPoolData{
-				Amount:    amount,
-				Depositor: depositor,
-			}),
-		),
-	}
-}
-
-func (m MsgFundCommunityPool) GetData() (MsgFundCommunityPoolData, error) {
-	res := MsgFundCommunityPoolData{}
-	if err := m.UnmarshalData(Cdc(), &res); err != nil {
-		return MsgFundCommunityPoolData{}, sdkerrors.Wrapf(chainType.ErrKuMsgDataUnmarshal, "%s", err.Error())
-	}
-	return res, nil
 }

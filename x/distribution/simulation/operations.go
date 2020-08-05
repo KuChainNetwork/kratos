@@ -72,10 +72,6 @@ func WeightedOperations(
 			weightMsgWithdrawValidatorCommission,
 			SimulateMsgWithdrawValidatorCommission(ak, bk, k, sk),
 		),
-		types.SimulationNewWeightedOperation(
-			weightMsgFundCommunityPool,
-			SimulateMsgFundCommunityPool(ak, bk, k, sk),
-		),
 	}
 }
 
@@ -220,59 +216,6 @@ func SimulateMsgWithdrawValidatorCommission(ak types.AccountKeeperAccountID, bk 
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{0}, // TODO: sim support new seq []uint64{account.GetSequence()},
 			simAccount.PrivKey,
-		)
-
-		_, _, err = app.Deliver(tx)
-		if err != nil {
-			return types.SimulationNoOpMsg(types.ModuleName), nil, err
-		}
-
-		return types.SimulationNewOperationMsg(msg, true, ""), nil, nil
-	}
-}
-
-// SimulateMsgFundCommunityPool simulates MsgFundCommunityPool execution where
-// a random account sends a random amount of its funds to the community pool.
-func SimulateMsgFundCommunityPool(ak types.AccountKeeperAccountID, bk types.BankKeeperAccountID, k keeper.Keeper, sk types.StakingKPKeeper) types.SimulationOperation {
-	return func(
-		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []types.SimulationAccount, chainID string,
-	) (types.SimulationOperationMsg, []types.SimulationFutureOperation, error) {
-
-		funder, _ := types.SimulationRandomAcc(r, accs)
-
-		funderId := chainTypes.NewAccountIDFromAccAdd(funder.Address)
-		account := ak.GetAccount(ctx, funderId)
-
-		accountId := chainTypes.NewAccountIDFromAccAdd(account.GetAuth())
-		spendable := bk.SpendableCoins(ctx, accountId)
-
-		fundAmount := kuSim.RandSubsetCoins(r, spendable)
-		if fundAmount.Empty() {
-			return types.SimulationNoOpMsg(types.ModuleName), nil, nil
-		}
-
-		var (
-			fees chainTypes.Coins
-			err  error
-		)
-
-		coins, hasNeg := spendable.SafeSub(fundAmount)
-		if !hasNeg {
-			fees, err = kuSim.RandomFees(r, ctx, coins)
-			if err != nil {
-				return types.SimulationNoOpMsg(types.ModuleName), nil, err
-			}
-		}
-
-		msg := types.NewMsgFundCommunityPool(account.GetAuth(), fundAmount, funderId)
-		tx := helpers.GenTx(
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{0}, // TODO: sim support new seq []uint64{account.GetSequence()},
-			funder.PrivKey,
 		)
 
 		_, _, err = app.Deliver(tx)
