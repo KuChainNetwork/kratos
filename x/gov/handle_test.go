@@ -7,8 +7,10 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"encoding/hex"
 	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	govTypes "github.com/KuChainNetwork/kuchain/x/gov/types"
@@ -16,9 +18,8 @@ import (
 	paramproposal "github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/tendermint/tendermint/crypto"
-	"time"
-	"encoding/hex"
 	"github.com/tendermint/tendermint/crypto/ed25519"
+	"time"
 )
 
 func newTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccAddress, accAlice, accJack, accValidator types.AccountID, app *simapp.SimApp) {
@@ -34,7 +35,7 @@ func newTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccA
 	if !succ {
 		resInt = sdk.NewInt(10000000000000000)
 	}
-	otherCoinDenom := types.CoinDenom(types.MustName("foo"),types.MustName("coin"))
+	otherCoinDenom := types.CoinDenom(types.MustName("foo"), types.MustName("coin"))
 
 	initAsset := types.NewCoin(constants.DefaultBondDenom, resInt)
 	asset1 := types.Coins{
@@ -122,13 +123,13 @@ func signBlock(app *simapp.SimApp) {
 	app.Commit()
 }
 
-func submitProposal(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, content govTypes.Content, amount types.Coins, passed bool) error {
+func submitProposal(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, content govTypes.Content, amount, transferAmount types.Coins, passed bool) error {
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
 	So(err, ShouldBeNil)
 	//NewKuMsgSubmitProposal(auth sdk.AccAddress, content Content, initialDeposit Coins, proposer AccountID)
-	msg := govTypes.NewKuMsgSubmitProposal(addAlice, content, amount, accAlice)
+	msg := customizeKuMsgProposal(addAlice, content, amount, transferAmount, accAlice)
 	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000)}
 	header := abci.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simapp.SignCheckDeliver(t, app.Codec(), app.BaseApp,
@@ -158,14 +159,39 @@ func vote(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.
 	return err
 }
 
-func disposit(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, proposalID uint64, amount types.Coins, passed bool) error {
+func customizeKuMsgDeposit(auth sdk.AccAddress, depositor types.AccountID, proposalID uint64, amount, transferAmount types.Coins) govTypes.KuMsgDeposit {
+	return govTypes.KuMsgDeposit{
+		*msg.MustNewKuMsg(
+			govTypes.RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithTransfer(depositor, govTypes.ModuleAccountID, transferAmount),
+			msg.WithData(govTypes.Cdc(), &govTypes.MsgDeposit{proposalID, depositor, amount}),
+		),
+	}
+}
+
+func customizeKuMsgProposal(auth sdk.AccAddress, content govTypes.Content, initialDeposit, transferAmount types.Coins, proposer types.AccountID) govTypes.KuMsgSubmitProposal {
+	return govTypes.KuMsgSubmitProposal{
+		*msg.MustNewKuMsg(
+			govTypes.RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithTransfer(proposer, govTypes.ModuleAccountID, transferAmount),
+			msg.WithData(govTypes.Cdc(), &govTypes.MsgSubmitProposalBase{
+				InitialDeposit: initialDeposit,
+				Proposer:       proposer,
+			}),
+		), content,
+	}
+}
+
+func disposit(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, proposalID uint64, amount, transferAmount types.Coins, passed bool) error {
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
 	So(err, ShouldBeNil)
-	//NewKuMsgDeposit(auth sdk.AccAddress, depositor AccountID, proposalID uint64, amount Coins)
-	msg := govTypes.NewKuMsgDeposit(addAlice, accAlice, proposalID, amount)
-	//	ctxCheck.Logger().Info("submitProposal msg log","msg",msg)
+	//	msg := govTypes.NewKuMsgDeposit(addAlice, accAlice, proposalID, amount)
+	msg := customizeKuMsgDeposit(addAlice, accAlice, proposalID, amount, transferAmount)
+
 	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000)}
 	header := abci.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simapp.SignCheckDeliver(t, app.Codec(), app.BaseApp,
@@ -227,7 +253,7 @@ func TestGovHandler(t *testing.T) {
 		err := createValidator(t, wallet, app, addAlice, accAlice, rate, pk, true)
 		So(err, ShouldBeNil)
 		initdepost := types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000000000)
-		otherCoinDenom := types.CoinDenom(types.MustName("foo"),types.MustName("coin"))
+		otherCoinDenom := types.CoinDenom(types.MustName("foo"), types.MustName("coin"))
 		otherdeposit := types.NewInt64Coin(otherCoinDenom, 1000000)
 
 		depositInt, succ := sdk.NewIntFromString("500000000000000000000")
@@ -240,28 +266,28 @@ func TestGovHandler(t *testing.T) {
 		So(err, ShouldBeNil)
 		//proposal normal text proposal
 		textContent := govTypes.ContentFromProposalType("test title", "test decription", govTypes.ProposalTypeText)
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
 		//deposit other coin
-		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{otherdeposit}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{otherdeposit}, types.Coins{otherdeposit}, true)
 		So(err, ShouldBeNil)
 		//vote before depost enough coin
 		err = vote(t, wallet, app, addAlice, accAlice, 1, govTypes.OptionYes, false)
 		So(err, ShouldNotBeNil)
 		//deposit but account does not have enough coin
-		err = disposit(t, wallet, app, addValidator, accValidator, 1, types.Coins{depositAsset}, false)
+		err = disposit(t, wallet, app, addValidator, accValidator, 1, types.Coins{depositAsset}, types.Coins{depositAsset}, false)
 		So(err, ShouldNotBeNil)
 		//deposit
-		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		//wrong coins
 		depositCoins := types.Coins{depositAsset}
 		initCoins := types.Coins{initdepost}
-		wrongCoin,_ := initCoins.SafeSub(depositCoins)
-		err = disposit(t, wallet, app, addAlice, accAlice, 1, wrongCoin, false)
+		wrongCoin, _ := initCoins.SafeSub(depositCoins)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, wrongCoin, wrongCoin, false)
 		So(err, ShouldNotBeNil)
 		//deposit after proposal have enough coin
-		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		//vote
 		err = vote(t, wallet, app, addAlice, accAlice, 1, govTypes.OptionYes, true)
@@ -270,7 +296,11 @@ func TestGovHandler(t *testing.T) {
 		err = vote(t, wallet, app, addAlice, accAlice, 1, govTypes.OptionYes, false)
 		So(err, ShouldNotBeNil)
 		//deposit after proposal close
-		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, false)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, types.Coins{depositAsset}, false)
+		So(err, ShouldNotBeNil)
+		// transfer amount not equal deposit amount
+		textContent = govTypes.ContentFromProposalType("test title2", "test decription2", govTypes.ProposalTypeText)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{depositAsset}, false)
 		So(err, ShouldNotBeNil)
 	})
 	Convey("TestTextProposal", t, func() {
@@ -293,7 +323,7 @@ func TestGovHandler(t *testing.T) {
 		So(err, ShouldBeNil)
 		//proposaler has no enough coin
 		textContent := govTypes.ContentFromProposalType("test title", "test decription", govTypes.ProposalTypeText)
-		err = submitProposal(t, wallet, app, addValidator, accValidator, textContent, types.Coins{initdepost}, false)
+		err = submitProposal(t, wallet, app, addValidator, accValidator, textContent, types.Coins{initdepost}, types.Coins{initdepost}, false)
 		So(err, ShouldNotBeNil)
 
 		longtitle := "test title test title test title test title test title test title test title test title test title test title test title test title test title test title "
@@ -303,16 +333,16 @@ func TestGovHandler(t *testing.T) {
 		}
 		// title too long
 		textContent = govTypes.ContentFromProposalType(longtitle, "longdecription", govTypes.ProposalTypeText)
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, false)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, false)
 		So(err, ShouldNotBeNil)
 		// decription too long
 		textContent = govTypes.ContentFromProposalType("longtitle", longdecription, govTypes.ProposalTypeText)
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, false)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, false)
 		So(err, ShouldNotBeNil)
 
 		//right proposal
 		textContent = govTypes.ContentFromProposalType("test title", "test decription", govTypes.ProposalTypeText)
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
 		//deposit
 		depositInt, succ := sdk.NewIntFromString("500000000000000000000")
@@ -320,11 +350,14 @@ func TestGovHandler(t *testing.T) {
 			depositInt = sdk.NewInt(500000000000000000)
 		}
 		depositAsset := types.NewCoin(constants.DefaultBondDenom, depositInt)
-		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, true)
+		// transfer amount not equal deposit amount
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, types.Coins{initdepost}, false)
+		So(err, ShouldNotBeNil)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		logProposal(app, 1)
 		//no exist proposal
-		err = disposit(t, wallet, app, addAlice, accAlice, 2, types.Coins{depositAsset}, false)
+		err = disposit(t, wallet, app, addAlice, accAlice, 2, types.Coins{depositAsset}, types.Coins{depositAsset}, false)
 		So(err, ShouldNotBeNil)
 		//vote
 		err = vote(t, wallet, app, addAlice, accAlice, 1, govTypes.OptionYes, true)
@@ -340,9 +373,9 @@ func TestGovHandler(t *testing.T) {
 		signBlock(app)
 		logProposal(app, 1)
 		//second proposal
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
-		err = disposit(t, wallet, app, addAlice, accAlice, 2, types.Coins{depositAsset}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 2, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		logProposal(app, 2)
 		err = vote(t, wallet, app, addJack, accJack, 2, govTypes.OptionNo, true)
@@ -354,9 +387,9 @@ func TestGovHandler(t *testing.T) {
 		signBlock(app)
 		logProposal(app, 2)
 		//third proposal
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
-		err = disposit(t, wallet, app, addAlice, accAlice, 3, types.Coins{depositAsset}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 3, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		logProposal(app, 3)
 		err = vote(t, wallet, app, addJack, accJack, 3, govTypes.OptionYes, true)
@@ -368,24 +401,24 @@ func TestGovHandler(t *testing.T) {
 		signBlock(app)
 		logProposal(app, 3)
 		//fouth proposal
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
 		signBlock(app)
 		logProposal(app, 4)
 		//fivth proposal
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
 		logProposal(app, 5)
-		err = disposit(t, wallet, app, addAlice, accAlice, 5, types.Coins{depositAsset}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 5, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		err = vote(t, wallet, app, addJack, accJack, 5, govTypes.OptionAbstain, true)
 		So(err, ShouldBeNil)
 		signBlock(app)
 		logProposal(app, 5)
 		//sixth proposal
-		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, textContent, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
-		err = disposit(t, wallet, app, addAlice, accAlice, 6, types.Coins{depositAsset}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 6, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		signBlock(app)
 		logProposal(app, 6)
@@ -430,11 +463,11 @@ func TestGovHandler(t *testing.T) {
 		app.Codec().UnmarshalJSON([]byte(jsonChangevotingparams), &proposal)
 		content := paramproposal.NewParameterChangeProposal(proposal.Title, proposal.Description, proposal.Changes.ToParamChanges())
 
-		err = submitProposal(t, wallet, app, addAlice, accAlice, content, types.Coins{initdepost}, true)
+		err = submitProposal(t, wallet, app, addAlice, accAlice, content, types.Coins{initdepost}, types.Coins{initdepost}, true)
 		So(err, ShouldBeNil)
 
 		//deposit other coin
-		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, true)
+		err = disposit(t, wallet, app, addAlice, accAlice, 1, types.Coins{depositAsset}, types.Coins{depositAsset}, true)
 		So(err, ShouldBeNil)
 		err = vote(t, wallet, app, addAlice, accAlice, 1, govTypes.OptionYes, true)
 		So(err, ShouldBeNil)

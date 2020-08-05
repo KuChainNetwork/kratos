@@ -13,6 +13,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
@@ -96,7 +97,7 @@ func createValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, ad
 }
 
 func exitValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, rate sdk.Dec, passed bool) error {
-	//auth sdk.AccAddress, valAddr chainTypes.AccountID, description Description, newRate *sdk.Dec
+	//auth sdk.AccAddress, valAddr types.AccountID, description Description, newRate *sdk.Dec
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -113,12 +114,28 @@ func exitValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addA
 	return err
 }
 
-func delegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accValidator types.AccountID, amount types.Coin, passed bool) error {
+// NewKuMsgDelegate create kuMsgDelegate
+func customizeKuMsgDelegate(auth sdk.AccAddress, delAddr types.AccountID, valAddr types.AccountID, amount, transferAmount types.Coin) stakingTypes.KuMsgDelegate {
+	return stakingTypes.KuMsgDelegate{
+		*msg.MustNewKuMsg(
+			stakingTypes.RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithTransfer(delAddr, stakingTypes.ModuleAccountID, types.Coins{transferAmount}),
+			msg.WithData(stakingTypes.Cdc(), &stakingTypes.MsgDelegate{
+				DelegatorAccount: delAddr,
+				ValidatorAccount: valAddr,
+				Amount:           amount,
+			}),
+		),
+	}
+}
+
+func delegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accValidator types.AccountID, amount, transferAmount types.Coin, passed bool) error {
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
 	So(err, ShouldBeNil)
-	msg := stakingTypes.NewKuMsgDelegate(addAlice, accAlice, accValidator, amount)
+	msg := customizeKuMsgDelegate(addAlice, accAlice, accValidator, amount, transferAmount)
 	fee := types.NewInt64Coins(constants.DefaultBondDenom, 1000000)
 	header := abci.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simapp.SignCheckDeliver(t, app.Codec(), app.BaseApp,
@@ -131,7 +148,7 @@ func delegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp
 }
 
 func redelegateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack, accValidator types.AccountID, amount types.Coin, passed bool) error {
-	//NewKuMsgRedelegate(auth sdk.AccAddress, delAddr chainTypes.AccountID, valSrcAddr, valDstAddr chainTypes.AccountID, amount chainTypes.Coin)
+	//NewKuMsgRedelegate(auth sdk.AccAddress, delAddr types.AccountID, valSrcAddr, valDstAddr types.AccountID, amount types.Coin)
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -149,7 +166,7 @@ func redelegateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp
 }
 
 func unbondValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack types.AccountID, amount types.Coin, passed bool) error {
-	//NewKuMsgUnbond(auth sdk.AccAddress, delAddr chainTypes.AccountID, valAddr chainTypes.AccountID, amount chainTypes.Coin)
+	//NewKuMsgUnbond(auth sdk.AccAddress, delAddr types.AccountID, valAddr types.AccountID, amount types.Coin)
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -226,18 +243,21 @@ func TestStakingHandler(t *testing.T) {
 		delegateAmount := types.NewInt64Coin(constants.DefaultBondDenom, 50000000)
 		smallAmount := types.NewInt64Coin(constants.DefaultBondDenom, 50000)
 		bigAmount := types.NewInt64Coin(constants.DefaultBondDenom, 2100000000000000000)
+		//transferAmount not equal  delegateAmount
+		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, delegateAmount, smallAmount, false)
+		So(err, ShouldNotBeNil)
 		//alice D jack 50000000
-		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, delegateAmount, true)
+		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, delegateAmount, delegateAmount, true)
 		So(err, ShouldBeNil)
 		//wrong coin delegate
-		wrongAmount := types.Coin{Denom:constants.DefaultBondDenom, Amount:sdk.NewInt(-5000000)}
-		err = delegationValidator(t, wallet, app, addValidator, accValidator, accJack, wrongAmount, false)
+		wrongAmount := types.Coin{Denom: constants.DefaultBondDenom, Amount: sdk.NewInt(-5000000)}
+		err = delegationValidator(t, wallet, app, addValidator, accValidator, accJack, wrongAmount, wrongAmount, false)
 		So(err, ShouldNotBeNil)
 		// coin not enought
-		err = delegationValidator(t, wallet, app, addValidator, accValidator, accJack, delegateAmount, false)
+		err = delegationValidator(t, wallet, app, addValidator, accValidator, accJack, delegateAmount, delegateAmount, false)
 		So(err, ShouldNotBeNil)
 		// not exist validator
-		err = delegationValidator(t, wallet, app, addAlice, accAlice, accValidator, delegateAmount, false)
+		err = delegationValidator(t, wallet, app, addAlice, accAlice, accValidator, delegateAmount, delegateAmount, false)
 		So(err, ShouldNotBeNil)
 		//wrong coin redelegate
 		err = redelegateValidator(t, wallet, app, addAlice, accAlice, accJack, accAlice, wrongAmount, false)
@@ -300,10 +320,10 @@ func TestStakingHandler(t *testing.T) {
 		So(err, ShouldBeNil)
 		bigAmount := types.NewInt64Coin(constants.DefaultBondDenom, 2100000000000000000)
 		//alice D jack
-		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, bigAmount, true)
+		err = delegationValidator(t, wallet, app, addAlice, accAlice, accJack, bigAmount, bigAmount, true)
 		So(err, ShouldBeNil)
 		//jack D alice
-		err = delegationValidator(t, wallet, app, addJack, accJack, accAlice, bigAmount, true)
+		err = delegationValidator(t, wallet, app, addJack, accJack, accAlice, bigAmount, bigAmount, true)
 		So(err, ShouldBeNil)
 		delegateAmount := types.NewInt64Coin(constants.DefaultBondDenom, 50000000)
 		// alice R jack ->alice
