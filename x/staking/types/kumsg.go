@@ -48,7 +48,7 @@ func (msg KuMsgCreateValidator) ValidateBasic() error {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
- 	return msgData.ValidateBasic()
+	return msgData.ValidateBasic()
 }
 
 type KuMsgDelegate struct {
@@ -79,7 +79,10 @@ func (msg KuMsgDelegate) ValidateBasic() error {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
- 	return msgData.ValidateBasic()
+	if (!msg.GetAmount().IsEqual(chainTypes.Coins{msgData.Amount})) {
+		return chainTypes.ErrKuMsgInconsistentAmount
+	}
+	return msgData.ValidateBasic()
 }
 
 type KuMsgEditValidator struct {
@@ -109,7 +112,7 @@ func (msg KuMsgEditValidator) ValidateBasic() error {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
- 	return msgData.ValidateBasic()
+	return msgData.ValidateBasic()
 }
 
 type KuMsgRedelegate struct {
@@ -140,7 +143,7 @@ func (msg KuMsgRedelegate) ValidateBasic() error {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
- 	return msgData.ValidateBasic()
+	return msgData.ValidateBasic()
 }
 
 type KuMsgUnbond struct {
@@ -170,5 +173,5 @@ func (msg KuMsgUnbond) ValidateBasic() error {
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
- 	return msgData.ValidateBasic()
+	return msgData.ValidateBasic()
 }
