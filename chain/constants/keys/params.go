@@ -1,7 +1,7 @@
 package keys
 
 const (
-	IssueCoinsWaitBlockNums       int64  = 5 // how many blocks after coins created that can issue
+	IssueCoinsWaitBlockNums       int64  = 1000 // how many blocks after coins created that can issue
 	DefaultMaxMemoCharacters      int    = 256
 	DefaultTxSigLimit             uint64 = 7
 	DefaultTxSizeCostPerByte      uint64 = 10
