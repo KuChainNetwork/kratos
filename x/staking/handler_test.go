@@ -1,7 +1,6 @@
 package staking_test
 
 import (
-	//"errors"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -97,7 +96,6 @@ func createValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, ad
 }
 
 func exitValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice types.AccountID, rate sdk.Dec, passed bool) error {
-	//auth sdk.AccAddress, valAddr types.AccountID, description Description, newRate *sdk.Dec
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -148,7 +146,6 @@ func delegationValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp
 }
 
 func redelegateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack, accValidator types.AccountID, amount types.Coin, passed bool) error {
-	//NewKuMsgRedelegate(auth sdk.AccAddress, delAddr types.AccountID, valSrcAddr, valDstAddr types.AccountID, amount types.Coin)
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -166,7 +163,6 @@ func redelegateValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp
 }
 
 func unbondValidator(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.AccAddress, accAlice, accJack types.AccountID, amount types.Coin, passed bool) error {
-	//NewKuMsgUnbond(auth sdk.AccAddress, delAddr types.AccountID, valAddr types.AccountID, amount types.Coin)
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
@@ -187,7 +183,6 @@ func newPubKey(pk string) (res crypto.PubKey) {
 	if err != nil {
 		panic(err)
 	}
-	//res, err = crypto.PubKeyFromBytes(pkBytes)
 	var pkEd ed25519.PubKeyEd25519
 	copy(pkEd[:], pkBytes)
 	return pkEd

@@ -128,7 +128,6 @@ func submitProposal(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, add
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
 	So(err, ShouldBeNil)
-	//NewKuMsgSubmitProposal(auth sdk.AccAddress, content Content, initialDeposit Coins, proposer AccountID)
 	msg := customizeKuMsgProposal(addAlice, content, amount, transferAmount, accAlice)
 	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000)}
 	header := abci.Header{Height: app.LastBlockHeight() + 1}
@@ -146,7 +145,6 @@ func vote(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice sdk.
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
 	So(err, ShouldBeNil)
-	//NewKuMsgVote(auth sdk.AccAddress, voter AccountID, proposalID uint64, option VoteOption)
 	msg := govTypes.NewKuMsgVote(addAlice, accAlice, proposalID, voteOption)
 	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000)}
 	header := abci.Header{Height: app.LastBlockHeight() + 1}
@@ -189,7 +187,6 @@ func disposit(t *testing.T, wallet *simapp.Wallet, app *simapp.SimApp, addAlice 
 
 	origAuthSeq, origAuthNum, err := app.AccountKeeper().GetAuthSequence(ctxCheck, addAlice)
 	So(err, ShouldBeNil)
-	//	msg := govTypes.NewKuMsgDeposit(addAlice, accAlice, proposalID, amount)
 	msg := customizeKuMsgDeposit(addAlice, accAlice, proposalID, amount, transferAmount)
 
 	fee := types.Coins{types.NewInt64Coin(constants.DefaultBondDenom, 1000000)}
