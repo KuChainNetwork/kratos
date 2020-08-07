@@ -212,8 +212,8 @@ func (msg MsgBurnCoinData) Sender() AccountID {
 }
 
 // NewMsgBurn new issue msg
-func NewMsgBurn(auth types.AccAddress, id types.AccountID, amount types.Coin) MsgIssueCoin {
-	return MsgIssueCoin{
+func NewMsgBurn(auth types.AccAddress, id types.AccountID, amount types.Coin) MsgBurnCoin {
+	return MsgBurnCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
 			msg.WithAuth(auth),

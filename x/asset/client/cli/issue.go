@@ -63,3 +63,37 @@ func Issue(cdc *codec.Codec) *cobra.Command {
 
 	return cmd
 }
+
+// Burn will create a account create tx and sign it with the given key.
+func Burn(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "burn [accountID] [amount]",
+		Short: "Burn coin owned by account",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			accountID := chainTypes.MustAccountID(args[0])
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(accountID)
+			auth, err := txutil.QueryAccountAuth(ctx, accountID)
+			if err != nil {
+				return sdkerrors.Wrapf(err, "query account %s auth error", accountID)
+			}
+
+			amount, err := chainTypes.ParseCoin(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgBurn(auth, accountID, amount)
+			return txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{msg})
+		},
+	}
+
+	cmd = flags.PostCommands(cmd)[0]
+
+	return cmd
+}
