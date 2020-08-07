@@ -38,6 +38,10 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) 
 		IssueRequestHandlerFn(cliCtx),
 	).Methods("POST")
 	r.HandleFunc(
+		"/assets/burn",
+		BurnRequestHandlerFn(cliCtx),
+	)
+	r.HandleFunc(
 		"/assets/lock",
 		LockRequestHandlerFn(cliCtx),
 	).Methods("POST")

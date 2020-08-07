@@ -39,6 +39,12 @@ type IssueReq struct {
 	Amount  string       `json:"amount" yaml:"amount"`
 }
 
+type BurnReq struct {
+	BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Account string       `json:"account" yaml:"account"`
+	Amount  string       `json:"amount" yaml:"amount"`
+}
+
 type LockReq struct {
 	BaseReq           rest.BaseReq `json:"base_req" yaml:"base_req"`
 	Account           string       `json:"account" yaml:"account"`
@@ -206,6 +212,44 @@ func IssueRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		msg := types.NewMsgIssue(auth, creator, symbol, amount)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{msg})
+	}
+}
+
+func BurnRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req BurnReq
+		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+
+		acc, err := chainTypes.NewAccountIDFromStr(req.Account)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(acc)
+		auth, err := txutil.QueryAccountAuth(ctx, acc)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		amount, err := chainTypes.ParseCoin(req.Amount)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		msg := types.NewMsgBurn(auth, acc, amount)
+		if err := msg.ValidateBasic(); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

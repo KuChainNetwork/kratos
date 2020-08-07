@@ -29,6 +29,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		Transfer(cdc),
 		Create(cdc),
 		Issue(cdc),
+		Burn(cdc),
 		LockCoin(cdc),
 		UnlockCoin(cdc),
 	)
