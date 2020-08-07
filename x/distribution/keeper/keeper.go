@@ -215,7 +215,7 @@ func (k Keeper) CanDistribution(ctx sdk.Context) (bool, time.Time) {
 		return true, k.startNotDistriTimePoint
 	}
 
-	nt := time.Now()
+	nt := ctx.BlockHeader().Time
 	tEnd := k.startNotDistriTimePoint.Add(24 * 3600 * 1e9)
 	if nt.Before(tEnd) && nt.After(k.startNotDistriTimePoint) {
 		return false, k.startNotDistriTimePoint
