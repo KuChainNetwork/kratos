@@ -201,7 +201,7 @@ func (k Keeper) SetStartNotDistributionTimePoint(ctx sdk.Context, t time.Time) {
 		"time", k.startNotDistriTimePoint.Nanosecond())
 }
 
-func (k Keeper) GetStartNotDistributionTimePoint(ctx sdk.Context) {
+func (k *Keeper) GetStartNotDistributionTimePoint(ctx sdk.Context) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get([]byte(key))
 
