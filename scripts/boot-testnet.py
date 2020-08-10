@@ -8,6 +8,7 @@ import sys
 import time
 import logging
 import re
+import random
 
 # Keys
 testKey = "kuchain1ysggxvhq3aqxp2dnzw8ucqf0hgjn44tqcp7l3s"
@@ -226,16 +227,63 @@ def startChainNode(name):
 
    nodeInBackground(name, logPath, bootParams)
 
+def message(msg, *args):
+    for arg in args:
+        print(msg + ' comes from ' + arg)
+
+def tx(fromAcc, cmd, *params):
+   cmd = 'tx ' + cmd
+   cmd += (" --yes --chain-id=%s" % chainID)
+   cmd += (" --from=%s" % fromAcc)
+   cmd += (" --node=%s" % "tcp://localhost:30157")
+
+   if len(params) % 2 is not 0:
+      logging.error("tx params len should be div by 2")
+
+   paramsKVlen = len(params) / 2
+   for pi in range(0, paramsKVlen):
+      key = params[pi * 2]
+      value = params[pi * 2 + 1]
+      cmd += (" --%s=%s" % (key, value))
+
+   logging.debug("run tx: %s", cmd)
+   
+   cli(cmd)
+
+def createValidator(name):
+   # create validator
+   cmd = 'kustaking create-validator %s' % name
+   tx(name, cmd, 
+      "pubkey", node(name, 'tendermint show-validator')[:-1],
+      "commission-rate", "0.10",
+      "moniker", name)
+
+def voteValidator(acc, node, coin):
+   cmd = 'kustaking delegate %s %s %s' % (acc, node, coin)
+   tx(acc, cmd)
+
 def regNodes(totalNum):
    logging.info("reg nodes")
+   for i in range(0, totalNum):
+      createValidator(getNodeName(i + 1))
+   
+   # wait for create
+   sleep(5)
+
+   for i in range(0, totalNum):
+      coreCoinBase = 10000000000000000000000000000
+      randomVoteCoin = "%d" % random.uniform(coreCoinBase * 4 / 5, coreCoinBase - 100)
+      voteValidator(getNodeName(i + 1), getNodeName(i + 1), coreCoin(randomVoteCoin))
+
+
 
 # Parse args
 parser = argparse.ArgumentParser()
 parser.add_argument('--build-path', metavar='', help='Kuchain build path', default='../build')
 parser.add_argument('--home', metavar='', help='testnet data home path', default='./testnet')
 parser.add_argument('--trace', action='store_true', help='if --trace to kucd')
-parser.add_argument('--log-level', metavar='', help='log level for kucd', default='*:debug')
-parser.add_argument('--node-num', type=int, metavar='', help='val node number', default=5)
+parser.add_argument('--log-level', metavar='', help='log level for kucd', default='*:info')
+parser.add_argument('--node-num', type=int, metavar='', help='val node number', default=12)
 
 args = parser.parse_args()
 logging.debug("args %s", args)
@@ -252,7 +300,6 @@ sleep(1)
 
 for i in range(0, int(args.node_num)):
    startChainNode(getNodeName(i + 1))
-   sleep(1)
 
 sleep(5)
 regNodes(int(args.node_num))
