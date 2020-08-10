@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 import logging
+import re
 
 # Keys
 testKey = "kuchain1ysggxvhq3aqxp2dnzw8ucqf0hgjn44tqcp7l3s"
@@ -23,6 +24,9 @@ nodeCmd = 'kucd'
 # auths for test
 auths = {}
 
+# node info for test
+nodes = {}
+
 logging.basicConfig(level=logging.DEBUG)
 
 args = None
@@ -32,6 +36,9 @@ def run(args):
    if subprocess.call(args, shell=True):
       logging.error('run \"%s\" error, exitting', args)
       sys.exit(1)
+
+def sleep(t):
+    time.sleep(t)
 
 def run_output(args):
    logging.debug('%s', args)
@@ -51,13 +58,29 @@ def cli(cmd):
    cliParams = "--home %s/cli/ --keyring-backend test" % (args.home)
    return run_output('%s/%s %s %s' % (args.build_path, cliCmd, cliParams, cmd))
 
-def node(cmd):
-   cliParams = "--home %s/node/" % (args.home)
-   return run('%s/%s %s %s' % (args.build_path, nodeCmd, cliParams, cmd))
+def cliByHome(home, cmd):
+   cliParams = "--home %s" % (home)
+   return run_output('%s/%s %s %s' % (args.build_path, cliCmd, cliParams, cmd))
 
-def nodeByCli(cmd):
-   cliParams = "--home %s/node/ --home-client %s/cli/ --keyring-backend test" % (args.home, args.home)
-   return run('%s/%s %s %s' % (args.build_path, nodeCmd, cliParams, cmd))
+def getNodeHomePath(name):
+   return "%s/nodes/%s/" % (args.home, name)
+
+def node(name, cmd):
+   cliParams = "--home %s" % (getNodeHomePath(name))
+   cmdRun = '%s/%s %s %s' % (args.build_path, nodeCmd, cliParams, cmd)
+   return run_output(cmdRun)
+
+def nodeInBackground(name, logPath, cmd):
+   cliParams = "--home %s" % (getNodeHomePath(name))
+   cmdRun = '%s/%s %s %s' % (args.build_path, nodeCmd, cliParams, cmd)
+
+   with open(logPath, mode='w') as f:
+      f.write(cmdRun + '\n')
+   subprocess.Popen(cmdRun + '    2>>' + logPath, shell=True)
+
+def nodeByCli(name, cmd):
+   cliParams = "--home-client %s/cli/ --keyring-backend test" % (args.home)
+   return node(name, '%s %s' % (cliParams, cmd))
 
 def coreCoin(amt):
    return '%s%s' % (amt, coreCoinDenom)
@@ -82,51 +105,129 @@ def genAuth(name):
 def getAuth(name):
    return auths[name]
 
-def addValidator(name):
+def getNodeName(num):
+   return "validator%d" % (num)
+
+def addValidatorToGenesis(name):
    valAuth = genAuth(name)
    logging.info("add validator %s %s", name, valAuth)
 
    # add to genesis
-   node('genesis add-address %s' % (valAuth))
-   node('genesis add-account %s %s' % (name, valAuth))
-   node('genesis add-account-coin %s %s' % (valAuth, coreCoin(10000000000000)))
-   node('genesis add-account-coin %s %s' % (name, coreCoin(100000000000000000000000000000000)))
+   node(mainChainSymbol, 'genesis add-address %s' % (valAuth))
+   node(mainChainSymbol, 'genesis add-account %s %s' % (name, valAuth))
+   node(mainChainSymbol, 'genesis add-account-coin %s %s' % (valAuth, coreCoin(10000000000000)))
+   node(mainChainSymbol, 'genesis add-account-coin %s %s' % (name, coreCoin(100000000000000000000000000000000)))
+
+def initGenesis(nodeNum):
+   mainAuth = getAuth(mainChainSymbol)
+   testAuth = getAuth('test')
+
+   node(mainChainSymbol, 'genesis add-address %s' % (mainAuth))
+   node(mainChainSymbol, 'genesis add-account %s %s' % (mainChainSymbol, mainAuth))
+   node(mainChainSymbol, 'genesis add-coin %s \"%s\"' % (coreCoin(1000000000000000000000000000000000000000), "main core"))
+   node(mainChainSymbol, 'genesis add-account-coin %s %s' % (mainAuth, coreCoin(100000000000000000000000000000000)))
+   node(mainChainSymbol, 'genesis add-account-coin %s %s' % (mainChainSymbol, coreCoin(100000000000000000000000000000000)))
+
+   genesisAccounts = ['testacc1', 'testacc2']
+   for genesisAccount in genesisAccounts:
+      node(mainChainSymbol, 'genesis add-account %s %s' % (genesisAccount, testAuth))
+      node(mainChainSymbol, 'genesis add-account-coin %s %s' % (genesisAccount, coreCoin(10000000000000000000000)))
+
+   for i in range(0, nodeNum):
+      addValidatorToGenesis(getNodeName(i + 1))
+   
+   genTx()
+
+def modifyNodeCfg(name, key, oldValue, newValue=None):
+   file = "%s/config/config.toml" % (getNodeHomePath(name))
+
+   patternStr = r"^%s = .+" % (key)
+   newStr = '%s = %s' % (key, oldValue)
+
+   if (newValue is not None):
+      patternStr = r"^%s = %s" % (key, oldValue)
+      newStr = '%s = %s' % (key, newValue)
+
+   with open(file, "r") as f1, open("%s.bak" % file, "w") as f2:
+      for line in f1:
+         f2.write(re.sub(patternStr, newStr, line))
+
+   os.remove(file)
+   os.rename("%s.bak" % file, file)
+
+def appendNodeCfg(name, key, value):
+   cliByHome(getNodeHomePath(name), "config %s %s" % (key, value))
+
+def mkNodeDatas(name, num, totalNum):
+   if name is not mainChainSymbol:
+      # cp genesis from main node
+      run('cp %s/config/genesis.json %s/config/genesis.json' % (getNodeHomePath(mainChainSymbol), getNodeHomePath(name)))
+
+      # bind ports, use 3XX56, 3XX57 and 3XX58
+      modifyNodeCfg(name, 'proxy_app', '"tcp://127.0.0.1:26658"', '"tcp://127.0.0.1:3%02d58"' % (num))
+      modifyNodeCfg(name, 'laddr',     '"tcp://127.0.0.1:26657"', '"tcp://127.0.0.1:3%02d57"' % (num))
+      modifyNodeCfg(name, 'laddr',     '"tcp://0.0.0.0:26656"',   '"tcp://0.0.0.0:3%02d56"' % (num))
+
+      # connect to root and next
+      toNum = num + 1
+      if (toNum > totalNum):
+         toNum = 1
+
+      peers = "%s@127.0.0.1:26656," % nodes[mainChainSymbol]['nodeID']
+      peers += "%s@127.0.0.1:3%02d56" % (nodes[getNodeName(toNum)]['nodeID'], toNum)
+
+      modifyNodeCfg(name, 'persistent_peers', '"%s"' % peers)
+
+   modifyNodeCfg(name, 'max_num_outbound_peers', '128')
+   modifyNodeCfg(name, 'allow_duplicate_ip', 'true')
+   appendNodeCfg(name, 'chain-id', chainID)
+   appendNodeCfg(name, 'trust-node', 'true')
+
 
 def initChain(nodeNum):
    logging.debug("init chain")
 
-   run('rm -rf %s/node' % (args.home))
-   node('init --chain-id %s %s' % (chainID, chainID))
+   initNode(mainChainSymbol, 0)
+   initGenesis(nodeNum)
 
-   mainAuth = getAuth(mainChainSymbol)
-   testAuth = getAuth('test')
-   
-   node('genesis add-address %s' % (mainAuth))
-   node('genesis add-account %s %s' % (mainChainSymbol, mainAuth))
-   node('genesis add-coin %s \"%s\"' % (coreCoin(1000000000000000000000000000000000000000), "main core"))
-   node('genesis add-account-coin %s %s' % (mainAuth, coreCoin(100000000000000000000000000000000)))
-   node('genesis add-account-coin %s %s' % (mainChainSymbol, coreCoin(100000000000000000000000000000000)))
+   for i in range(0, nodeNum):
+      initNode(getNodeName(i + 1), i + 1)
 
-   genesisAccounts = ['testacc1', 'testacc2']
-   for genesisAccount in genesisAccounts:
-      node('genesis add-account %s %s' % (genesisAccount, testAuth))
-      node('genesis add-account-coin %s %s' % (genesisAccount, coreCoin(10000000000000000000000)))
+   for i in range(0, nodeNum):
+      mkNodeDatas(getNodeName(i + 1), i + 1, nodeNum)
 
-   for i in range(1, nodeNum):
-      addValidator("validator%d" % (i))
-
+   mkNodeDatas(mainChainSymbol, 0, nodeNum)
    return
 
 def genTx():
-   nodeByCli('gentx %s --name %s ' % (getAuth(mainChainSymbol), mainChainSymbol))
-   node('collect-gentxs')
+   nodeByCli(mainChainSymbol, 'gentx %s --name %s ' % (getAuth(mainChainSymbol), mainChainSymbol))
+   node(mainChainSymbol, 'collect-gentxs')
 
-def startChainByOneNode():
+def initNode(name, num):
+   run('rm -rf %s' % (getNodeHomePath(name)))
+   node(name, 'init --chain-id %s %s' % (chainID, name))
+
+   nodeID = node(name, 'tendermint show-node-id')
+   logging.info('init node %s, id: %s', name, nodeID)
+
+   nodes[name] = {
+      'name'   : name,
+      'nodeID' : nodeID[:-1],
+      'num'    : num
+   }
+
+def startChainNode(name):
+   logPath = '%s/logs/%s.log' % (args.home, name)
+   run('mkdir -p %s/logs/' % args.home)
+
    bootParams = 'start --log_level "%s"' % (args.log_level)
    if( args.trace is not None ):
       bootParams += ' --trace'
 
-   node(bootParams)
+   nodeInBackground(name, logPath, bootParams)
+
+def regNodes(totalNum):
+   logging.info("reg nodes")
 
 # Parse args
 parser = argparse.ArgumentParser()
@@ -144,5 +245,14 @@ logging.info("start kuchain testnet by %s to %s", args.home, args.build_path)
 
 initWallet()
 initChain(int(args.node_num))
-genTx()
-startChainByOneNode()
+
+# Start main first
+startChainNode(mainChainSymbol)
+sleep(1)
+
+for i in range(0, int(args.node_num)):
+   startChainNode(getNodeName(i + 1))
+   sleep(1)
+
+sleep(5)
+regNodes(int(args.node_num))
