@@ -56,6 +56,10 @@ def node(cmd):
    cliParams = "--home %s/node/" % (args.home)
    return run('%s/%s %s %s' % (args.build_path, nodeCmd, cliParams, cmd))
 
+def nodeByCli(cmd):
+   cliParams = "--home %s/node/ --home-client %s/cli/ --keyring-backend test" % (args.home, args.home)
+   return run('%s/%s %s %s' % (args.build_path, nodeCmd, cliParams, cmd))
+
 def coreCoin(amt):
    return '%s%s' % (amt, coreCoinDenom)
 
@@ -83,6 +87,10 @@ def initChain():
    for genesisAccount in genesisAccounts:
       node('genesis add-account %s %s' % (genesisAccount, testAuth))
       node('genesis add-account-coin %s %s' % (genesisAccount, coreCoin(10000000000000000000000)))
+
+   # gentx
+   nodeByCli('gentx %s --name %s ' % (mainAuth, mainChainSymbol))
+   node('collect-gentxs')
 
    return
 
