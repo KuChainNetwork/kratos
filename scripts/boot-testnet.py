@@ -78,6 +78,7 @@ def initChain():
    run('rm -rf %s/node' % (args.home))
    node('init --chain-id %s %s' % (chainID, chainID))
    
+   node('genesis add-address %s' % (mainAuth))
    node('genesis add-account %s %s' % (mainChainSymbol, mainAuth))
    node('genesis add-coin %s \"%s\"' % (coreCoin(1000000000000000000000000000000000000000), "main core"))
    node('genesis add-account-coin %s %s' % (mainAuth, coreCoin(100000000000000000000000000000000)))
@@ -94,10 +95,19 @@ def initChain():
 
    return
 
+def startChainByOneNode():
+   bootParams = 'start --log_level "%s"' % (args.log_level)
+   if( args.trace is not None ):
+      bootParams += ' --trace'
+
+   node(bootParams)
+
 # Parse args
 parser = argparse.ArgumentParser()
 parser.add_argument('--build-path', metavar='', help='Kuchain build path', default='../build')
 parser.add_argument('--home', metavar='', help='testnet data home path', default='./testnet')
+parser.add_argument('--trace', action='store_true', help='if --trace to kucd')
+parser.add_argument('--log-level', metavar='', help='log level for kucd', default='*:debug')
 
 args = parser.parse_args()
 logging.debug("args %s", args)
@@ -116,3 +126,4 @@ testAuth = testAuth[:-1]
 logging.debug("test auth : %s", testAuth)
 
 initChain()
+startChainByOneNode()
