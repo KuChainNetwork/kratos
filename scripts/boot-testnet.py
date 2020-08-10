@@ -20,9 +20,8 @@ coreCoinDenom = '%s/%s' % (mainChainSymbol, coreCoinSymbol)
 cliCmd = 'kucli'
 nodeCmd = 'kucd'
 
-# auth for test
-mainAuth = None
-testAuth = None
+# auths for test
+auths = {}
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -67,16 +66,40 @@ def initWallet():
    logging.debug("init wallet")
 
    run('rm -rf %s/cli' % (args.home))
-   cli('keys add ' + mainChainSymbol) # add for root auth
-   cli('keys add test') # add for auth for test
+   
+   genAuth(mainChainSymbol)
+   genAuth('test')
 
    return
 
-def initChain():
+def genAuth(name):
+   cli('keys add ' + name)
+   valAuth = cli('keys show %s -a' % (name))
+   valAuth = valAuth[:-1]
+   auths[name] = valAuth
+   return valAuth
+
+def getAuth(name):
+   return auths[name]
+
+def addValidator(name):
+   valAuth = genAuth(name)
+   logging.info("add validator %s %s", name, valAuth)
+
+   # add to genesis
+   node('genesis add-address %s' % (valAuth))
+   node('genesis add-account %s %s' % (name, valAuth))
+   node('genesis add-account-coin %s %s' % (valAuth, coreCoin(10000000000000)))
+   node('genesis add-account-coin %s %s' % (name, coreCoin(100000000000000000000000000000000)))
+
+def initChain(nodeNum):
    logging.debug("init chain")
 
    run('rm -rf %s/node' % (args.home))
    node('init --chain-id %s %s' % (chainID, chainID))
+
+   mainAuth = getAuth(mainChainSymbol)
+   testAuth = getAuth('test')
    
    node('genesis add-address %s' % (mainAuth))
    node('genesis add-account %s %s' % (mainChainSymbol, mainAuth))
@@ -89,11 +112,14 @@ def initChain():
       node('genesis add-account %s %s' % (genesisAccount, testAuth))
       node('genesis add-account-coin %s %s' % (genesisAccount, coreCoin(10000000000000000000000)))
 
-   # gentx
-   nodeByCli('gentx %s --name %s ' % (mainAuth, mainChainSymbol))
-   node('collect-gentxs')
+   for i in range(1, nodeNum):
+      addValidator("validator%d" % (i))
 
    return
+
+def genTx():
+   nodeByCli('gentx %s --name %s ' % (getAuth(mainChainSymbol), mainChainSymbol))
+   node('collect-gentxs')
 
 def startChainByOneNode():
    bootParams = 'start --log_level "%s"' % (args.log_level)
@@ -108,6 +134,7 @@ parser.add_argument('--build-path', metavar='', help='Kuchain build path', defau
 parser.add_argument('--home', metavar='', help='testnet data home path', default='./testnet')
 parser.add_argument('--trace', action='store_true', help='if --trace to kucd')
 parser.add_argument('--log-level', metavar='', help='log level for kucd', default='*:debug')
+parser.add_argument('--node-num', type=int, metavar='', help='val node number', default=5)
 
 args = parser.parse_args()
 logging.debug("args %s", args)
@@ -116,14 +143,6 @@ logging.debug("args %s", args)
 logging.info("start kuchain testnet by %s to %s", args.home, args.build_path)
 
 initWallet()
-
-mainAuth = cli('keys show %s -a' % mainChainSymbol)
-mainAuth = mainAuth[:-1]
-logging.debug("main auth : %s", mainAuth)
-
-testAuth = cli('keys show test -a')
-testAuth = testAuth[:-1]
-logging.debug("test auth : %s", testAuth)
-
-initChain()
+initChain(int(args.node_num))
+genTx()
 startChainByOneNode()
