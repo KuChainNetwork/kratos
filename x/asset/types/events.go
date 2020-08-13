@@ -10,6 +10,7 @@ const (
 	EventTypeTransfer = "transfer"
 	EventTypeLock     = "lock"
 	EventTypeUnlock   = "unlock"
+	EventTypeExercise = "exercise"
 )
 
 const (

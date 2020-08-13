@@ -55,13 +55,17 @@ func (a AssetKeeper) subCoinPower(ctx sdk.Context, id types.AccountID, amt Coins
 		return coins, nil
 	}
 
+	if amt.IsAnyNegative() {
+		return Coins{}, sdkerrors.Wrapf(types.ErrAssetCoinNoEnough, "amt should not be negative")
+	}
+
 	subed, hasNeg := coins.SafeSub(amt)
 	if hasNeg {
 		return Coins{}, sdkerrors.Wrapf(types.ErrAssetCoinNoEnough, "sub coin power error no enough")
 	}
 
 	if subed == nil {
-		subed = NewInt64Coins(amt[0].Denom, 0)
+		subed = NewCoins()
 	}
 
 	if err := a.setCoinsPower(ctx, id, subed); err != nil {
@@ -127,7 +131,7 @@ func (a AssetKeeper) CoinsToPower(ctx sdk.Context, from, to types.AccountID, amt
 
 // ExerciseCoinPower exercise coin power to get coins to account
 func (a AssetKeeper) ExerciseCoinPower(ctx sdk.Context, id types.AccountID, amt types.Coin) error {
-	if _, err := a.subCoinPower(ctx, id, Coins{amt}); err != nil {
+	if _, err := a.subCoinPower(ctx, id, NewCoins(amt)); err != nil {
 		return sdkerrors.Wrapf(err, "get %s coins powers in exercise error", id)
 	}
 
