@@ -21,6 +21,7 @@ type AssetCoinsKeeper interface {
 	Burn(ctx sdk.Context, id types.AccountID, amt types.Coin) error
 	LockCoins(ctx sdk.Context, account types.AccountID, unlockBlockHeight int64, coins types.Coins) error
 	UnLockCoins(ctx sdk.Context, account types.AccountID, coins types.Coins) error
+	ExerciseCoinPower(ctx sdk.Context, id types.AccountID, amt types.Coin) error
 }
 
 // AssetViewKeeper keeper view interface for asset module

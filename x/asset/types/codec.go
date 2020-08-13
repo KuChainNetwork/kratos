@@ -28,6 +28,8 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(&MsgLockCoin{}, "asset/lock", nil)
 	cdc.RegisterConcrete(&MsgUnlockCoinData{}, "asset/unlockData", nil)
 	cdc.RegisterConcrete(&MsgUnlockCoin{}, "asset/unlock", nil)
+	cdc.RegisterConcrete(&MsgExerciseCoinData{}, "asset/exerciseData", nil)
+	cdc.RegisterConcrete(&MsgExerciseCoin{}, "asset/exercise", nil)
 }
 
 // Cdc get codec for types

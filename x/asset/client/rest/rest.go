@@ -49,4 +49,8 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) 
 		"/assets/unlock",
 		UnlockRequestHandlerFn(cliCtx),
 	).Methods("POST")
+	r.HandleFunc(
+		"/assets/exercise",
+		ExerciseRequestHandlerFn(cliCtx),
+	).Methods("POST")
 }

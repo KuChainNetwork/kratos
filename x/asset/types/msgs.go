@@ -395,3 +395,70 @@ func (msg MsgUnlockCoin) ValidateBasic() error {
 
 	return nil
 }
+
+type MsgExerciseCoin struct {
+	types.KuMsg
+}
+
+type MsgExerciseCoinData struct {
+	Id     AccountID `json:"id" yaml:"id"`
+	Amount Coin      `json:"amount" yaml:"amount"`
+}
+
+// Type imp for data KuMsgData
+func (MsgExerciseCoinData) Type() types.Name { return types.MustName("exercise") }
+
+func (msg MsgExerciseCoinData) Sender() AccountID {
+	return msg.Id
+}
+
+// NewMsgBurn new issue msg
+func NewMsgExercise(auth types.AccAddress, id types.AccountID, amount types.Coin) MsgExerciseCoin {
+	return MsgExerciseCoin{
+		*msg.MustNewKuMsg(
+			RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithData(Cdc(), &MsgExerciseCoinData{
+				Id:     id,
+				Amount: amount,
+			}),
+		),
+	}
+}
+
+func (msg MsgExerciseCoin) GetData() (MsgExerciseCoinData, error) {
+	res := MsgExerciseCoinData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgExerciseCoinData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgExerciseCoin) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Id.Empty() {
+		return types.ErrKuMsgAccountIDNil
+	}
+
+	if err := types.ValidateDenom(data.Amount.Denom); err != nil {
+		return err
+	}
+
+	if data.Amount.IsNegative() {
+		return ErrAssetCoinNoEnough
+	}
+
+	if data.Amount.IsZero() {
+		return ErrAssetCoinNoZero
+	}
+
+	return nil
+}
