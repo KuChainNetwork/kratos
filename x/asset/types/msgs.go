@@ -456,5 +456,9 @@ func (msg MsgExerciseCoin) ValidateBasic() error {
 		return ErrAssetCoinNoEnough
 	}
 
+	if data.Amount.IsZero() {
+		return ErrAssetCoinNoZero
+	}
+
 	return nil
 }
