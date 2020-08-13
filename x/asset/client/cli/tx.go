@@ -32,6 +32,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		Burn(cdc),
 		LockCoin(cdc),
 		UnlockCoin(cdc),
+		Exercise(cdc),
 	)
 
 	return txCmd

@@ -58,6 +58,12 @@ type UnlockReq struct {
 	Amount  string       `json:"amount" yaml:"amount"`
 }
 
+type ExerciseReq struct {
+	BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Account string       `json:"account" yaml:"account"`
+	Amount  string       `json:"amount" yaml:"amount"`
+}
+
 func TransferRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req TransferReq
@@ -322,6 +328,39 @@ func UnlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		msg := types.NewMsgUnlockCoin(auth, account, amount)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{msg})
+	}
+}
+
+func ExerciseRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req ExerciseReq
+		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+
+		account, err := types.NewAccountIDFromStr(req.Account)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("account parse error, %s", err.Error()))
+			return
+		}
+
+		amount, err := chainTypes.ParseCoin(req.Amount)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("amount parse error, %s", err.Error()))
+			return
+		}
+
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(account)
+		auth, err := txutil.QueryAccountAuth(ctx, account)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("query account auth error, %s", err.Error()))
+			return
+		}
+
+		msg := types.NewMsgExercise(auth, account, amount)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
