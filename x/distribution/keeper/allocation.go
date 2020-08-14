@@ -59,7 +59,7 @@ func (k Keeper) AllocateTokens(
 			sdk.NewEvent(
 				types.EventTypeProposerReward,
 				sdk.NewAttribute(sdk.AttributeKeyAmount, proposerReward.String()),
-				sdk.NewAttribute(types.AttributeKeyValidator, proposerValidator.GetOperator().String()),
+				sdk.NewAttribute(types.AttributeKeyValidator, proposerValidator.GetOperatorAccountID().String()),
 			),
 		)
 
@@ -113,7 +113,7 @@ func (k Keeper) AllocateTokensToValidator(ctx sdk.Context, val types.StakingExpo
 		sdk.NewEvent(
 			types.EventTypeCommission,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, commission.String()),
-			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator().String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperatorAccountID().String()),
 		),
 	)
 	currentCommission := k.GetValidatorAccumulatedCommission(ctx, val.GetOperatorAccountID())
@@ -133,7 +133,7 @@ func (k Keeper) AllocateTokensToValidator(ctx sdk.Context, val types.StakingExpo
 		sdk.NewEvent(
 			types.EventTypeRewards,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, tokens.String()),
-			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator().String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperatorAccountID().String()),
 		),
 	)
 	outstanding := k.GetValidatorOutstandingRewards(ctx, val.GetOperatorAccountID())
