@@ -5,8 +5,9 @@ import (
 )
 
 var (
-	MinGasPriceString        = "0.01" + DefaultBondDenom
-	GasTxSizePrice    uint64 = 5
+	MinGasPriceString           = "0.01" + DefaultBondDenom
+	GasTxSizePrice       uint64 = 5
+	EstimatedGasConsumed uint64 = 24000
 )
 
 var (
