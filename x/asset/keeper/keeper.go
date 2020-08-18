@@ -16,7 +16,7 @@ type AssetCoinsKeeper interface {
 	AssetViewKeeper
 	AssetTransfer
 
-	Create(ctx sdk.Context, creator, symbol types.Name, maxSupply types.Coin, canIssue, canLock bool, issue2Height int64, initSupply types.Coin, desc []byte) error
+	Create(ctx sdk.Context, creator, symbol types.Name, maxSupply types.Coin, canIssue, canLock, canBurn bool, issue2Height int64, initSupply types.Coin, desc []byte) error
 	Issue(ctx sdk.Context, creator, symbol types.Name, amount types.Coin) error
 	Burn(ctx sdk.Context, id types.AccountID, amt types.Coin) error
 	LockCoins(ctx sdk.Context, account types.AccountID, unlockBlockHeight int64, coins types.Coins) error
@@ -74,7 +74,7 @@ func (ak AssetKeeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (a AssetKeeper) Create(ctx sdk.Context, creator, symbol types.Name, max_supply types.Coin, canIssue, canLock bool, issue2Height int64, initSupply types.Coin, desc []byte) error {
+func (a AssetKeeper) Create(ctx sdk.Context, creator, symbol types.Name, max_supply types.Coin, canIssue, canLock, canBurn bool, issue2Height int64, initSupply types.Coin, desc []byte) error {
 	stat, _ := a.getStat(ctx, creator, symbol)
 	if stat != nil {
 		return types.ErrAssetHasCreated
@@ -88,7 +88,7 @@ func (a AssetKeeper) Create(ctx sdk.Context, creator, symbol types.Name, max_sup
 
 	// init state
 	newStat := types.NewCoinStat(ctx, creator, symbol, max_supply)
-	if err := newStat.SetOpt(canIssue, canLock, issue2Height, initSupply); err != nil {
+	if err := newStat.SetOpt(canIssue, canLock, canBurn, issue2Height, initSupply); err != nil {
 		return sdkerrors.Wrapf(err, "set stat opt")
 	}
 	if err := a.setStat(ctx, &newStat); err != nil {

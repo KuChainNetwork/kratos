@@ -22,7 +22,7 @@ func InitGenesis(ctx sdk.Context, ak Keeper, bz json.RawMessage) {
 
 		initSupply := types.NewCoin(a.GetMaxSupply().Denom, sdk.ZeroInt())
 
-		err := ak.Create(ctx, a.GetCreator(), a.GetSymbol(), a.GetMaxSupply(), true, true, 0, initSupply, []byte{}) // TODO: genesis coins support opt
+		err := ak.Create(ctx, a.GetCreator(), a.GetSymbol(), a.GetMaxSupply(), true, true, true, 0, initSupply, []byte{}) // TODO: genesis coins support opt
 		if err != nil {
 			panic(err)
 		}

@@ -63,6 +63,7 @@ func handleMsgCreate(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *typ
 		"max_supply", msgData.MaxSupply,
 		"isCanIssue", msgData.CanIssue,
 		"isCanLock", msgData.CanLock,
+		"isCanBurn", msgData.CanBurn,
 		"issueHeight", msgData.IssueToHeight,
 		"initSupply", msgData.InitSupply,
 		"desc", string(msgData.Desc))
@@ -75,7 +76,8 @@ func handleMsgCreate(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *typ
 	}
 	if err := k.Create(ctx.Context(),
 		msgData.Creator, msgData.Symbol, msgData.MaxSupply,
-		msgData.CanIssue, msgData.CanLock, msgData.IssueToHeight, msgData.InitSupply, msgData.Desc); err != nil {
+		msgData.CanIssue, msgData.CanLock, msgData.CanBurn,
+		msgData.IssueToHeight, msgData.InitSupply, msgData.Desc); err != nil {
 		return nil, sdkerrors.Wrapf(err, "msg create coin %s", msgData.Symbol)
 	}
 

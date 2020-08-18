@@ -20,9 +20,9 @@ import (
 // Create will create a account create tx and sign it with the given key.
 func Create(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create [creator] [symbol] [max_supply] [canIssue] [canLock] [issueToHeight] [initSupply] [desc]",
-		Short: "Create coin, if canIssue is 1 or canLock is 1, the coin cannot issue or lock after 64 blocks",
-		Args:  cobra.ExactArgs(8),
+		Use:   "create [creator] [symbol] [max_supply] [canIssue] [canLock] [canBurn] [issueToHeight] [initSupply] [desc]",
+		Short: "Create coin, for canIssue, canLock and canBurn, the 1 means true.",
+		Args:  cobra.ExactArgs(9),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
@@ -53,12 +53,13 @@ func Create(cdc *codec.Codec) *cobra.Command {
 
 			isCanIssue := args[3] == "1"
 			isCanLock := args[4] == "1"
-			issueToHeight, err := strconv.ParseInt(args[5], 10, 64)
+			isCanBurn := args[5] == "1"
+			issueToHeight, err := strconv.ParseInt(args[6], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			initSupply, err := chainTypes.ParseCoin(args[6])
+			initSupply, err := chainTypes.ParseCoin(args[7])
 			if err != nil {
 				return errors.Wrap(err, "init supply parse error")
 			}
@@ -73,12 +74,12 @@ func Create(cdc *codec.Codec) *cobra.Command {
 					initSupply.Denom, maxSupply.Denom)
 			}
 
-			desc := args[7]
+			desc := args[8]
 			if len(desc) > types.CoinDescriptionLen {
 				return fmt.Errorf("coin desc too long, should be less than %d", types.CoinDescriptionLen)
 			}
 
-			msg := types.NewMsgCreate(auth, creator, symbol, maxSupply, isCanIssue, isCanLock, issueToHeight, initSupply, []byte(desc))
+			msg := types.NewMsgCreate(auth, creator, symbol, maxSupply, isCanIssue, isCanLock, isCanBurn, issueToHeight, initSupply, []byte(desc))
 			return txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{msg})
 		},
 	}

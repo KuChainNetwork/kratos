@@ -77,7 +77,7 @@ func createCoin(t *testing.T, app *simapp.SimApp, isSuccess bool,
 
 	auth := app.AccountKeeper().GetAccount(ctx, creator).GetAuth()
 
-	msg := assetTypes.NewMsgCreate(auth, creatorName, symbol, maxSupply, true, true, 0, initSupply, desc)
+	msg := assetTypes.NewMsgCreate(auth, creatorName, symbol, maxSupply, true, true, true, 0, initSupply, desc)
 	tx := simapp.NewTxForTest(
 		creator,
 		[]sdk.Msg{
@@ -98,7 +98,7 @@ func createCoinExt(t *testing.T, app *simapp.SimApp, isSuccess bool,
 
 	auth := app.AccountKeeper().GetAccount(ctx, creator).GetAuth()
 
-	msg := assetTypes.NewMsgCreate(auth, creatorName, symbol, maxSupply, canIssue, canLock, issue2Height, initSupply, desc)
+	msg := assetTypes.NewMsgCreate(auth, creatorName, symbol, maxSupply, canIssue, canLock, true, issue2Height, initSupply, desc)
 	tx := simapp.NewTxForTest(
 		creator,
 		[]sdk.Msg{

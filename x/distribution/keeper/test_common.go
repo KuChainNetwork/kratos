@@ -201,7 +201,7 @@ func CreateTestInputAdvanced(t *testing.T, isCheckTx bool, initPower int64,
 	SymbolName, _ := chainTypes.NewName(constants.DefaultBondSymbol)
 
 	assetKeeper.Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-		true, true, 0, assettypes.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
+		true, true, true, 0, assettypes.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
 
 	assetKeeper.Issue(ctx, MasterName, SymbolName,
 		assettypes.NewCoin(constants.DefaultBondDenom, intNum3))
