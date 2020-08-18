@@ -52,6 +52,7 @@ type MsgCreateCoinData struct {
 	MaxSupply     Coin   `json:"max_supply" yaml:"max_supply"`                     // MaxSupply coin max supply limit
 	CanIssue      bool   `json:"can_issue,omitempty" yaml:"can_issue"`             // CanIssue if the coin can issue after create
 	CanLock       bool   `json:"can_lock,omitempty" yaml:"can_lock"`               // CanLock if the coin can lock by user
+	CanBurn       bool   `json:"can_burn,omitempty" yaml:"can_burn"`               // CanBurn if the coin can burn by user
 	IssueToHeight int64  `json:"issue_to_height,omitempty" yaml:"issue_to_height"` // IssueToHeight if this is not zero, creator only can issue this
 	InitSupply    Coin   `json:"init_supply" yaml:"init_supply"`                   // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
 	Desc          []byte `json:"desc" yaml:"desc"`                                 // Description
@@ -64,7 +65,7 @@ func (msg MsgCreateCoinData) Sender() AccountID {
 }
 
 // NewMsgCreate new create coin msg
-func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, maxSupply types.Coin, canIssue, canLock bool, issue2Height int64, initSupply types.Coin, desc []byte) MsgCreateCoin {
+func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, maxSupply types.Coin, canIssue, canLock, canBurn bool, issue2Height int64, initSupply types.Coin, desc []byte) MsgCreateCoin {
 	return MsgCreateCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -75,6 +76,7 @@ func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, 
 				MaxSupply:     maxSupply,
 				CanIssue:      canIssue,
 				CanLock:       canLock,
+				CanBurn:       canBurn,
 				IssueToHeight: issue2Height,
 				InitSupply:    initSupply,
 				Desc:          desc,

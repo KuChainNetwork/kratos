@@ -63,6 +63,7 @@ func handleMsgCreate(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *typ
 		"max_supply", msgData.MaxSupply,
 		"isCanIssue", msgData.CanIssue,
 		"isCanLock", msgData.CanLock,
+		"isCanBurn", msgData.CanBurn,
 		"issueHeight", msgData.IssueToHeight,
 		"initSupply", msgData.InitSupply,
 		"desc", string(msgData.Desc))
@@ -75,7 +76,8 @@ func handleMsgCreate(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *typ
 	}
 	if err := k.Create(ctx.Context(),
 		msgData.Creator, msgData.Symbol, msgData.MaxSupply,
-		msgData.CanIssue, msgData.CanLock, msgData.IssueToHeight, msgData.InitSupply, msgData.Desc); err != nil {
+		msgData.CanIssue, msgData.CanLock, msgData.CanBurn,
+		msgData.IssueToHeight, msgData.InitSupply, msgData.Desc); err != nil {
 		return nil, sdkerrors.Wrapf(err, "msg create coin %s", msgData.Symbol)
 	}
 
@@ -161,6 +163,20 @@ func handleMsgBurn(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types
 		"amount", msgData.Amount)
 
 	ctx.RequireAuth(msgData.Id)
+
+	creator, symbol, err := types.CoinAccountsFromDenom(msgData.Amount.Denom)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(err, "msg burn coins denom error")
+	}
+
+	stat, err := k.GetCoinStat(ctx.Context(), creator, symbol)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msg.Amount.String())
+	}
+
+	if !stat.CanBurn {
+		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeBurn, "coin %s cannot be burn", msg.Amount.String())
+	}
 
 	if err := k.Burn(ctx.Context(), msgData.Id, msgData.Amount); err != nil {
 		return nil, sdkerrors.Wrapf(err, "msg burn coin %s", msgData.Id)

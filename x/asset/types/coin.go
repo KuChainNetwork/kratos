@@ -35,6 +35,7 @@ type CoinStat struct {
 	MaxSupply     Coin  `json:"max_supply" yaml:"max_supply"` // MaxSupply coin max supply limit
 	CanIssue      bool  `json:"can_issue,omitempty" yaml:"can_issue"`
 	CanLock       bool  `json:"can_lock,omitempty" yaml:"can_lock"`
+	CanBurn       bool  `json:"can_burn,omitempty" yaml:"can_burn"`
 	IssueToHeight int64 `json:"issue_to_height,omitempty" yaml:"issue_to_height"`
 	InitSupply    Coin  `json:"init_supply" yaml:"init_supply"` // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
 }
@@ -51,13 +52,14 @@ func NewCoinStat(ctx sdk.Context, creator, symbol Name, maxSupply Coin) CoinStat
 }
 
 // SetOpt set coin optional
-func (c *CoinStat) SetOpt(canIssue, canLock bool, issue2Height int64, initSupply Coin) error {
+func (c *CoinStat) SetOpt(canIssue, canLock, canBurn bool, issue2Height int64, initSupply Coin) error {
 	if err := CheckCoinStatOpts(c.CreateHeight, canIssue, canLock, issue2Height, initSupply, c.MaxSupply); err != nil {
 		return err
 	}
 
 	c.CanIssue = canIssue
 	c.CanLock = canLock
+	c.CanBurn = canBurn
 	c.IssueToHeight = issue2Height
 	c.InitSupply = initSupply
 	return nil

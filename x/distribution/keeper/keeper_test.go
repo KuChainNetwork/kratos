@@ -1,10 +1,11 @@
 package keeper
 
 import (
+	"testing"
+
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	assettypes "github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 
@@ -45,10 +46,10 @@ func TestWithdrawValidatorCommission1(t *testing.T) {
 	intNumMax, _ := sdk.NewIntFromString("300000000000000000000")
 
 	ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNum),
-		true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
+		true, true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
 
 	ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNum),
-		true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
+		true, true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
 
 	intNum0, _ := sdk.NewIntFromString("100033333333333333")
 	myTokenCoins := assettypes.Coins{assettypes.NewCoin(tCoins, intNum0)}
@@ -139,10 +140,10 @@ func TestWithdrawValidatorCommission2(t *testing.T) {
 	intNumMax, _ := sdk.NewIntFromString("300000000000000000000")
 
 	ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNum),
-		true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
+		true, true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
 
 	ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNum),
-		true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
+		true, true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
 
 	intNum0, _ := sdk.NewIntFromString("100033333333333333")
 	TokenCoins := assettypes.Coins{assettypes.NewCoin(tCoins, intNum0)}
@@ -235,10 +236,10 @@ func TestGetTotalRewards(t *testing.T) {
 	intNumMax, _ := sdk.NewIntFromString("300000000000000000000")
 
 	ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNum),
-		true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
+		true, true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
 
 	ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNum),
-		true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
+		true, true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
 
 	{
 		intNum0, _ := sdk.NewIntFromString("100033333333333333")
