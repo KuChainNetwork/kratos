@@ -21,7 +21,7 @@ func TestCreateAssetOpt(t *testing.T) {
 			desc       = []byte(fmt.Sprintf("desc for %s", demon))
 		)
 
-		So(createCoinExt(t, app, true, account4, se, maxSupply, true, true, 1000, initSupply, desc), ShouldBeNil)
+		So(createCoinExt(t, app, true, account4, se, maxSupply, true, true, true, 1000, initSupply, desc), ShouldBeNil)
 	})
 
 }

@@ -164,6 +164,22 @@ func handleMsgBurn(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types
 
 	ctx.RequireAuth(msgData.Id)
 
+	creator, symbol, err := types.CoinAccountsFromDenom(msgData.Amount.Denom)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(err, "msg burn coins denom error")
+	}
+
+	stat, err := k.GetCoinStat(ctx.Context(), creator, symbol)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msg.Amount.String())
+	}
+
+	// if coins cannot be issue, if there is 1000 blocks after coin created, no one can issue
+	if !stat.CanBurn {
+		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeBurn,
+			"coin %s cannot be burn", msg.Amount.String())
+	}
+
 	if err := k.Burn(ctx.Context(), msgData.Id, msgData.Amount); err != nil {
 		return nil, sdkerrors.Wrapf(err, "msg burn coin %s", msgData.Id)
 	}
