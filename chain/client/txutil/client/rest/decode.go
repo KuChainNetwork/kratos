@@ -57,9 +57,3 @@ func DecodeTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		utils.PostProcessResponse(w, cliCtx, response)
 	}
 }
-
-func DecodeMsgRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-	}
-}

@@ -13,5 +13,5 @@ func RegisterTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/txs/encode", EncodeTxRequestHandlerFn(cliCtx)).Methods("POST")
 	r.HandleFunc("/txs/decode", DecodeTxRequestHandlerFn(cliCtx)).Methods("POST")
 	r.HandleFunc("/sign_msg/encode", EncodeMsgRequestHandlerFn(cliCtx)).Methods("POST")
-	r.HandleFunc("/sign_msg/decode", DecodeMsgRequestHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc("/txs/fee", QueryTxFeeAndGasConsumed(cliCtx)).Methods("POST")
 }
