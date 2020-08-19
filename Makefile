@@ -1,14 +1,18 @@
 #!/usr/bin/make -f
 
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
-#VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
-VERSION := '0.0.1'
+VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
+TIME_BEGIN := $(shell date -u +"%Y-%m-%d %H:%M.%S")
+BRANCH := $(shell echo $(shell git rev-parse --abbrev-ref HEAD) | sed 's/^v//')
 
-MAIN_SYMBOL := 'kuchain'
-CORE_SYMBOL := 'sys'
+$(info "Kuchain Version: ${VERSION} ${SDK_PACK} in ${TIME_BEGIN}")
+$(info "Current branch: ${BRANCH}")
+
+MAIN_SYMBOL := kuchain
+CORE_SYMBOL := sys
 
 export GO111MODULE = on
 
@@ -57,6 +61,10 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=$(MAIN_SYMBOL) \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+		  -X github.com/KuChainNetwork/kuchain/chain/constants.KuchainBuildVersion=$(VERSION) \
+		  -X github.com/KuChainNetwork/kuchain/chain/constants.KuchainBuildBranch=$(BRANCH) \
+		  -X "github.com/KuChainNetwork/kuchain/chain/constants.KuchainBuildTime=$(TIME_BEGIN)" \
+		  -X github.com/KuChainNetwork/kuchain/chain/constants.KuchainBuildSDKVersion=$(SDK_PACK) \
 		  -X github.com/KuChainNetwork/kuchain/chain/constants/keys.ChainNameStr=$(CORE_SYMBOL) \
 		  -X github.com/KuChainNetwork/kuchain/chain/constants/keys.ChainMainNameStr=$(MAIN_SYMBOL)
 
@@ -67,7 +75,6 @@ ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)' -trimpath
-
 
 all: clear-build build
 

@@ -1,30 +1,40 @@
 package constants
 
 import (
-	"strconv"
-
-	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/tendermint/tendermint/libs/log"
+	"gopkg.in/yaml.v2"
 )
-
-// some fix height
 
 var (
-	// FixAssetHeight fix asset bugs height
-	FixAssetHeight       string = ""
-	FixAssetHeightVal, _        = strconv.ParseInt(FixAssetHeight, 10, 64)
+	KuchainBuildVersion    = ""
+	KuchainBuildBranch     = ""
+	KuchainBuildTime       = ""
+	KuchainBuildSDKVersion = ""
 )
+
+// VersionInfo get Version Info
+func VersionInfo() []byte {
+	ver := struct {
+		Version    string `json:"version" yaml:"version"`
+		Branch     string `json:"branch" yaml:"branch"`
+		BuildTime  string `json:"build_time" yaml:"build_time"`
+		SDKVersion string `json:"sdk_version" yaml:"sdk_version"`
+	}{
+		Version:    KuchainBuildVersion,
+		Branch:     KuchainBuildBranch,
+		BuildTime:  KuchainBuildTime,
+		SDKVersion: KuchainBuildSDKVersion,
+	}
+
+	res, _ := yaml.Marshal(ver)
+	return res
+}
 
 // LogVersion log version info
 func LogVersion(logger log.Logger) {
-	logger.Info("FixAsset", "height", GetFixAssetHeight())
-}
-
-func GetFixAssetHeight() int64 {
-	return FixAssetHeightVal
-}
-
-// IsFixAssetHeight is fix asset
-func IsFixAssetHeight(ctx types.Context) bool {
-	return ctx.BlockHeight() > FixAssetHeightVal
+	logger.Info("Kuchain Version",
+		"version", KuchainBuildVersion,
+		"branch", KuchainBuildBranch,
+		"time", KuchainBuildTime,
+		"sdkVersion", KuchainBuildSDKVersion)
 }

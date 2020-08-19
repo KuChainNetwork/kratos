@@ -69,6 +69,8 @@ func main() {
 	rootCmd.AddCommand(replayCmd())
 	rootCmd.AddCommand(debug.Cmd(cdc))
 
+	rootCmd.AddCommand(versionCmd(ctx))
+
 	AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	// prepare and add flags
