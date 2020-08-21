@@ -2,13 +2,14 @@ package keeper_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account"
 	"github.com/KuChainNetwork/kuchain/x/asset"
 	assettypes "github.com/KuChainNetwork/kuchain/x/asset/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 
@@ -85,7 +86,7 @@ func TestSendCoins(t *testing.T) {
 		intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
 
 		app.AssetKeeper().Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-			true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
+			true, true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
 
 		app.AssetKeeper().IssueCoinPower(ctx, Master, chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, intNum3)))
 
@@ -164,7 +165,7 @@ func TestMintCoins(t *testing.T) {
 		intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
 
 		app.AssetKeeper().Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-			true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
+			true, true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
 	}
 
 	require.Panics(t, func() { keeper.MintCoins(ctx, "", &initCoins) }, "no module account")
@@ -206,7 +207,7 @@ func TestBurnCoins(t *testing.T) {
 		intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
 
 		app.AssetKeeper().Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-			true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
+			true, true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
 	}
 
 	_, err := app.AssetKeeper().IssueCoinPower(ctx, burnerAcc.GetID(), initCoins)
