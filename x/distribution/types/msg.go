@@ -203,23 +203,3 @@ func NewMsgWithdrawValidatorCommission(auth AccAddress, valAddr AccountID) MsgWi
 		),
 	}
 }
-
-var TypeMsgFundCommunityPool = MustName("fundcommpool")
-
-type MsgFundCommunityPoolData struct {
-	Amount    Coins     `json:"amount" yaml:"amount"`
-	Depositor AccountID `json:"depositor" yaml:"depositor"`
-}
-
-func (m MsgFundCommunityPoolData) Sender() AccountID {
-	return m.Depositor
-}
-func (MsgFundCommunityPoolData) Type() Name { return MustName("fundcommpool") }
-
-func (m MsgFundCommunityPoolData) Marshal() ([]byte, error) {
-	return ModuleCdc.MarshalJSON(m)
-}
-
-func (m *MsgFundCommunityPoolData) Unmarshal(b []byte) error {
-	return ModuleCdc.UnmarshalJSON(b, m)
-}
