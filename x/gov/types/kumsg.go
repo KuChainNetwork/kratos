@@ -34,25 +34,32 @@ func (msg KuMsgSubmitProposal) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
+
 	if msg.Content == nil {
 		return sdkerrors.Wrap(ErrInvalidProposalContent, "missing content")
 	}
+
 	msgData := MsgSubmitProposalBase{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return err
 	}
-	if !msg.GetAmount().IsEqual(msgData.InitialDeposit) {
+
+	if err := msg.KuMsg.ValidateTransferRequire(ModuleAccountID, msgData.InitialDeposit); err != nil {
 		return chainTypes.ErrKuMsgInconsistentAmount
 	}
+
 	if msgData.Proposer.Empty() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msgData.Proposer.String())
 	}
+
 	if !msgData.InitialDeposit.IsValid() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msgData.InitialDeposit.String())
 	}
+
 	if msgData.InitialDeposit.IsAnyNegative() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msgData.InitialDeposit.String())
 	}
+
 	if !IsValidProposalType(msg.Content.ProposalType()) {
 		return sdkerrors.Wrap(ErrInvalidProposalType, msg.Content.ProposalType())
 	}
@@ -112,7 +119,7 @@ func (msg KuMsgDeposit) ValidateBasic() error {
 		return err
 	}
 
-	if !msg.GetAmount().IsEqual(msgData.Amount) {
+	if err := msg.KuMsg.ValidateTransferRequire(ModuleAccountID, msgData.Amount); err != nil {
 		return chainTypes.ErrKuMsgInconsistentAmount
 	}
 
