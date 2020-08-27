@@ -26,9 +26,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // ParameterChangeProposal defines a proposal which contains multiple parameter
 // changes.
 type ParameterChangeProposal struct {
-	Title       string        `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Description string        `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Changes     []ParamChange `protobuf:"bytes,3,rep,name=changes,proto3" json:"changes"`
+	Title       string        `json:"title,omitempty" yaml:"title"`
+	Description string        `json:"description,omitempty" yaml:"description"`
+	Changes     []ParamChange `json:"changes" yaml:"changes"`
 }
 
 func (m *ParameterChangeProposal) Reset()      { *m = ParameterChangeProposal{} }
@@ -65,9 +65,9 @@ var xxx_messageInfo_ParameterChangeProposal proto.InternalMessageInfo
 
 // ParamChange defines a parameter change.
 type ParamChange struct {
-	Subspace string `protobuf:"bytes,1,opt,name=subspace,proto3" json:"subspace,omitempty"`
-	Key      string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	Value    string `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	Subspace string `json:"subspace,omitempty" yaml:"subspace"`
+	Key      string `json:"key,omitempty" yaml:"key"`
+	Value    string `json:"value,omitempty" yaml:"value"`
 }
 
 func (m *ParamChange) Reset()      { *m = ParamChange{} }

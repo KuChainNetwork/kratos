@@ -16,8 +16,8 @@ var FindAcc findAccount
 var _, _, _ sdk.Msg = &MsgSetWithdrawAccountId{}, &MsgWithdrawDelegatorReward{}, &MsgWithdrawValidatorCommission{}
 
 type MsgSetWithdrawAccountIdData struct {
-	DelegatorAccountid chainType.AccountID `protobuf:"bytes,1,opt,name=delegator_accountid,json=delegatorAccountid,proto3" json:"delegator_accountid" yaml:"delegator_accountid"`
-	WithdrawAccountid  chainType.AccountID `protobuf:"bytes,2,opt,name=withdraw_accountid,json=withdrawAccountid,proto3" json:"withdraw_accountid" yaml:"withdraw_accountid"`
+	DelegatorAccountid chainType.AccountID `json:"delegator_accountid" yaml:"delegator_accountid"`
+	WithdrawAccountid  chainType.AccountID `json:"withdraw_accountid" yaml:"withdraw_accountid"`
 }
 
 func (m MsgSetWithdrawAccountIdData) Sender() AccountID {
@@ -45,6 +45,7 @@ func (m MsgSetWithdrawAccountId) GetData() (MsgSetWithdrawAccountIdData, error) 
 	}
 	return res, nil
 }
+
 func (m MsgSetWithdrawAccountId) ValidateBasic() error {
 	data, err := m.GetData()
 	if err == nil {
@@ -79,8 +80,8 @@ func NewMsgSetWithdrawAccountId(auth AccAddress, delAddr, withdrawAddr AccountID
 }
 
 type MsgWithdrawDelegatorRewardData struct {
-	DelegatorAccountId chainType.AccountID `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address" yaml:"delegator_address"`
-	ValidatorAccountId chainType.AccountID `protobuf:"bytes,2,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address" yaml:"validator_address"`
+	DelegatorAccountId chainType.AccountID `json:"delegator_address" yaml:"delegator_address"`
+	ValidatorAccountId chainType.AccountID `json:"validator_address" yaml:"validator_address"`
 }
 
 func (m MsgWithdrawDelegatorRewardData) Sender() AccountID {
@@ -147,7 +148,7 @@ func NewMsgWithdrawDelegatorReward(auth AccAddress, delAddr, valAddr AccountID) 
 }
 
 type MsgWithdrawValidatorCommissionData struct {
-	ValidatorAccountId chainType.AccountID `protobuf:"bytes,1,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address" yaml:"validator_address"`
+	ValidatorAccountId chainType.AccountID `json:"validator_address" yaml:"validator_address"`
 }
 
 func (m MsgWithdrawValidatorCommissionData) Sender() AccountID {
