@@ -74,7 +74,7 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreateAccount,
-			sdk.NewAttribute(types.AttributeKeyCreator, msg.From.String()),
+			sdk.NewAttribute(types.AttributeKeyCreator, msgData.Creator.String()),
 			sdk.NewAttribute(types.AttributeKeyAccount, msgData.Name.String()),
 			sdk.NewAttribute(types.AttributeKeyAuth, msgData.Auth.String()),
 		),
