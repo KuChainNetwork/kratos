@@ -143,3 +143,20 @@ func (msg KuMsg) PrettifyJSON(cdc *codec.Codec) ([]byte, error) {
 
 	return cdc.MarshalJSON(alias)
 }
+
+// ValidateTransferTo validate kumsg is transfer from `from` to `to` with amount
+func (msg KuMsg) ValidateTransferTo(from, to AccountID, amount Coins) error {
+	if !msg.GetFrom().Eq(from) {
+		return ErrKuMsgFromNotEqual
+	}
+
+	if !msg.GetTo().Eq(to) {
+		return ErrKuMsgToNotEqual
+	}
+
+	if !msg.GetAmount().IsEqual(amount) {
+		return ErrKuMsgAmountNotEqual
+	}
+
+	return nil
+}
