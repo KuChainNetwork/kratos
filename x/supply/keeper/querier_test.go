@@ -2,6 +2,9 @@ package keeper_test
 
 import (
 	"fmt"
+	"strings"
+	"testing"
+
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset"
@@ -9,8 +12,6 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"strings"
-	"testing"
 
 	//"github.com/stretchr/testify/require"
 	//abci "github.com/tendermint/tendermint/abci/types"
@@ -33,7 +34,7 @@ func initCoin(t *testing.T, ctx sdk.Context, assetKeeper asset.Keeper, coin chai
 	SymbolName, _ := chainType.NewName(Symbol[1])
 
 	assetKeeper.Create(ctx, MasterName, SymbolName, assettypes.NewCoin(coin.Denom, intNum),
-		true, true, 0, assettypes.NewCoin(coin.Denom, intMaxNum), []byte("create"))
+		true, true, true, 0, assettypes.NewCoin(coin.Denom, intMaxNum), []byte("create"))
 
 	assetKeeper.Issue(ctx, MasterName, SymbolName, assettypes.NewCoin(coin.Denom, coin.Amount))
 
@@ -101,7 +102,6 @@ func TestQuerySupply(t *testing.T) {
 	keeper := *app.SupplyKeeper()
 	cdc := app.Codec()
 
-
 	supplyCoins := chainType.NewCoins(
 		chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(100)),
 		chainType.NewCoin(constants.ChainMainNameStr+"/"+"photon", sdk.NewInt(50)),
@@ -124,7 +124,6 @@ func TestQuerySupply(t *testing.T) {
 	queryTotalSupplyParams := types.NewQueryTotalSupplyParams(1, 10)
 	bz, errRes := cdc.MarshalJSON(queryTotalSupplyParams)
 	require.Nil(t, errRes)
-
 
 	query.Path = fmt.Sprintf("/custom/supply/%s", types.QueryTotalSupply)
 	query.Data = bz
