@@ -133,25 +133,12 @@ func (c Context) Authorize(account ...Name) {
 
 // RequireTransfer require transfer coin large then amount for to
 func (c Context) RequireTransfer(to AccountID, amount Coins) error {
-	if !c.msg.GetTo().Equals(&to) {
-		return ErrTransfNotTo
+	transfers := c.msg.GetTransfers()
+	for _, t := range transfers {
+		if t.To.Eq(to) && t.Amount.IsAllGTE(amount) {
+			return nil
+		}
 	}
 
-	if !c.msg.GetAmount().IsAllGTE(amount) {
-		return ErrTransfNoEnough
-	}
-
-	return nil
-}
-
-// GetTransf get transfer info from msg
-func (c Context) GetTransf() (from, to AccountID, amount Coins) {
-	if c.msg == nil {
-		return
-	}
-
-	from = c.msg.GetFrom()
-	to = c.msg.GetTo()
-	amount = c.msg.GetAmount()
-	return
+	return ErrTransfNoEnough
 }
