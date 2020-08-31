@@ -145,6 +145,8 @@ func (a AssetKeeper) Burn(ctx sdk.Context, id types.AccountID, amount types.Coin
 		return sdkerrors.Wrap(err, "burn")
 	}
 
+	// keep asset history
+	newCoins = keepZeroCoins(coins, newCoins)
 	if err := a.setCoins(ctx, id, newCoins); err != nil {
 		return sdkerrors.Wrap(err, "burn set coins")
 	}
@@ -196,6 +198,8 @@ func (a AssetKeeper) Transfer(ctx sdk.Context, from, to types.AccountID, amount 
 		return sdkerrors.Wrap(err, "set to coins")
 	}
 
+	// keep asset history
+	coinSubed = keepZeroCoins(fromCoins, coinSubed)
 	if err := a.setCoins(ctx, from, coinSubed); err != nil {
 		return sdkerrors.Wrap(err, "set from coins")
 	}
@@ -214,4 +218,23 @@ func (a AssetKeeper) GenesisCoins(ctx sdk.Context, account types.AccountID, coin
 
 func (k AssetKeeper) GetStoreKey() sdk.StoreKey {
 	return k.key
+}
+
+func keepZeroCoins(oldCoins types.Coins, newCoins types.Coins) types.Coins {
+	if 0 < len(oldCoins) && len(newCoins) != len(oldCoins) {
+		set := make(map[string]types.Coin)
+		for _, coin := range newCoins {
+			set[coin.Denom] = coin
+		}
+		for i := range oldCoins {
+			if v, ok := set[oldCoins[i].Denom]; !ok {
+				// set zero, keep asset history
+				oldCoins[i].Amount = sdk.ZeroInt()
+			} else {
+				oldCoins[i].Amount = v.Amount
+			}
+		}
+		return oldCoins
+	}
+	return newCoins
 }
