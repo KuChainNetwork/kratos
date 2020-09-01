@@ -58,6 +58,9 @@ func NewQuerier(k Keeper) sdk.Querier {
 		case types.QueryParameters:
 			return queryParameters(ctx, k)
 
+		case types.QueryValidatorByConsAddr:
+			return queryValidatorFromConsAddr(ctx, req, k)
+
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown %s query endpoint: %s", types.ModuleName, path[0])
 		}
@@ -462,4 +465,25 @@ func redelegationsToRedelegationResponses(
 	}
 
 	return resp, nil
+}
+
+func queryValidatorFromConsAddr(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, error) {
+	var params types.QueryValidatorFromConsAddr
+
+	err := types.ModuleCdc.UnmarshalJSON(req.Data, &params)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	validator, found := k.GetValidatorByConsAddr(ctx, params.ConsAcc)
+	if !found {
+		return nil, types.ErrNoValidatorFound
+	}
+
+	res, err := codec.MarshalJSONIndent(types.ModuleCdc, validator)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return res, nil
 }

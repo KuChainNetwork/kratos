@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // query endpoints supported by the staking Querier
@@ -21,6 +22,7 @@ const (
 	QueryPool                          = "pool"
 	QueryParameters                    = "parameters"
 	QueryHistoricalInfo                = "historicalInfo"
+	QueryValidatorByConsAddr           = "validatorByConsAddr"
 )
 
 // defines the params for the following queries:
@@ -107,4 +109,13 @@ type QueryHistoricalInfoParams struct {
 // NewQueryHistoricalInfoParams creates a new QueryHistoricalInfoParams instance
 func NewQueryHistoricalInfoParams(height int64) QueryHistoricalInfoParams {
 	return QueryHistoricalInfoParams{height}
+}
+
+
+type QueryValidatorFromConsAddr struct {
+	ConsAcc sdk.ConsAddress
+}
+
+func NewQueryValidatorFromConsAddr(consAcc sdk.ConsAddress) QueryValidatorFromConsAddr {
+	return QueryValidatorFromConsAddr{consAcc}
 }
