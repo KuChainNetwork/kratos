@@ -25,9 +25,7 @@ type KuTransfMsg interface {
 	Type() string
 	GetSignBytes() []byte
 	GetSigners() []AccAddress
-	GetFrom() AccountID
-	GetTo() AccountID
-	GetAmount() Coins
+	GetTransfers() []KuMsgTransfer
 	GetData() []byte
 	ValidateTransfer() error
 }

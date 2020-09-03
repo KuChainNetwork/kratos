@@ -80,7 +80,7 @@ func (msg KuMsgDelegate) ValidateBasic() error {
 		return err
 	}
 
-	if (!msg.GetAmount().IsEqual(chainTypes.Coins{msgData.Amount})) {
+	if err := msg.KuMsg.ValidateTransferRequire(ModuleAccountID, chainTypes.NewCoins(msgData.Amount)); err != nil {
 		return chainTypes.ErrKuMsgInconsistentAmount
 	}
 

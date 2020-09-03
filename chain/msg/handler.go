@@ -44,34 +44,38 @@ func WarpHandler(transfer AssetTransfer, auther AccountAuther, h Handler) sdk.Ha
 
 // onHandlerKuMsg handler Ku msg for transfer
 func onHandlerKuMsg(ctx Context, k AssetTransfer, msg KuTransfMsg) error {
-	from := msg.GetFrom()
-	to := msg.GetTo()
-	amount := msg.GetAmount()
+	transfers := msg.GetTransfers()
 
-	if from.Empty() || to.Empty() || amount.IsZero() || from.Eq(to) {
-		return nil
+	for _, t := range transfers {
+		from := t.From
+		to := t.To
+		amount := t.Amount
+
+		if from.Empty() || to.Empty() || amount.IsZero() || from.Eq(to) {
+			continue
+		}
+
+		// check validate for safe
+		if err := msg.ValidateTransfer(); err != nil {
+			return err
+		}
+
+		ctx.RequireAuth(from)
+
+		if err := k.Transfer(ctx.Context(), from, to, amount); err != nil {
+			return err
+		}
+
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				EventTypeTransfer,
+				sdk.NewAttribute(sdk.AttributeKeyModule, types.KuCodeSpace),
+				sdk.NewAttribute(AttributeKeyFrom, from.String()),
+				sdk.NewAttribute(AttributeKeyTo, to.String()),
+				sdk.NewAttribute(AttributeKeyAmount, amount.String()),
+			),
+		)
 	}
-
-	// check validate for safe
-	if err := msg.ValidateTransfer(); err != nil {
-		return err
-	}
-
-	ctx.RequireAuth(msg.GetFrom())
-
-	if err := k.Transfer(ctx.Context(), from, to, amount); err != nil {
-		return err
-	}
-
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
-			EventTypeTransfer,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.KuCodeSpace),
-			sdk.NewAttribute(AttributeKeyFrom, from.String()),
-			sdk.NewAttribute(AttributeKeyTo, to.String()),
-			sdk.NewAttribute(AttributeKeyAmount, amount.String()),
-		),
-	)
 
 	return nil
 }

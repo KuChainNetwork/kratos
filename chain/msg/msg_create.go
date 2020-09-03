@@ -41,9 +41,12 @@ type withTransfer struct {
 }
 
 func (k withTransfer) Op(msg *KuMsg) error {
-	msg.From = k.From
-	msg.To = k.To
-	msg.Amount = k.Amount
+	msg.Transfers = append(msg.Transfers,
+		types.KuMsgTransfer{
+			From:   k.From,
+			To:     k.To,
+			Amount: k.Amount,
+		})
 	return nil
 }
 

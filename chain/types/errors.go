@@ -41,6 +41,11 @@ var (
 	ErrKuMsgDataNotFindAccount = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 10), "KuMsg msg can not find account error")
 	ErrKuMsgAccountIDNil       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 11), "KuMsg msg account id should not be nil")
 	ErrKuMsgInconsistentAmount = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 12), "KuMsg msg amount and data amount are inconsistent")
+	ErrKuMSgNameEmpty          = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 13), "KuMsg msg name is empty")
+	ErrKuMsgCoinsHasNegative   = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 14), "KuMsg coins has negative amount")
+	ErrKuMsgFromNotEqual       = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 15), "KuMsg from not equal")
+	ErrKuMsgToNotEqual         = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 16), "KuMsg to not equal")
+	ErrKuMsgAmountNotEqual     = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 17), "KuMsg amount not equal")
 )
 
 var (
