@@ -121,14 +121,14 @@ func handleMsgIssue(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *type
 
 	stat, err := k.GetCoinStat(ctx.Context(), msgData.Creator, msgData.Symbol)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msg.Amount.String())
+		return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msgData.Amount.String())
 	}
 
 	// if coins cannot be issue, if there is 1000 blocks after coin created, no one can issue
 	if !stat.CanIssue && (ctx.BlockHeight() > (stat.CreateHeight + constants.IssueCoinsWaitBlockNums)) {
 		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeIssue,
 			"coin %s cannot be issue after %d block from coin create",
-			msg.Amount.String(), constants.IssueCoinsWaitBlockNums)
+			msgData.Amount.String(), constants.IssueCoinsWaitBlockNums)
 	}
 
 	if err := k.Issue(ctx.Context(), msgData.Creator, msgData.Symbol, msgData.Amount); err != nil {
@@ -171,11 +171,11 @@ func handleMsgBurn(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types
 
 	stat, err := k.GetCoinStat(ctx.Context(), creator, symbol)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msg.Amount.String())
+		return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msgData.Amount.String())
 	}
 
 	if !stat.CanBurn {
-		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeBurn, "coin %s cannot be burn", msg.Amount.String())
+		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeBurn, "coin %s cannot be burn", msgData.Amount.String())
 	}
 
 	if err := k.Burn(ctx.Context(), msgData.Id, msgData.Amount); err != nil {
@@ -214,16 +214,16 @@ func handleMsgLockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *t
 	for _, c := range msgData.Amount {
 		creator, symbol, err := chainTypes.CoinAccountsFromDenom(c.Denom)
 		if err != nil {
-			return nil, sdkerrors.Wrapf(err, "get creator and symbol from coin %s", msg.Amount.String())
+			return nil, sdkerrors.Wrapf(err, "get creator and symbol from coin %s", msgData.Amount.String())
 		}
 
 		stat, err := k.GetCoinStat(ctx.Context(), creator, symbol)
 		if err != nil {
-			return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msg.Amount.String())
+			return nil, sdkerrors.Wrapf(err, "get coin stat from coin %s", msgData.Amount.String())
 		}
 
 		if !stat.CanLock {
-			return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeLock, "coin %s cannot be locked", msg.Amount.String())
+			return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeLock, "coin %s cannot be locked", msgData.Amount.String())
 		}
 	}
 
