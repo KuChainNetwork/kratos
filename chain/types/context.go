@@ -143,15 +143,3 @@ func (c Context) RequireTransfer(to AccountID, amount Coins) error {
 
 	return nil
 }
-
-// GetTransf get transfer info from msg
-func (c Context) GetTransf() (from, to AccountID, amount Coins) {
-	if c.msg == nil {
-		return
-	}
-
-	from = c.msg.GetFrom()
-	to = c.msg.GetTo()
-	amount = c.msg.GetAmount()
-	return
-}
