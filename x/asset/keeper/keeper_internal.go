@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -42,7 +43,8 @@ func (a AssetKeeper) issueCoinStat(ctx sdk.Context, amount types.Coin) error {
 	maxSupply := stat.GetCurrentMaxSupplyLimit(ctx.BlockHeight())
 	ctx.Logger().Debug("update state", "newSupply", newSupply, "maxSupply", stat.MaxSupply, "limit", maxSupply)
 
-	if !maxSupply.IsGTE(newSupply) {
+	// Core token no limit
+	if (amount.Denom != constants.DefaultBondDenom) && (!maxSupply.IsGTE(newSupply)) {
 		return types.ErrAssetIssueGTMaxSupply
 	}
 

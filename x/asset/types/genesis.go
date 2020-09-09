@@ -98,10 +98,6 @@ func NewGenesisCoin(creator, symbol Name, maxSupplyAmount Int, description strin
 
 // Validate imp GenesisCoin
 func (g BaseGensisAssetCoin) Validate() error {
-	if g.MaxSupply.IsZero() {
-		return fmt.Errorf("genesis max supply coin cannot be zero")
-	}
-
 	if len(g.Description) >= MaxDescriptionLength {
 		return fmt.Errorf("genesis coin description too length")
 	}
