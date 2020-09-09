@@ -120,6 +120,11 @@ func (msg MsgCreateCoin) ValidateBasic() error {
 		return ErrAssetSymbolError
 	}
 
+	// current version no allow create coins max_supply with 0
+	if data.MaxSupply.IsZero() {
+		return ErrAssetIssueMaxSupplyShouldNoZero
+	}
+
 	if err := CheckCoinStatOpts(
 		0, // no check this
 		data.CanIssue, data.CanLock,
