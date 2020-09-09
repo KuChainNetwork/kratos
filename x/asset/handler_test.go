@@ -245,6 +245,30 @@ func TestIssueCoins(t *testing.T) {
 	})
 }
 
+func TestIssueMaxSupplyCoreCoin(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test core coins no limit by max supply", t, func() {
+		ctx := app.NewTestContext()
+		stat, err := app.AssetKeeper().GetCoinStat(ctx, constants.ChainMainName, constants.DefaultBondSymbolName)
+		So(err, ShouldBeNil)
+
+		So(stat.GetCurrentMaxSupplyLimit(111).IsZero(), ShouldBeTrue)
+		So(stat.MaxSupply.IsZero(), ShouldBeTrue)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		statNew, err := app.AssetKeeper().GetCoinStat(ctx, constants.ChainMainName, constants.DefaultBondSymbolName)
+		So(err, ShouldBeNil)
+
+		So(statNew.GetCurrentMaxSupplyLimit(111).IsZero(), ShouldBeTrue)
+		So(statNew.MaxSupply.IsZero(), ShouldBeTrue)
+		So(statNew.Supply.IsGTE(stat.Supply), ShouldBeTrue)
+		So(statNew.Supply.IsZero(), ShouldBeFalse)
+	})
+}
+
 func TestIssueMaxSupply(t *testing.T) {
 	app, _ := createAppForTest()
 	Convey("test issue coins cannot > max supply", t, func() {
@@ -334,7 +358,6 @@ func TestIssueIsCanIssueTag(t *testing.T) {
 		So(issueCoin(t, app, false, account4, symbol, issueAmt),
 			simapp.ShouldErrIs, assetTypes.ErrAssetCoinCannotBeIssue) // after IssueCoinsWaitBlockNums - 1 block, can issue
 		simapp.CheckBalance(t, app, account4, amt)
-
 	})
 }
 
