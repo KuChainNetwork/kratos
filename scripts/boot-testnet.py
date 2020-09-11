@@ -125,7 +125,7 @@ def initGenesis(nodeNum):
 
    node(mainChainSymbol, 'genesis add-address %s' % (mainAuth))
    node(mainChainSymbol, 'genesis add-account %s %s' % (mainChainSymbol, mainAuth))
-   node(mainChainSymbol, 'genesis add-coin %s \"%s\"' % (coreCoin(1000000000000000000000000000000000000000), "main core"))
+   node(mainChainSymbol, 'genesis add-coin %s \"%s\"' % (coreCoin(0), "main core"))
    node(mainChainSymbol, 'genesis add-account-coin %s %s' % (mainAuth, coreCoin(100000000000000000000000000000000)))
    node(mainChainSymbol, 'genesis add-account-coin %s %s' % (mainChainSymbol, coreCoin(100000000000000000000000000000000)))
 

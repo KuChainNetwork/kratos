@@ -35,7 +35,7 @@ printf "current val key ${VALKEY}\\n"
 ./build/kucd ${PARAMS} genesis add-account testacc1 ${TESTVALKEY}
 ./build/kucd ${PARAMS} genesis add-account testacc2 ${TESTVALKEY}
 ./build/kucd ${PARAMS} genesis add-address ${VALKEY}
-./build/kucd ${PARAMS} genesis add-coin "1000000000000000000000000000000000000000${MAIN_SYMBOL}/${CORE_SYMBOL}" "main token"
+./build/kucd ${PARAMS} genesis add-coin "0${MAIN_SYMBOL}/${CORE_SYMBOL}" "main token"
 #./build/kucd ${PARAMS} genesis add-coin "1000000000000000000000000000000000000000validatortoken" "for staking"
 ./build/kucd ${PARAMS} genesis add-account-coin ${VALKEY} "100000000000000000000000${MAIN_SYMBOL}/${CORE_SYMBOL}"
 ./build/kucd ${PARAMS} genesis add-account-coin ${MAIN_SYMBOL} "100000000000000000000000${MAIN_SYMBOL}/${CORE_SYMBOL}"
