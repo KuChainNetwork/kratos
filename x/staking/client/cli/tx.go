@@ -420,17 +420,15 @@ func BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder
 	return txBldr, msg, nil
 }
 
-func BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
+func BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, authAddress chainTypes.AccAddress, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
 
-	amounstStr := viper.GetString(FlagAmount)
-	amount, err := chainTypes.ParseCoin(amounstStr)
+	defaultAmount = stakingexport.TokensFromConsensusPower(1).String() + stakingexport.DefaultBondDenom
+	amount, err := chainTypes.ParseCoin(defaultAmount)
 	if err != nil {
 		return txBldr, nil, err
 	}
 
-	delAccAddress := cliCtx.GetFromAddress()
-
-	msg := types.NewKuMsgDelegate(delAccAddress, delAccountID, valAccountID, amount)
+	msg := types.NewKuMsgDelegate(authAddress, delAccountID, valAccountID, amount)
 
 	return txBldr, msg, nil
 }

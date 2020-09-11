@@ -3,6 +3,7 @@ package cli
 import (
 	"bufio"
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,6 +27,7 @@ import (
 	"github.com/spf13/viper"
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -36,7 +38,18 @@ type StakingMsgBuildingHelpers interface {
 	PrepareFlagsForTxCreateValidator(config *cfg.Config, nodeID, chainID string, valPubKey crypto.PubKey)
 
 	BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, operAccountID chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error)
-	BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error)
+	BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, authAddress chainTypes.AccAddress, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error)
+}
+
+func newPubKey(pk string) (res crypto.PubKey) {
+	pkBytes, err := hex.DecodeString(pk)
+	if err != nil {
+		panic(err)
+	}
+	//res, err = crypto.PubKeyFromBytes(pkBytes)
+	var pkEd ed25519.PubKeyEd25519
+	copy(pkEd[:], pkBytes)
+	return pkEd
 }
 
 // GenTxCmd builds the application's gentx command.
@@ -44,13 +57,12 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 	genBalIterator types.GenesisBalancesIterator, defaultNodeHome, defaultCLIHome string,
 	stakingFuncManager types.StakingFuncManager) *cobra.Command {
 
-	ipDefault, _ := server.ExternalIP()
-	fsCreateValidator, flagNodeID, flagPubKey, _, defaultsDesc := smbh.CreateValidatorMsgHelpers(ipDefault)
+	fsCreateValidator, flagNodeID, flagPubKey, _, defaultsDesc := smbh.CreateValidatorMsgHelpers("127.0.0.1")
 
 	cmd := &cobra.Command{
-		Use:   "gentx [validator-operator-account]",
+		Use:   "gentx [validator-operator-account] [validator-account-auth-address]",
 		Short: "Generate a genesis tx carrying a self delegation",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		Long: fmt.Sprintf(`This command is an alias of the 'tx create-validator' command'.
 
 		It creates a genesis transaction to create a validator. 
@@ -71,10 +83,12 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 			}
 			// Read --pubkey, if empty take it from priv_validator.json
 			if valPubKeyString := viper.GetString(flagPubKey); valPubKeyString != "" {
-				valPubKey, err = sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, valPubKeyString)
-				if err != nil {
-					return errors.Wrap(err, "failed to get consensus node public key")
-				}
+				valPubKey = newPubKey(valPubKeyString)
+
+				//valPubKey, err = sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, valPubKeyString)
+				//if err != nil {
+				//	return errors.Wrap(err, "failed to get consensus node public key")
+				//}
 			}
 
 			genDoc, err := tmtypes.GenesisDocFromFile(config.GenesisFile())
@@ -92,19 +106,13 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 			}
 
 			inBuf := bufio.NewReader(cmd.InOrStdin())
-			kb, err := keys.NewKeyring(sdk.KeyringServiceName(),
+			_, err = keys.NewKeyring(sdk.KeyringServiceName(),
 				viper.GetString(flags.FlagKeyringBackend), viper.GetString(flagClientHome), inBuf)
 			if err != nil {
 				return errors.Wrap(err, "failed to initialize keybase")
 			}
 
-			name := viper.GetString(flags.FlagName)
-			key, err := kb.Get(name)
-			if err != nil {
-				return errors.Wrap(err, "failed to read from keybase")
-			}
-
-			authAccAddress := key.GetAddress()
+			authAccAddress := chainTypes.MustAccAddressFromBech32(args[1])
 
 			// Set flags for creating gentx
 			viper.Set(flags.FlagHome, viper.GetString(flagClientHome))
@@ -126,18 +134,13 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 				return errors.Wrap(err, "failed to build create-validator message")
 			}
 
-			txBldr, msgdelegator, err := smbh.BuildDelegateMsg(cliCtx, txBldr, valAccountID, valAccountID)
+			txBldr, msgdelegator, err := smbh.BuildDelegateMsg(cliCtx, txBldr, authAccAddress, valAccountID, valAccountID)
 			if err != nil {
 				return errors.Wrap(err, "failed to build create-validator message")
 			}
 
 			// set payer in gentx
 			txBldr = txBldr.WithPayer(args[0])
-
-			if key.GetType() == keys.TypeOffline || key.GetType() == keys.TypeMulti {
-				fmt.Println("Offline key passed in. Use `tx sign` command to sign:")
-				return txutil.PrintUnsignedStdTx(txBldr, cliCtx, []sdk.Msg{msg, msgdelegator})
-			}
 
 			// write the unsigned transaction to the buffer
 			w := bytes.NewBuffer([]byte{})
@@ -153,12 +156,6 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 				return errors.Wrap(err, "failed to read unsigned gen tx file")
 			}
 
-			// sign the transaction and write it to the output file
-			signedTx, err := txutil.SignStdTx(txBldr, cliCtx, name, stdTx, false, true)
-			if err != nil {
-				return errors.Wrap(err, "failed to sign std tx")
-			}
-
 			// Fetch output file name
 			outputDocument := viper.GetString(flags.FlagOutputDocument)
 			if outputDocument == "" {
@@ -168,7 +165,7 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 				}
 			}
 
-			if err := writeSignedGenTx(cdc, outputDocument, signedTx); err != nil {
+			if err := writeSignedGenTx(cdc, outputDocument, stdTx); err != nil {
 				return errors.Wrap(err, "failed to write signed gen tx")
 			}
 
