@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -31,10 +30,10 @@ func InitialMinter(inflation sdk.Dec) Minter {
 }
 
 // DefaultInitialMinter returns a default initial Minter object for a new chain
-// which uses an inflation rate of 13%.
+// which uses an inflation rate of 14%.
 func DefaultInitialMinter() Minter {
 	return InitialMinter(
-		sdk.NewDecWithPrec(9, 2),
+		sdk.NewDecWithPrec(14, 2),
 	)
 }
 
