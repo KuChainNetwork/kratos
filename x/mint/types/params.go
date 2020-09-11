@@ -56,9 +56,9 @@ func NewParams(
 func DefaultParams() Params {
 	return Params{
 		MintDenom:           StakingExported.DefaultBondDenom,
-		InflationRateChange: sdk.NewDecWithPrec(9, 2),
-		InflationMax:        sdk.NewDecWithPrec(12, 2),
-		InflationMin:        sdk.NewDecWithPrec(6, 2),
+		InflationRateChange: sdk.NewDecWithPrec(14, 2),
+		InflationMax:        sdk.NewDecWithPrec(21, 2),
+		InflationMin:        sdk.NewDecWithPrec(8, 2),
 		GoalBonded:          sdk.NewDecWithPrec(67, 2),
 		BlocksPerYear:       uint64(60 * 60 * 8766 / 3), // assuming 3 second block times
 	}
