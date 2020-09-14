@@ -381,7 +381,7 @@ func PrepareFlagsForTxCreateValidator(
 
 // BuildCreateValidatorMsg makes a new MsgCreateValidator.
 func BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, valAddr chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error) {
-	delAddr := cliCtx.GetAccountID()
+	delAddr := chainTypes.NewAccountIDFromAccAdd(authAddress)
 	pkStr := viper.GetString(FlagPubKey)
 
 	pk, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, pkStr)

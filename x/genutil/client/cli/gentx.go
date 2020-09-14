@@ -3,7 +3,6 @@ package cli
 import (
 	"bufio"
 	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,6 +14,7 @@ import (
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
 	"github.com/KuChainNetwork/kuchain/x/genutil/types"
+	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -27,7 +27,6 @@ import (
 	"github.com/spf13/viper"
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -41,23 +40,13 @@ type StakingMsgBuildingHelpers interface {
 	BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, authAddress chainTypes.AccAddress, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error)
 }
 
-func newPubKey(pk string) (res crypto.PubKey) {
-	pkBytes, err := hex.DecodeString(pk)
-	if err != nil {
-		panic(err)
-	}
-	//res, err = crypto.PubKeyFromBytes(pkBytes)
-	var pkEd ed25519.PubKeyEd25519
-	copy(pkEd[:], pkBytes)
-	return pkEd
-}
-
 // GenTxCmd builds the application's gentx command.
 func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, smbh StakingMsgBuildingHelpers,
 	genBalIterator types.GenesisBalancesIterator, defaultNodeHome, defaultCLIHome string,
 	stakingFuncManager types.StakingFuncManager) *cobra.Command {
 
-	fsCreateValidator, flagNodeID, flagPubKey, _, defaultsDesc := smbh.CreateValidatorMsgHelpers("127.0.0.1")
+	ipDefault, _ := server.ExternalIP()
+	fsCreateValidator, flagNodeID, flagPubKey, _, defaultsDesc := smbh.CreateValidatorMsgHelpers(ipDefault)
 
 	cmd := &cobra.Command{
 		Use:   "gentx [validator-operator-account] [validator-account-auth-address]",
@@ -81,14 +70,13 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 			if nodeIDString := viper.GetString(flagNodeID); nodeIDString != "" {
 				nodeID = nodeIDString
 			}
+
 			// Read --pubkey, if empty take it from priv_validator.json
 			if valPubKeyString := viper.GetString(flagPubKey); valPubKeyString != "" {
-				valPubKey = newPubKey(valPubKeyString)
-
-				//valPubKey, err = sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, valPubKeyString)
-				//if err != nil {
-				//	return errors.Wrap(err, "failed to get consensus node public key")
-				//}
+				valPubKey, err = sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, valPubKeyString)
+				if err != nil {
+					return errors.Wrap(err, "failed to get consensus node public key")
+				}
 			}
 
 			genDoc, err := tmtypes.GenesisDocFromFile(config.GenesisFile())
@@ -119,11 +107,15 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 			smbh.PrepareFlagsForTxCreateValidator(config, nodeID, genDoc.ChainID, valPubKey)
 
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
 			// Set the generate-only flag here after the CLI context has
 			// been created. This allows the from name/key to be correctly populated.
 			viper.Set(flags.FlagGenerateOnly, true)
+			viper.Set(flags.FlagFrom, args[1])
+
+			ctxCli := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := txutil.NewKuCLICtxNoFrom(ctxCli)
+
 			valAccountID, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return errors.Wrap(err, "Invalid validator account ID")
