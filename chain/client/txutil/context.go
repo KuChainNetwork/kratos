@@ -23,9 +23,20 @@ func NewKuCLICtx(ctx context.CLIContext) KuCLIContext {
 	}.WithFromAccount(types.NewAccountIDFromAccAdd(ctx.GetFromAddress()))
 }
 
+func NewKuCLICtxNoFrom(ctx context.CLIContext) KuCLIContext {
+	return KuCLIContext{
+		CLIContext: ctx,
+	}
+}
+
 // NewKuCLICtxByBuf creates a new KuCLIContext with cmd
 func NewKuCLICtxByBuf(cdc *codec.Codec, inBuf io.Reader) KuCLIContext {
 	return NewKuCLICtx(context.NewCLIContextWithInput(inBuf).WithCodec(cdc))
+}
+
+func NewKuCLICtxByBufNoFrom(cdc *codec.Codec, inBuf io.Reader) KuCLIContext {
+	ctx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+	return NewKuCLICtxNoFrom(ctx)
 }
 
 // WithFromAccount with account from accountID
