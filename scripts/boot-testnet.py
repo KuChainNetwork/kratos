@@ -10,10 +10,6 @@ import logging
 import re
 import random
 
-# Keys
-testKey = "kuchain1ysggxvhq3aqxp2dnzw8ucqf0hgjn44tqcp7l3s"
-testKeyMnemonic = "warm law where bid turtle tenant story logic air ancient gesture way main rabbit sock enlist hollow wealth stereo position fiscal expand mosquito latin"
-
 # Symbols
 chainID = 'testing'
 mainChainSymbol = 'kuchain'
@@ -21,9 +17,13 @@ coreCoinSymbol = 'sys'
 coreCoinDenom = '%s/%s' % (mainChainSymbol, coreCoinSymbol)
 cliCmd = 'kucli'
 nodeCmd = 'kucd'
+coinBase = 1000000000000000000
 
 # auths for test
 auths = {}
+pubkeys = {}
+conpubkeys = {}
+keyHexs = {}
 
 # node info for test
 nodes = {}
@@ -55,8 +55,10 @@ def run_output(args):
 
    return out_bytes.decode('utf-8')
 
-def cli(cmd):
+def cli(cmd, noKey = None):
    cliParams = "--home %s/cli/ --keyring-backend test" % (args.home)
+   if noKey is not None:
+      cliParams = "--home %s/cli/ " % (args.home)
    return run_output('%s/%s %s %s' % (args.build_path, cliCmd, cliParams, cmd))
 
 def cliByHome(home, cmd):
@@ -97,10 +99,25 @@ def initWallet():
    return
 
 def genAuth(name):
-   cli('keys add ' + name)
-   valAuth = cli('keys show %s -a' % (name))
-   valAuth = valAuth[:-1]
+   addInfoJSON = cli('keys add ' + name)
+   infos = addInfoJSON.splitlines()
+   pubkey = infos[3].split(':')[1][1:]
+
+   valAuth = cli('keys show %s -a' % (name))[:-1]
+   keyHex = cli('parse --chain-id %s %s' % (chainID, pubkey), True)[:-1]
+   keyHex = keyHex.splitlines()[1].split(':')[1][1:]
+
+   keysInfos = cli('parse --chain-id %s %s' % (chainID, keyHex), True)
+
+   conpubkey = keysInfos.splitlines()[6][2:]
+
    auths[name] = valAuth
+   pubkeys[name] = pubkey
+   conpubkeys[name] = conpubkey
+   keyHexs[name] = keyHex
+
+   logging.debug("gen key %s %s %s %s" % (valAuth, pubkey, conpubkey, keyHex))
+
    return valAuth
 
 def getAuth(name):
@@ -125,7 +142,7 @@ def initGenesis(nodeNum):
 
    node(mainChainSymbol, 'genesis add-address %s' % (mainAuth))
    node(mainChainSymbol, 'genesis add-account %s %s' % (mainChainSymbol, mainAuth))
-   node(mainChainSymbol, 'genesis add-coin %s \"%s\"' % (coreCoin(1000000000000000000000000000000000000000), "main core"))
+   node(mainChainSymbol, 'genesis add-coin %s \"%s\"' % (coreCoin(0), "main core"))
    node(mainChainSymbol, 'genesis add-account-coin %s %s' % (mainAuth, coreCoin(100000000000000000000000000000000)))
    node(mainChainSymbol, 'genesis add-account-coin %s %s' % (mainChainSymbol, coreCoin(100000000000000000000000000000000)))
 
@@ -201,7 +218,10 @@ def initChain(nodeNum):
    return
 
 def genTx():
-   nodeByCli(mainChainSymbol, 'gentx %s --name %s ' % (getAuth(mainChainSymbol), mainChainSymbol))
+   genTxCmd = 'gentx %s %s --name %s ' % (mainChainSymbol, getAuth(mainChainSymbol), mainChainSymbol)
+   if args.sign:
+      genTxCmd += '--sign '
+   nodeByCli(mainChainSymbol, genTxCmd)
    node(mainChainSymbol, 'collect-gentxs')
 
 def initNode(name, num):
@@ -271,9 +291,8 @@ def regNodes(totalNum):
    sleep(5)
 
    for i in range(0, totalNum):
-      coreCoinBase = 10000000000000000000000000000
-      randomVoteCoin = "%d" % random.uniform(coreCoinBase * 4 / 5, coreCoinBase - 100)
-      voteValidator(getNodeName(i + 1), getNodeName(i + 1), coreCoin(randomVoteCoin))
+      coreCoinBase = 1000000000000000 * coinBase
+      voteValidator(getNodeName(i + 1), getNodeName(i + 1), coreCoin(coreCoinBase))
 
 
 
@@ -284,6 +303,7 @@ parser.add_argument('--home', metavar='', help='testnet data home path', default
 parser.add_argument('--trace', action='store_true', help='if --trace to kucd')
 parser.add_argument('--log-level', metavar='', help='log level for kucd', default='*:info')
 parser.add_argument('--node-num', type=int, metavar='', help='val node number', default=12)
+parser.add_argument('--sign', type=bool, metavar='', help='if sign genesis trx auto', default=True)
 
 args = parser.parse_args()
 logging.debug("args %s", args)
@@ -294,6 +314,7 @@ logging.info("start kuchain testnet by %s to %s", args.home, args.build_path)
 initWallet()
 initChain(int(args.node_num))
 
+
 # Start main first
 startChainNode(mainChainSymbol)
 sleep(1)
@@ -302,4 +323,5 @@ for i in range(0, int(args.node_num)):
    startChainNode(getNodeName(i + 1))
 
 sleep(5)
+
 regNodes(int(args.node_num))

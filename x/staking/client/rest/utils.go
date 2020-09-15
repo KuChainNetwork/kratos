@@ -151,3 +151,40 @@ func queryValidator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
+
+
+func queryValidatorByConsAddr(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		strConsAddr := vars["consAddr"]
+
+		// validatorAddr, err := sdk.ValAddressFromBech32(bech32validatorAddr)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		// 	return
+		// }
+		consAddr, _ := sdk.ConsAddressFromHex(strConsAddr)
+
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		params := types.NewQueryValidatorFromConsAddr(consAddr)
+
+		bz, err := cliCtx.Codec.MarshalJSON(params)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		res, height, err := cliCtx.QueryWithData(endpoint, bz)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}

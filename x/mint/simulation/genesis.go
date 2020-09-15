@@ -33,12 +33,12 @@ func GenInflationRateChange(r *rand.Rand) sdk.Dec {
 
 // GenInflationMax randomized InflationMax
 func GenInflationMax(r *rand.Rand) sdk.Dec {
-	return sdk.NewDecWithPrec(12, 2)
+	return sdk.NewDecWithPrec(21, 2)
 }
 
 // GenInflationMin randomized InflationMin
 func GenInflationMin(r *rand.Rand) sdk.Dec {
-	return sdk.NewDecWithPrec(6, 2)
+	return sdk.NewDecWithPrec(8, 2)
 }
 
 // GenGoalBonded randomized GoalBonded
