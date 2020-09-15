@@ -31,6 +31,10 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
+const (
+	flagSignGenesisTrx = "sign"
+)
+
 // StakingMsgBuildingHelpers helpers for message building gen-tx command
 type StakingMsgBuildingHelpers interface {
 	CreateValidatorMsgHelpers(ipDefault string) (fs *flag.FlagSet, nodeIDFlag, pubkeyFlag, amountFlag, defaultsDesc string)
@@ -148,6 +152,17 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 				return errors.Wrap(err, "failed to read unsigned gen tx file")
 			}
 
+			name := viper.GetString(flags.FlagName)
+
+			if viper.GetBool(flagSignGenesisTrx) {
+				// sign the transaction and write it to the output file
+				signedTx, err := txutil.SignStdTx(txBldr, cliCtx, name, stdTx, false, true)
+				if err != nil {
+					return errors.Wrap(err, "failed to sign std tx")
+				}
+				stdTx = signedTx
+			}
+
 			// Fetch output file name
 			outputDocument := viper.GetString(flags.FlagOutputDocument)
 			if outputDocument == "" {
@@ -174,6 +189,7 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 		"write the genesis transaction JSON document to the given file instead of the default location")
 	cmd.Flags().AddFlagSet(fsCreateValidator)
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
+	cmd.Flags().Bool(flagSignGenesisTrx, false, "If sign genesis trx in boot")
 	viper.BindPFlag(flags.FlagKeyringBackend, cmd.Flags().Lookup(flags.FlagKeyringBackend))
 
 	cmd.MarkFlagRequired(flags.FlagName)
