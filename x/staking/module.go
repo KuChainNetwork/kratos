@@ -93,8 +93,8 @@ func (AppModuleBasic) BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext,
 
 // BuildDelegateMsg - used for gen-tx
 func (AppModuleBasic) BuildDelegateMsg(cliCtx txutil.KuCLIContext,
-	txBldr txutil.TxBuilder, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
-	return cli.BuildDelegateMsg(cliCtx, txBldr, delAccountID, valAccountID)
+	txBldr txutil.TxBuilder, address chainTypes.AccAddress, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
+	return cli.BuildDelegateMsg(cliCtx, txBldr, address, delAccountID, valAccountID)
 }
 
 //____________________________________________________________________________

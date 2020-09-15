@@ -1,7 +1,13 @@
 package types
 
 import (
+	"flag"
+	"fmt"
+	StakingExported "github.com/KuChainNetwork/kuchain/x/staking/exported"
+	"log"
 	"math/rand"
+	"os"
+	"runtime"
 	"testing"
 
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
@@ -10,8 +16,14 @@ import (
 )
 
 func TestNextInflation(t *testing.T) {
-	minter := DefaultInitialMinter()
-	params := DefaultParams()
+	minter := InitialMinter(sdk.NewDecWithPrec(9, 2))
+	params := NewParams(StakingExported.DefaultBondDenom,
+		sdk.NewDecWithPrec(9, 2),
+		sdk.NewDecWithPrec(12, 2),
+		sdk.NewDecWithPrec(6, 2),
+		sdk.NewDecWithPrec(67, 2),
+		uint64(60*60*8766/3),
+	)
 	blocksPerYr := chainTypes.NewDec(int64(params.BlocksPerYear))
 
 	// Governing Mechanism:
@@ -128,4 +140,77 @@ func BenchmarkNextAnnualProvisions(b *testing.B) {
 		minter.NextAnnualProvisions(params, totalSupply)
 	}
 
+}
+
+func BenchmarkTestMinting(t *testing.B) {
+	var (
+		logFileName = flag.String("log", "BenchmarkTestMinting.log", "Log file name")
+	)
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	flag.Parse()
+
+	//set logfile Stdout
+	logFile, logErr := os.OpenFile(*logFileName, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
+	if logErr != nil {
+		fmt.Println("Fail to find", *logFile, "cServer start Failed")
+		os.Exit(1)
+	}
+	log.SetOutput(logFile)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
+	minter := DefaultInitialMinter()
+	params := NewParams(StakingExported.DefaultBondDenom,
+		sdk.NewDecWithPrec(14, 2),
+		sdk.NewDecWithPrec(21, 2),
+		sdk.NewDecWithPrec(8, 2),
+		sdk.NewDecWithPrec(67, 2),
+		uint64(60*60*8766/3),
+	)
+	tests := []struct {
+		bondedRatio sdk.Dec
+	}{
+		{sdk.ZeroDec(),},
+		{sdk.NewDecWithPrec(33, 2),},
+		{sdk.NewDecWithPrec(5, 1),},
+		{sdk.NewDecWithPrec(67, 2),},
+		{sdk.OneDec(),},
+	}
+	for _, tc := range tests {
+		totalStakingSupply := sdk.NewInt(140000000)
+		minter.Inflation = params.InflationRateChange
+		for i := uint64(0); i < params.BlocksPerYear; i++ {
+			minter.Inflation = minter.NextInflationRate(params, tc.bondedRatio)
+			minter.AnnualProvisions = minter.NextAnnualProvisions(params, totalStakingSupply)
+
+			bAmount := minter.BlockProvision(params).Amount
+			totalStakingSupply = totalStakingSupply.Add(bAmount)
+			//write log
+			if bAmount.BigInt().Int64() <= 0 {
+				log.Println("bondedRatio", tc.bondedRatio, minter.Inflation, bAmount, totalStakingSupply)
+			}
+		}
+		fmt.Println(totalStakingSupply)
+	}
+}
+
+func TestMinting(t *testing.T) {
+	minter := DefaultInitialMinter()
+	params := DefaultParams()
+
+	totalStakingSupply := sdk.NewInt(140000000)
+	tests := []struct {
+		inf sdk.Dec
+	}{
+		{params.InflationMin},
+		{params.InflationMax},
+	}
+	for _, tc := range tests {
+		for i := uint64(0); i < params.BlocksPerYear; i++ {
+			minter.Inflation = tc.inf
+			minter.AnnualProvisions = minter.NextAnnualProvisions(params, totalStakingSupply)
+			totalStakingSupply = totalStakingSupply.Add(minter.BlockProvision(params).Amount)
+		}
+		fmt.Println(totalStakingSupply)
+	}
 }

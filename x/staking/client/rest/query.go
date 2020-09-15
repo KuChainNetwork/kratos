@@ -106,6 +106,11 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		paramsHandlerFn(cliCtx),
 	).Methods("GET")
 
+	r.HandleFunc(
+		"/staking/validator_consaddr/{consAddr}",
+		validatorByConsAddrHandlerFn(cliCtx),
+	).Methods("GET")
+
 }
 
 // HTTP request handler to query a delegator delegations
@@ -390,4 +395,9 @@ func paramsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		cliCtx = cliCtx.WithHeight(height)
 		rest.PostProcessResponse(w, cliCtx, res)
 	}
+}
+
+// HTTP request handler to query the validator information from a given validator address
+func validatorByConsAddrHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return queryValidatorByConsAddr(cliCtx, fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryValidatorByConsAddr))
 }

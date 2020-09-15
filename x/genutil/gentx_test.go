@@ -3,6 +3,9 @@ package genutil_test
 import (
 	"bufio"
 	"encoding/json"
+	"os"
+	"testing"
+
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
@@ -19,8 +22,6 @@ import (
 	"github.com/spf13/viper"
 	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
 	"github.com/tendermint/tendermint/libs/cli"
-	"os"
-	"testing"
 )
 
 var smbh = staking.AppModuleBasic{}
@@ -47,7 +48,7 @@ func TestSetGenTxsInAppGenesisState(t *testing.T) {
 		txBldr, msg, err := smbh.BuildCreateValidatorMsg(cliCtx, txBldr, valAccountID, auth)
 		So(err, ShouldBeNil)
 
-		txBldr, msgdelegator, err := smbh.BuildDelegateMsg(cliCtx, txBldr, valAccountID, valAccountID)
+		txBldr, msgdelegator, err := smbh.BuildDelegateMsg(cliCtx, txBldr, auth, valAccountID, valAccountID)
 		So(err, ShouldBeNil)
 
 		stdSignMsg, err := txBldr.BuildSignMsg([]sdk.Msg{msg, msgdelegator})
