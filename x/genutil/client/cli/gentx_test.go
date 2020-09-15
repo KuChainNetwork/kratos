@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"testing"
+
 	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	"github.com/KuChainNetwork/kuchain/x/asset"
@@ -14,12 +16,14 @@ import (
 	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
-	"testing"
 )
 
 func TestGenTxCmdCmd(t *testing.T) {
 	Convey("TestGenTxCmdCmd", t, func() {
 		cmd := &cobra.Command{}
+
+		wallet := simapp.NewWallet()
+		key := wallet.NewAccAddress()
 
 		SetupViper()
 		keysHome, cleanup := simapp.NewTestCaseDir(t)
@@ -47,7 +51,7 @@ func TestGenTxCmdCmd(t *testing.T) {
 
 		gentxCmd := GenTxCmd(ctx, cdc, simapp.ModuleBasics, staking.AppModuleBasic{}, asset.GenesisBalancesIterator{},
 			home, keysHome, staking.NewFuncManager())
-		err = gentxCmd.RunE(cmd, []string{"moniker"})
+		err = gentxCmd.RunE(cmd, []string{"moniker", key.String()})
 		So(err, ShouldBeNil)
 	})
 }
