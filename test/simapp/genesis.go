@@ -70,6 +70,11 @@ func NewGenesisAccounts(rootAuth types.AccAddress, accounts ...SimGenesisAccount
 		}
 		max := types.NewInt(1000000000000000000) // for default
 		max = max.Mul(types.NewInt(1000000000000000000))
+
+		if c.Denom == constants.DefaultBondDenom {
+			max = types.NewInt(0)
+		}
+
 		res.coins = append(res.coins, assetTypes.NewGenesisCoin(createor, symbol, max, fmt.Sprintf("desc for %s", c.Denom)))
 	}
 

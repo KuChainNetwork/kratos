@@ -20,6 +20,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/app"
 	blockrest "github.com/KuChainNetwork/kuchain/chain/client/blockutil/client/rest"
+	kuKeys "github.com/KuChainNetwork/kuchain/chain/client/keys"
 	txcmd "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/cli"
 	txrest "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/rest"
 	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
@@ -30,12 +31,14 @@ var (
 	cdc = app.MakeCodec()
 )
 
+func init() {
+	// Read in the configuration file for the sdk
+	chainCfg.SealChainConfig()
+}
+
 func main() {
 	// Configure cobra to sort commands
 	cobra.EnableCommandSorting = false
-
-	// Read in the configuration file for the sdk
-	chainCfg.SealChainConfig()
 
 	// TODO: setup keybase, viper object, etc. to be passed into
 	// the below functions and eliminate global vars, like we do
@@ -65,6 +68,7 @@ func main() {
 		flags.LineBreak,
 		version.Cmd,
 		flags.NewCompletionCmd(rootCmd, true),
+		kuKeys.ParseKeyStringCommand(),
 	)
 
 	// Add flags and prefix all env exposed with GA
