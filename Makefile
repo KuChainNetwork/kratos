@@ -74,7 +74,17 @@ endif
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)' -trimpath
+OS_NAME := $(shell uname -s | tr A-Z a-z)/$(shell uname -m)
+
+os:
+	@echo $(OS_NAME)
+
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+
+BUILD_OS := -osarch="linux/arm linux/amd64 windows/amd64"
+ifneq ($(OS_NAME), darwin/x86_64)
+	BUILD_OS = -osarch="linux/arm linux/amd64 windows/amd64 darwin/amd64"
+endif
 
 all: clear-build build
 
@@ -87,8 +97,14 @@ else
 	go build -mod=readonly $(BUILD_FLAGS) -o build/kucli ./cmd/kucli
 endif
 
-build-linux: go.sum
-	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
+build-gox: go.sum
+	gox $(BUILD_FLAGS) $(BUILD_OS) -output "build/kucd_{{.OS}}_{{.Arch}}" ./cmd/kucd
+	gox $(BUILD_FLAGS) $(BUILD_OS) -output "build/kucli_{{.OS}}_{{.Arch}}" ./cmd/kucli
+
+ifeq ($(OS_NAME), darwin/x86_64)
+	go build -mod=readonly $(BUILD_FLAGS) -o build/kucd_darwin_amd64 ./cmd/kucd
+	go build -mod=readonly $(BUILD_FLAGS) -o build/kucli_darwin_amd64 ./cmd/kucli
+endif
 
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/kucd
