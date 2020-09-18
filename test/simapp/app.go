@@ -21,6 +21,7 @@ import (
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account"
 	"github.com/KuChainNetwork/kuchain/x/asset"
+	"github.com/KuChainNetwork/kuchain/x/dex"
 	distr "github.com/KuChainNetwork/kuchain/x/distribution"
 	"github.com/KuChainNetwork/kuchain/x/evidence"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
@@ -60,6 +61,7 @@ var (
 		gov.NewAppModuleBasic(paramsclient.ProposalHandler, distr.ProposalHandler),
 		mint.NewAppModuleBasic(),
 		params.NewAppModuleBasic(),
+		dex.NewAppModuleBasic(),
 		plugin.NewAppModuleBasic(),
 	)
 
@@ -123,6 +125,7 @@ type SimApp struct {
 	slashingKeeper slashing.Keeper
 	evidenceKeeper evidence.Keeper
 	govKeeper      gov.Keeper
+	dexKeeper      dex.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -170,6 +173,7 @@ func NewSimApp(
 	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
 	app.subspaces[mint.ModuleName] = app.paramsKeeper.Subspace(mint.DefaultParamspace)
 	app.subspaces[gov.ModuleName] = app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
+
 	// add keepers
 	app.accountKeeper = account.NewAccountKeeper(cdc, keys[account.StoreKey])
 	app.assetKeeper = asset.NewAssetKeeper(cdc, keys[asset.StoreKey], app.accountKeeper)
@@ -212,6 +216,8 @@ func NewSimApp(
 		app.supplyKeeper, &stakingKeeper, app.distrKeeper, govRouter,
 	)
 
+	app.dexKeeper = dex.NewKeeper(cdc, keys[gov.StoreKey])
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
@@ -238,12 +244,13 @@ func NewSimApp(
 		mint.NewAppModule(app.mintKeeper, app.supplyKeeper),
 		evidence.NewAppModule(app.evidenceKeeper, app.accountKeeper, app.assetKeeper),
 		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
+		dex.NewAppModule(app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.dexKeeper),
 		plugin.NewAppModule(),
 	)
 
 	// plugin.ModuleName MUST be the last
-	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName, evidence.ModuleName, plugin.ModuleName)
-	app.mm.SetOrderEndBlockers(staking.ModuleName, gov.ModuleName, plugin.ModuleName)
+	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName, evidence.ModuleName, dex.ModuleName, plugin.ModuleName)
+	app.mm.SetOrderEndBlockers(staking.ModuleName, gov.ModuleName, dex.ModuleName, plugin.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -256,6 +263,7 @@ func NewSimApp(
 		supply.ModuleName,
 		genutil.ModuleName,
 		mint.ModuleName,
+		dex.ModuleName,
 	)
 
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
