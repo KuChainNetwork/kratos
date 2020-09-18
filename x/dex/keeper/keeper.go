@@ -30,3 +30,8 @@ func NewDexKeeper(cdc *codec.Codec, key sdk.StoreKey) DexKeeper {
 func (ak DexKeeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
+
+// GetDex get dex data, if no found, return false
+func (a DexKeeper) GetDex(ctx sdk.Context, creator types.Name) (*types.Dex, bool) {
+	return a.getDex(ctx, creator)
+}
