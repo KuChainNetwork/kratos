@@ -81,7 +81,7 @@ func CalculateMsgGas(msg sdk.Msg) (uint64, error) {
 		return constants.EstimatedGasBurnCoin, nil
 	case "delegate":
 		return constants.EstimatedGasDelegate, nil
-	case "begin_redelegate":
+	case "beginredelegate":
 		return constants.EstimatedGasReDelegate, nil
 	case "create@staking":
 		return constants.EstimatedGasCreateVal, nil
