@@ -26,7 +26,6 @@ type KuTransfMsg interface {
 	GetSignBytes() []byte
 	GetSigners() []AccAddress
 	GetTransfers() []KuMsgTransfer
-	GetData() []byte
 	ValidateTransfer() error
 }
 
