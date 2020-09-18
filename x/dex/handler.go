@@ -41,9 +41,12 @@ func handleMsgCreateDex(ctx chainTypes.Context, k Keeper, msg *types.MsgCreateDe
 		"desc", string(msgData.Desc))
 
 	ctx.RequireAccount(msgData.Creator)
+
+	/* no need check, has check by ValiteBasic
 	if err := ctx.RequireTransfer(types.ModuleAccountID, msgData.Stakings); err != nil {
 		return nil, errors.Wrapf(err, "msg create dex error no transfer")
 	}
+	*/
 
 	if err := k.CreateDex(ctx.Context(),
 		msgData.Creator, msgData.Stakings, string(msgData.Desc)); err != nil {

@@ -6,6 +6,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+var (
+	_ types.KuTransfMsg = &MsgCreateDex{}
+)
+
 // MsgCreateDex msg for create dex
 type MsgCreateDex struct {
 	types.KuMsg
