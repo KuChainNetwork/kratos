@@ -79,10 +79,22 @@ func CoinAccountsFromDenom(denom string) (Name, Name, error) {
 	return creator, symbol, nil
 }
 
+// NewInt64CoreCoin create a default bond denom coin amount by int64 amt
 func NewInt64CoreCoin(amt int64) Coin {
 	return NewCoin(keys.DefaultBondDenom, NewInt(amt))
 }
 
+// NewInt64CoreCoins create a default bond denom coins type amount by int64 amt
 func NewInt64CoreCoins(amt int64) Coins {
 	return Coins{NewInt64CoreCoin(amt)}
+}
+
+// NewIntCoreCoin create a default bond denom coin amount by Int amt
+func NewIntCoreCoin(val Int) Coin {
+	return NewCoin(keys.DefaultBondDenom, val)
+}
+
+// NewIntCoreCoins create a default bond denom coins type amount by Int amt
+func NewIntCoreCoins(val Int) Coins {
+	return Coins{NewIntCoreCoin(val)}
 }
