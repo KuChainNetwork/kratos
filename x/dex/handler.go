@@ -13,13 +13,13 @@ import (
 // NewHandler returns a handler for "bank" type messages.
 func NewHandler(k Keeper) msg.Handler {
 	return func(ctx chainTypes.Context, msg chainTypes.Msg) (*sdk.Result, error) {
-		switch msg := msg.(type) {
+		switch theMsg := msg.(type) {
 		case *types.MsgCreateDex:
-			return handleMsgCreateDex(ctx, k, msg)
+			return handleMsgCreateDex(ctx, k, theMsg)
 		case *types.MsgUpdateDexDescription:
-			return handleMsgUpdateDexDescription(ctx, k, msg)
+			return handleMsgUpdateDexDescription(ctx, k, theMsg)
 		case *types.MsgDestroyDex:
-			return handleMsgDestroyDex(ctx, k, msg)
+			return handleMsgDestroyDex(ctx, k, theMsg)
 		default:
 			return nil, errors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized asset message type: %T", msg)
 		}
@@ -75,6 +75,12 @@ func handleMsgUpdateDexDescription(ctx chainTypes.Context,
 	msgData := types.MsgUpdateDexDescriptionData{}
 	if err = msg.UnmarshalData(ModuleCdc, &msgData); nil != err {
 		err = errors.Wrapf(err, "msg dex update description data unmarshal error")
+		return
+	}
+
+	// check description max length
+	if types.MaxDexDescriptorLen < len(msgData.Desc) {
+		err = types.ErrDexDescTooLong
 		return
 	}
 

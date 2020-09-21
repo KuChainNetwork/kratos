@@ -1,5 +1,6 @@
 package types
 
+// Dex model
 type Dex struct {
 	Creator     Name   `json:"creator" yaml:"creator"`         // Creator
 	Staking     Coins  `json:"staking" yaml:"staking"`         // Dex Staking
@@ -8,6 +9,7 @@ type Dex struct {
 	Sequence    uint64 `json:"sequence" yaml:"sequence"`       // Dex sequence
 }
 
+// NewDex creator a new dex
 func NewDex(creator Name, staking Coins, description string) *Dex {
 	return &Dex{
 		Creator:     creator,
@@ -18,11 +20,13 @@ func NewDex(creator Name, staking Coins, description string) *Dex {
 	}
 }
 
+// WithNumber set dex number
 func (d *Dex) WithNumber(n uint64) *Dex {
 	d.Number = n
 	return d
 }
 
+// CanDestroy check whether dex can destroy
 func (d *Dex) CanDestroy() (ok bool) {
 	//TODO
 	return
