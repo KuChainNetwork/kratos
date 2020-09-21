@@ -8,15 +8,13 @@ import (
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account"
 	"github.com/KuChainNetwork/kuchain/x/asset"
-	assettypes "github.com/KuChainNetwork/kuchain/x/asset/types"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-
-	"github.com/stretchr/testify/require"
-
 	keep "github.com/KuChainNetwork/kuchain/x/supply/keeper"
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
 const initialPower = int64(100)
@@ -67,196 +65,207 @@ func TestSendCoins(t *testing.T) {
 	app, ctx := createTestApp(false)
 	ak := app.AccountKeeper()
 
-	bName, _ := chainType.NewName("baseacc")
-	baseAcc := ak.NewAccountByName(ctx, bName)
+	Convey("test send coins to supply", t, func() {
 
-	app.SupplyKeeper().SetModuleAccount(ctx, holderAcc)
-	app.SupplyKeeper().SetModuleAccount(ctx, burnerAcc)
-	ak.SetAccount(ctx, baseAcc)
+		bName, _ := chainType.NewName("baseacc")
+		baseAcc := ak.NewAccountByName(ctx, bName)
 
-	{
-		SymbolName, _ := chainType.NewName(constants.DefaultBondSymbol)
-		TestMaster := constants.ChainMainNameStr
-		MasterName, _ := chainType.NewName(TestMaster)
-		Master := chainType.NewAccountIDFromName(MasterName)
+		app.SupplyKeeper().SetModuleAccount(ctx, holderAcc)
+		app.SupplyKeeper().SetModuleAccount(ctx, burnerAcc)
+		ak.SetAccount(ctx, baseAcc)
 
-		intNum1, _ := sdk.NewIntFromString("20000000000000000000000")
-		intNum2, _ := sdk.NewIntFromString("80000000000000000000000")
-		intNum3, _ := sdk.NewIntFromString("60000000000000000000000")
-		intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
+		{
+			SymbolName, _ := chainType.NewName(constants.DefaultBondSymbol)
+			TestMaster := constants.ChainMainNameStr
+			MasterName, _ := chainType.NewName(TestMaster)
+			Master := chainType.NewAccountIDFromName(MasterName)
 
-		app.AssetKeeper().Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-			true, true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
+			intNum1, _ := sdk.NewIntFromString("20000000000000000000000")
+			intNum3, _ := sdk.NewIntFromString("60000000000000000000000")
+			intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
 
-		app.AssetKeeper().IssueCoinPower(ctx, Master, chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, intNum3)))
+			err := app.AssetKeeper().Create(ctx, MasterName, SymbolName, chainType.NewIntCoreCoin(intMaxNum),
+				true, true, true, 0, chainType.NewInt64CoreCoin(0), []byte("create"))
+			So(err, ShouldBeNil)
 
-		Coins := chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, intNum1))
-		supplyAcc := app.SupplyKeeper().GetModuleAccount(ctx, types.ModuleName)
-		err := app.AssetKeeper().SendCoinPower(ctx, Master, supplyAcc.GetID(), Coins)
-		require.Nil(t, err)
+			_, err = app.AssetKeeper().IssueCoinPower(ctx, Master, chainType.NewCoins(chainType.NewIntCoreCoin(intNum3)))
+			So(err, ShouldBeNil)
 
-		HCoins := chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, initTokens.Mul(sdk.NewInt(3))))
-		err = app.AssetKeeper().SendCoinPower(ctx, Master, holderAcc.GetID(), HCoins)
-		require.Nil(t, err)
-	}
+			Coins := chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, intNum1))
+			supplyAcc := app.SupplyKeeper().GetModuleAccount(ctx, types.ModuleName)
+			err = app.AssetKeeper().SendCoinPower(ctx, Master, supplyAcc.GetID(), Coins)
+			So(err, ShouldBeNil)
 
-	require.Panics(t, func() {
-		app.SupplyKeeper().SendCoinsFromModuleToModule(ctx, "", holderAcc.String(), initCoins)
+			HCoins := chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, initTokens.Mul(sdk.NewInt(3))))
+			err = app.AssetKeeper().SendCoinPower(ctx, Master, holderAcc.GetID(), HCoins)
+			So(err, ShouldBeNil)
+		}
+
+		require.Panics(t, func() {
+			app.SupplyKeeper().SendCoinsFromModuleToModule(ctx, "", holderAcc.String(), initCoins)
+		})
+
+		require.Panics(t, func() {
+			app.SupplyKeeper().SendCoinsFromModuleToModule(ctx, types.Burner, "", initCoins)
+		})
+
+		require.Panics(t, func() {
+			app.SupplyKeeper().SendCoinsFromModuleToAccount(ctx, "", baseAcc.GetID(), initCoins)
+		})
+
+		bAcc := baseAcc.GetID()
+		hAccStr := holderAcc.GetName().String()
+		err := app.SupplyKeeper().SendCoinsFromModuleToAccount(ctx, hAccStr, bAcc, initCoins.Add(initCoins...))
+		So(err, ShouldBeNil)
+
+		err = app.SupplyKeeper().SendCoinsFromModuleToModule(ctx, holderAcc.GetName().String(), types.Burner, initCoins)
+		So(err, ShouldBeNil)
+
+		holderAccCoins := getCoinsByName(ctx, *app.SupplyKeeper(), holderAcc.GetName().String(), *app.AssetKeeper())
+		fmt.Println(holderAccCoins.String())
+		require.Equal(t, chainType.Coins{}, holderAccCoins)
+
+		BurnerAccCoins := getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
+		require.Equal(t, initCoins, BurnerAccCoins)
+
+		err = app.SupplyKeeper().SendCoinsFromModuleToAccount(ctx, types.Burner, bAcc, initCoins)
+		So(err, ShouldBeNil)
+		BurnerAccCoins = getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
+		require.Equal(t, chainType.Coins{}, BurnerAccCoins)
+
+		BAccCoins := app.AssetKeeper().GetCoinPowers(ctx, baseAcc.GetID())
+		require.Equal(t, chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, initTokens.Mul(sdk.NewInt(3)))), BAccCoins)
+
+		err = app.SupplyKeeper().SendCoinsFromAccountToModule(ctx, baseAcc.GetID(), types.Burner, initCoins)
+		So(err, ShouldBeNil)
+
+		BAccCoins = app.AssetKeeper().GetCoinPowers(ctx, baseAcc.GetID())
+		require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, initTokens.Mul(sdk.NewInt(2)))}, BAccCoins)
+
+		BurnerAccCoins = getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
+		require.Equal(t, initCoins, BurnerAccCoins)
 	})
-
-	require.Panics(t, func() {
-		app.SupplyKeeper().SendCoinsFromModuleToModule(ctx, types.Burner, "", initCoins)
-	})
-
-	require.Panics(t, func() {
-		app.SupplyKeeper().SendCoinsFromModuleToAccount(ctx, "", baseAcc.GetID(), initCoins)
-	})
-
-	bAcc := baseAcc.GetID()
-	hAccStr := holderAcc.GetName().String()
-	err := app.SupplyKeeper().SendCoinsFromModuleToAccount(ctx, hAccStr, bAcc, initCoins.Add(initCoins...))
-	require.NoError(t, err)
-
-	err = app.SupplyKeeper().SendCoinsFromModuleToModule(ctx, holderAcc.GetName().String(), types.Burner, initCoins)
-	require.NoError(t, err)
-
-	holderAccCoins := getCoinsByName(ctx, *app.SupplyKeeper(), holderAcc.GetName().String(), *app.AssetKeeper())
-	fmt.Println(holderAccCoins.String())
-	require.Equal(t, chainType.Coins{}, holderAccCoins)
-
-	BurnerAccCoins := getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
-	require.Equal(t, initCoins, BurnerAccCoins)
-
-	err = app.SupplyKeeper().SendCoinsFromModuleToAccount(ctx, types.Burner, bAcc, initCoins)
-	require.NoError(t, err)
-	BurnerAccCoins = getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
-	require.Equal(t, chainType.Coins{}, BurnerAccCoins)
-
-	BAccCoins := app.AssetKeeper().GetCoinPowers(ctx, baseAcc.GetID())
-	require.Equal(t, chainType.NewCoins(chainType.NewCoin(constants.DefaultBondDenom, initTokens.Mul(sdk.NewInt(3)))), BAccCoins)
-
-	err = app.SupplyKeeper().SendCoinsFromAccountToModule(ctx, baseAcc.GetID(), types.Burner, initCoins)
-	require.NoError(t, err)
-
-	BAccCoins = app.AssetKeeper().GetCoinPowers(ctx, baseAcc.GetID())
-	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, initTokens.Mul(sdk.NewInt(2)))}, BAccCoins)
-
-	BurnerAccCoins = getCoinsByName(ctx, *app.SupplyKeeper(), types.Burner, *app.AssetKeeper())
-	require.Equal(t, initCoins, BurnerAccCoins)
 }
 
 func TestMintCoins(t *testing.T) {
 	app, ctx := createTestApp(false)
 	keeper := app.SupplyKeeper()
 
-	keeper.SetModuleAccount(ctx, burnerAcc)
-	keeper.SetModuleAccount(ctx, minterAcc)
-	keeper.SetModuleAccount(ctx, multiPermAcc)
-	keeper.SetModuleAccount(ctx, randomPermAcc)
+	Convey("test mint coins to supply", t, func() {
 
-	initialSupply := keeper.GetSupply(ctx)
+		keeper.SetModuleAccount(ctx, burnerAcc)
+		keeper.SetModuleAccount(ctx, minterAcc)
+		keeper.SetModuleAccount(ctx, multiPermAcc)
+		keeper.SetModuleAccount(ctx, randomPermAcc)
 
-	{
-		SymbolName, _ := chainType.NewName(constants.DefaultBondSymbol)
-		TestMaster := constants.ChainMainNameStr
-		MasterName, _ := chainType.NewName(TestMaster)
+		initialSupply := keeper.GetSupply(ctx)
 
-		intNum2, _ := sdk.NewIntFromString("80000000000000000000000")
-		intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
+		{
+			SymbolName, _ := chainType.NewName(constants.DefaultBondSymbol)
+			TestMaster := constants.ChainMainNameStr
+			MasterName, _ := chainType.NewName(TestMaster)
 
-		app.AssetKeeper().Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-			true, true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
-	}
+			intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
 
-	require.Panics(t, func() { keeper.MintCoins(ctx, "", &initCoins) }, "no module account")
-	require.Panics(t, func() { keeper.MintCoins(ctx, types.Burner, &initCoins) }, "invalid permission")
+			err := app.AssetKeeper().Create(ctx, MasterName, SymbolName, chainType.NewIntCoreCoin(intMaxNum),
+				true, true, true, 0, chainType.NewInt64CoreCoin(0), []byte("create"))
 
-	err := keeper.MintCoins(ctx, types.Minter, &chainType.Coins{chainType.Coin{Denom: "denom", Amount: chainType.NewInt(-10)}})
-	require.Error(t, err, "insufficient coins")
+			So(err, ShouldBeNil)
+		}
 
-	require.Panics(t, func() { keeper.MintCoins(ctx, randomPerm, &initCoins) })
+		require.Panics(t, func() { keeper.MintCoins(ctx, "", &initCoins) }, "no module account")
+		require.Panics(t, func() { keeper.MintCoins(ctx, types.Burner, &initCoins) }, "invalid permission")
 
-	err = keeper.MintCoins(ctx, types.Minter, &initCoins)
-	require.NoError(t, err)
+		err := keeper.MintCoins(ctx, types.Minter, &chainType.Coins{chainType.Coin{Denom: "denom", Amount: chainType.NewInt(-10)}})
+		require.Error(t, err, "insufficient coins")
 
-	mintCoins := getCoinsByName(ctx, *keeper, types.Minter, *app.AssetKeeper())
-	require.Equal(t, initCoins, mintCoins)
-	require.Equal(t, initialSupply.GetTotal().Add(initCoins...), keeper.GetSupply(ctx).GetTotal())
+		require.Panics(t, func() { keeper.MintCoins(ctx, randomPerm, &initCoins) })
 
-	// test same functionality on module account with multiple permissions
-	initialSupply = keeper.GetSupply(ctx)
+		err = keeper.MintCoins(ctx, types.Minter, &initCoins)
+		So(err, ShouldBeNil)
 
-	err = keeper.MintCoins(ctx, multiPermAcc.GetName().String(), &initCoins)
-	require.NoError(t, err)
-	require.Equal(t, initCoins, getCoinsByName(ctx, *keeper, multiPermAcc.GetName().String(), *app.AssetKeeper()))
-	require.Equal(t, initialSupply.GetTotal().Add(initCoins...), keeper.GetSupply(ctx).GetTotal())
+		mintCoins := getCoinsByName(ctx, *keeper, types.Minter, *app.AssetKeeper())
+		require.Equal(t, initCoins, mintCoins)
+		require.Equal(t, initialSupply.GetTotal().Add(initCoins...), keeper.GetSupply(ctx).GetTotal())
 
-	require.Panics(t, func() { keeper.MintCoins(ctx, types.Burner, &initCoins) })
+		// test same functionality on module account with multiple permissions
+		initialSupply = keeper.GetSupply(ctx)
+
+		err = keeper.MintCoins(ctx, multiPermAcc.GetName().String(), &initCoins)
+		So(err, ShouldBeNil)
+		require.Equal(t, initCoins, getCoinsByName(ctx, *keeper, multiPermAcc.GetName().String(), *app.AssetKeeper()))
+		require.Equal(t, initialSupply.GetTotal().Add(initCoins...), keeper.GetSupply(ctx).GetTotal())
+
+		require.Panics(t, func() { keeper.MintCoins(ctx, types.Burner, &initCoins) })
+	})
 }
 
 func TestBurnCoins(t *testing.T) {
 	app, ctx := createTestApp(false)
 	keeper := *app.SupplyKeeper()
 
-	{
-		SymbolName, _ := chainType.NewName(constants.DefaultBondSymbol)
-		TestMaster := constants.ChainMainNameStr
-		MasterName, _ := chainType.NewName(TestMaster)
+	Convey("test burn coins to supply", t, func() {
+		{
+			SymbolName, _ := chainType.NewName(constants.DefaultBondSymbol)
+			TestMaster := constants.ChainMainNameStr
+			MasterName, _ := chainType.NewName(TestMaster)
 
-		intNum2, _ := sdk.NewIntFromString("80000000000000000000000")
-		intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
+			intNum2, _ := sdk.NewIntFromString("80000000000000000000000")
 
-		app.AssetKeeper().Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-			true, true, true, 0, chainType.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
-	}
+			err := app.AssetKeeper().Create(ctx, MasterName, SymbolName, chainType.NewIntCoreCoin(intNum2),
+				true, true, true, 0, chainType.NewInt64CoreCoin(0), []byte("create"))
 
-	_, err := app.AssetKeeper().IssueCoinPower(ctx, burnerAcc.GetID(), initCoins)
-	require.NoError(t, err)
+			So(err, ShouldBeNil)
+		}
 
-	keeper.SetModuleAccount(ctx, burnerAcc)
-	initialSupply := keeper.GetSupply(ctx)
+		_, err := app.AssetKeeper().IssueCoinPower(ctx, burnerAcc.GetID(), initCoins)
+		So(err, ShouldBeNil)
 
-	nName, _ := chainType.NewName("")
-	nAcc := app.AccountKeeper().NewAccountByName(ctx, nName)
-	require.Panics(t, func() { keeper.BurnCoins(ctx, nAcc.GetID(), initCoins) }, "no module account")
+		keeper.SetModuleAccount(ctx, burnerAcc)
+		initialSupply := keeper.GetSupply(ctx)
 
-	MintName, _ := chainType.NewName(types.Minter)
-	mintAcc := app.AccountKeeper().NewAccountByName(ctx, MintName)
-	require.Panics(t, func() { keeper.BurnCoins(ctx, mintAcc.GetID(), initCoins) }, "invalid permission")
+		nName, _ := chainType.NewName("")
+		nAcc := app.AccountKeeper().NewAccountByName(ctx, nName)
+		require.Panics(t, func() { keeper.BurnCoins(ctx, nAcc.GetID(), initCoins) }, "no module account")
 
-	randomPermName, _ := chainType.NewName(randomPerm)
-	randomPermNameAcc := app.AccountKeeper().NewAccountByName(ctx, randomPermName)
-	require.Panics(t, func() { keeper.BurnCoins(ctx, randomPermNameAcc.GetID(), initialSupply.GetTotal()) }, "random permission")
+		MintName, _ := chainType.NewName(types.Minter)
+		mintAcc := app.AccountKeeper().NewAccountByName(ctx, MintName)
+		require.Panics(t, func() { keeper.BurnCoins(ctx, mintAcc.GetID(), initCoins) }, "invalid permission")
 
-	bName, _ := chainType.NewName(types.Burner)
-	bAcc := app.AccountKeeper().NewAccountByName(ctx, bName)
+		randomPermName, _ := chainType.NewName(randomPerm)
+		randomPermNameAcc := app.AccountKeeper().NewAccountByName(ctx, randomPermName)
+		require.Panics(t, func() { keeper.BurnCoins(ctx, randomPermNameAcc.GetID(), initialSupply.GetTotal()) }, "random permission")
 
-	fmt.Println(initialSupply.GetTotal())
-	err = keeper.BurnCoins(ctx, bAcc.GetID(), initialSupply.GetTotal())
-	require.NoError(t, err)
+		bName, _ := chainType.NewName(types.Burner)
+		bAcc := app.AccountKeeper().NewAccountByName(ctx, bName)
 
-	bAccCoins := getCoinsByName(ctx, keeper, types.Burner, *app.AssetKeeper())
+		fmt.Println(initialSupply.GetTotal())
+		err = keeper.BurnCoins(ctx, bAcc.GetID(), initialSupply.GetTotal())
+		So(err, ShouldBeNil)
 
-	_, err = app.AssetKeeper().IssueCoinPower(ctx, burnerAcc.GetID(), initCoins)
-	require.NoError(t, err)
-	err = keeper.BurnCoins(ctx, bAcc.GetID(), initCoins)
-	require.NoError(t, err)
+		bAccCoins := getCoinsByName(ctx, keeper, types.Burner, *app.AssetKeeper())
 
-	bAccCoins = getCoinsByName(ctx, keeper, types.Burner, *app.AssetKeeper())
-	require.Equal(t, chainType.Coins{}, bAccCoins)
-	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(200000000))}, keeper.GetSupply(ctx).GetTotal())
+		_, err = app.AssetKeeper().IssueCoinPower(ctx, burnerAcc.GetID(), initCoins)
+		So(err, ShouldBeNil)
+		err = keeper.BurnCoins(ctx, bAcc.GetID(), initCoins)
+		So(err, ShouldBeNil)
 
-	// test same functionality on module account with multiple permissions
-	initialSupply = keeper.GetSupply(ctx)
-	keeper.SetModuleAccount(ctx, multiPermAcc)
+		bAccCoins = getCoinsByName(ctx, keeper, types.Burner, *app.AssetKeeper())
+		require.Equal(t, chainType.Coins{}, bAccCoins)
+		require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(200000000))}, keeper.GetSupply(ctx).GetTotal())
 
-	_, err = app.AssetKeeper().IssueCoinPower(ctx, multiPermAcc.GetID(), initCoins)
-	require.NoError(t, err)
+		// test same functionality on module account with multiple permissions
+		initialSupply = keeper.GetSupply(ctx)
+		keeper.SetModuleAccount(ctx, multiPermAcc)
 
-	err = keeper.BurnCoins(ctx, multiPermAcc.GetID(), initCoins)
-	require.NoError(t, err)
+		_, err = app.AssetKeeper().IssueCoinPower(ctx, multiPermAcc.GetID(), initCoins)
+		So(err, ShouldBeNil)
 
-	multiPermAccCoins := getCoinsByName(ctx, keeper, multiPermAcc.GetName().String(), *app.AssetKeeper())
-	require.Equal(t, chainType.Coins{}, multiPermAccCoins)
-	require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(300000000))}, keeper.GetSupply(ctx).GetTotal())
+		err = keeper.BurnCoins(ctx, multiPermAcc.GetID(), initCoins)
+		So(err, ShouldBeNil)
+
+		multiPermAccCoins := getCoinsByName(ctx, keeper, multiPermAcc.GetName().String(), *app.AssetKeeper())
+		require.Equal(t, chainType.Coins{}, multiPermAccCoins)
+		require.Equal(t, chainType.Coins{chainType.NewCoin(constants.DefaultBondDenom, sdk.NewInt(300000000))}, keeper.GetSupply(ctx).GetTotal())
+	})
 }
