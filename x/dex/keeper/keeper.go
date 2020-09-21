@@ -27,7 +27,7 @@ func NewDexKeeper(cdc *codec.Codec, key sdk.StoreKey) DexKeeper {
 }
 
 // Logger returns a module-specific logger.
-func (ak DexKeeper) Logger(ctx sdk.Context) log.Logger {
+func (a DexKeeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 

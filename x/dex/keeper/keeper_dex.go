@@ -19,15 +19,21 @@ func (a DexKeeper) CreateDex(ctx sdk.Context, creator types.Name, staking types.
 }
 
 // DestroyDex delete a dex by creator
-func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
+func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name, stakings types.Coins) (err error) {
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
 		err = errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
 		return
 	}
 	// check the dex can be destroyed
-	if !dex.CanDestroy() {
-		err = errors.Wrapf(types.ErrDexCanNotBeDestroyed, "dex %s can not be deleted", creator.String())
+	if !dex.CanDestroy(&ctx) {
+		err = errors.Wrapf(types.ErrDexCanNotBeDestroyed,
+			"dex %s can not be destroy", creator.String())
+		return
+	}
+	if !dex.Staking.IsEqual(stakings) {
+		err = errors.Wrapf(types.ErrDexStakingsNotMatch,
+			"dex %s staking not match", creator.String())
 		return
 	}
 	a.deleteDex(ctx, dex)

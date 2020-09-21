@@ -40,10 +40,11 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 // createDexHandlerFn returns the create dex handler
 func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode := http.StatusBadRequest
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				rest.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 		var body []byte
@@ -85,10 +86,11 @@ func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 // destroyDexHandlerFn returns the destroy dex handler
 func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode := http.StatusBadRequest
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				rest.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 		var body []byte
@@ -113,8 +115,14 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		// get dex's staking
+		getter := types.NewDexRetriever(cliCtx)
+		var dex *types.Dex
+		if dex, _, err = getter.GetDexWithHeight(name); nil != err {
+			return
+		}
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgDestroyDex(addr, name),
+			types.NewMsgDestroyDex(addr, name, dex.Staking),
 		})
 	}
 }

@@ -134,8 +134,16 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			msg := types.NewMsgDestroyDex(auth, creator)
-			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{msg})
+			// get dex's staking
+			getter := types.NewDexRetriever(cliCtx)
+			var dex *types.Dex
+			if dex, _, err = getter.GetDexWithHeight(creator); nil != err {
+				return
+			}
+
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgDestroyDex(auth, creator, dex.Staking),
+			})
 			return
 		},
 	}

@@ -9,4 +9,5 @@ var (
 	ErrDexDescTooLong       = sdkerrors.Register(ModuleName, 2, "dex description too long")
 	ErrDexNotExists         = sdkerrors.Register(ModuleName, 3, "dex not exists")
 	ErrDexCanNotBeDestroyed = sdkerrors.Register(ModuleName, 4, "dex can not be destroyed")
+	ErrDexStakingsNotMatch  = sdkerrors.Register(ModuleName, 5, "dex stakings not match")
 )

@@ -1,5 +1,7 @@
 package types
 
+import sdk "github.com/cosmos/cosmos-sdk/types"
+
 // Dex model
 type Dex struct {
 	Creator     Name   `json:"creator" yaml:"creator"`         // Creator
@@ -27,7 +29,7 @@ func (d *Dex) WithNumber(n uint64) *Dex {
 }
 
 // CanDestroy check whether dex can destroy
-func (d *Dex) CanDestroy() (ok bool) {
+func (d *Dex) CanDestroy(ctx *sdk.Context) (ok bool) {
 	//TODO
 	return
 }
