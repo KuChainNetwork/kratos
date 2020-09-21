@@ -99,8 +99,7 @@ func CalculateMsgGas(msg sdk.Msg) (uint64, error) {
 		return constants.EstimatedGasProposal, nil
 	case "withdrawcccid":
 		return constants.EstimatedGasSetWithdrawAddr, nil
-	case "withdrawdelreward":
-	case "withdrawvalcom":
+	case "withdrawdelreward", "withdrawvalcom":
 		return constants.EstimatedGasRewards, nil
 	}
 
