@@ -206,3 +206,60 @@ func TestHandleCreateDexNumber(t *testing.T) {
 		So(dex2.Number, ShouldEqual, 1)
 	})
 }
+
+func TestHandleUpdateDex(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test create dex", t, func() {
+		ctx := app.NewTestContext()
+
+		var (
+			acc     = account5
+			accName = name5
+			auth    = wallet.GetAuth(acc)
+		)
+
+		msg := dexTypes.NewMsgCreateDex(
+			auth,
+			accName,
+			types.NewInt64CoreCoins(1000000),
+			[]byte("dex for test"))
+
+		So(msg.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msg,
+			}, wallet.PrivKey(auth))
+
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+	})
+
+	Convey("test update dex desc", t, func() {
+		ctx := app.NewTestContext()
+
+		var (
+			acc     = account5
+			accName = name5
+			auth    = wallet.GetAuth(acc)
+		)
+
+		msg := dexTypes.NewMsgUpdateDexDescription(
+			auth,
+			accName,
+			[]byte("test update dex desc"))
+
+		So(msg.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msg,
+			}, wallet.PrivKey(auth))
+
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+	})
+}
