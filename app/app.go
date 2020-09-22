@@ -205,7 +205,7 @@ func NewKuchainApp(
 		app.supplyKeeper, &stakingKeeper, app.distrKeeper, govRouter,
 	)
 
-	app.dexKeeper = dex.NewKeeper(cdc, keys[gov.StoreKey])
+	app.dexKeeper = dex.NewKeeper(cdc, keys[gov.StoreKey], app.assetKeeper)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks

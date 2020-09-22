@@ -115,14 +115,8 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
-		// get dex's staking
-		getter := types.NewDexRetriever(cliCtx)
-		var dex *types.Dex
-		if dex, _, err = getter.GetDexWithHeight(name); nil != err {
-			return
-		}
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgDestroyDex(addr, name, dex.Staking),
+			types.NewMsgDestroyDex(addr, name),
 		})
 	}
 }

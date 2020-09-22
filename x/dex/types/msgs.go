@@ -158,8 +158,7 @@ func (msg MsgDestroyDex) GetData() (MsgDestroyDexData, error) {
 
 // MsgDestroyDexData msg data for delete dex
 type MsgDestroyDexData struct {
-	Creator  Name        `json:"creator" yaml:"creator"`
-	Stakings types.Coins `json:"stakings" yaml:"stakings"`
+	Creator Name `json:"creator" yaml:"creator"`
 }
 
 func (MsgDestroyDexData) Type() types.Name { return types.MustName("destroy@dex") }
@@ -169,14 +168,12 @@ func (m MsgDestroyDexData) Sender() AccountID {
 }
 
 // NewMsgDestroyDex new destroy dex msg
-func NewMsgDestroyDex(auth types.AccAddress, creator types.Name, stakings types.Coins) MsgDestroyDex {
+func NewMsgDestroyDex(auth types.AccAddress, creator types.Name) MsgDestroyDex {
 	return MsgDestroyDex{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
-			msg.WithTransfer(ModuleAccountID, types.NewAccountIDFromName(creator), stakings),
 			msg.WithData(ModuleCdc, &MsgDestroyDexData{
-				Creator:  creator,
-				Stakings: stakings,
+				Creator: creator,
 			})),
 	}
 }

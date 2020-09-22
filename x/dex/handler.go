@@ -108,9 +108,8 @@ func handleMsgDestroyDex(ctx chainTypes.Context,
 		return
 	}
 	logger.Debug("handle dex destroy",
-		"creator", msgData.Creator,
-		"staking", msgData.Stakings)
-	if err = keeper.DestroyDex(ctx.Context(), msgData.Creator, msgData.Stakings); nil != err {
+		"creator", msgData.Creator)
+	if err = keeper.DestroyDex(ctx.Context(), msgData.Creator); nil != err {
 		err = errors.Wrapf(err, "msg destroy dex %s", msgData.Creator)
 		return
 	}
@@ -119,7 +118,6 @@ func handleMsgDestroyDex(ctx chainTypes.Context,
 			types.EventTypeDestroyDex,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyCreator, msgData.Creator.String()),
-			sdk.NewAttribute(types.AttributeKeyStakings, msgData.Stakings.String()),
 		),
 	)
 	res = &sdk.Result{Events: ctx.EventManager().Events()}

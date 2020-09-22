@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/pkg/errors"
 
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
@@ -19,10 +20,15 @@ func (a DexKeeper) CreateDex(ctx sdk.Context, creator types.Name, staking types.
 }
 
 // DestroyDex delete a dex by creator
-func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name, stakings types.Coins) (err error) {
+func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
 		err = errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
+		return
+	}
+	// check dex destroy flag
+	if dex.DestroyFlag {
+		err = errors.Wrapf(types.ErrDexWasDestroy, "dex %s was destroy", creator.String())
 		return
 	}
 	// check the dex can be destroyed
@@ -31,12 +37,15 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name, stakings type
 			"dex %s can not be destroy", creator.String())
 		return
 	}
-	if !dex.Staking.IsEqual(stakings) {
-		err = errors.Wrapf(types.ErrDexStakingsNotMatch,
-			"dex %s staking not match", creator.String())
+	// transfer asset to coin power
+	if err = a.assetKeeper.CoinsToPower(ctx,
+		types.ModuleAccountID,
+		chainTypes.NewAccountIDFromName(creator),
+		dex.Staking); nil != err {
 		return
 	}
-	a.deleteDex(ctx, dex)
+	// marked dex destroy
+	a.setDex(ctx, dex.WithDestroyFlag())
 	return
 }
 
@@ -47,6 +56,11 @@ func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
 		err = errors.Wrapf(types.ErrDexHadCreated, "dex %s not exists", creator.String())
+		return
+	}
+	// check dex destroy flag
+	if dex.DestroyFlag {
+		err = errors.Wrapf(types.ErrDexWasDestroy, "dex %s was destroy", creator.String())
 		return
 	}
 	dex.Description = description
@@ -70,6 +84,7 @@ func (a DexKeeper) getDex(ctx sdk.Context, creator types.Name) (*types.Dex, bool
 	return res, true
 }
 
+// setDex set dex data
 func (a DexKeeper) setDex(ctx sdk.Context, dex *types.Dex) {
 	store := ctx.KVStore(a.key)
 	bz, err := a.cdc.MarshalBinaryBare(*dex)
@@ -80,11 +95,13 @@ func (a DexKeeper) setDex(ctx sdk.Context, dex *types.Dex) {
 	store.Set(types.DexStoreKey(dex.Creator), bz)
 }
 
+// deleteDex delete dex data
 func (a DexKeeper) deleteDex(ctx sdk.Context, dex *types.Dex) {
 	store := ctx.KVStore(a.key)
 	store.Delete(types.DexStoreKey(dex.Creator))
 }
 
+// nextNumber next dex number
 func (a DexKeeper) nextNumber(ctx sdk.Context) (n uint64) {
 	var err error
 	store := ctx.KVStore(a.key)

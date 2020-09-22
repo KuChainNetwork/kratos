@@ -10,4 +10,5 @@ var (
 	ErrDexNotExists         = sdkerrors.Register(ModuleName, 3, "dex not exists")
 	ErrDexCanNotBeDestroyed = sdkerrors.Register(ModuleName, 4, "dex can not be destroyed")
 	ErrDexStakingsNotMatch  = sdkerrors.Register(ModuleName, 5, "dex stakings not match")
+	ErrDexWasDestroy        = sdkerrors.Register(ModuleName, 6, "dex was destroy")
 )
