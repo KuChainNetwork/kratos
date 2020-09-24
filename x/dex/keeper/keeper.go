@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	assetKeeper "github.com/KuChainNetwork/kuchain/x/asset/keeper"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,21 +14,24 @@ import (
 type DexKeeper struct {
 	// The (unexposed) key used to access the store from the Context.
 	key sdk.StoreKey
-
 	// The codec codec for binary encoding/decoding of accounts.
-	cdc *codec.Codec
+	cdc         *codec.Codec
+	assetKeeper assetKeeper.AssetKeeper
 }
 
 // NewDexKeeper new keeper for a dex
-func NewDexKeeper(cdc *codec.Codec, key sdk.StoreKey) DexKeeper {
+func NewDexKeeper(cdc *codec.Codec,
+	key sdk.StoreKey,
+	keeper assetKeeper.AssetKeeper) DexKeeper {
 	return DexKeeper{
-		key: key,
-		cdc: cdc,
+		key:         key,
+		cdc:         cdc,
+		assetKeeper: keeper,
 	}
 }
 
 // Logger returns a module-specific logger.
-func (ak DexKeeper) Logger(ctx sdk.Context) log.Logger {
+func (a DexKeeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
