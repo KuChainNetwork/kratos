@@ -216,3 +216,38 @@ func (a AssetKeeper) getCoinsPower(ctx sdk.Context, account types.AccountID) (ty
 
 	return coins, nil
 }
+
+func (a AssetKeeper) setApprove(ctx sdk.Context, account, spender types.AccountID, coin types.Coins) error {
+	store := ctx.KVStore(a.key)
+	bz, err := a.cdc.MarshalBinaryBare(coin)
+	if err != nil {
+		return sdkerrors.Wrap(err, "set coins marshal error")
+	}
+
+	key := types.ApproveStoreKey(account, spender)
+	if bz == nil {
+		if store.Has(key) {
+			store.Delete(key)
+		}
+		return nil
+	}
+
+	store.Set(key, bz)
+	return nil
+}
+
+func (a AssetKeeper) getApprove(ctx sdk.Context, account, spender types.AccountID) (types.Coins, error) {
+	store := ctx.KVStore(a.key)
+	bz := store.Get(types.ApproveStoreKey(account, spender))
+	if bz == nil {
+		return types.Coins{}, nil
+	}
+
+	var coins types.Coins
+
+	if err := a.cdc.UnmarshalBinaryBare(bz, &coins); err != nil {
+		return types.Coins{}, sdkerrors.Wrap(err, "get coins unmarshal")
+	}
+
+	return coins, nil
+}

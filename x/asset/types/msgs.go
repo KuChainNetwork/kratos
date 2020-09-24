@@ -528,6 +528,10 @@ func (msg MsgApprove) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMsgAccountIDNil, "spender accountID empty")
 	}
 
+	if data.Id.Eq(data.Spender) {
+		return sdkerrors.Wrap(types.ErrKuMsgSpenderShouldNotEqual, "spender should not be equal to id")
+	}
+
 	if data.Amount.IsAnyNegative() {
 		return ErrAssetCoinNoEnough
 	}

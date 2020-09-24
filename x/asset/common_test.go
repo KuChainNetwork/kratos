@@ -33,6 +33,15 @@ var (
 	addAccount1 = types.NewAccountIDFromAccAdd(addr1)
 )
 
+var (
+	NewInt64Coins     = types.NewInt64Coins
+	NewInt64Coin      = types.NewInt64Coin
+	MustName          = types.MustName
+	CheckTxs          = simapp.CheckTxs
+	NewInt64CoreCoin  = types.NewInt64CoreCoin
+	NewInt64CoreCoins = types.NewInt64CoreCoins
+)
+
 func createAppForTest() (*simapp.SimApp, sdk.Context) {
 	asset1 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 10000000),
