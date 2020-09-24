@@ -3,6 +3,7 @@ package asset_test
 import (
 	"testing"
 
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	assetTypes "github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -130,5 +131,52 @@ func TestApproveResetCoins(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(app3s.IsZero(), ShouldBeTrue)
 
+	})
+}
+
+func TestApproveTransfer(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test simple transfer, a->b with auth(a)", t, func() {
+		ctx := app.NewTestContext()
+
+		// transfer from a to b, with a auth, should success
+		transferMsg := assetTypes.NewMsgTransfer(
+			wallet.GetAuth(account1), account1, account2, NewInt64CoreCoins(100))
+
+		tx := simapp.NewTxForTest(
+			account1,
+			[]sdk.Msg{
+				&transferMsg,
+			}, wallet.PrivKey(addr1))
+		So(simapp.CheckTxs(t, app, ctx, tx), ShouldBeNil)
+	})
+
+	Convey("test simple transfer, a->b with auth(b), should failed", t, func() {
+		ctx := app.NewTestContext()
+
+		transferMsg := assetTypes.NewMsgTransfer(
+			wallet.GetAuth(account2), account1, account2, NewInt64CoreCoins(100))
+
+		tx := simapp.NewTxForTest(
+			account2,
+			[]sdk.Msg{
+				&transferMsg,
+			}, wallet.PrivKey(addr2)).WithCannotPass()
+		So(simapp.CheckTxs(t, app, ctx, tx), simapp.ShouldErrIs, types.ErrMissingAuth)
+	})
+
+	Convey("test simple transfer, a->b with auth(c), should failed", t, func() {
+		ctx := app.NewTestContext()
+
+		transferMsg := assetTypes.NewMsgTransfer(
+			wallet.GetAuth(account3), account1, account2, NewInt64CoreCoins(100))
+
+		tx := simapp.NewTxForTest(
+			account3,
+			[]sdk.Msg{
+				&transferMsg,
+			}, wallet.PrivKey(addr3)).WithCannotPass()
+		So(simapp.CheckTxs(t, app, ctx, tx), simapp.ShouldErrIs, types.ErrMissingAuth)
 	})
 }

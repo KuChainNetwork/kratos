@@ -4,6 +4,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/plugins"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // Handler defines the core of the state transition function of an application.
@@ -21,7 +22,9 @@ func WarpHandler(transfer AssetTransfer, auther AccountAuther, h Handler) sdk.Ha
 		kuCtx := NewKuMsgCtx(ctx.WithEventManager(sdk.NewEventManager()), auther, msg)
 		kuCtx = kuCtx.WithAuths(msg.GetSigners())
 
-		if kuMsg, ok := msg.(KuTransfMsg); ok {
+		kuMsg, ok := msg.(KuTransfMsg)
+
+		if ok {
 			if err := onHandlerKuMsg(kuCtx, transfer, kuMsg); err != nil {
 				return nil, err
 			}
@@ -36,10 +39,59 @@ func WarpHandler(transfer AssetTransfer, auther AccountAuther, h Handler) sdk.Ha
 			return nil, err
 		}
 
+		if err := checkTransferAuths(kuCtx, transfer, auther, kuMsg); err != nil {
+			return nil, err
+		}
+
 		plugins.HandleEvent(ctx, res.Events)
 
 		return res, err
 	}
+}
+
+func getAuthByAccountID(ctx Context, auther AccountAuther, id AccountID) (AccAddress, error) {
+	if add, ok := id.ToAccAddress(); ok {
+		return add, nil
+	}
+
+	if name, ok := id.ToName(); ok {
+		authByAccount, err := auther.GetAuth(ctx.Context(), name)
+		if err != nil {
+			return nil, err
+		}
+
+		return authByAccount, nil
+	}
+
+	return nil, types.ErrMissingAuth
+}
+
+func checkTransferAuth(ctx Context, transfer AssetTransfer, auther AccountAuther, msg types.KuMsgTransfer) error {
+	fromAuth, err := getAuthByAccountID(ctx, auther, msg.From)
+	if err != nil {
+		// no found from auth, there must be a error, even no need from auth
+		return sdkerrors.Wrapf(err, "get from auth error")
+	}
+
+	// check is has fromAuth
+	if ctx.IsHasAuth(fromAuth) {
+		return nil // has fromAuth, so it checked ok
+	}
+
+	// if is from has approve to with amt
+
+	return types.ErrMissingAuth
+}
+
+func checkTransferAuths(ctx Context, transfer AssetTransfer, auther AccountAuther, msg KuTransfMsg) error {
+	ts := msg.GetTransfers()
+	for _, t := range ts {
+		if err := checkTransferAuth(ctx, transfer, auther, t); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // onHandlerKuMsg handler Ku msg for transfer
@@ -59,8 +111,6 @@ func onHandlerKuMsg(ctx Context, k AssetTransfer, msg KuTransfMsg) error {
 		if err := msg.ValidateTransfer(); err != nil {
 			return err
 		}
-
-		ctx.RequireAuth(from)
 
 		if err := k.Transfer(ctx.Context(), from, to, amount); err != nil {
 			return err
