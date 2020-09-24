@@ -42,3 +42,21 @@ func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt t
 
 	return nil
 }
+
+func (a AssetKeeper) ApplyApporve(ctx sdk.Context, from, to types.AccountID, amount Coins) error {
+	apporveCoins, err := a.getApprove(ctx, from, to)
+	if err != nil {
+		return sdkerrors.Wrap(err, "apply apporveCoins get error")
+	}
+
+	newApporves, hasNeg := apporveCoins.SafeSub(amount)
+	if hasNeg {
+		return types.ErrAssetApporveNotEnough
+	}
+
+	if err := a.setApprove(ctx, from, to, newApporves); err != nil {
+		return sdkerrors.Wrap(err, "apply apporveCoins set new error")
+	}
+
+	return nil
+}

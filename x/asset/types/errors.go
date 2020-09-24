@@ -26,4 +26,5 @@ var (
 	ErrAssetCoinNoZero                       = sdkerrors.Register(ModuleName, 21, "amount should not be zero")
 	ErrAssetCoinCannotBeBurn                 = sdkerrors.Register(ModuleName, 22, "coin state not allowed burn")
 	ErrAssetIssueMaxSupplyShouldNoZero       = sdkerrors.Register(ModuleName, 23, "issue max supply should not be zero")
+	ErrAssetApporveNotEnough                 = sdkerrors.Register(ModuleName, 24, "apporve coins not enough")
 )

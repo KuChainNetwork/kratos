@@ -179,4 +179,42 @@ func TestApproveTransfer(t *testing.T) {
 			}, wallet.PrivKey(addr3)).WithCannotPass()
 		So(simapp.CheckTxs(t, app, ctx, tx), simapp.ShouldErrIs, types.ErrMissingAuth)
 	})
+
+	Convey("test transfer with appover, a->b with auth(b)", t, func() {
+		ctx := app.NewTestContext()
+
+		var (
+			apporveCoins  = NewInt64CoreCoins(1000)
+			transferCoins = NewInt64CoreCoins(100)
+		)
+
+		msgApprove := assetTypes.NewMsgApprove(
+			wallet.GetAuth(account1), account1, account2, apporveCoins)
+
+		tx := simapp.NewTxForTest(
+			account1,
+			[]sdk.Msg{
+				&msgApprove,
+			}, wallet.PrivKey(addr1))
+
+		So(simapp.CheckTxs(t, app, ctx, tx), ShouldBeNil)
+
+		ctx = app.NewTestContext()
+
+		transferMsg := assetTypes.NewMsgTransfer(
+			wallet.GetAuth(account2), account1, account2, transferCoins)
+
+		tx = simapp.NewTxForTest(
+			account2,
+			[]sdk.Msg{
+				&transferMsg,
+			}, wallet.PrivKey(addr2))
+		So(simapp.CheckTxs(t, app, ctx, tx), ShouldBeNil)
+
+		ctx = app.NewTestContext()
+
+		apps, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
+		So(err, ShouldBeNil)
+		So(apps, simapp.ShouldEq, apporveCoins.Sub(transferCoins))
+	})
 }

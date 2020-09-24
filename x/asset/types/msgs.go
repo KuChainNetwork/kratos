@@ -532,6 +532,10 @@ func (msg MsgApprove) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMsgSpenderShouldNotEqual, "spender should not be equal to id")
 	}
 
+	// TODO: Now version, account can not be approve to a module account or other account with no auth.
+	// In future Maybe need, it is no need to check if to is a module account
+	// approve to a module account but module account cannot transfer coins
+
 	if data.Amount.IsAnyNegative() {
 		return ErrAssetCoinNoEnough
 	}

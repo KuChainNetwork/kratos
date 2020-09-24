@@ -79,6 +79,19 @@ func checkTransferAuth(ctx Context, transfer AssetTransfer, auther AccountAuther
 	}
 
 	// if is from has approve to with amt
+	toAuth, err := getAuthByAccountID(ctx, auther, msg.To)
+	if err != nil {
+		// no found to auth, there must be a error, even no need to auth
+		// that means account can not approve to module account
+		return sdkerrors.Wrapf(err, "get to auth error")
+	}
+
+	if ctx.IsHasAuth(toAuth) {
+		if err := transfer.ApplyApporve(ctx.Context(), msg.From, msg.To, msg.Amount); err == nil {
+			// if apply apporve success, then checked ok
+			return nil
+		}
+	}
 
 	return types.ErrMissingAuth
 }
