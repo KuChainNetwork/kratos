@@ -98,7 +98,7 @@ func TestIterateAccount(t *testing.T) {
 			return false
 		})
 
-		So(len(names), ShouldEqual, (1 + 6 + 4)) // kuchain, 6 module account, and 4 genesis account
+		So(len(names), ShouldEqual, (1 + 7 + 4)) // kuchain, 7 module account, and 4 genesis account
 		ids := []string{constants.SystemAccountID.String(),
 			"mint", "kugov", "kustaking", "kubondedpool", "kudistribution", "kunotbondedpool",
 			account1.String(), account2.String(), addr1.String(), acc3.GetID().String()}

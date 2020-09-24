@@ -88,8 +88,8 @@ func TestCreateAsset(t *testing.T) {
 		for _, se := range symbolErrs {
 			var (
 				demon      = types.CoinDenom(name4, se)
-				maxSupply  = NewInt64Coin(demon, 10000000000000)
-				initSupply = NewInt64Coin(demon, 0)
+				maxSupply  = types.Coin{demon, types.NewInt(10000000000000)}
+				initSupply = types.Coin{demon, types.NewInt(0)}
 				desc       = []byte(fmt.Sprintf("desc for %s", demon))
 			)
 
@@ -100,8 +100,8 @@ func TestCreateAsset(t *testing.T) {
 		var (
 			se         = types.MustName("abc")
 			demon      = types.CoinDenom(name1, se) // creator has @
-			maxSupply  = NewInt64Coin(demon, 10000000000000)
-			initSupply = NewInt64Coin(demon, 0)
+			maxSupply  = types.Coin{demon, types.NewInt(10000000000000)}
+			initSupply = types.Coin{demon, types.NewInt(0)}
 			desc       = []byte(fmt.Sprintf("desc for %s", demon))
 		)
 
@@ -114,8 +114,8 @@ func TestCreateAsset(t *testing.T) {
 		var (
 			symbol     = types.MustName("abcd")
 			demon      = types.CoinDenom(name4, symbol)
-			maxSupply  = types.NewCoin(demon, types.NewInt(10000000000000))
-			initSupply = types.NewCoin(demon, types.NewInt(0))
+			maxSupply  = types.Coin{demon, types.NewInt(10000000000000)}
+			initSupply = types.Coin{demon, types.NewInt(0)}
 			desc       = []byte(make([]byte, assetTypes.CoinDescriptionLen+1))
 		)
 
