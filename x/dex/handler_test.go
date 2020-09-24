@@ -299,3 +299,13 @@ func TestHandleDestroyDex(t *testing.T) {
 		So(err, ShouldNotBeNil)
 	})
 }
+
+func TestHandleCreateCurrency(t *testing.T) {}
+
+func TestHandleUpdateCurrency(t *testing.T) {}
+
+func TestHandlePauseCurrency(t *testing.T) {}
+
+func TestHandleRestoreCurrency(t *testing.T) {}
+
+func TestShutdownCurrency(t *testing.T) {}

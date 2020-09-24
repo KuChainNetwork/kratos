@@ -10,6 +10,8 @@ const (
 	EventTypeDestroyDex           = "destroyDex"
 	EventTypeCreateCurrency       = "createCurrency"
 	EventTypeUpdateCurrency       = "updateCurrency"
+	EventTypePauseCurrency        = "pauseCurrency"
+	EventTypeRestoreCurrency      = "restoreCurrency"
 	EventTypeShutdownCurrency     = "shutdownCurrency"
 )
 

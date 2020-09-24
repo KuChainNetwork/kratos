@@ -33,6 +33,8 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		DestroyDex(cdc),
 		CreateCurrency(cdc),
 		UpdateCurrency(cdc),
+		PauseCurrency(cdc),
+		RestoreCurrency(cdc),
 		ShutdownCurrency(cdc),
 	)
 
@@ -304,6 +306,80 @@ func UpdateCurrency(cdc *codec.Codec) *cobra.Command {
 						},
 					},
 				),
+			})
+			return
+		},
+	}
+	return flags.PostCommands(cmd)[0]
+}
+
+// PauseCurrency returns a pause currency command
+func PauseCurrency(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pause_currency [creator] [base_code] [quote_code]",
+		Short: "Pause dex currency",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			var creator types.Name
+			if creator, err = chainTypes.NewName(args[0]); nil != err {
+				return
+			}
+
+			baseCode, quoteCode := args[1], args[2]
+			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+				err = errors.Errorf("base code or quote code is empty")
+				return
+			}
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			var auth chainTypes.AccAddress
+			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
+				err = errors.Wrapf(err, "pause currency account %s auth error", creator)
+				return
+			}
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgPauseCurrency(auth, creator, baseCode, quoteCode),
+			})
+			return
+		},
+	}
+	return flags.PostCommands(cmd)[0]
+}
+
+// RestoreCurrency returns a restore currency command
+func RestoreCurrency(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "restore_currency [creator] [base_code] [quote_code]",
+		Short: "Restore dex currency",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			var creator types.Name
+			if creator, err = chainTypes.NewName(args[0]); nil != err {
+				return
+			}
+
+			baseCode, quoteCode := args[1], args[2]
+			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+				err = errors.Errorf("base code or quote code is empty")
+				return
+			}
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			var auth chainTypes.AccAddress
+			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
+				err = errors.Wrapf(err, "restore currency account %s auth error", creator)
+				return
+			}
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgRestoreCurrency(auth, creator, baseCode, quoteCode),
 			})
 			return
 		},

@@ -26,6 +26,10 @@ func NewHandler(k Keeper) msg.Handler {
 			return handleMsgCreateCurrency(ctx, k, theMsg)
 		case *types.MsgUpdateCurrency:
 			return handleMsgUpdateCurrency(ctx, k, theMsg)
+		case *types.MsgPauseCurrency:
+			return handleMsgPauseCurrency(ctx, k, theMsg)
+		case *types.MsgRestoreCurrency:
+			return handleMsgRestoreCurrency(ctx, k, theMsg)
 		case *types.MsgShutdownCurrency:
 			return handleMsgShutdownCurrency(ctx, k, theMsg)
 		default:
@@ -246,8 +250,80 @@ func handleMsgUpdateCurrency(ctx chainTypes.Context,
 	upList = append(upList, sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory))
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			types.EventTypeCreateCurrency,
+			types.EventTypeUpdateCurrency,
 			upList...,
+		),
+	)
+	res = &sdk.Result{Events: ctx.EventManager().Events()}
+	return
+}
+
+// handleMsgPauseCurrency handle Msg pause currency
+func handleMsgPauseCurrency(ctx chainTypes.Context,
+	keeper Keeper,
+	msg *types.MsgPauseCurrency) (res *sdk.Result, err error) {
+	var data types.MsgPauseCurrencyData
+	if data, err = msg.GetData(); nil != err {
+		return
+	}
+	if 0 >= len(data.BaseCode) || 0 >= len(data.QuoteCode) {
+		err = errors.Wrapf(types.ErrCurrencyIncorrect,
+			"msg pause currency base code or quote code is empty, creator %s",
+			data.Creator.String())
+		return
+	}
+	logger := ctx.Logger()
+	logger.Debug("handle pause currency",
+		"creator", data.Creator)
+	if err = keeper.PauseCurrency(ctx.Context(), data.Creator, data.BaseCode, data.QuoteCode); nil != err {
+		err = errors.Wrapf(err,
+			"msg shutdown currency error, creator %s",
+			data.Creator.String())
+		return
+	}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypePauseCurrency,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(types.AttributeKeyCreator, data.Creator.String()),
+			sdk.NewAttribute(types.AttributeKeyCurrencyBaseCode, data.BaseCode),
+			sdk.NewAttribute(types.AttributeKeyCurrencyBaseName, data.QuoteCode),
+		),
+	)
+	res = &sdk.Result{Events: ctx.EventManager().Events()}
+	return
+}
+
+// handleMsgRestoreCurrency handle Msg restore currency
+func handleMsgRestoreCurrency(ctx chainTypes.Context,
+	keeper Keeper,
+	msg *types.MsgRestoreCurrency) (res *sdk.Result, err error) {
+	var data types.MsgRestoreCurrencyData
+	if data, err = msg.GetData(); nil != err {
+		return
+	}
+	if 0 >= len(data.BaseCode) || 0 >= len(data.QuoteCode) {
+		err = errors.Wrapf(types.ErrCurrencyIncorrect,
+			"msg restore currency base code or quote code is empty, creator %s",
+			data.Creator.String())
+		return
+	}
+	logger := ctx.Logger()
+	logger.Debug("handle restore currency",
+		"creator", data.Creator)
+	if err = keeper.RestoreCurrency(ctx.Context(), data.Creator, data.BaseCode, data.QuoteCode); nil != err {
+		err = errors.Wrapf(err,
+			"msg restore currency error, creator %s",
+			data.Creator.String())
+		return
+	}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeRestoreCurrency,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(types.AttributeKeyCreator, data.Creator.String()),
+			sdk.NewAttribute(types.AttributeKeyCurrencyBaseCode, data.BaseCode),
+			sdk.NewAttribute(types.AttributeKeyCurrencyBaseName, data.QuoteCode),
 		),
 	)
 	res = &sdk.Result{Events: ctx.EventManager().Events()}
@@ -279,7 +355,7 @@ func handleMsgShutdownCurrency(ctx chainTypes.Context,
 	}
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
-			types.EventTypeCreateCurrency,
+			types.EventTypeShutdownCurrency,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyCreator, data.Creator.String()),
 			sdk.NewAttribute(types.AttributeKeyCurrencyBaseCode, data.BaseCode),
@@ -287,6 +363,5 @@ func handleMsgShutdownCurrency(ctx chainTypes.Context,
 		),
 	)
 	res = &sdk.Result{Events: ctx.EventManager().Events()}
-	return
 	return
 }

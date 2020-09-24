@@ -46,6 +46,7 @@ type Currency struct {
 	Quote         QuoteCurrency `json:"quote" yaml:"quote"`
 	DomainAddress string        `json:"domain_address" yaml:"domain_address"`
 	CreateTime    time.Time     `json:"create_time" yaml:"create_time"`
+	IsPaused      bool          `json:"is_paused" yaml:"is_paused"`
 }
 
 // WithBase set base currency param
@@ -72,12 +73,23 @@ func (object *Currency) WithCreateTime(createTime time.Time) *Currency {
 	return object
 }
 
+// WithPaused set pause flag
+func (object *Currency) WithPaused(paused bool) *Currency {
+	object.IsPaused = paused
+	return object
+}
+
 // Validate validate
 func (object *Currency) Validate() bool {
 	return object.Quote.Validate() &&
 		object.Base.Validate() &&
 		0 < len(object.DomainAddress) &&
 		!object.CreateTime.IsZero()
+}
+
+// Paused check currency pause flag
+func (object *Currency) Paused() bool {
+	return object.IsPaused
 }
 
 // NewEmptyCurrency new empty currency

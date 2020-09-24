@@ -71,6 +71,64 @@ func (a DexKeeper) UpdateCurrencyInfo(ctx sdk.Context,
 	return
 }
 
+// PauseCurrency pause currency
+func (a DexKeeper) PauseCurrency(ctx sdk.Context,
+	creator types.Name, baseCode, quoteCode string) (err error) {
+	dex, ok := a.getDex(ctx, creator)
+	if !ok {
+		err = errors.Wrapf(types.ErrDexNotExists,
+			"pause currency, dex %s not exists",
+			creator.String())
+		return
+	}
+	var currency types.Currency
+	if currency, ok = dex.Currency(baseCode, quoteCode); !ok {
+		err = errors.Wrapf(types.ErrCurrencyNotExists,
+			"pause currency, currency (%s/%s) not exists",
+			baseCode,
+			quoteCode)
+		return
+	}
+	if !dex.UpdateCurrency(baseCode, quoteCode, (&currency).WithPaused(true)) {
+		err = errors.Wrapf(types.ErrCurrencyNotExists,
+			"pause currency, currency (%s/%s) not exists",
+			baseCode,
+			quoteCode)
+		return
+	}
+	a.setDex(ctx, dex)
+	return
+}
+
+// RestoreCurrency pause currency
+func (a DexKeeper) RestoreCurrency(ctx sdk.Context,
+	creator types.Name, baseCode, quoteCode string) (err error) {
+	dex, ok := a.getDex(ctx, creator)
+	if !ok {
+		err = errors.Wrapf(types.ErrDexNotExists,
+			"restore currency, dex %s not exists",
+			creator.String())
+		return
+	}
+	var currency types.Currency
+	if currency, ok = dex.Currency(baseCode, quoteCode); !ok {
+		err = errors.Wrapf(types.ErrCurrencyNotExists,
+			"restore currency, currency (%s/%s) not exists",
+			baseCode,
+			quoteCode)
+		return
+	}
+	if !dex.UpdateCurrency(baseCode, quoteCode, (&currency).WithPaused(false)) {
+		err = errors.Wrapf(types.ErrCurrencyNotExists,
+			"restore currency, currency (%s/%s) not exists",
+			baseCode,
+			quoteCode)
+		return
+	}
+	a.setDex(ctx, dex)
+	return
+}
+
 // ShutdownCurrency shutdown currency
 func (a DexKeeper) ShutdownCurrency(ctx sdk.Context,
 	creator types.Name, baseCode, quoteCode string) (err error) {
