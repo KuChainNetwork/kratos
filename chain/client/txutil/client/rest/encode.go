@@ -2,12 +2,12 @@ package rest
 
 import (
 	"encoding/base64"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"io/ioutil"
-	"net/http"
 )
 
 // EncodeResp defines a tx encoding response.

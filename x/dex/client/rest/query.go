@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -15,7 +16,11 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/{creator}",
 		getCreatorHandlerFn(cliCtx),
-	).Methods("GET")
+	).Methods(http.MethodGet)
+	r.HandleFunc(
+		"/dex/{creator}/{baseCode}/{quoteCode}",
+		getCurrencyHandlerFn(cliCtx),
+	).Methods(http.MethodGet)
 }
 
 // getCreatorHandlerFn function returns the get dex REST handler.
@@ -35,5 +40,42 @@ func getCreatorHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		rest.PostProcessResponse(w, cliCtx, dex)
+	}
+}
+
+// getCurrencyHandlerFn returns get currency REST handler
+func getCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		name := vars["creator"]
+		baseCode := vars["baseCode"]
+		quoteCode := vars["quoteCode"]
+		if 0 >= len(name) ||
+			0 >= len(baseCode) ||
+			0 >= len(quoteCode) {
+			rest.WriteErrorResponse(w,
+				http.StatusBadRequest,
+				"creator, base code or quote code is empty")
+			return
+		}
+		creator, err := chainTypes.NewName(name)
+		if nil != err {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		getter := types.NewDexRetriever(cliCtx)
+		var dex *types.Dex
+		if dex, _, err = getter.GetDexWithHeight(creator); nil != err {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		currency, ok := dex.Currency(baseCode, quoteCode)
+		if !ok {
+			rest.WriteErrorResponse(w,
+				http.StatusNotFound,
+				fmt.Sprintf("%s/%s not exists", baseCode, quoteCode))
+			return
+		}
+		rest.PostProcessResponse(w, cliCtx, currency)
 	}
 }

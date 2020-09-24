@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -193,4 +195,307 @@ func (msg MsgDestroyDex) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+// MsgCreateCurrency msg for create dex currency
+type MsgCreateCurrency struct {
+	types.KuMsg
+}
+
+func (msg MsgCreateCurrency) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+	if data.Creator.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
+	}
+	return nil
+}
+
+func (msg MsgCreateCurrency) GetData() (MsgCreateCurrencyData, error) {
+	res := MsgCreateCurrencyData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgCreateCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+// MsgCreateCurrencyData msg data for delete dex
+type MsgCreateCurrencyData struct {
+	Creator       Name          `json:"creator" yaml:"creator"`
+	Base          BaseCurrency  `json:"base" yaml:"base"`
+	Quote         QuoteCurrency `json:"quote" yaml:"quote"`
+	DomainAddress string        `json:"domain_address" yaml:"domain_address"`
+	CreateTime    time.Time     `json:"create_time" yaml:"create_time"`
+}
+
+func (MsgCreateCurrencyData) Type() types.Name { return types.MustName("create@currency") }
+
+func (m MsgCreateCurrencyData) Sender() AccountID {
+	return types.NewAccountIDFromName(m.Creator)
+}
+
+// NewMsgCreateCurrency new destroy dex msg
+func NewMsgCreateCurrency(auth types.AccAddress,
+	creator types.Name,
+	base *BaseCurrency,
+	quote *QuoteCurrency,
+	domainAddress string,
+	createTime time.Time,
+) MsgCreateCurrency {
+	return MsgCreateCurrency{
+		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithData(ModuleCdc, &MsgCreateCurrencyData{
+				Creator:       creator,
+				Base:          *base,
+				Quote:         *quote,
+				DomainAddress: domainAddress,
+				CreateTime:    createTime,
+			})),
+	}
+}
+
+// MsgUpdateCurrency msg for update dex currency
+type MsgUpdateCurrency struct {
+	types.KuMsg
+}
+
+func (msg MsgUpdateCurrency) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Creator.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
+	}
+
+	return nil
+}
+
+func (msg MsgUpdateCurrency) GetData() (MsgUpdateCurrencyData, error) {
+	res := MsgUpdateCurrencyData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgUpdateCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+// MsgUpdateCurrencyData msg data for update dex currency
+type MsgUpdateCurrencyData struct {
+	Creator Name          `json:"creator" yaml:"creator"`
+	Base    BaseCurrency  `json:"base" yaml:"base"`
+	Quote   QuoteCurrency `json:"quote" yaml:"quote"`
+}
+
+func (MsgUpdateCurrencyData) Type() types.Name { return types.MustName("update@currency") }
+
+func (m MsgUpdateCurrencyData) Sender() AccountID {
+	return types.NewAccountIDFromName(m.Creator)
+}
+
+// NewMsgUpdateCurrency new update dex currency msg
+func NewMsgUpdateCurrency(auth types.AccAddress,
+	creator types.Name,
+	base *BaseCurrency,
+	quote *QuoteCurrency,
+) MsgUpdateCurrency {
+	return MsgUpdateCurrency{
+		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithData(ModuleCdc, &MsgUpdateCurrencyData{
+				Creator: creator,
+				Base:    *base,
+				Quote:   *quote,
+			})),
+	}
+}
+
+// MsgPauseCurrency msg for pause dex currency
+type MsgPauseCurrency struct {
+	types.KuMsg
+}
+
+func (msg MsgPauseCurrency) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Creator.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
+	}
+
+	return nil
+}
+
+func (msg MsgPauseCurrency) GetData() (MsgPauseCurrencyData, error) {
+	res := MsgPauseCurrencyData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgPauseCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+// MsgPauseCurrencyData msg data for pause dex currency
+type MsgPauseCurrencyData struct {
+	Creator   Name   `json:"creator" yaml:"creator"`
+	BaseCode  string `json:"base_code" yaml:"base_code"`
+	QuoteCode string `json:"quote_code" yaml:"quote_code"`
+}
+
+func (MsgPauseCurrencyData) Type() types.Name { return types.MustName("pause@currency") }
+
+func (m MsgPauseCurrencyData) Sender() AccountID {
+	return types.NewAccountIDFromName(m.Creator)
+}
+
+// NewMsgPauseCurrency new pause dex currency msg
+func NewMsgPauseCurrency(auth types.AccAddress,
+	creator types.Name,
+	baseCode,
+	quoteCode string,
+) MsgPauseCurrency {
+	return MsgPauseCurrency{
+		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithData(ModuleCdc, &MsgPauseCurrencyData{
+				Creator:   creator,
+				BaseCode:  baseCode,
+				QuoteCode: quoteCode,
+			})),
+	}
+}
+
+// MsgRestoreCurrency msg for restore dex currency
+type MsgRestoreCurrency struct {
+	types.KuMsg
+}
+
+func (msg MsgRestoreCurrency) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Creator.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
+	}
+
+	return nil
+}
+
+func (msg MsgRestoreCurrency) GetData() (MsgRestoreCurrencyData, error) {
+	res := MsgRestoreCurrencyData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgRestoreCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+// MsgRestoreCurrencyData msg data for restore dex currency
+type MsgRestoreCurrencyData struct {
+	Creator   Name   `json:"creator" yaml:"creator"`
+	BaseCode  string `json:"base_code" yaml:"base_code"`
+	QuoteCode string `json:"quote_code" yaml:"quote_code"`
+}
+
+func (MsgRestoreCurrencyData) Type() types.Name { return types.MustName("restore@currency") }
+
+func (m MsgRestoreCurrencyData) Sender() AccountID {
+	return types.NewAccountIDFromName(m.Creator)
+}
+
+// NewMsgRestoreCurrency new restore dex currency msg
+func NewMsgRestoreCurrency(auth types.AccAddress,
+	creator types.Name,
+	baseCode,
+	quoteCode string,
+) MsgRestoreCurrency {
+	return MsgRestoreCurrency{
+		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithData(ModuleCdc, &MsgRestoreCurrencyData{
+				Creator:   creator,
+				BaseCode:  baseCode,
+				QuoteCode: quoteCode,
+			})),
+	}
+}
+
+// MsgShutdownCurrency msg for shutdown dex currency
+type MsgShutdownCurrency struct {
+	types.KuMsg
+}
+
+func (msg MsgShutdownCurrency) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Creator.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
+	}
+
+	return nil
+}
+
+func (msg MsgShutdownCurrency) GetData() (MsgShutdownCurrencyData, error) {
+	res := MsgShutdownCurrencyData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgShutdownCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+// MsgUpdateCurrencyData msg data for update dex currency
+type MsgShutdownCurrencyData struct {
+	Creator   Name   `json:"creator" yaml:"creator"`
+	BaseCode  string `json:"base_code" yaml:"base_code"`
+	QuoteCode string `json:"quote_code" yaml:"quote_code"`
+}
+
+func (MsgShutdownCurrencyData) Type() types.Name { return types.MustName("shutdown@currency") }
+
+func (m MsgShutdownCurrencyData) Sender() AccountID {
+	return types.NewAccountIDFromName(m.Creator)
+}
+
+// NewMsgUpdateCurrency new update dex currency msg
+func NewMsgShutdownCurrency(auth types.AccAddress,
+	creator types.Name,
+	baseCode,
+	quoteCode string,
+) MsgShutdownCurrency {
+	return MsgShutdownCurrency{
+		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithData(ModuleCdc, &MsgShutdownCurrencyData{
+				Creator:   creator,
+				BaseCode:  baseCode,
+				QuoteCode: quoteCode,
+			})),
+	}
 }

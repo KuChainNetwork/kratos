@@ -3,8 +3,10 @@ package rest
 import (
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
@@ -26,6 +28,28 @@ type DestroyDexReq struct {
 	Creator string       `json:"creator" yml:"creator"`
 }
 
+type CreateCurrencyReq struct {
+	BaseReq       rest.BaseReq        `json:"base_req" yaml:"base_req"`
+	Creator       string              `json:"creator" yaml:"creator"`
+	Base          types.BaseCurrency  `json:"base" yaml:"base"`
+	Quote         types.QuoteCurrency `json:"quote" yaml:"quote"`
+	DomainAddress string              `json:"domain_address" yaml:"domain_address"`
+}
+
+type UpdateCurrencyReq struct {
+	BaseReq rest.BaseReq        `json:"base_req" yaml:"base_req"`
+	Creator string              `json:"creator" yaml:"creator"`
+	Base    types.BaseCurrency  `json:"base" yaml:"base"`
+	Quote   types.QuoteCurrency `json:"quote" yaml:"quote"`
+}
+
+type ShutdownCurrencyReq struct {
+	BaseReq   rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Creator   string       `json:"creator" yaml:"creator"`
+	BaseCode  string       `json:"base_code" yaml:"base_code"`
+	QuoteCode string       `json:"quote_code" yaml:"quote_code"`
+}
+
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/create",
@@ -34,6 +58,24 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/destroy",
 		destroyDexHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
+	r.HandleFunc(
+		"/dex/currency/create",
+		createCurrencyHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
+	r.HandleFunc(
+		"/dex/currency/update",
+		updateCurrencyHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
+	r.HandleFunc("/dex/currency/pause",
+		pauseCurrencyHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
+	r.HandleFunc("/dex/currency/restore",
+		restoreCurrencyHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
+	r.HandleFunc(
+		"/dex/currency/shutdown",
+		shutdownCurrencyHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
 }
 
@@ -117,6 +159,260 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgDestroyDex(addr, name),
+		})
+	}
+}
+
+// createCurrencyHandlerFn returns the create currency handler
+func createCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode := http.StatusBadRequest
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, statusCode, err.Error())
+			}
+		}()
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+		var req CreateCurrencyReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+		if 0 >= len(req.Base.Code) ||
+			0 >= len(req.Base.Name) ||
+			0 >= len(req.Base.FullName) ||
+			0 >= len(req.Base.IconUrl) ||
+			0 >= len(req.Base.TxUrl) ||
+			0 >= len(req.Quote.Code) ||
+			0 >= len(req.Quote.Name) ||
+			0 >= len(req.Quote.FullName) ||
+			0 >= len(req.Quote.IconUrl) ||
+			0 >= len(req.Quote.TxUrl) ||
+			0 >= len(req.DomainAddress) {
+			err = errors.Errorf("incorrect request fields")
+			return
+		}
+		req.BaseReq = req.BaseReq.Sanitize()
+		var name chainTypes.Name
+		if name, err = chainTypes.NewName(req.Creator); nil != err {
+			return
+		}
+		var addr chainTypes.AccAddress
+		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
+			return
+		}
+		var creatorAccountID chainTypes.AccountID
+		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
+			return
+		}
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+			types.NewMsgCreateCurrency(addr,
+				name,
+				&req.Base,
+				&req.Quote,
+				req.DomainAddress,
+				time.Time{}, // use server time
+			),
+		})
+	}
+}
+
+// updateCurrencyHandlerFn returns the update currency handler
+func updateCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode := http.StatusBadRequest
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, statusCode, err.Error())
+			}
+		}()
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+		var req UpdateCurrencyReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+		if 0 >= len(req.Base.Code) &&
+			0 >= len(req.Base.Name) &&
+			0 >= len(req.Base.FullName) &&
+			0 >= len(req.Base.IconUrl) &&
+			0 >= len(req.Base.TxUrl) &&
+			0 >= len(req.Quote.Code) &&
+			0 >= len(req.Quote.Name) &&
+			0 >= len(req.Quote.FullName) &&
+			0 >= len(req.Quote.IconUrl) &&
+			0 >= len(req.Quote.TxUrl) {
+			err = errors.Errorf("incorrect request fields")
+			return
+		}
+		req.BaseReq = req.BaseReq.Sanitize()
+		var name chainTypes.Name
+		if name, err = chainTypes.NewName(req.Creator); nil != err {
+			return
+		}
+		var addr chainTypes.AccAddress
+		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
+			return
+		}
+		var creatorAccountID chainTypes.AccountID
+		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
+			return
+		}
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+			types.NewMsgUpdateCurrency(addr,
+				name,
+				&req.Base,
+				&req.Quote,
+			),
+		})
+	}
+}
+
+// pauseCurrencyHandlerFn returns the pause currency handler
+func pauseCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode := http.StatusBadRequest
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, statusCode, err.Error())
+			}
+		}()
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+		var req ShutdownCurrencyReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+		if 0 >= len(req.BaseCode) ||
+			0 >= len(req.QuoteCode) {
+			err = errors.Errorf("incorrect request fields")
+			return
+		}
+		req.BaseReq = req.BaseReq.Sanitize()
+		var name chainTypes.Name
+		if name, err = chainTypes.NewName(req.Creator); nil != err {
+			return
+		}
+		var addr chainTypes.AccAddress
+		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
+			return
+		}
+		var creatorAccountID chainTypes.AccountID
+		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
+			return
+		}
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+			types.NewMsgPauseCurrency(addr,
+				name,
+				req.BaseCode,
+				req.QuoteCode,
+			),
+		})
+	}
+}
+
+// restoreCurrencyHandlerFn returns the restore currency handler
+func restoreCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode := http.StatusBadRequest
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, statusCode, err.Error())
+			}
+		}()
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+		var req ShutdownCurrencyReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+		if 0 >= len(req.BaseCode) ||
+			0 >= len(req.QuoteCode) {
+			err = errors.Errorf("incorrect request fields")
+			return
+		}
+		req.BaseReq = req.BaseReq.Sanitize()
+		var name chainTypes.Name
+		if name, err = chainTypes.NewName(req.Creator); nil != err {
+			return
+		}
+		var addr chainTypes.AccAddress
+		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
+			return
+		}
+		var creatorAccountID chainTypes.AccountID
+		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
+			return
+		}
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+			types.NewMsgRestoreCurrency(addr,
+				name,
+				req.BaseCode,
+				req.QuoteCode,
+			),
+		})
+	}
+}
+
+// updateCurrencyHandlerFn returns the shutdown currency handler
+func shutdownCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		statusCode := http.StatusBadRequest
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, statusCode, err.Error())
+			}
+		}()
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+		var req ShutdownCurrencyReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+		if 0 >= len(req.BaseCode) ||
+			0 >= len(req.QuoteCode) {
+			err = errors.Errorf("incorrect request fields")
+			return
+		}
+		req.BaseReq = req.BaseReq.Sanitize()
+		var name chainTypes.Name
+		if name, err = chainTypes.NewName(req.Creator); nil != err {
+			return
+		}
+		var addr chainTypes.AccAddress
+		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
+			return
+		}
+		var creatorAccountID chainTypes.AccountID
+		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
+			return
+		}
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+			types.NewMsgShutdownCurrency(addr,
+				name,
+				req.BaseCode,
+				req.QuoteCode,
+			),
 		})
 	}
 }

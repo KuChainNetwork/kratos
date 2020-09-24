@@ -2,6 +2,7 @@ package dex_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
@@ -310,5 +311,519 @@ func TestHandleDestroyDex(t *testing.T) {
 		So(dex, ShouldBeNil)
 		coins = app.AssetKeeper().GetCoinPowers(ctx, acc)
 		So(coins.IsEqual(types.NewInt64CoreCoins(1000)), ShouldBeTrue)
+	})
+}
+
+func TestHandleCreateCurrency(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test create currency", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app, wallet,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency := &dexTypes.Currency{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateCurrency := dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&currency.Base,
+			&currency.Quote,
+			currency.DomainAddress,
+			currency.CreateTime)
+
+		So(msgCreateCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedCurrency, ok := dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedCurrency.Equal(currency), ShouldBeTrue)
+	})
+}
+
+func TestHandleUpdateCurrency(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test update currency", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app, wallet,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency := &dexTypes.Currency{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateCurrency := dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&currency.Base,
+			&currency.Quote,
+			currency.DomainAddress,
+			currency.CreateTime)
+		So(msgCreateCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedCurrency, ok := dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedCurrency.Equal(currency), ShouldBeTrue)
+
+		copiedCurrency := *currency
+		copiedCurrency.Base.IconUrl = "base.icon.url"
+		copiedCurrency.Quote.IconUrl = "quote.icon.url"
+		msgUpdateCurrency := dexTypes.NewMsgUpdateCurrency(auth,
+			accName,
+			&copiedCurrency.Base,
+			&copiedCurrency.Quote)
+		So(msgCreateCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgUpdateCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedCurrency, ok = dex.Currency(copiedCurrency.Base.Code, copiedCurrency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedCurrency.Equal(&copiedCurrency), ShouldBeTrue)
+	})
+}
+
+func TestHandlePauseCurrency(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test pause currency handler", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app, wallet,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency := dexTypes.Currency{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateCurrency := dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&currency.Base,
+			&currency.Quote,
+			currency.DomainAddress,
+			currency.CreateTime)
+		So(msgCreateCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedCurrency, ok := dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedCurrency.Equal(&currency), ShouldBeTrue)
+
+		msgPauseCurrency := dexTypes.NewMsgPauseCurrency(auth,
+			accName,
+			currency.Base.Code,
+			currency.Quote.Code)
+		So(msgPauseCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgPauseCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(currency.Paused(), ShouldBeTrue)
+	})
+}
+
+func TestHandleRestoreCurrency(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test restore currency handler", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app, wallet,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency := dexTypes.Currency{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateCurrency := dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&currency.Base,
+			&currency.Quote,
+			currency.DomainAddress,
+			currency.CreateTime)
+		So(msgCreateCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedCurrency, ok := dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedCurrency.Equal(&currency), ShouldBeTrue)
+
+		msgPauseCurrency := dexTypes.NewMsgPauseCurrency(auth,
+			accName,
+			currency.Base.Code,
+			currency.Quote.Code)
+		So(msgPauseCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgPauseCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(currency.Paused(), ShouldBeTrue)
+
+		msgRestoreCurrency := dexTypes.NewMsgRestoreCurrency(auth,
+			accName,
+			currency.Base.Code,
+			currency.Quote.Code)
+		So(msgRestoreCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgRestoreCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(currency.Paused(), ShouldBeFalse)
+	})
+}
+
+func TestShutdownCurrency(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test shutdown currency handler", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app, wallet,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency := dexTypes.Currency{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateCurrency := dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&currency.Base,
+			&currency.Quote,
+			currency.DomainAddress,
+			currency.CreateTime)
+		So(msgCreateCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedCurrency, ok := dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedCurrency.Equal(&currency), ShouldBeTrue)
+
+		msgShutdownCurrency := dexTypes.NewMsgShutdownCurrency(auth,
+			accName,
+			currency.Base.Code,
+			currency.Quote.Code)
+		So(msgShutdownCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgShutdownCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		currency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeFalse)
 	})
 }

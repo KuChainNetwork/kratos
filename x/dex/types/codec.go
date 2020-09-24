@@ -18,6 +18,16 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(&MsgUpdateDexDescriptionData{}, "dex/MsgUpdateDexDescriptionData", nil)
 	cdc.RegisterConcrete(&MsgDestroyDex{}, "dex/MsgDestroyDex", nil)
 	cdc.RegisterConcrete(&MsgDestroyDexData{}, "dex/MsgDestroyDexData", nil)
+	cdc.RegisterConcrete(&MsgCreateCurrency{}, "dex/MsgCreateCurrency", nil)
+	cdc.RegisterConcrete(&MsgCreateCurrencyData{}, "dex/MsgCreateCurrencyData", nil)
+	cdc.RegisterConcrete(&MsgUpdateCurrency{}, "dex/MsgUpdateCurrency", nil)
+	cdc.RegisterConcrete(&MsgUpdateCurrencyData{}, "dex/MsgUpdateCurrencyData", nil)
+	cdc.RegisterConcrete(&MsgPauseCurrency{}, "dex/MsgPauseCurrency", nil)
+	cdc.RegisterConcrete(&MsgPauseCurrencyData{}, "dex/MsgPauseCurrencyData", nil)
+	cdc.RegisterConcrete(&MsgRestoreCurrency{}, "dex/MsgRestoreCurrency", nil)
+	cdc.RegisterConcrete(&MsgRestoreCurrencyData{}, "dex/MsgRestoreCurrencyData", nil)
+	cdc.RegisterConcrete(&MsgShutdownCurrency{}, "dex/MsgShutdownCurrency", nil)
+	cdc.RegisterConcrete(&MsgShutdownCurrencyData{}, "dex/MsgShutdownCurrencyData", nil)
 }
 
 func init() {

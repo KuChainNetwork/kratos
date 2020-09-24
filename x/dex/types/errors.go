@@ -11,4 +11,7 @@ var (
 	ErrDexCanNotBeDestroyed = sdkerrors.Register(ModuleName, 4, "dex can not be destroyed")
 	ErrDexStakingsNotMatch  = sdkerrors.Register(ModuleName, 5, "dex stakings not match")
 	ErrDexWasDestroy        = sdkerrors.Register(ModuleName, 6, "dex was destroy")
+	ErrCurrencyExists       = sdkerrors.Register(ModuleName, 7, "dex currency exists")
+	ErrCurrencyNotExists    = sdkerrors.Register(ModuleName, 8, "dex currency not exists")
+	ErrCurrencyIncorrect    = sdkerrors.Register(ModuleName, 9, "dex currency data incorrect")
 )
