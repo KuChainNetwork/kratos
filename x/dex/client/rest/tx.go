@@ -149,7 +149,6 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			err = types.ErrDexDescTooLong
 			return
 		}
-
 		req.BaseReq = req.BaseReq.Sanitize()
 		var name chainTypes.Name
 		if name, err = chainTypes.NewName(req.Creator); nil != err {
