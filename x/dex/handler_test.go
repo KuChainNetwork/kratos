@@ -286,6 +286,9 @@ func TestHandleDestroyDex(t *testing.T) {
 		So(dex.Creator, simapp.ShouldEq, accName)
 		So(dex.Number, ShouldEqual, 0)
 
+		coins := app.AssetKeeper().GetCoinPowers(ctx, acc)
+		So(coins.IsZero(), ShouldBeTrue)
+
 		msgDestroyDex := dexTypes.NewMsgDestroyDex(
 			auth,
 			accName)
@@ -306,6 +309,8 @@ func TestHandleDestroyDex(t *testing.T) {
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeFalse)
 		So(dex, ShouldBeNil)
+		coins = app.AssetKeeper().GetCoinPowers(ctx, acc)
+		So(coins.IsEqual(types.NewInt64CoreCoins(1000)), ShouldBeTrue)
 	})
 }
 
