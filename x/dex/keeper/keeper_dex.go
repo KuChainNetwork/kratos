@@ -63,6 +63,11 @@ func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 		err = errors.Wrapf(types.ErrDexWasDestroy, "dex %s was destroy", creator.String())
 		return
 	}
+	// check description max length
+	if types.MaxDexDescriptorLen < len(description) {
+		err = errors.Wrapf(types.ErrDexDescTooLong, "dex %s description too long", creator.String())
+		return
+	}
 	dex.Description = description
 	a.setDex(ctx, dex)
 	return

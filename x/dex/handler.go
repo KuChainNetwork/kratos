@@ -264,7 +264,7 @@ func handleMsgShutdownCurrency(ctx chainTypes.Context,
 	}
 	if 0 >= len(data.BaseCode) || 0 >= len(data.QuoteCode) {
 		err = errors.Wrapf(types.ErrCurrencyIncorrect,
-			"msg shutdown currency base code or quote code is empty",
+			"msg shutdown currency base code or quote code is empty, creator %s",
 			data.Creator.String())
 		return
 	}

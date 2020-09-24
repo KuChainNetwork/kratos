@@ -9,6 +9,7 @@ import (
 	dexTypes "github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/tendermint/tendermint/libs/rand"
 )
 
 func CreateDexForTest(t *testing.T, app *simapp.SimApp, wallet *simapp.Wallet, isSuccess bool, account types.AccountID, stakings types.Coins, desc []byte) error {
@@ -235,6 +236,20 @@ func TestHandleUpdateDexDescription(t *testing.T) {
 			So(ok, ShouldBeTrue)
 			So(theDex.Description, ShouldEqual, desc)
 		}
+		// check max length
+		err := app.DexKeeper().UpdateDexDescription(ctx, name4, "test")
+		So(err, ShouldBeNil)
+		theDex, ok := app.DexKeeper().GetDex(ctx, name4)
+		So(ok, ShouldBeTrue)
+		So(theDex.Description, ShouldEqual, "test")
+
+		desc := rand.Str(dexTypes.MaxDexDescriptorLen)
+		err = app.DexKeeper().UpdateDexDescription(ctx, name4, desc)
+		So(err, ShouldEqual, dexTypes.ErrDexDescTooLong)
+		dex, ok = app.DexKeeper().GetDex(ctx, name4)
+		So(ok, ShouldBeTrue)
+		So(dex, ShouldNotBeNil)
+		So(dex.Description, ShouldEqual, "test")
 	})
 }
 
@@ -244,7 +259,7 @@ func TestHandleDestroyDex(t *testing.T) {
 	Convey("test destroy dex", t, func() {
 		So(CreateDexForTest(t, app, wallet,
 			true,
-			account4, types.NewInt64CoreCoins(111),
+			account4, types.NewInt64CoreCoins(1000),
 			[]byte("account4")), ShouldBeNil)
 
 		simapp.AfterBlockCommitted(app, 1)
@@ -264,8 +279,14 @@ func TestHandleDestroyDex(t *testing.T) {
 		err := app.DexKeeper().UpdateDexDescription(ctx, name4, "test0")
 		So(err, ShouldBeNil)
 
+		coins := app.AssetKeeper().GetCoinPowers(ctx, account4)
+		So(len(coins), ShouldEqual, 0)
+
 		err = app.DexKeeper().DestroyDex(ctx, name4)
 		So(err, ShouldBeNil)
+
+		coins = app.AssetKeeper().GetCoinPowers(ctx, account4)
+		So(coins.IsEqual(types.NewInt64CoreCoins(1000)), ShouldBeTrue)
 
 		theDex, ok = app.DexKeeper().GetDex(ctx, name4)
 		So(ok, ShouldBeTrue)
