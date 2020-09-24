@@ -20,6 +20,15 @@ func (object *CurrencyBase) Validate() bool {
 		0 < len(object.TxUrl)
 }
 
+// Equals check whether self equals other
+func (object *CurrencyBase) Equal(other *CurrencyBase) bool {
+	return object.Code == other.Code &&
+		object.Name == other.Name &&
+		object.FullName == other.FullName &&
+		object.IconUrl == other.IconUrl &&
+		object.TxUrl == other.TxUrl
+}
+
 // BaseCurrency
 type BaseCurrency struct {
 	CurrencyBase
@@ -30,6 +39,11 @@ func (object *BaseCurrency) Validate() bool {
 	return object.CurrencyBase.Validate()
 }
 
+// Equals check whether self equals other
+func (object *BaseCurrency) Equal(other *BaseCurrency) bool {
+	return object.CurrencyBase.Equal(&other.CurrencyBase)
+}
+
 // QuoteCurrency
 type QuoteCurrency struct {
 	CurrencyBase
@@ -38,6 +52,11 @@ type QuoteCurrency struct {
 // Validate validate
 func (object *QuoteCurrency) Validate() bool {
 	return object.CurrencyBase.Validate()
+}
+
+// Equals check whether self equals other
+func (object *QuoteCurrency) Equal(other *QuoteCurrency) bool {
+	return object.CurrencyBase.Equal(&other.CurrencyBase)
 }
 
 // Currency
@@ -90,6 +109,15 @@ func (object *Currency) Validate() bool {
 // Paused check currency pause flag
 func (object *Currency) Paused() bool {
 	return object.IsPaused
+}
+
+// Equal check whether self equals other
+func (object *Currency) Equal(other *Currency) bool {
+	return object.Base.Equal(&other.Base) &&
+		object.Quote.Equal(&other.Quote) &&
+		object.DomainAddress == other.DomainAddress &&
+		object.CreateTime.Equal(other.CreateTime) &&
+		object.IsPaused == other.IsPaused
 }
 
 // NewEmptyCurrency new empty currency

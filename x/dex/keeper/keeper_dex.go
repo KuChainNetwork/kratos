@@ -27,10 +27,10 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 		return
 	}
 	// check dex destroy flag
-	if dex.DestroyFlag {
-		err = errors.Wrapf(types.ErrDexWasDestroy, "dex %s was destroy", creator.String())
-		return
-	}
+	//if dex.DestroyFlag {
+	//	err = errors.Wrapf(types.ErrDexWasDestroy, "dex %s was destroy", creator.String())
+	//	return
+	//}
 	// check the dex can be destroyed
 	if !dex.CanDestroy(&ctx) {
 		err = errors.Wrapf(types.ErrDexCanNotBeDestroyed,
@@ -45,7 +45,8 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 		return
 	}
 	// marked dex destroy
-	a.setDex(ctx, dex.WithDestroyFlag())
+	//a.setDex(ctx, dex.WithDestroyFlag())
+	a.deleteDex(ctx, dex)
 	return
 }
 
@@ -55,14 +56,14 @@ func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 	description string) (err error) {
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
-		err = errors.Wrapf(types.ErrDexHadCreated, "dex %s not exists", creator.String())
+		err = errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
 		return
 	}
 	// check dex destroy flag
-	if dex.DestroyFlag {
-		err = errors.Wrapf(types.ErrDexWasDestroy, "dex %s was destroy", creator.String())
-		return
-	}
+	//if dex.DestroyFlag {
+	//	err = errors.Wrapf(types.ErrDexWasDestroy, "dex %s was destroy", creator.String())
+	//	return
+	//}
 	// check description max length
 	if types.MaxDexDescriptorLen < len(description) {
 		err = errors.Wrapf(types.ErrDexDescTooLong, "dex %s description too long", creator.String())

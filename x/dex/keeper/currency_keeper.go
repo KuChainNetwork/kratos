@@ -20,6 +20,7 @@ func (a DexKeeper) CreateCurrency(ctx sdk.Context,
 		err = types.ErrCurrencyExists
 		return
 	}
+	a.setDex(ctx, dex)
 	return
 }
 

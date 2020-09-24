@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bufio"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -222,6 +223,7 @@ func CreateCurrency(cdc *codec.Codec) *cobra.Command {
 						},
 					},
 					domainAddress,
+					time.Time{}, // use server time
 				),
 			})
 

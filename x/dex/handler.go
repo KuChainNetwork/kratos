@@ -167,7 +167,12 @@ func handleMsgCreateCurrency(ctx chainTypes.Context,
 		Base:          data.Base,
 		Quote:         data.Quote,
 		DomainAddress: data.DomainAddress,
-		CreateTime:    time.Now(),
+		CreateTime: func() time.Time {
+			if data.CreateTime.IsZero() {
+				return time.Now()
+			}
+			return data.CreateTime
+		}(),
 	}); nil != err {
 		err = errors.Wrapf(err,
 			"msg create currency error, creator %s",

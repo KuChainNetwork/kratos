@@ -4,12 +4,12 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 
 // Dex model
 type Dex struct {
-	Creator      Name       `json:"creator" yaml:"creator"`             // Creator
-	Staking      Coins      `json:"staking" yaml:"staking"`             // Dex Staking
-	Description  string     `json:"description" yaml:"description"`     // Dex Description
-	Number       uint64     `json:"number" yaml:"number"`               // Dex number
-	Sequence     uint64     `json:"sequence" yaml:"sequence"`           // Dex sequence
-	DestroyFlag  bool       `json:"destroy_flag" yaml:"destroy_flag"`   // Dex destroy flag
+	Creator     Name   `json:"creator" yaml:"creator"`         // Creator
+	Staking     Coins  `json:"staking" yaml:"staking"`         // Dex Staking
+	Description string `json:"description" yaml:"description"` // Dex Description
+	Number      uint64 `json:"number" yaml:"number"`           // Dex number
+	Sequence    uint64 `json:"sequence" yaml:"sequence"`       // Dex sequence
+	//DestroyFlag  bool       `json:"destroy_flag" yaml:"destroy_flag"`   // Dex destroy flag
 	CurrencyList []Currency `json:"currency_list" yaml:"currency_list"` // Dex currency list
 }
 
@@ -29,10 +29,10 @@ func (d *Dex) WithNumber(n uint64) *Dex {
 }
 
 // WithDestroyFlag set dex destroy flag
-func (d *Dex) WithDestroyFlag() *Dex {
-	d.DestroyFlag = true
-	return d
-}
+//func (d *Dex) WithDestroyFlag() *Dex {
+//	d.DestroyFlag = true
+//	return d
+//}
 
 // CanDestroy check whether dex can destroy
 func (d *Dex) CanDestroy(ctx *sdk.Context) (ok bool) {
@@ -77,7 +77,7 @@ func (d *Dex) Currency(baseCode, quoteCode string) (currency Currency, ok bool) 
 // UpdateCurrency update currency
 func (d *Dex) UpdateCurrency(baseCode, quoteCode string,
 	currency *Currency) (ok bool) {
-	if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+	if 0 >= len(baseCode) || 0 >= len(quoteCode) || nil == currency || !currency.Validate() {
 		return
 	}
 	for i := 0; i < len(d.CurrencyList); i++ {

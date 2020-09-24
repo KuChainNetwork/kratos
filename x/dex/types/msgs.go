@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -228,6 +230,7 @@ type MsgCreateCurrencyData struct {
 	Base          BaseCurrency  `json:"base" yaml:"base"`
 	Quote         QuoteCurrency `json:"quote" yaml:"quote"`
 	DomainAddress string        `json:"domain_address" yaml:"domain_address"`
+	CreateTime    time.Time     `json:"create_time" yaml:"create_time"`
 }
 
 func (MsgCreateCurrencyData) Type() types.Name { return types.MustName("create@currency") }
@@ -242,6 +245,7 @@ func NewMsgCreateCurrency(auth types.AccAddress,
 	base *BaseCurrency,
 	quote *QuoteCurrency,
 	domainAddress string,
+	createTime time.Time,
 ) MsgCreateCurrency {
 	return MsgCreateCurrency{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
@@ -251,6 +255,7 @@ func NewMsgCreateCurrency(auth types.AccAddress,
 				Base:          *base,
 				Quote:         *quote,
 				DomainAddress: domainAddress,
+				CreateTime:    createTime,
 			})),
 	}
 }

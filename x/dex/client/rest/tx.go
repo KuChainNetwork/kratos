@@ -3,6 +3,7 @@ package rest
 import (
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -214,6 +215,7 @@ func createCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				&req.Base,
 				&req.Quote,
 				req.DomainAddress,
+				time.Time{}, // use server time
 			),
 		})
 	}
