@@ -255,7 +255,7 @@ func handleMsgUnlockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg 
 		return nil, sdkerrors.Wrapf(err, "msg unlock coin data unmarshal error")
 	}
 
-	logger.Debug("handle coin lock",
+	logger.Debug("handle coin unlock",
 		"id", msgData.Id,
 		"amount", msgData.Amount)
 
