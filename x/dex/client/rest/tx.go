@@ -145,6 +145,11 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
+		if types.MaxDexDescriptorLen < len(req.Description) {
+			err = types.ErrDexDescTooLong
+			return
+		}
+
 		req.BaseReq = req.BaseReq.Sanitize()
 		var name chainTypes.Name
 		if name, err = chainTypes.NewName(req.Creator); nil != err {
