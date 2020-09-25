@@ -49,7 +49,7 @@ func TestTransferCoinsErr(t *testing.T) {
 		ctx := app.NewTestContext()
 		acc1Coins := app.AssetKeeper().GetAllBalances(ctx, account1)
 		acc2Coins := app.AssetKeeper().GetAllBalances(ctx, account2)
-		coins2Transfer := NewInt64CoreCoins(10000000001)
+		coins2Transfer := NewInt64CoreCoins(100000000000001)
 
 		So(transfer(t, app, false, account1, account2, coins2Transfer, account1),
 			simapp.ShouldErrIs, assetTypes.ErrAssetCoinNoEnough)
