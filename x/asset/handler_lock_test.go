@@ -484,3 +484,110 @@ func TestUnLockCoinsMultiple(t *testing.T) {
 		So(len(locks), ShouldEqual, 0)
 	})
 }
+
+func TestUnLockCoinsMultipleInSameHeight(t *testing.T) {
+	app, _ := createAppForTest()
+	Convey("test lock in same height", t, func() {
+		var (
+			symbol             = types.MustName("abc")
+			denom              = types.CoinDenom(name2, symbol) // create in last
+			maxSupplyAmt int64 = 10000000000000
+		)
+
+		So(createCoin(t, app, true, account2, symbol, maxSupplyAmt), ShouldBeNil)
+
+		issueAmt := types.NewInt64Coin(denom, 1000)
+		So(issueCoin(t, app, true, account2, symbol, issueAmt), ShouldBeNil)
+
+		var (
+			ctx            = app.NewTestContext()
+			lockedCoins    = types.NewInt64Coins(denom, 100)
+			lockedBlockNum = app.LastBlockHeight() + 1 + 6
+		)
+
+		Convey("lock two times in same height", func() {
+			msgLock := assetTypes.NewMsgLockCoin(addr2, account2, lockedCoins, lockedBlockNum)
+			tx := simapp.NewTxForTest(
+				account2,
+				[]sdk.Msg{
+					&msgLock,
+				}, wallet.PrivKey(addr2))
+
+			So(simapp.CheckTxs(t, app, ctx, tx), ShouldBeNil)
+
+			allLockedCoins, locks, err := app.AssetKeeper().GetLockCoins(app.NewTestContext(), account2)
+			So(err, ShouldBeNil)
+			So(allLockedCoins, simapp.ShouldEq, lockedCoins)
+			So(len(locks), ShouldEqual, 1)
+			So(locks[0].UnlockBlockHeight, ShouldEqual, lockedBlockNum)
+			So(locks[0].Coins, simapp.ShouldEq, lockedCoins)
+
+			simapp.AfterBlockCommitted(app, 1)
+
+			ctx = app.NewTestContext()
+			msgLock = assetTypes.NewMsgLockCoin(addr2, account2, lockedCoins, lockedBlockNum)
+			tx = simapp.NewTxForTest(
+				account2,
+				[]sdk.Msg{
+					&msgLock,
+				}, wallet.PrivKey(addr2))
+
+			So(simapp.CheckTxs(t, app, ctx, tx), ShouldBeNil)
+
+			lockedCoins = lockedCoins.Add(lockedCoins...)
+
+			allLockedCoins, locks, err = app.AssetKeeper().GetLockCoins(app.NewTestContext(), account2)
+			So(err, ShouldBeNil)
+			So(allLockedCoins, simapp.ShouldEq, lockedCoins)
+			So(len(locks), ShouldEqual, 1)
+			So(locks[0].UnlockBlockHeight, ShouldEqual, lockedBlockNum)
+			So(locks[0].Coins, simapp.ShouldEq, lockedCoins)
+
+			// lock many coins
+			var (
+				lockedCoins2    = types.NewInt64Coins(constants.DefaultBondDenom, 100)
+				lockedBlockNum2 = app.LastBlockHeight() + 1 + 5
+			)
+
+			ctx = app.NewTestContext()
+
+			msgLock2 := assetTypes.NewMsgLockCoin(
+				addr2, account2, lockedCoins2, lockedBlockNum2)
+			tx2 := simapp.NewTxForTest(
+				account2,
+				[]sdk.Msg{
+					&msgLock2,
+				}, wallet.PrivKey(addr2))
+
+			So(simapp.CheckTxs(t, app, app.NewTestContext(), tx2), ShouldBeNil)
+
+			allLockedCoins, locks, err = app.AssetKeeper().GetLockCoins(app.NewTestContext(), account2)
+			So(err, ShouldBeNil)
+			So(allLockedCoins, simapp.ShouldEq, lockedCoins.Add(lockedCoins2...))
+			So(len(locks), ShouldEqual, 2)
+			So(locks[0].UnlockBlockHeight, ShouldEqual, lockedBlockNum)
+			So(locks[0].Coins, simapp.ShouldEq, lockedCoins)
+			So(locks[1].UnlockBlockHeight, ShouldEqual, lockedBlockNum2)
+			So(locks[1].Coins, simapp.ShouldEq, lockedCoins2)
+
+			simapp.AfterBlockCommitted(app, 10)
+			ctx = app.NewTestContext()
+
+			// unlock coins
+			msgUnLock := assetTypes.NewMsgUnlockCoin(addr2, account2, lockedCoins.Add(lockedCoins2...))
+			tx = simapp.NewTxForTest(
+				account2,
+				[]sdk.Msg{
+					&msgUnLock,
+				}, wallet.PrivKey(addr2))
+
+			// unlock should success
+			So(simapp.CheckTxs(t, app, ctx, tx), ShouldBeNil)
+
+			allLockedCoins, locks, err = app.AssetKeeper().GetLockCoins(app.NewTestContext(), account2)
+			So(err, ShouldBeNil)
+			So(allLockedCoins.IsZero(), ShouldBeTrue)
+			So(len(locks), ShouldEqual, 0)
+		})
+	})
+}

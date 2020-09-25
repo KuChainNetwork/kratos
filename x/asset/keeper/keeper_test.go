@@ -43,6 +43,24 @@ func createTestApp() (*simapp.SimApp, sdk.Context) {
 	return app, ctxCheck
 }
 
+func createTestAppWithCoins() (*simapp.SimApp, sdk.Context) {
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
+
+	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
+		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),
+		simapp.NewSimGenesisAccount(account2, addr2).WithAsset(asset1),
+		simapp.NewSimGenesisAccount(account3, addr3).WithAsset(asset1),
+	)
+	app := simapp.SetupWithGenesisAccounts(genAccs)
+
+	ctxCheck := app.BaseApp.NewContext(true,
+		abci.Header{
+			Time:   time.Now(),
+			Height: app.LastBlockHeight() + 1,
+		})
+	return app, ctxCheck
+}
+
 func TestAssetTransfer(t *testing.T) {
 	app, ctx := createTestApp()
 
