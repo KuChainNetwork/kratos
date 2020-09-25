@@ -181,17 +181,7 @@ func createCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
-		if 0 >= len(req.Base.Code) ||
-			0 >= len(req.Base.Name) ||
-			0 >= len(req.Base.FullName) ||
-			0 >= len(req.Base.IconUrl) ||
-			0 >= len(req.Base.TxUrl) ||
-			0 >= len(req.Quote.Code) ||
-			0 >= len(req.Quote.Name) ||
-			0 >= len(req.Quote.FullName) ||
-			0 >= len(req.Quote.IconUrl) ||
-			0 >= len(req.Quote.TxUrl) ||
-			0 >= len(req.DomainAddress) {
+		if !req.Base.Validate() || !req.Quote.Validate() || 0 >= len(req.DomainAddress) {
 			err = errors.Errorf("incorrect request fields")
 			return
 		}
@@ -239,16 +229,8 @@ func updateCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
-		if 0 >= len(req.Base.Code) &&
-			0 >= len(req.Base.Name) &&
-			0 >= len(req.Base.FullName) &&
-			0 >= len(req.Base.IconUrl) &&
-			0 >= len(req.Base.TxUrl) &&
-			0 >= len(req.Quote.Code) &&
-			0 >= len(req.Quote.Name) &&
-			0 >= len(req.Quote.FullName) &&
-			0 >= len(req.Quote.IconUrl) &&
-			0 >= len(req.Quote.TxUrl) {
+		if 0 >= len(req.Base.Code) || 0 >= len(req.Quote.Code) ||
+			(req.Base.Empty(false) && req.Quote.Empty(false)) {
 			err = errors.Errorf("incorrect request fields")
 			return
 		}

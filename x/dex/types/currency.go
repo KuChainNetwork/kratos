@@ -29,6 +29,15 @@ func (object *CurrencyBase) Equal(other *CurrencyBase) bool {
 		object.TxUrl == other.TxUrl
 }
 
+// Empty whether all members are invalid
+func (object *CurrencyBase) Empty(checkCode bool) bool {
+	return (checkCode && 0 >= len(object.Code)) &&
+		0 >= len(object.Name) &&
+		0 >= len(object.FullName) &&
+		0 >= len(object.IconUrl) &&
+		0 >= len(object.TxUrl)
+}
+
 // BaseCurrency
 type BaseCurrency struct {
 	CurrencyBase
