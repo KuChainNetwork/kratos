@@ -119,7 +119,7 @@ func (a AssetKeeper) IterateAllCoins(ctx sdk.Context, cb func(address types.Acco
 }
 
 // GetCoin get coin by account id and coin demon
-func (a AssetKeeper) GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (types.Coins, error) {
+func (a AssetKeeper) GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (ApproveData, error) {
 	return a.getApprove(ctx, account, spender)
 }
 

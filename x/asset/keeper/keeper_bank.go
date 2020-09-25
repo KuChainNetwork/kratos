@@ -30,12 +30,15 @@ func (a AssetKeeper) GetBalance(ctx sdk.Context, ID types.AccountID, denom strin
 	return res
 }
 
-func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt types.Coins) error {
+func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt types.Coins, isLock bool) error {
 	logger := a.Logger(ctx)
 
 	logger.Debug("approve coins", "id", id, "spender", spender, "amount", amt)
 
-	err := a.setApprove(ctx, id, spender, amt)
+	data := NewApproveData(amt)
+	data.IsLock = isLock
+
+	err := a.setApprove(ctx, id, spender, data)
 	if err != nil {
 		return sdkerrors.Wrapf(err, "approve %s to %s by %s error", id, spender, amt)
 	}
@@ -49,12 +52,14 @@ func (a AssetKeeper) ApplyApporve(ctx sdk.Context, from, to types.AccountID, amo
 		return sdkerrors.Wrap(err, "apply apporveCoins get error")
 	}
 
-	newApporves, hasNeg := apporveCoins.SafeSub(amount)
+	newApporves, hasNeg := apporveCoins.Amount.SafeSub(amount)
 	if hasNeg {
 		return types.ErrAssetApporveNotEnough
 	}
 
-	if err := a.setApprove(ctx, from, to, newApporves); err != nil {
+	apporveCoins.Amount = newApporves
+
+	if err := a.setApprove(ctx, from, to, apporveCoins); err != nil {
 		return sdkerrors.Wrap(err, "apply apporveCoins set new error")
 	}
 

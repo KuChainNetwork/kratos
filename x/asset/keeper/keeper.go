@@ -22,7 +22,7 @@ type AssetCoinsKeeper interface {
 	LockCoins(ctx sdk.Context, account types.AccountID, unlockBlockHeight int64, coins types.Coins) error
 	UnLockCoins(ctx sdk.Context, account types.AccountID, coins types.Coins) error
 	ExerciseCoinPower(ctx sdk.Context, id types.AccountID, amt types.Coin) error
-	Approve(ctx sdk.Context, id, spender types.AccountID, amt types.Coins) error
+	Approve(ctx sdk.Context, id, spender types.AccountID, amt types.Coins, isLock bool) error
 }
 
 // AssetViewKeeper keeper view interface for asset module
@@ -36,7 +36,7 @@ type AssetViewKeeper interface {
 	GetCoinDesc(ctx sdk.Context, creator, symbol types.Name) (*types.CoinDescription, error)
 	GetCoinStat(ctx sdk.Context, creator, symbol types.Name) (*types.CoinStat, error)
 	GetLockCoins(ctx sdk.Context, account types.AccountID) (types.Coins, []LockedCoins, error)
-	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (types.Coins, error)
+	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (ApproveData, error)
 }
 
 type AccountEnsurer interface {

@@ -77,7 +77,7 @@ func TestApproveCoins(t *testing.T) {
 
 		app1s, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
 		So(err, ShouldBeNil)
-		So(app1s, simapp.ShouldEq, approveCoins1)
+		So(app1s.Amount, simapp.ShouldEq, approveCoins1)
 
 		// second coins 2
 		msgApprove2 := assetTypes.NewMsgApprove(
@@ -94,16 +94,16 @@ func TestApproveCoins(t *testing.T) {
 
 		app1s, err = app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
 		So(err, ShouldBeNil)
-		So(app1s, simapp.ShouldEq, approveCoins1)
+		So(app1s.Amount, simapp.ShouldEq, approveCoins1)
 
 		app2s, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account3)
 		So(err, ShouldBeNil)
-		So(app2s, simapp.ShouldEq, approveCoins2)
+		So(app2s.Amount, simapp.ShouldEq, approveCoins2)
 
 		// no exit
 		app4s, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account4)
 		So(err, ShouldBeNil)
-		So(app4s.IsZero(), ShouldBeTrue)
+		So(app4s.Amount.IsZero(), ShouldBeTrue)
 	})
 }
 
@@ -134,7 +134,8 @@ func TestApproveResetCoins(t *testing.T) {
 
 		app1s, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
 		So(err, ShouldBeNil)
-		So(app1s, simapp.ShouldEq, approveCoins1)
+		So(app1s.Amount, simapp.ShouldEq, approveCoins1)
+		So(app1s.IsLock, ShouldEqual, false)
 
 		// second coins 2
 		msgApprove2 := assetTypes.NewMsgApprove(
@@ -151,7 +152,8 @@ func TestApproveResetCoins(t *testing.T) {
 
 		app2s, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
 		So(err, ShouldBeNil)
-		So(app2s, simapp.ShouldEq, approveCoins2)
+		So(app2s.Amount, simapp.ShouldEq, approveCoins2)
+		So(app2s.IsLock, ShouldEqual, false)
 
 		// second coins zero
 		msgApprove3 := assetTypes.NewMsgApprove(
@@ -168,7 +170,7 @@ func TestApproveResetCoins(t *testing.T) {
 
 		app3s, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
 		So(err, ShouldBeNil)
-		So(app3s.IsZero(), ShouldBeTrue)
+		So(app3s.Amount.IsZero(), ShouldBeTrue)
 
 	})
 }
@@ -254,7 +256,7 @@ func TestApproveTransfer(t *testing.T) {
 
 		apps, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
 		So(err, ShouldBeNil)
-		So(apps, simapp.ShouldEq, apporveCoins.Sub(transferCoins))
+		So(apps.Amount, simapp.ShouldEq, apporveCoins.Sub(transferCoins))
 	})
 }
 

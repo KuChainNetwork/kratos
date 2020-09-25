@@ -217,9 +217,9 @@ func (a AssetKeeper) getCoinsPower(ctx sdk.Context, account types.AccountID) (ty
 	return coins, nil
 }
 
-func (a AssetKeeper) setApprove(ctx sdk.Context, account, spender types.AccountID, coin types.Coins) error {
+func (a AssetKeeper) setApprove(ctx sdk.Context, account, spender types.AccountID, data ApproveData) error {
 	store := ctx.KVStore(a.key)
-	bz, err := a.cdc.MarshalBinaryBare(coin)
+	bz, err := a.cdc.MarshalBinaryBare(data)
 	if err != nil {
 		return sdkerrors.Wrap(err, "set coins marshal error")
 	}
@@ -236,18 +236,18 @@ func (a AssetKeeper) setApprove(ctx sdk.Context, account, spender types.AccountI
 	return nil
 }
 
-func (a AssetKeeper) getApprove(ctx sdk.Context, account, spender types.AccountID) (types.Coins, error) {
+func (a AssetKeeper) getApprove(ctx sdk.Context, account, spender types.AccountID) (ApproveData, error) {
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.ApproveStoreKey(account, spender))
 	if bz == nil {
-		return types.Coins{}, nil
+		return ApproveData{}, nil
 	}
 
-	var coins types.Coins
+	var res ApproveData
 
-	if err := a.cdc.UnmarshalBinaryBare(bz, &coins); err != nil {
-		return types.Coins{}, sdkerrors.Wrap(err, "get coins unmarshal")
+	if err := a.cdc.UnmarshalBinaryBare(bz, &res); err != nil {
+		return ApproveData{}, sdkerrors.Wrap(err, "get ApproveData unmarshal")
 	}
 
-	return coins, nil
+	return res, nil
 }

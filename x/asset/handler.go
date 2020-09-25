@@ -319,7 +319,7 @@ func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *ty
 
 	ctx.RequireAuth(msgData.Id)
 
-	err = k.Approve(ctx.Context(), msgData.Id, msgData.Spender, msgData.Amount)
+	err = k.Approve(ctx.Context(), msgData.Id, msgData.Spender, msgData.Amount, false)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "msg approve handler error")
 	}
