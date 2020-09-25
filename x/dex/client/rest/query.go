@@ -18,7 +18,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		getCreatorHandlerFn(cliCtx),
 	).Methods(http.MethodGet)
 	r.HandleFunc(
-		"/dex/{creator}/{baseCode}/{quoteCode}",
+		"/dex/currency/{creator}/{baseCode}/{quoteCode}",
 		getCurrencyHandlerFn(cliCtx),
 	).Methods(http.MethodGet)
 }
