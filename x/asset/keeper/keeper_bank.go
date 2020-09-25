@@ -35,10 +35,23 @@ func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt t
 
 	logger.Debug("approve coins", "id", id, "spender", spender, "amount", amt)
 
-	data := NewApproveData(amt)
-	data.IsLock = isLock
+	apporveCoins, err := a.getApprove(ctx, id, spender)
+	if apporveCoins != nil {
+		if apporveCoins.IsLock != isLock {
+			return types.ErrAssetApporveCannotChangeLock
+		}
 
-	err := a.setApprove(ctx, id, spender, data)
+		if apporveCoins.IsLock && apporveCoins.Amount.IsAnyGT(amt) {
+			return sdkerrors.Wrap(types.ErrAssetApporveCannotChangeLock, "amount in lock apporve cannot be less")
+		}
+	} else {
+		apporveCoins = NewApproveData(amt)
+	}
+
+	apporveCoins.IsLock = isLock
+	apporveCoins.Amount = amt
+
+	err = a.setApprove(ctx, id, spender, *apporveCoins)
 	if err != nil {
 		return sdkerrors.Wrapf(err, "approve %s to %s by %s error", id, spender, amt)
 	}
@@ -52,6 +65,10 @@ func (a AssetKeeper) ApplyApporve(ctx sdk.Context, from, to types.AccountID, amo
 		return sdkerrors.Wrap(err, "apply apporveCoins get error")
 	}
 
+	if apporveCoins == nil {
+		return types.ErrAssetApporveNotEnough
+	}
+
 	newApporves, hasNeg := apporveCoins.Amount.SafeSub(amount)
 	if hasNeg {
 		return types.ErrAssetApporveNotEnough
@@ -59,7 +76,7 @@ func (a AssetKeeper) ApplyApporve(ctx sdk.Context, from, to types.AccountID, amo
 
 	apporveCoins.Amount = newApporves
 
-	if err := a.setApprove(ctx, from, to, apporveCoins); err != nil {
+	if err := a.setApprove(ctx, from, to, *apporveCoins); err != nil {
 		return sdkerrors.Wrap(err, "apply apporveCoins set new error")
 	}
 

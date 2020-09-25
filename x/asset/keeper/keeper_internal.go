@@ -236,18 +236,18 @@ func (a AssetKeeper) setApprove(ctx sdk.Context, account, spender types.AccountI
 	return nil
 }
 
-func (a AssetKeeper) getApprove(ctx sdk.Context, account, spender types.AccountID) (ApproveData, error) {
+func (a AssetKeeper) getApprove(ctx sdk.Context, account, spender types.AccountID) (*ApproveData, error) {
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.ApproveStoreKey(account, spender))
 	if bz == nil {
-		return ApproveData{}, nil
+		return nil, nil
 	}
 
 	var res ApproveData
 
 	if err := a.cdc.UnmarshalBinaryBare(bz, &res); err != nil {
-		return ApproveData{}, sdkerrors.Wrap(err, "get ApproveData unmarshal")
+		return nil, sdkerrors.Wrap(err, "get ApproveData unmarshal")
 	}
 
-	return res, nil
+	return &res, nil
 }

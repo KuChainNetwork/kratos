@@ -36,7 +36,7 @@ type AssetViewKeeper interface {
 	GetCoinDesc(ctx sdk.Context, creator, symbol types.Name) (*types.CoinDescription, error)
 	GetCoinStat(ctx sdk.Context, creator, symbol types.Name) (*types.CoinStat, error)
 	GetLockCoins(ctx sdk.Context, account types.AccountID) (types.Coins, []LockedCoins, error)
-	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (ApproveData, error)
+	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (*ApproveData, error)
 }
 
 type AccountEnsurer interface {

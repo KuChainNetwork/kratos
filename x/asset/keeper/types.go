@@ -36,8 +36,8 @@ type ApproveData struct {
 	Amount             Coins     `json:"amount" yaml:"amount"`
 }
 
-func NewApproveData(amt Coins) ApproveData {
-	return ApproveData{
+func NewApproveData(amt Coins) *ApproveData {
+	return &ApproveData{
 		Amount: amt,
 	}
 }

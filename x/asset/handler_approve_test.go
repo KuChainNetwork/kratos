@@ -103,7 +103,7 @@ func TestApproveCoins(t *testing.T) {
 		// no exit
 		app4s, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account4)
 		So(err, ShouldBeNil)
-		So(app4s.Amount.IsZero(), ShouldBeTrue)
+		So(app4s, ShouldBeNil)
 	})
 }
 
@@ -302,5 +302,33 @@ func TestApproveTransferError(t *testing.T) {
 				simapp.ShouldErrIs, types.ErrMissingAuth)
 		})
 
+	})
+}
+
+func TestApproveLockMode(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test approve lock mode for test", t, func() {
+		So(transfer(t, app, true, account1, addAccount2, NewInt64CoreCoins(2000000000), account1), ShouldBeNil)
+		So(transfer(t, app, true, account1, addAccount3, NewInt64CoreCoins(2000000000), account1), ShouldBeNil)
+
+		// use keeper to set
+		ctx := app.NewTestContext()
+		So(app.AssetKeeper().Approve(ctx, account1, account2, NewInt64CoreCoins(10000), true), ShouldBeNil)
+
+		// add ok
+		So(app.AssetKeeper().Approve(ctx, account1, account2, NewInt64CoreCoins(100000), true), ShouldBeNil)
+
+		appData, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
+		So(err, ShouldBeNil)
+		So(appData.IsLock, ShouldBeTrue)
+		So(appData.Amount, simapp.ShouldEq, NewInt64CoreCoins(100000))
+
+		// sub err
+		So(app.AssetKeeper().Approve(ctx, account1, account2, NewInt64CoreCoins(10000), true),
+			simapp.ShouldErrIs, assetTypes.ErrAssetApporveCannotChangeLock)
+
+		So(app.AssetKeeper().Approve(ctx, account1, account2, NewInt64CoreCoins(100000), false),
+			simapp.ShouldErrIs, assetTypes.ErrAssetApporveCannotChangeLock)
 	})
 }
