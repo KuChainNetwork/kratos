@@ -118,6 +118,11 @@ func (a AssetKeeper) IterateAllCoins(ctx sdk.Context, cb func(address types.Acco
 	}
 }
 
+// GetCoin get coin by account id and coin demon
+func (a AssetKeeper) GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (*ApproveData, error) {
+	return a.getApprove(ctx, account, spender)
+}
+
 // IterateAllCoins iterate all account 's coins
 func (a AssetKeeper) IterateAllCoinPowers(ctx sdk.Context, cb func(address types.AccountID, balance Coins) (stop bool)) {
 	store := ctx.KVStore(a.key)

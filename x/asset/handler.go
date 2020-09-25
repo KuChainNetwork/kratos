@@ -30,6 +30,8 @@ func NewHandler(k keeper.AssetCoinsKeeper) msg.Handler {
 			return handleMsgUnlockCoin(ctx, k, msg)
 		case *types.MsgExerciseCoin:
 			return handleMsgExerciseCoin(ctx, k, msg)
+		case *types.MsgApprove:
+			return handleMsgApprove(ctx, k, msg)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized asset message type: %T", msg)
 		}
@@ -253,7 +255,7 @@ func handleMsgUnlockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg 
 		return nil, sdkerrors.Wrapf(err, "msg unlock coin data unmarshal error")
 	}
 
-	logger.Debug("handle coin lock",
+	logger.Debug("handle coin unlock",
 		"id", msgData.Id,
 		"amount", msgData.Amount)
 
@@ -297,6 +299,37 @@ func handleMsgExerciseCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, ms
 			types.EventTypeExercise,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyFrom, msgData.Id.String()),
+			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
+		),
+	)
+
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}
+
+func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types.MsgApprove) (*sdk.Result, error) {
+	logger := ctx.Logger()
+
+	msgData, err := msg.GetData()
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Debug("handle coin approve",
+		"id", msgData.Id, "spender", msgData.Spender, "amount", msgData.Amount)
+
+	ctx.RequireAuth(msgData.Id)
+
+	err = k.Approve(ctx.Context(), msgData.Id, msgData.Spender, msgData.Amount, false)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "msg approve handler error")
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeApprove,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(types.AttributeKeyFrom, msgData.Id.String()),
+			sdk.NewAttribute(types.AttributeKeySpender, msgData.Spender.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
 		),
 	)
