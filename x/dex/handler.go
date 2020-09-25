@@ -144,17 +144,7 @@ func handleMsgCreateCurrency(ctx chainTypes.Context,
 	if data, err = msg.GetData(); nil != err {
 		return
 	}
-	if 0 >= len(data.Base.Code) ||
-		0 >= len(data.Base.Name) ||
-		0 >= len(data.Base.FullName) ||
-		0 >= len(data.Base.IconUrl) ||
-		0 >= len(data.Base.TxUrl) ||
-		0 >= len(data.Quote.Code) ||
-		0 >= len(data.Quote.Name) ||
-		0 >= len(data.Quote.FullName) ||
-		0 >= len(data.Quote.IconUrl) ||
-		0 >= len(data.Quote.TxUrl) ||
-		0 >= len(data.DomainAddress) {
+	if !data.Base.Validate() || !data.Quote.Validate() || 0 >= len(data.DomainAddress) {
 		err = errors.Wrapf(types.ErrCurrencyIncorrect,
 			"msg create currency %s data is incorrect",
 			data.Creator.String())
@@ -216,7 +206,7 @@ func handleMsgUpdateCurrency(ctx chainTypes.Context,
 			data.Creator.String())
 		return
 	}
-	upList := make([]sdk.Attribute, 0)
+	attributes := make([]sdk.Attribute, 0)
 	for _, e := range []struct {
 		Key   string
 		Value string
@@ -231,10 +221,10 @@ func handleMsgUpdateCurrency(ctx chainTypes.Context,
 		{types.AttributeKeyCurrencyQuoteTxUrl, data.Quote.TxUrl},
 	} {
 		if 0 < len(e.Value) {
-			upList = append(upList, sdk.NewAttribute(e.Key, e.Value))
+			attributes = append(attributes, sdk.NewAttribute(e.Key, e.Value))
 		}
 	}
-	if 0 >= len(upList) {
+	if 0 >= len(attributes) {
 		err = errors.Wrapf(types.ErrCurrencyIncorrect,
 			"msg create currency %s data is incorrect",
 			data.Creator.String())
@@ -252,11 +242,11 @@ func handleMsgUpdateCurrency(ctx chainTypes.Context,
 			data.Creator.String())
 		return
 	}
-	upList = append(upList, sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory))
+	attributes = append(attributes, sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory))
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeUpdateCurrency,
-			upList...,
+			attributes...,
 		),
 	)
 	res = &sdk.Result{Events: ctx.EventManager().Events()}
