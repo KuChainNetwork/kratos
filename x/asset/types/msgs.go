@@ -34,6 +34,22 @@ func NewMsgTransfer(auth types.AccAddress, from AccountID, to AccountID, amount 
 	}
 }
 
+// NewMsgTransfers create msg transfer
+func NewMsgTransfers(auth types.AccAddress, ts []types.KuMsgTransfer) MsgTransfer {
+	opts := make([]msg.Option, 0, len(ts)+1)
+	opts = append(opts, msg.WithAuth(auth))
+	for _, t := range ts {
+		opts = append(opts, msg.WithTransfer(t.From, t.To, t.Amount))
+	}
+
+	return MsgTransfer{
+		*msg.MustNewKuMsg(
+			RouterKeyName,
+			opts...,
+		),
+	}
+}
+
 func (msg MsgTransfer) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err

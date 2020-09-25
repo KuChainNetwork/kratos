@@ -31,6 +31,10 @@ var (
 	account4    = types.NewAccountIDFromName(name4)
 	account5    = types.NewAccountIDFromName(name5)
 	addAccount1 = types.NewAccountIDFromAccAdd(addr1)
+	addAccount2 = types.NewAccountIDFromAccAdd(addr2)
+	addAccount3 = types.NewAccountIDFromAccAdd(addr3)
+	addAccount4 = types.NewAccountIDFromAccAdd(addr4)
+	addAccount5 = types.NewAccountIDFromAccAdd(addr5)
 )
 
 var (
@@ -45,12 +49,12 @@ var (
 func createAppForTest() (*simapp.SimApp, sdk.Context) {
 	asset1 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 10000000),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+		types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000))
 	asset2 := types.NewCoins(
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+		types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000))
 	asset3 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 100),
-		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+		types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000))
 
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),

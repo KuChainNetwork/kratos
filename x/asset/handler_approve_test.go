@@ -10,6 +10,45 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+// ApproveForTest approve for test
+func ApproveForTest(t *testing.T, w *simapp.Wallet, app *simapp.SimApp, isSuccess bool, id, spender types.AccountID, amt types.Coins) error {
+	ctx := app.NewTestContext()
+	msgApprove := assetTypes.NewMsgApprove(
+		w.GetAuth(id), id, spender, amt)
+
+	tx := simapp.NewTxForTest(
+		id,
+		[]sdk.Msg{
+			&msgApprove,
+		}, w.PrivKey(w.GetAuth(id)))
+
+	if !isSuccess {
+		tx = tx.WithCannotPass()
+	}
+
+	return simapp.CheckTxs(t, app, ctx, tx)
+}
+
+func TransferByApproveForTest(t *testing.T, w *simapp.Wallet, app *simapp.SimApp, isSuccess bool, auth types.AccAddress, from, to types.AccountID, amt types.Coins) error {
+	ctx := app.NewTestContext()
+
+	// transfer from a to b, with a auth, should success
+	transferMsg := assetTypes.NewMsgTransfer(
+		auth, from, to, amt)
+
+	tx := simapp.NewTxForTest(
+		types.NewAccountIDFromAccAdd(auth),
+		[]sdk.Msg{
+			&transferMsg,
+		}, w.PrivKey(auth))
+
+	if !isSuccess {
+		tx = tx.WithCannotPass()
+	}
+
+	return simapp.CheckTxs(t, app, ctx, tx)
+}
+
 func TestApproveCoins(t *testing.T) {
 	app, _ := createAppForTest()
 
@@ -216,5 +255,50 @@ func TestApproveTransfer(t *testing.T) {
 		apps, err := app.AssetKeeper().GetApproveCoins(ctx, account1, account2)
 		So(err, ShouldBeNil)
 		So(apps, simapp.ShouldEq, apporveCoins.Sub(transferCoins))
+	})
+}
+
+func TestApproveTransferError(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test approve for test", t, func() {
+		So(transfer(t, app, true, account1, addAccount2, NewInt64CoreCoins(2000000000), account1), ShouldBeNil)
+		So(transfer(t, app, true, account1, addAccount3, NewInt64CoreCoins(2000000000), account1), ShouldBeNil)
+		So(ApproveForTest(t, wallet, app, true, account1, account2, NewInt64CoreCoins(1000)), ShouldBeNil)
+
+		Convey("test transfer error by no approve", func() {
+			So(TransferByApproveForTest(t, wallet, app, false, addr3, account1, account3, NewInt64CoreCoins(100)),
+				simapp.ShouldErrIs, types.ErrMissingAuth)
+		})
+
+		Convey("test transfer error by approve coins no enough", func() {
+			So(TransferByApproveForTest(t, wallet, app, false, addr2, account1, account2, NewInt64CoreCoins(1001)),
+				simapp.ShouldErrIs, types.ErrMissingAuth)
+		})
+
+		Convey("test muit-transfer error by approve coins no enough", func() {
+			ctx := app.NewTestContext()
+
+			transferMsg := assetTypes.NewMsgTransfers(
+				wallet.GetAuth(account2),
+				[]types.KuMsgTransfer{
+					types.NewKuMsgTransfer(account1, account2, NewInt64CoreCoins(100)),
+					types.NewKuMsgTransfer(account1, account2, NewInt64CoreCoins(900)),
+					types.NewKuMsgTransfer(account1, account2, NewInt64CoreCoins(100)),
+				})
+
+			tx := simapp.NewTxForTest(
+				account2,
+				[]sdk.Msg{
+					&transferMsg,
+				}, wallet.PrivKey(addr2)).WithCannotPass()
+			So(simapp.CheckTxs(t, app, ctx, tx), simapp.ShouldErrIs, types.ErrMissingAuth)
+		})
+
+		Convey("test transfer error by approve auth error", func() {
+			So(TransferByApproveForTest(t, wallet, app, false, addr3, account1, account2, NewInt64CoreCoins(100)),
+				simapp.ShouldErrIs, types.ErrMissingAuth)
+		})
+
 	})
 }
