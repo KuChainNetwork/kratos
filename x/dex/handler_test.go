@@ -387,6 +387,75 @@ func TestHandleCreateCurrency(t *testing.T) {
 		savedCurrency, ok := dex.Currency(currency.Base.Code, currency.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(savedCurrency.Equal(currency), ShouldBeTrue)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		currency.Quote.Code = "2"
+		msgCreateCurrency = dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&currency.Base,
+			&currency.Quote,
+			currency.DomainAddress,
+			currency.CreateTime)
+
+		So(msgCreateCurrency.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateCurrency,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedCurrency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedCurrency.Equal(currency), ShouldBeTrue)
+
+		invalidCurrency := currency
+		invalidCurrency.Base.Code = ""
+		So(dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&invalidCurrency.Base,
+			&invalidCurrency.Quote,
+			invalidCurrency.DomainAddress,
+			invalidCurrency.CreateTime).ValidateBasic(), ShouldNotBeNil)
+
+		invalidCurrency = currency
+		invalidCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&invalidCurrency.Base,
+			&invalidCurrency.Quote,
+			invalidCurrency.DomainAddress,
+			invalidCurrency.CreateTime).ValidateBasic(), ShouldNotBeNil)
+
+		invalidCurrency = currency
+		invalidCurrency.Base.Code = ""
+		invalidCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&invalidCurrency.Base,
+			&invalidCurrency.Quote,
+			invalidCurrency.DomainAddress,
+			invalidCurrency.CreateTime).ValidateBasic(), ShouldNotBeNil)
+
+		invalidCurrency = currency
+		invalidCurrency.Base.Code = "1"
+		invalidCurrency.Base.TxUrl = ""
+		invalidCurrency.Quote.Code = "3"
+		So(dexTypes.NewMsgCreateCurrency(auth,
+			accName,
+			&invalidCurrency.Base,
+			&invalidCurrency.Quote,
+			invalidCurrency.DomainAddress,
+			invalidCurrency.CreateTime).ValidateBasic(), ShouldNotBeNil)
 	})
 }
 
@@ -489,6 +558,36 @@ func TestHandleUpdateCurrency(t *testing.T) {
 		savedCurrency, ok = dex.Currency(copiedCurrency.Base.Code, copiedCurrency.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(savedCurrency.Equal(&copiedCurrency), ShouldBeTrue)
+
+		copiedCurrency = *currency
+		copiedCurrency.Base.Code = ""
+		So(dexTypes.NewMsgUpdateCurrency(auth,
+			accName,
+			&copiedCurrency.Base,
+			&copiedCurrency.Quote).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = *currency
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgUpdateCurrency(auth,
+			accName,
+			&copiedCurrency.Base,
+			&copiedCurrency.Quote).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = *currency
+		copiedCurrency.Base.Code = ""
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgUpdateCurrency(auth,
+			accName,
+			&copiedCurrency.Base,
+			&copiedCurrency.Quote).ValidateBasic(), ShouldNotBeNil)
+
+		var emptyCurrency dexTypes.Currency
+		emptyCurrency.Base.Code = currency.Base.Code
+		emptyCurrency.Quote.Code = currency.Quote.Code
+		So(dexTypes.NewMsgUpdateCurrency(auth,
+			accName,
+			&emptyCurrency.Base,
+			&emptyCurrency.Quote).ValidateBasic(), ShouldNotBeNil)
 	})
 }
 
@@ -592,6 +691,28 @@ func TestHandlePauseCurrency(t *testing.T) {
 		currency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(currency.Paused(), ShouldBeTrue)
+
+		copiedCurrency := currency
+		copiedCurrency.Base.Code = ""
+		So(dexTypes.NewMsgPauseCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = currency
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgPauseCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = currency
+		copiedCurrency.Base.Code = ""
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgPauseCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 	})
 }
 
@@ -723,6 +844,28 @@ func TestHandleRestoreCurrency(t *testing.T) {
 		currency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(currency.Paused(), ShouldBeFalse)
+
+		copiedCurrency := currency
+		copiedCurrency.Base.Code = ""
+		So(dexTypes.NewMsgRestoreCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = currency
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgRestoreCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = currency
+		copiedCurrency.Base.Code = ""
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgRestoreCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 	})
 }
 
@@ -825,5 +968,27 @@ func TestShutdownCurrency(t *testing.T) {
 
 		currency, ok = dex.Currency(currency.Base.Code, currency.Quote.Code)
 		So(ok, ShouldBeFalse)
+
+		copiedCurrency := currency
+		copiedCurrency.Base.Code = ""
+		So(dexTypes.NewMsgShutdownCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = currency
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgShutdownCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedCurrency = currency
+		copiedCurrency.Base.Code = ""
+		copiedCurrency.Quote.Code = ""
+		So(dexTypes.NewMsgShutdownCurrency(auth,
+			accName,
+			copiedCurrency.Base.Code,
+			copiedCurrency.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 	})
 }

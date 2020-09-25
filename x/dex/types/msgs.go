@@ -213,6 +213,15 @@ func (msg MsgCreateCurrency) ValidateBasic() error {
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
+	if !data.Base.Validate() {
+		return sdkerrors.Wrap(ErrCurrencyBaseInvalid, "base part invalid")
+	}
+	if !data.Quote.Validate() {
+		return sdkerrors.Wrap(ErrCurrencyQuoteInvalid, "quote part invalid")
+	}
+	if 0 >= len(data.DomainAddress) {
+		return sdkerrors.Wrap(ErrCurrencyDomainAddressInvalid, "domain address invalid")
+	}
 	return nil
 }
 
@@ -269,16 +278,22 @@ func (msg MsgUpdateCurrency) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
-
 	data, err := msg.GetData()
 	if err != nil {
 		return err
 	}
-
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
-
+	if 0 >= len(data.Base.Code) {
+		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+	}
+	if 0 >= len(data.Quote.Code) {
+		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+	}
+	if !data.Base.Validate() && !data.Quote.Validate() {
+		return sdkerrors.Wrap(ErrCurrencyUpdateFieldsInvalid, "update fields not empty at least one")
+	}
 	return nil
 }
 
@@ -329,16 +344,19 @@ func (msg MsgPauseCurrency) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
-
 	data, err := msg.GetData()
 	if err != nil {
 		return err
 	}
-
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
-
+	if 0 >= len(data.BaseCode) {
+		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+	}
+	if 0 >= len(data.QuoteCode) {
+		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+	}
 	return nil
 }
 
@@ -389,16 +407,19 @@ func (msg MsgRestoreCurrency) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
-
 	data, err := msg.GetData()
 	if err != nil {
 		return err
 	}
-
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
-
+	if 0 >= len(data.BaseCode) {
+		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+	}
+	if 0 >= len(data.QuoteCode) {
+		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+	}
 	return nil
 }
 
@@ -449,16 +470,19 @@ func (msg MsgShutdownCurrency) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
-
 	data, err := msg.GetData()
 	if err != nil {
 		return err
 	}
-
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
-
+	if 0 >= len(data.BaseCode) {
+		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+	}
+	if 0 >= len(data.QuoteCode) {
+		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+	}
 	return nil
 }
 
