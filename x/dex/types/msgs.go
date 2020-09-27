@@ -197,12 +197,12 @@ func (msg MsgDestroyDex) ValidateBasic() error {
 	return nil
 }
 
-// MsgCreateCurrency msg for create dex currency
-type MsgCreateCurrency struct {
+// MsgCreateSymbol msg for create dex symbol
+type MsgCreateSymbol struct {
 	types.KuMsg
 }
 
-func (msg MsgCreateCurrency) ValidateBasic() error {
+func (msg MsgCreateSymbol) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
@@ -214,27 +214,27 @@ func (msg MsgCreateCurrency) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
 	if !data.Base.Validate() {
-		return sdkerrors.Wrap(ErrCurrencyBaseInvalid, "base part invalid")
+		return sdkerrors.Wrap(ErrSymbolBaseInvalid, "base part invalid")
 	}
 	if !data.Quote.Validate() {
-		return sdkerrors.Wrap(ErrCurrencyQuoteInvalid, "quote part invalid")
+		return sdkerrors.Wrap(ErrSymbolQuoteInvalid, "quote part invalid")
 	}
 	if 0 >= len(data.DomainAddress) {
-		return sdkerrors.Wrap(ErrCurrencyDomainAddressInvalid, "domain address invalid")
+		return sdkerrors.Wrap(ErrSymbolDomainAddressInvalid, "domain address invalid")
 	}
 	return nil
 }
 
-func (msg MsgCreateCurrency) GetData() (MsgCreateCurrencyData, error) {
-	res := MsgCreateCurrencyData{}
+func (msg MsgCreateSymbol) GetData() (MsgCreateSymbolData, error) {
+	res := MsgCreateSymbolData{}
 	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
-		return MsgCreateCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+		return MsgCreateSymbolData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
 	}
 	return res, nil
 }
 
-// MsgCreateCurrencyData msg data for delete dex
-type MsgCreateCurrencyData struct {
+// MsgCreateSymbolData msg data for delete dex
+type MsgCreateSymbolData struct {
 	Creator       Name          `json:"creator" yaml:"creator"`
 	Base          BaseCurrency  `json:"base" yaml:"base"`
 	Quote         QuoteCurrency `json:"quote" yaml:"quote"`
@@ -242,24 +242,24 @@ type MsgCreateCurrencyData struct {
 	CreateTime    time.Time     `json:"create_time" yaml:"create_time"`
 }
 
-func (MsgCreateCurrencyData) Type() types.Name { return types.MustName("create@currency") }
+func (MsgCreateSymbolData) Type() types.Name { return types.MustName("create@symbol") }
 
-func (m MsgCreateCurrencyData) Sender() AccountID {
+func (m MsgCreateSymbolData) Sender() AccountID {
 	return types.NewAccountIDFromName(m.Creator)
 }
 
-// NewMsgCreateCurrency new destroy dex msg
-func NewMsgCreateCurrency(auth types.AccAddress,
+// NewMsgCreateSymbol new destroy dex msg
+func NewMsgCreateSymbol(auth types.AccAddress,
 	creator types.Name,
 	base *BaseCurrency,
 	quote *QuoteCurrency,
 	domainAddress string,
 	createTime time.Time,
-) MsgCreateCurrency {
-	return MsgCreateCurrency{
+) MsgCreateSymbol {
+	return MsgCreateSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
-			msg.WithData(ModuleCdc, &MsgCreateCurrencyData{
+			msg.WithData(ModuleCdc, &MsgCreateSymbolData{
 				Creator:       creator,
 				Base:          *base,
 				Quote:         *quote,
@@ -269,12 +269,12 @@ func NewMsgCreateCurrency(auth types.AccAddress,
 	}
 }
 
-// MsgUpdateCurrency msg for update dex currency
-type MsgUpdateCurrency struct {
+// MsgUpdateSymbol msg for update dex symbol
+type MsgUpdateSymbol struct {
 	types.KuMsg
 }
 
-func (msg MsgUpdateCurrency) ValidateBasic() error {
+func (msg MsgUpdateSymbol) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
@@ -286,48 +286,48 @@ func (msg MsgUpdateCurrency) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
 	if 0 >= len(data.Base.Code) {
-		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+		return sdkerrors.Wrap(ErrSymbolBaseCodeEmpty, "base code not empty")
 	}
 	if 0 >= len(data.Quote.Code) {
-		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
 	}
 	if !data.Base.Validate() && !data.Quote.Validate() {
-		return sdkerrors.Wrap(ErrCurrencyUpdateFieldsInvalid, "update fields not empty at least one")
+		return sdkerrors.Wrap(ErrSymbolUpdateFieldsInvalid, "update fields not empty at least one")
 	}
 	return nil
 }
 
-func (msg MsgUpdateCurrency) GetData() (MsgUpdateCurrencyData, error) {
-	res := MsgUpdateCurrencyData{}
+func (msg MsgUpdateSymbol) GetData() (MsgUpdateSymbolData, error) {
+	res := MsgUpdateSymbolData{}
 	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
-		return MsgUpdateCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+		return MsgUpdateSymbolData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
 	}
 	return res, nil
 }
 
-// MsgUpdateCurrencyData msg data for update dex currency
-type MsgUpdateCurrencyData struct {
+// MsgUpdateSymbolData msg data for update dex symbol
+type MsgUpdateSymbolData struct {
 	Creator Name          `json:"creator" yaml:"creator"`
 	Base    BaseCurrency  `json:"base" yaml:"base"`
 	Quote   QuoteCurrency `json:"quote" yaml:"quote"`
 }
 
-func (MsgUpdateCurrencyData) Type() types.Name { return types.MustName("update@currency") }
+func (MsgUpdateSymbolData) Type() types.Name { return types.MustName("update@symbol") }
 
-func (m MsgUpdateCurrencyData) Sender() AccountID {
+func (m MsgUpdateSymbolData) Sender() AccountID {
 	return types.NewAccountIDFromName(m.Creator)
 }
 
-// NewMsgUpdateCurrency new update dex currency msg
-func NewMsgUpdateCurrency(auth types.AccAddress,
+// NewMsgUpdateSymbol new update dex symbol msg
+func NewMsgUpdateSymbol(auth types.AccAddress,
 	creator types.Name,
 	base *BaseCurrency,
 	quote *QuoteCurrency,
-) MsgUpdateCurrency {
-	return MsgUpdateCurrency{
+) MsgUpdateSymbol {
+	return MsgUpdateSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
-			msg.WithData(ModuleCdc, &MsgUpdateCurrencyData{
+			msg.WithData(ModuleCdc, &MsgUpdateSymbolData{
 				Creator: creator,
 				Base:    *base,
 				Quote:   *quote,
@@ -335,12 +335,12 @@ func NewMsgUpdateCurrency(auth types.AccAddress,
 	}
 }
 
-// MsgPauseCurrency msg for pause dex currency
-type MsgPauseCurrency struct {
+// MsgPauseSymbol msg for pause dex symbol
+type MsgPauseSymbol struct {
 	types.KuMsg
 }
 
-func (msg MsgPauseCurrency) ValidateBasic() error {
+func (msg MsgPauseSymbol) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
@@ -352,45 +352,45 @@ func (msg MsgPauseCurrency) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
 	if 0 >= len(data.BaseCode) {
-		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+		return sdkerrors.Wrap(ErrSymbolBaseCodeEmpty, "base code not empty")
 	}
 	if 0 >= len(data.QuoteCode) {
-		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
 	}
 	return nil
 }
 
-func (msg MsgPauseCurrency) GetData() (MsgPauseCurrencyData, error) {
-	res := MsgPauseCurrencyData{}
+func (msg MsgPauseSymbol) GetData() (MsgPauseSymbolData, error) {
+	res := MsgPauseSymbolData{}
 	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
-		return MsgPauseCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+		return MsgPauseSymbolData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
 	}
 	return res, nil
 }
 
-// MsgPauseCurrencyData msg data for pause dex currency
-type MsgPauseCurrencyData struct {
+// MsgPauseSymbolData msg data for pause dex symbol
+type MsgPauseSymbolData struct {
 	Creator   Name   `json:"creator" yaml:"creator"`
 	BaseCode  string `json:"base_code" yaml:"base_code"`
 	QuoteCode string `json:"quote_code" yaml:"quote_code"`
 }
 
-func (MsgPauseCurrencyData) Type() types.Name { return types.MustName("pause@currency") }
+func (MsgPauseSymbolData) Type() types.Name { return types.MustName("pause@symbol") }
 
-func (m MsgPauseCurrencyData) Sender() AccountID {
+func (m MsgPauseSymbolData) Sender() AccountID {
 	return types.NewAccountIDFromName(m.Creator)
 }
 
-// NewMsgPauseCurrency new pause dex currency msg
-func NewMsgPauseCurrency(auth types.AccAddress,
+// NewMsgPauseSymbol new pause dex symbol msg
+func NewMsgPauseSymbol(auth types.AccAddress,
 	creator types.Name,
 	baseCode,
 	quoteCode string,
-) MsgPauseCurrency {
-	return MsgPauseCurrency{
+) MsgPauseSymbol {
+	return MsgPauseSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
-			msg.WithData(ModuleCdc, &MsgPauseCurrencyData{
+			msg.WithData(ModuleCdc, &MsgPauseSymbolData{
 				Creator:   creator,
 				BaseCode:  baseCode,
 				QuoteCode: quoteCode,
@@ -398,12 +398,12 @@ func NewMsgPauseCurrency(auth types.AccAddress,
 	}
 }
 
-// MsgRestoreCurrency msg for restore dex currency
-type MsgRestoreCurrency struct {
+// MsgRestoreSymbol msg for restore dex symbol
+type MsgRestoreSymbol struct {
 	types.KuMsg
 }
 
-func (msg MsgRestoreCurrency) ValidateBasic() error {
+func (msg MsgRestoreSymbol) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
@@ -415,45 +415,45 @@ func (msg MsgRestoreCurrency) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
 	if 0 >= len(data.BaseCode) {
-		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+		return sdkerrors.Wrap(ErrSymbolBaseCodeEmpty, "base code not empty")
 	}
 	if 0 >= len(data.QuoteCode) {
-		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
 	}
 	return nil
 }
 
-func (msg MsgRestoreCurrency) GetData() (MsgRestoreCurrencyData, error) {
-	res := MsgRestoreCurrencyData{}
+func (msg MsgRestoreSymbol) GetData() (MsgRestoreSymbolData, error) {
+	res := MsgRestoreSymbolData{}
 	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
-		return MsgRestoreCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+		return MsgRestoreSymbolData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
 	}
 	return res, nil
 }
 
-// MsgRestoreCurrencyData msg data for restore dex currency
-type MsgRestoreCurrencyData struct {
+// MsgRestoreSymbolData msg data for restore dex symbol
+type MsgRestoreSymbolData struct {
 	Creator   Name   `json:"creator" yaml:"creator"`
 	BaseCode  string `json:"base_code" yaml:"base_code"`
 	QuoteCode string `json:"quote_code" yaml:"quote_code"`
 }
 
-func (MsgRestoreCurrencyData) Type() types.Name { return types.MustName("restore@currency") }
+func (MsgRestoreSymbolData) Type() types.Name { return types.MustName("restore@symbol") }
 
-func (m MsgRestoreCurrencyData) Sender() AccountID {
+func (m MsgRestoreSymbolData) Sender() AccountID {
 	return types.NewAccountIDFromName(m.Creator)
 }
 
-// NewMsgRestoreCurrency new restore dex currency msg
-func NewMsgRestoreCurrency(auth types.AccAddress,
+// NewMsgRestoreSymbol new restore dex symbol msg
+func NewMsgRestoreSymbol(auth types.AccAddress,
 	creator types.Name,
 	baseCode,
 	quoteCode string,
-) MsgRestoreCurrency {
-	return MsgRestoreCurrency{
+) MsgRestoreSymbol {
+	return MsgRestoreSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
-			msg.WithData(ModuleCdc, &MsgRestoreCurrencyData{
+			msg.WithData(ModuleCdc, &MsgRestoreSymbolData{
 				Creator:   creator,
 				BaseCode:  baseCode,
 				QuoteCode: quoteCode,
@@ -461,12 +461,12 @@ func NewMsgRestoreCurrency(auth types.AccAddress,
 	}
 }
 
-// MsgShutdownCurrency msg for shutdown dex currency
-type MsgShutdownCurrency struct {
+// MsgShutdownSymbol msg for shutdown dex symbol
+type MsgShutdownSymbol struct {
 	types.KuMsg
 }
 
-func (msg MsgShutdownCurrency) ValidateBasic() error {
+func (msg MsgShutdownSymbol) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
@@ -478,45 +478,45 @@ func (msg MsgShutdownCurrency) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
 	if 0 >= len(data.BaseCode) {
-		return sdkerrors.Wrap(ErrCurrencyBaseCodeEmpty, "base code not empty")
+		return sdkerrors.Wrap(ErrSymbolBaseCodeEmpty, "base code not empty")
 	}
 	if 0 >= len(data.QuoteCode) {
-		return sdkerrors.Wrap(ErrCurrencyQuoteCodeEmpty, "quote code not empty")
+		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
 	}
 	return nil
 }
 
-func (msg MsgShutdownCurrency) GetData() (MsgShutdownCurrencyData, error) {
-	res := MsgShutdownCurrencyData{}
+func (msg MsgShutdownSymbol) GetData() (MsgShutdownSymbolData, error) {
+	res := MsgShutdownSymbolData{}
 	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
-		return MsgShutdownCurrencyData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+		return MsgShutdownSymbolData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
 	}
 	return res, nil
 }
 
-// MsgUpdateCurrencyData msg data for update dex currency
-type MsgShutdownCurrencyData struct {
+// MsgUpdateSymbolData msg data for update dex symbol
+type MsgShutdownSymbolData struct {
 	Creator   Name   `json:"creator" yaml:"creator"`
 	BaseCode  string `json:"base_code" yaml:"base_code"`
 	QuoteCode string `json:"quote_code" yaml:"quote_code"`
 }
 
-func (MsgShutdownCurrencyData) Type() types.Name { return types.MustName("shutdown@currency") }
+func (MsgShutdownSymbolData) Type() types.Name { return types.MustName("shutdown@symbol") }
 
-func (m MsgShutdownCurrencyData) Sender() AccountID {
+func (m MsgShutdownSymbolData) Sender() AccountID {
 	return types.NewAccountIDFromName(m.Creator)
 }
 
-// NewMsgUpdateCurrency new update dex currency msg
-func NewMsgShutdownCurrency(auth types.AccAddress,
+// NewMsgUpdateSymbol new update dex symbol msg
+func NewMsgShutdownSymbol(auth types.AccAddress,
 	creator types.Name,
 	baseCode,
 	quoteCode string,
-) MsgShutdownCurrency {
-	return MsgShutdownCurrency{
+) MsgShutdownSymbol {
+	return MsgShutdownSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
-			msg.WithData(ModuleCdc, &MsgShutdownCurrencyData{
+			msg.WithData(ModuleCdc, &MsgShutdownSymbolData{
 				Creator:   creator,
 				BaseCode:  baseCode,
 				QuoteCode: quoteCode,

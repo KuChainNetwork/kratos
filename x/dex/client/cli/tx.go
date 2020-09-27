@@ -32,11 +32,11 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		CreateDex(cdc),
 		UpdateDexDescriptionCmd(cdc),
 		DestroyDex(cdc),
-		CreateCurrency(cdc),
-		UpdateCurrency(cdc),
-		PauseCurrency(cdc),
-		RestoreCurrency(cdc),
-		ShutdownCurrency(cdc),
+		CreateSymbol(cdc),
+		UpdateSymbol(cdc),
+		PauseSymbol(cdc),
+		RestoreSymbol(cdc),
+		ShutdownSymbol(cdc),
 	)
 
 	return txCmd
@@ -149,12 +149,12 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 	return flags.PostCommands(cmd)[0]
 }
 
-// CreateCurrency returns a create currency command
-func CreateCurrency(cdc *codec.Codec) *cobra.Command {
+// CreateSymbol returns a create symbol command
+func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create_currency [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
+		Use: "create_symbol [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
 			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url] [domain_address]",
-		Short: "Create dex currency",
+		Short: "Create dex symbol",
 		Args:  cobra.ExactArgs(12),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
@@ -196,12 +196,12 @@ func CreateCurrency(cdc *codec.Codec) *cobra.Command {
 			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
-				err = errors.Wrapf(err, "create dex currency account %s auth error", creator)
+				err = errors.Wrapf(err, "create dex symbol account %s auth error", creator)
 				return
 			}
 
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgCreateCurrency(
+				types.NewMsgCreateSymbol(
 					auth,
 					creator,
 					&types.BaseCurrency{
@@ -233,12 +233,12 @@ func CreateCurrency(cdc *codec.Codec) *cobra.Command {
 	return flags.PostCommands(cmd)[0]
 }
 
-// UpdateCurrency returns a update currency command
-func UpdateCurrency(cdc *codec.Codec) *cobra.Command {
+// UpdateSymbol returns a update symbol command
+func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "update_currency [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
+		Use: "update_symbol [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
 			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url]",
-		Short: "Update dex currency",
+		Short: "Update dex symbol",
 		Args:  cobra.ExactArgs(11),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
@@ -281,12 +281,12 @@ func UpdateCurrency(cdc *codec.Codec) *cobra.Command {
 			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
-				err = errors.Wrapf(err, "update dex currency account %s auth error", creator)
+				err = errors.Wrapf(err, "update dex symbol account %s auth error", creator)
 				return
 			}
 
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgUpdateCurrency(
+				types.NewMsgUpdateSymbol(
 					auth,
 					creator,
 					&types.BaseCurrency{
@@ -315,11 +315,11 @@ func UpdateCurrency(cdc *codec.Codec) *cobra.Command {
 	return flags.PostCommands(cmd)[0]
 }
 
-// PauseCurrency returns a pause currency command
-func PauseCurrency(cdc *codec.Codec) *cobra.Command {
+// PauseSymbol returns a pause symbol command
+func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pause_currency [creator] [base_code] [quote_code]",
-		Short: "Pause dex currency",
+		Use:   "pause_symbol [creator] [base_code] [quote_code]",
+		Short: "Pause dex symbol",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
@@ -340,11 +340,11 @@ func PauseCurrency(cdc *codec.Codec) *cobra.Command {
 			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
-				err = errors.Wrapf(err, "pause currency account %s auth error", creator)
+				err = errors.Wrapf(err, "pause symbol account %s auth error", creator)
 				return
 			}
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgPauseCurrency(auth, creator, baseCode, quoteCode),
+				types.NewMsgPauseSymbol(auth, creator, baseCode, quoteCode),
 			})
 			return
 		},
@@ -352,11 +352,11 @@ func PauseCurrency(cdc *codec.Codec) *cobra.Command {
 	return flags.PostCommands(cmd)[0]
 }
 
-// RestoreCurrency returns a restore currency command
-func RestoreCurrency(cdc *codec.Codec) *cobra.Command {
+// RestoreSymbol returns a restore symbol command
+func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "restore_currency [creator] [base_code] [quote_code]",
-		Short: "Restore dex currency",
+		Use:   "restore_symbol [creator] [base_code] [quote_code]",
+		Short: "Restore dex symbol",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
@@ -377,11 +377,11 @@ func RestoreCurrency(cdc *codec.Codec) *cobra.Command {
 			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
-				err = errors.Wrapf(err, "restore currency account %s auth error", creator)
+				err = errors.Wrapf(err, "restore symbol account %s auth error", creator)
 				return
 			}
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgRestoreCurrency(auth, creator, baseCode, quoteCode),
+				types.NewMsgRestoreSymbol(auth, creator, baseCode, quoteCode),
 			})
 			return
 		},
@@ -389,11 +389,11 @@ func RestoreCurrency(cdc *codec.Codec) *cobra.Command {
 	return flags.PostCommands(cmd)[0]
 }
 
-// ShutdownCurrency returns a shutdown currency command
-func ShutdownCurrency(cdc *codec.Codec) *cobra.Command {
+// ShutdownSymbol returns a shutdown symbol command
+func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "shutdown_currency [creator] [base_code] [quote_code]",
-		Short: "Shutdown dex currency",
+		Use:   "shutdown_symbol [creator] [base_code] [quote_code]",
+		Short: "Shutdown dex symbol",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
@@ -414,11 +414,11 @@ func ShutdownCurrency(cdc *codec.Codec) *cobra.Command {
 			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
-				err = errors.Wrapf(err, "shutdown currency account %s auth error", creator)
+				err = errors.Wrapf(err, "shutdown symbol account %s auth error", creator)
 				return
 			}
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgShutdownCurrency(auth, creator, baseCode, quoteCode),
+				types.NewMsgShutdownSymbol(auth, creator, baseCode, quoteCode),
 			})
 			return
 		},

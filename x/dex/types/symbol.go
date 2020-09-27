@@ -68,74 +68,83 @@ func (object *QuoteCurrency) Equal(other *QuoteCurrency) bool {
 	return object.CurrencyBase.Equal(&other.CurrencyBase)
 }
 
-// Currency
-type Currency struct {
+// Symbol
+type Symbol struct {
 	Base          BaseCurrency  `json:"base" yaml:"base"`
 	Quote         QuoteCurrency `json:"quote" yaml:"quote"`
 	DomainAddress string        `json:"domain_address" yaml:"domain_address"`
+	Height        int64         `json:"height" yaml:"height"`
 	CreateTime    time.Time     `json:"create_time" yaml:"create_time"`
 	IsPaused      bool          `json:"is_paused" yaml:"is_paused"`
 }
 
 // WithBase set base currency param
-func (object *Currency) WithBase(base *BaseCurrency) *Currency {
+func (object *Symbol) WithBase(base *BaseCurrency) *Symbol {
 	object.Base = *base
 	return object
 }
 
 // WithQuote set quote currency param
-func (object *Currency) WithQuote(quote *QuoteCurrency) *Currency {
+func (object *Symbol) WithQuote(quote *QuoteCurrency) *Symbol {
 	object.Quote = *quote
 	return object
 }
 
 // WithDomainAddress set domain address
-func (object *Currency) WithDomainAddress(address string) *Currency {
+func (object *Symbol) WithDomainAddress(address string) *Symbol {
 	object.DomainAddress = address
 	return object
 }
 
+// WithHeight set block height
+func (object *Symbol) WithHeight(height int64) *Symbol {
+	object.Height = height
+	return object
+}
+
 // WithCreateTime set create time
-func (object *Currency) WithCreateTime(createTime time.Time) *Currency {
+func (object *Symbol) WithCreateTime(createTime time.Time) *Symbol {
 	object.CreateTime = createTime
 	return object
 }
 
 // WithPaused set pause flag
-func (object *Currency) WithPaused(paused bool) *Currency {
+func (object *Symbol) WithPaused(paused bool) *Symbol {
 	object.IsPaused = paused
 	return object
 }
 
 // Validate validate
-func (object *Currency) Validate() bool {
+func (object *Symbol) Validate() bool {
 	return object.Quote.Validate() &&
 		object.Base.Validate() &&
 		0 < len(object.DomainAddress) &&
+		0 < object.Height &&
 		!object.CreateTime.IsZero()
 }
 
 // Paused check currency pause flag
-func (object *Currency) Paused() bool {
+func (object *Symbol) Paused() bool {
 	return object.IsPaused
 }
 
 // Equal check whether self equals other
-func (object *Currency) Equal(other *Currency) bool {
+func (object *Symbol) Equal(other *Symbol) bool {
 	return object.Base.Equal(&other.Base) &&
 		object.Quote.Equal(&other.Quote) &&
 		object.DomainAddress == other.DomainAddress &&
+		object.Height == other.Height &&
 		object.CreateTime.Equal(other.CreateTime) &&
 		object.IsPaused == other.IsPaused
 }
 
-// NewEmptyCurrency new empty currency
-func NewEmptyCurrency() *Currency {
-	return &Currency{}
+// NewEmptySymbol new empty currency
+func NewEmptySymbol() *Symbol {
+	return &Symbol{}
 }
 
-// NewCurrency new currency with base currency and quote currency
-func NewCurrency(base *BaseCurrency, quote *QuoteCurrency,
-	domainAddress string) *Currency {
-	return &Currency{Base: *base, Quote: *quote, DomainAddress: domainAddress}
+// NewSymbol new currency with base currency and quote currency
+func NewSymbol(base *BaseCurrency, quote *QuoteCurrency,
+	domainAddress string) *Symbol {
+	return &Symbol{Base: *base, Quote: *quote, DomainAddress: domainAddress}
 }

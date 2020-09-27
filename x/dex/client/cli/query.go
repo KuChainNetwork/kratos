@@ -24,7 +24,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 
 	cmd.AddCommand(
 		GetDexCmd(cdc),
-		GetCurrency(cdc),
+		GetSymbol(cdc),
 	)
 
 	return cmd
@@ -57,11 +57,11 @@ func GetDexCmd(cdc *codec.Codec) *cobra.Command {
 	return flags.GetCommands(cmd)[0]
 }
 
-// GetCurrency returns a query currency
-func GetCurrency(cdc *codec.Codec) *cobra.Command {
+// GetSymbol returns a query symbol
+func GetSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "currency [creator] [base code] [quote code]",
-		Short: "Query dex currency",
+		Use:   "symbol [creator] [base code] [quote code]",
+		Short: "Query dex symbol",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
@@ -85,9 +85,9 @@ func GetCurrency(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			currency, ok := dex.Currency(args[1], args[2])
+			symbol, ok := dex.Symbol(args[1], args[2])
 			if ok {
-				err = cliCtx.PrintOutput(currency)
+				err = cliCtx.PrintOutput(symbol)
 			}
 			return
 		},

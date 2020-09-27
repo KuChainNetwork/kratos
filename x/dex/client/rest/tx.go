@@ -28,7 +28,7 @@ type DestroyDexReq struct {
 	Creator string       `json:"creator" yml:"creator"`
 }
 
-type CreateCurrencyReq struct {
+type CreateSymbolReq struct {
 	BaseReq       rest.BaseReq        `json:"base_req" yaml:"base_req"`
 	Creator       string              `json:"creator" yaml:"creator"`
 	Base          types.BaseCurrency  `json:"base" yaml:"base"`
@@ -36,14 +36,14 @@ type CreateCurrencyReq struct {
 	DomainAddress string              `json:"domain_address" yaml:"domain_address"`
 }
 
-type UpdateCurrencyReq struct {
+type UpdateSymbolReq struct {
 	BaseReq rest.BaseReq        `json:"base_req" yaml:"base_req"`
 	Creator string              `json:"creator" yaml:"creator"`
 	Base    types.BaseCurrency  `json:"base" yaml:"base"`
 	Quote   types.QuoteCurrency `json:"quote" yaml:"quote"`
 }
 
-type ShutdownCurrencyReq struct {
+type ShutdownSymbolReq struct {
 	BaseReq   rest.BaseReq `json:"base_req" yaml:"base_req"`
 	Creator   string       `json:"creator" yaml:"creator"`
 	BaseCode  string       `json:"base_code" yaml:"base_code"`
@@ -60,22 +60,22 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		destroyDexHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
 	r.HandleFunc(
-		"/dex/currency/create",
-		createCurrencyHandlerFn(cliCtx),
+		"/dex/symbol/create",
+		createSymbolHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
 	r.HandleFunc(
-		"/dex/currency/update",
-		updateCurrencyHandlerFn(cliCtx),
+		"/dex/symbol/update",
+		updateSymbolHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
-	r.HandleFunc("/dex/currency/pause",
-		pauseCurrencyHandlerFn(cliCtx),
+	r.HandleFunc("/dex/symbol/pause",
+		pauseSymbolHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
-	r.HandleFunc("/dex/currency/restore",
-		restoreCurrencyHandlerFn(cliCtx),
+	r.HandleFunc("/dex/symbol/restore",
+		restoreSymbolHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
 	r.HandleFunc(
-		"/dex/currency/shutdown",
-		shutdownCurrencyHandlerFn(cliCtx),
+		"/dex/symbol/shutdown",
+		shutdownSymbolHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
 }
 
@@ -163,8 +163,8 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-// createCurrencyHandlerFn returns the create currency handler
-func createCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+// createSymbolHandlerFn returns the create currency handler
+func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -177,7 +177,7 @@ func createCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
 		}
-		var req CreateCurrencyReq
+		var req CreateSymbolReq
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
@@ -200,7 +200,7 @@ func createCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgCreateCurrency(addr,
+			types.NewMsgCreateSymbol(addr,
 				name,
 				&req.Base,
 				&req.Quote,
@@ -211,8 +211,8 @@ func createCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-// updateCurrencyHandlerFn returns the update currency handler
-func updateCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+// updateSymbolHandlerFn returns the update currency handler
+func updateSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -225,7 +225,7 @@ func updateCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
 		}
-		var req UpdateCurrencyReq
+		var req UpdateSymbolReq
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
@@ -249,7 +249,7 @@ func updateCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgUpdateCurrency(addr,
+			types.NewMsgUpdateSymbol(addr,
 				name,
 				&req.Base,
 				&req.Quote,
@@ -258,8 +258,8 @@ func updateCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-// pauseCurrencyHandlerFn returns the pause currency handler
-func pauseCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+// pauseSymbolHandlerFn returns the pause currency handler
+func pauseSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -272,7 +272,7 @@ func pauseCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
 		}
-		var req ShutdownCurrencyReq
+		var req ShutdownSymbolReq
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
@@ -296,7 +296,7 @@ func pauseCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgPauseCurrency(addr,
+			types.NewMsgPauseSymbol(addr,
 				name,
 				req.BaseCode,
 				req.QuoteCode,
@@ -305,8 +305,8 @@ func pauseCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-// restoreCurrencyHandlerFn returns the restore currency handler
-func restoreCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+// restoreSymbolHandlerFn returns the restore currency handler
+func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -319,7 +319,7 @@ func restoreCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
 		}
-		var req ShutdownCurrencyReq
+		var req ShutdownSymbolReq
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
@@ -343,7 +343,7 @@ func restoreCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgRestoreCurrency(addr,
+			types.NewMsgRestoreSymbol(addr,
 				name,
 				req.BaseCode,
 				req.QuoteCode,
@@ -352,8 +352,8 @@ func restoreCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-// updateCurrencyHandlerFn returns the shutdown currency handler
-func shutdownCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+// updateSymbolHandlerFn returns the shutdown currency handler
+func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -366,7 +366,7 @@ func shutdownCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
 		}
-		var req ShutdownCurrencyReq
+		var req ShutdownSymbolReq
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
@@ -390,7 +390,7 @@ func shutdownCurrencyHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgShutdownCurrency(addr,
+			types.NewMsgShutdownSymbol(addr,
 				name,
 				req.BaseCode,
 				req.QuoteCode,
