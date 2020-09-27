@@ -134,8 +134,9 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			msg := types.NewMsgDestroyDex(auth, creator)
-			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{msg})
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgDestroyDex(auth, creator),
+			})
 			return
 		},
 	}

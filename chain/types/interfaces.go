@@ -12,6 +12,7 @@ type (
 // AssetTransfer a interface for asset coins transfer
 type AssetTransfer interface {
 	Transfer(ctx sdk.Context, from, to AccountID, amount Coins) error
+	ApplyApporve(ctx sdk.Context, from, to AccountID, amount Coins) error
 }
 
 // AccountAuther a interface for account auth getter

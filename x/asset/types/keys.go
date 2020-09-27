@@ -33,6 +33,7 @@ var (
 	CoinLockedStatStoreKeyPrefix = chainTypes.MustName("coin.locks").Bytes()
 	CoinStatStoreKeyPrefix       = chainTypes.MustName("coin.stat").Bytes()
 	CoinDescStoreKeyPrefix       = chainTypes.MustName("coin.desc").Bytes()
+	CoinApproveStoreKeyPrefix    = chainTypes.MustName("coin.approve").Bytes()
 
 	coinStoreKeyPreLen = len(AssetModuleKeyPrefix)
 )
@@ -123,4 +124,9 @@ func CoinDescStoreKey(creator, symbol chainTypes.Name) []byte {
 		return genCoinStoreKey(CoinDescStoreKeyPrefix, symbol.Bytes())
 	}
 	return genCoinStoreKey(CoinDescStoreKeyPrefix, creator.Bytes(), symbol.Bytes())
+}
+
+// ApproveStoreKey get the key of coin approve store keeper for asset
+func ApproveStoreKey(account, spender AccountID) []byte {
+	return genCoinStoreKey(CoinApproveStoreKeyPrefix, account.Bytes(), spender.Bytes())
 }

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/pkg/errors"
 
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
@@ -26,8 +27,16 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 		return
 	}
 	// check the dex can be destroyed
-	if !dex.CanDestroy() {
-		err = errors.Wrapf(types.ErrDexCanNotBeDestroyed, "dex %s can not be deleted", creator.String())
+	if !dex.CanDestroy(&ctx) {
+		err = errors.Wrapf(types.ErrDexCanNotBeDestroyed,
+			"dex %s can not be destroy", creator.String())
+		return
+	}
+	// transfer asset to coin power
+	if err = a.assetKeeper.CoinsToPower(ctx,
+		types.ModuleAccountID,
+		chainTypes.NewAccountIDFromName(creator),
+		dex.Staking); nil != err {
 		return
 	}
 	a.deleteDex(ctx, dex)
@@ -40,7 +49,12 @@ func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 	description string) (err error) {
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
-		err = errors.Wrapf(types.ErrDexHadCreated, "dex %s not exists", creator.String())
+		err = errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
+		return
+	}
+	// check description max length
+	if types.MaxDexDescriptorLen < len(description) {
+		err = errors.Wrapf(types.ErrDexDescTooLong, "dex %s description too long", creator.String())
 		return
 	}
 	dex.Description = description
@@ -64,6 +78,7 @@ func (a DexKeeper) getDex(ctx sdk.Context, creator types.Name) (*types.Dex, bool
 	return res, true
 }
 
+// setDex set dex data
 func (a DexKeeper) setDex(ctx sdk.Context, dex *types.Dex) {
 	store := ctx.KVStore(a.key)
 	bz, err := a.cdc.MarshalBinaryBare(*dex)
@@ -74,11 +89,13 @@ func (a DexKeeper) setDex(ctx sdk.Context, dex *types.Dex) {
 	store.Set(types.DexStoreKey(dex.Creator), bz)
 }
 
+// deleteDex delete dex data
 func (a DexKeeper) deleteDex(ctx sdk.Context, dex *types.Dex) {
 	store := ctx.KVStore(a.key)
 	store.Delete(types.DexStoreKey(dex.Creator))
 }
 
+// nextNumber next dex number
 func (a DexKeeper) nextNumber(ctx sdk.Context) (n uint64) {
 	var err error
 	store := ctx.KVStore(a.key)
