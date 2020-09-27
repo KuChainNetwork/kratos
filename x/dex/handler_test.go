@@ -3,6 +3,8 @@ package dex_test
 import (
 	"testing"
 
+	"github.com/tendermint/tendermint/libs/rand"
+
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	dexTypes "github.com/KuChainNetwork/kuchain/x/dex/types"
