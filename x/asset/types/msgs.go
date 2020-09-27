@@ -346,6 +346,7 @@ func (msg MsgLockCoin) ValidateBasic() error {
 		}
 	}
 
+	// now version user cannot lock its coin forever
 	if data.UnlockBlockHeight <= 0 {
 		return ErrAssetLockUnlockBlockHeightErr
 	}

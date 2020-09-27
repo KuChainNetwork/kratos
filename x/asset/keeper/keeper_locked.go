@@ -99,7 +99,7 @@ func (a AssetKeeper) LockCoins(ctx sdk.Context, account types.AccountID, unlockB
 		return types.ErrAssetLockCoinsNoEnough
 	}
 
-	if unlockBlockHeight <= ctx.BlockHeight() {
+	if unlockBlockHeight > 0 && unlockBlockHeight <= ctx.BlockHeight() {
 		return types.ErrAssetLockUnlockBlockHeightErr
 	}
 
@@ -108,10 +108,21 @@ func (a AssetKeeper) LockCoins(ctx sdk.Context, account types.AccountID, unlockB
 		return sdkerrors.Wrap(err, "LockCoins: get coins locked stat")
 	}
 
-	stat.Lockeds = append(stat.Lockeds, LockedCoins{
-		Coins:             coins,
-		UnlockBlockHeight: unlockBlockHeight,
-	})
+	inserted := false
+	for idx, locked := range stat.Lockeds {
+		if locked.UnlockBlockHeight == unlockBlockHeight {
+			stat.Lockeds[idx].Coins = locked.Coins.Add(coins...)
+			inserted = true
+			break
+		}
+	}
+
+	if !inserted {
+		stat.Lockeds = append(stat.Lockeds, LockedCoins{
+			Coins:             coins,
+			UnlockBlockHeight: unlockBlockHeight,
+		})
+	}
 
 	if err := a.setCoinsLockedStat(ctx, account, stat); err != nil {
 		return sdkerrors.Wrap(err, "LockCoins: set coins locked stat")
@@ -144,7 +155,7 @@ func (a AssetKeeper) UnLockCoins(ctx sdk.Context, account types.AccountID, coins
 	}
 
 	for _, l := range stat.Lockeds {
-		if l.UnlockBlockHeight <= height {
+		if l.UnlockBlockHeight >= 0 && l.UnlockBlockHeight <= height {
 			coinsCanUnLocked = coinsCanUnLocked.Add(l.Coins...)
 		} else {
 			newStat.Lockeds = append(newStat.Lockeds, l)
@@ -169,6 +180,62 @@ func (a AssetKeeper) UnLockCoins(ctx sdk.Context, account types.AccountID, coins
 	err = a.setCoinsLockedStat(ctx, account, newStat)
 	return sdkerrors.Wrap(err, "UnlockedCoins")
 
+}
+
+// UnLockFreezedCoins unlock freezed coins which UnlockBlockHeight is < 0
+func (a AssetKeeper) UnLockFreezedCoins(ctx sdk.Context, account types.AccountID, coins types.Coins) error {
+	coinLocked, err := a.getCoinsLocked(ctx, account)
+	if err != nil {
+		return sdkerrors.Wrap(err, "UnlockCoins: get coins locked")
+	}
+
+	stat, err := a.getCoinsLockedStat(ctx, account)
+	if err != nil {
+		return sdkerrors.Wrap(err, "UnlockCoins: get coins locked stat")
+	}
+
+	founded := false
+	for idx, l := range stat.Lockeds {
+		if l.UnlockBlockHeight < 0 {
+			coinsLocked := stat.Lockeds[idx].Coins
+
+			newCoins, hasNeg := coinsLocked.SafeSub(coins)
+			if hasNeg {
+				return sdkerrors.Wrapf(types.ErrAssetUnLockCoins, "unlock sum be %s >= %s",
+					coinsLocked.String(), coins.String())
+			}
+
+			stat.Lockeds[idx].Coins = newCoins
+			if newCoins.IsZero() {
+				ll := len(stat.Lockeds)
+				if (idx + 1) != ll {
+					stat.Lockeds[idx] = stat.Lockeds[ll-1]
+				}
+				stat.Lockeds = stat.Lockeds[:ll-1]
+			}
+			founded = true
+			break
+		}
+	}
+
+	if !founded {
+		return sdkerrors.Wrapf(types.ErrAssetUnLockCoins,
+			"no found locked freezed coins")
+	}
+
+	newCoinsLocked, isNegative := coinLocked.SafeSub(coins)
+	if isNegative {
+		return sdkerrors.Wrapf(types.ErrAssetUnLockCoins, "unlock sum be %s >= %s",
+			coins.String(), coinLocked.String())
+	}
+
+	err = a.setCoinsLocked(ctx, account, newCoinsLocked)
+	if err != nil {
+		return sdkerrors.Wrap(err, "UnlockedCoins")
+	}
+
+	err = a.setCoinsLockedStat(ctx, account, stat)
+	return sdkerrors.Wrap(err, "UnlockedCoins")
 }
 
 // GetLockCoins get locked data
