@@ -34,9 +34,11 @@ var (
 	// ModuleDexKeyPrefix prefix for asset store
 	ModuleDexKeyPrefix = []byte{0x0B}
 
-	DexStoreKeyPrefix = MustName("dex").Bytes()
-
 	DexNumberStoreKey = MustName("dex.number").Bytes()
+
+	DexStoreKeyPrefix       = MustName("dex").Bytes()
+	DexSigInStoreKeyPrefix  = MustName("dex.sigin").Bytes()
+	DexSigSumStoreKeyPrefix = MustName("dex.sigsum").Bytes()
 )
 
 func Logger(ctx sdk.Context) log.Logger {
@@ -53,6 +55,10 @@ func genStoreKey(pre []byte, keys ...[]byte) []byte {
 	return res
 }
 
+func GenStoreKey(pre []byte, keys ...[]byte) []byte {
+	return genStoreKey(pre, keys...)
+}
+
 // DexStoreKey get the key of coin state store keeper for asset
 func DexStoreKey(creator Name) []byte {
 	return genStoreKey(DexStoreKeyPrefix, creator.Bytes())
@@ -60,5 +66,5 @@ func DexStoreKey(creator Name) []byte {
 
 // GetNumberStoreKey get the key of next dex number
 func GetDexNumberStoreKey() []byte {
-	return genStoreKey(DexStoreKeyPrefix, DexNumberStoreKey)
+	return genStoreKey(DexNumberStoreKey)
 }

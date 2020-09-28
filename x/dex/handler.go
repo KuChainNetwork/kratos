@@ -139,7 +139,9 @@ func handleMsgDexSigIn(ctx chainTypes.Context, k Keeper, msg *types.MsgDexSigIn)
 
 	ctx.RequireAuth(msgData.User)
 
-	// FIXME: imp sigin
+	if err := k.SigIn(ctx.Context(), msgData.User, msgData.Dex, msgData.Amount); err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

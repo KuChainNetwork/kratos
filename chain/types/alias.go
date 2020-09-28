@@ -1,6 +1,8 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 type (
 	AccAddress = sdk.AccAddress
@@ -9,6 +11,12 @@ type (
 
 var (
 	AccAddressFromBech32 = sdk.AccAddressFromBech32
+)
+
+type (
+	StoreKey          = sdk.StoreKey
+	KVStoreKey        = sdk.KVStoreKey
+	TransientStoreKey = sdk.TransientStoreKey
 )
 
 // MustAccAddressFromBech32 AccAddressFromBech32 if error then panic
