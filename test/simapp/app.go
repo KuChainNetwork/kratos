@@ -105,6 +105,8 @@ type SimApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
+	wallet *Wallet
+
 	invCheckPeriod uint
 
 	// keys to access the substores
@@ -434,4 +436,13 @@ func GetMaccPerms() map[string][]string {
 		dupMaccPerms[k] = v
 	}
 	return dupMaccPerms
+}
+
+func (app *SimApp) WithWallet(w *Wallet) *SimApp {
+	app.wallet = w
+	return app
+}
+
+func (app SimApp) GetWallet() *Wallet {
+	return app.wallet
 }
