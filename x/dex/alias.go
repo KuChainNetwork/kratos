@@ -23,6 +23,8 @@ var (
 
 type (
 	GenesisState = types.GenesisState
+	AccountID    = types.AccountID
+	Coins        = types.Coins
 )
 
 type (
