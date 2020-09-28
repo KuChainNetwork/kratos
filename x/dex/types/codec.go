@@ -21,6 +21,8 @@ func RegisterCodec(cdc *codec.Codec) {
 
 	cdc.RegisterConcrete(&MsgDexSigIn{}, "dex/sigin", nil)
 	cdc.RegisterConcrete(&MsgDexSigInData{}, "dex/siginData", nil)
+	cdc.RegisterConcrete(&MsgDexSigOut{}, "dex/sigout", nil)
+	cdc.RegisterConcrete(&MsgDexSigOutData{}, "dex/sigoutData", nil)
 }
 
 func init() {

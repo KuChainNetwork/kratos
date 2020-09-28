@@ -319,6 +319,17 @@ func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *ty
 
 	ctx.RequireAuth(msgData.Id)
 
+	apporveCoins, err := k.GetApproveCoins(ctx.Context(), msgData.Id, msgData.Spender)
+	if apporveCoins != nil {
+		if apporveCoins.IsLock == true {
+			return nil, types.ErrAssetApporveCannotChangeLock
+		}
+
+		if apporveCoins.IsLock && apporveCoins.Amount.IsAnyGT(msgData.Amount) {
+			return nil, sdkerrors.Wrap(types.ErrAssetApporveCannotChangeLock, "amount in lock apporve cannot be less")
+		}
+	}
+
 	err = k.Approve(ctx.Context(), msgData.Id, msgData.Spender, msgData.Amount, false)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "msg approve handler error")
