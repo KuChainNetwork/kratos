@@ -12,3 +12,7 @@ var (
 	ErrDexStakingsNotMatch  = sdkerrors.Register(ModuleName, 5, "dex stakings not match")
 	ErrDexWasDestroy        = sdkerrors.Register(ModuleName, 6, "dex was destroy")
 )
+
+var (
+	ErrDexSigInChangeToNegative = sdkerrors.Register(ModuleName, 7, "dex sigIn amt should cannot tobe changed to negative")
+)

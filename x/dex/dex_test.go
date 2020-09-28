@@ -31,6 +31,16 @@ var (
 	addAccount1 = types.NewAccountIDFromAccAdd(addr1)
 )
 
+var (
+	dexName1    = types.MustName("dexaccount1")
+	dexAccount1 = types.NewAccountIDFromName(dexName1)
+	dexAddr1    = wallet.NewAccAddressByName(dexName1)
+
+	dexName2    = types.MustName("dexaccount2")
+	dexAccount2 = types.NewAccountIDFromName(dexName2)
+	dexAddr2    = wallet.NewAccAddressByName(dexName2)
+)
+
 func createAppForTest() (*simapp.SimApp, sdk.Context) {
 	asset1 := types.NewCoins(
 		types.NewInt64Coin("foo/coin", 10000000),
@@ -47,8 +57,11 @@ func createAppForTest() (*simapp.SimApp, sdk.Context) {
 		simapp.NewSimGenesisAccount(account3, addr3).WithAsset(asset3),
 		simapp.NewSimGenesisAccount(account4, addr4).WithAsset(asset2),
 		simapp.NewSimGenesisAccount(account5, addr5).WithAsset(asset2),
+		simapp.NewSimGenesisAccount(dexAccount1, dexAddr1).WithAsset(asset2),
+		simapp.NewSimGenesisAccount(dexAccount2, dexAddr2).WithAsset(asset2),
 	)
 	app := simapp.SetupWithGenesisAccounts(genAccs)
+	app = app.WithWallet(wallet)
 
 	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
 	return app, ctxCheck

@@ -40,10 +40,6 @@ func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt t
 		if apporveCoins.IsLock != isLock {
 			return types.ErrAssetApporveCannotChangeLock
 		}
-
-		if apporveCoins.IsLock && apporveCoins.Amount.IsAnyGT(amt) {
-			return sdkerrors.Wrap(types.ErrAssetApporveCannotChangeLock, "amount in lock apporve cannot be less")
-		}
 	} else {
 		apporveCoins = NewApproveData(amt)
 	}

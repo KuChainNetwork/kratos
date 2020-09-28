@@ -3,11 +3,16 @@ package keeper
 import (
 	"fmt"
 
-	assetKeeper "github.com/KuChainNetwork/kuchain/x/asset/keeper"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
+)
+
+type (
+	AccountID = types.AccountID
+	Coins     = types.Coins
+	Coin      = types.Coin
 )
 
 // DexKeeper for asset state
@@ -16,13 +21,13 @@ type DexKeeper struct {
 	key sdk.StoreKey
 	// The codec codec for binary encoding/decoding of accounts.
 	cdc         *codec.Codec
-	assetKeeper assetKeeper.AssetKeeper
+	assetKeeper IAssetKeeper
 }
 
 // NewDexKeeper new keeper for a dex
 func NewDexKeeper(cdc *codec.Codec,
 	key sdk.StoreKey,
-	keeper assetKeeper.AssetKeeper) DexKeeper {
+	keeper IAssetKeeper) DexKeeper {
 	return DexKeeper{
 		key:         key,
 		cdc:         cdc,

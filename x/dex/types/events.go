@@ -8,7 +8,11 @@ const (
 	EventTypeCreateDex            = "createDex"
 	EventTypeUpdateDexDescription = "updateDexDescription"
 	EventTypeDestroyDex           = "destroyDex"
+	EventTypeDexSigIn             = "dexSigIn"
+	EventTypeDexSigOut            = "dexSigOut"
 )
+
+// TODO: use one in all modules
 
 const (
 	AttributeKeyFrom          = "from"
@@ -25,4 +29,7 @@ const (
 	AttributeKeyIssueToHeight = "issueToHeight"
 	AttributeKeyInit          = "init"
 	AttributeKeyDescription   = "desc"
+	AttributeKeyUser          = "user"
+	AttributeKeyDex           = "dex"
+	AttributeKeyIsTimeout     = "isTimeout"
 )
