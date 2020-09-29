@@ -3,12 +3,13 @@ package dex_test
 import (
 	"testing"
 
+	"github.com/tendermint/tendermint/libs/rand"
+
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	dexTypes "github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/tendermint/tendermint/libs/rand"
 )
 
 func CreateDexForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, account types.AccountID, stakings types.Coins, desc []byte) error {
