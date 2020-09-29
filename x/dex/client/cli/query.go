@@ -25,6 +25,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(
 		GetDexCmd(cdc),
 		GetSymbol(cdc),
+		GetSigInCmd(cdc),
 	)
 
 	return cmd
@@ -92,5 +93,37 @@ func GetSymbol(cdc *codec.Codec) *cobra.Command {
 			return
 		},
 	}
+	return flags.GetCommands(cmd)[0]
+}
+
+// GetSignInCmd returns a query dex
+func GetSigInCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "getSigIn [account] [dex]",
+		Short: "Query sigIn status for account to dex",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			getter := types.NewDexRetriever(cliCtx)
+
+			acc, err := chainTypes.NewAccountIDFromStr(args[0])
+			if err != nil {
+				return errors.Wrap(err, "acc")
+			}
+
+			dex, err := chainTypes.NewAccountIDFromStr(args[1])
+			if err != nil {
+				return errors.Wrap(err, "dex")
+			}
+
+			c, _, err := getter.GetSigInWithHeight(acc, dex)
+			if err != nil {
+				return errors.Wrap(err, "get")
+			}
+
+			return cliCtx.PrintOutput(c)
+		},
+	}
+
 	return flags.GetCommands(cmd)[0]
 }

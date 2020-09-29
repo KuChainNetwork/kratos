@@ -37,6 +37,8 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		PauseSymbol(cdc),
 		RestoreSymbol(cdc),
 		ShutdownSymbol(cdc),
+		SigInCmd(cdc),
+		SigOutCmd(cdc),
 	)
 
 	return txCmd

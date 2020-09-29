@@ -16,6 +16,8 @@ func NewQuerier(keeper DexKeeper) sdk.Querier {
 		switch path[0] {
 		case types.QueryDex:
 			return queryDex(ctx, req, keeper)
+		case types.QuerySigIn:
+			return querySigIn(ctx, req, keeper)
 		default:
 			return nil, errors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
 		}
@@ -35,6 +37,23 @@ func queryDex(ctx sdk.Context, req abci.RequestQuery, keeper DexKeeper) ([]byte,
 	}
 
 	bz, err := codec.MarshalJSONIndent(keeper.cdc, *dex)
+	if err != nil {
+		return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	}
+
+	return bz, nil
+}
+
+// querySigIn query sigIn for a dex
+func querySigIn(ctx sdk.Context, req abci.RequestQuery, keeper DexKeeper) ([]byte, error) {
+	var params types.QueryDexSigInParams
+	if err := keeper.cdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, errors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	}
+
+	coins := keeper.GetSigInForDex(ctx, params.Account, params.Dex)
+
+	bz, err := codec.MarshalJSONIndent(keeper.cdc, coins)
 	if err != nil {
 		return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
