@@ -47,6 +47,7 @@ var (
 	ErrKuMsgToNotEqual            = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 16), "KuMsg to not equal")
 	ErrKuMsgAmountNotEqual        = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 17), "KuMsg amount not equal")
 	ErrKuMsgSpenderShouldNotEqual = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 18), "KuMsg apporve id and spender should not equal")
+	ErrKuMsgTransferError         = sdkerrors.Register(KuCodeSpace, errorCode(kuMsgErrorCodeRoot, 19), "KuMsg transfer error")
 )
 
 var (
