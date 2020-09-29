@@ -16,8 +16,8 @@ func TestCreateAssetOpt(t *testing.T) {
 		var (
 			se         = types.MustName("abc")
 			demon      = types.CoinDenom(name4, se) // creator has @
-			maxSupply  = types.Coin{demon, types.NewInt(10000000000000)}
-			initSupply = types.Coin{demon, types.NewInt(0)}
+			maxSupply  = NewInt64Coin(demon, 10000000000000)
+			initSupply = NewInt64Coin(demon, 0)
 			desc       = []byte(fmt.Sprintf("desc for %s", demon))
 		)
 

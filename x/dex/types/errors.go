@@ -21,3 +21,7 @@ var (
 	ErrSymbolDomainAddressInvalid = sdkerrors.Register(ModuleName, 14, "dex symbol domain address invalid")
 	ErrSymbolUpdateFieldsInvalid  = sdkerrors.Register(ModuleName, 15, "dex symbol update fields invalid")
 )
+
+var (
+	ErrDexSigInChangeToNegative = sdkerrors.Register(ModuleName, 16, "dex sigIn amt should cannot tobe changed to negative")
+)

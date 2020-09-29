@@ -8,12 +8,19 @@ const (
 	EventTypeCreateDex            = "createDex"
 	EventTypeUpdateDexDescription = "updateDexDescription"
 	EventTypeDestroyDex           = "destroyDex"
-	EventTypeCreateSymbol         = "createSymbol"
-	EventTypeUpdateSymbol         = "updateSymbol"
-	EventTypePauseSymbol          = "pauseSymbol"
-	EventTypeRestoreSymbol        = "restoreSymbol"
-	EventTypeShutdownSymbol       = "shutdownSymbol"
+
+	EventTypeCreateSymbol   = "createSymbol"
+	EventTypeUpdateSymbol   = "updateSymbol"
+	EventTypePauseSymbol    = "pauseSymbol"
+	EventTypeRestoreSymbol  = "restoreSymbol"
+	EventTypeShutdownSymbol = "shutdownSymbol"
+
+	EventTypeDexSigIn  = "dexSigIn"
+	EventTypeDexSigOut = "dexSigOut"
+	EventTypeDexDeal   = "dexDeal"
 )
+
+// TODO: use one in all modules
 
 const (
 	AttributeKeyFrom                = "from"
@@ -42,4 +49,19 @@ const (
 	AttributeKeySymbolQuoteIconUrl  = "quoteIconUrl"
 	AttributeKeySymbolQuoteTxUrl    = "quoteTxUrl"
 	AttributeKeySymbolDomainAddress = "domainAddress"
+	AttributeKeyUser                = "user"
+)
+
+const (
+	AttributeKeyDex       = "dex"
+	AttributeKeyIsTimeout = "isTimeout"
+)
+
+const (
+	AttributeKeyDealRole1  = "role1"
+	AttributeKeyDealFee1   = "fee1"
+	AttributeKeyDealToken1 = "token1"
+	AttributeKeyDealRole2  = "role2"
+	AttributeKeyDealFee2   = "fee2"
+	AttributeKeyDealToken2 = "token2"
 )

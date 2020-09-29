@@ -24,12 +24,28 @@ type MsgTransfer struct {
 }
 
 // NewMsgTransfer create msg transfer
-func NewMsgTransfer(auth types.AccAddress, from types.AccountID, to types.AccountID, amount Coins) MsgTransfer {
+func NewMsgTransfer(auth types.AccAddress, from AccountID, to AccountID, amount Coins) MsgTransfer {
 	return MsgTransfer{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithTransfer(from, to, amount),
+		),
+	}
+}
+
+// NewMsgTransfers create msg transfer
+func NewMsgTransfers(auth types.AccAddress, ts []types.KuMsgTransfer) MsgTransfer {
+	opts := make([]msg.Option, 0, len(ts)+1)
+	opts = append(opts, msg.WithAuth(auth))
+	for _, t := range ts {
+		opts = append(opts, msg.WithTransfer(t.From, t.To, t.Amount))
+	}
+
+	return MsgTransfer{
+		*msg.MustNewKuMsg(
+			RouterKeyName,
+			opts...,
 		),
 	}
 }
@@ -47,25 +63,25 @@ type MsgCreateCoin struct {
 }
 
 type MsgCreateCoinData struct {
-	Symbol        Name   `json:"symbol" yaml:"symbol"`                             // Symbol coin symbol name
-	Creator       Name   `json:"creator" yaml:"creator"`                           // Creator coin creator account name
-	MaxSupply     Coin   `json:"max_supply" yaml:"max_supply"`                     // MaxSupply coin max supply limit
-	CanIssue      bool   `json:"can_issue,omitempty" yaml:"can_issue"`             // CanIssue if the coin can issue after create
-	CanLock       bool   `json:"can_lock,omitempty" yaml:"can_lock"`               // CanLock if the coin can lock by user
-	CanBurn       bool   `json:"can_burn,omitempty" yaml:"can_burn"`               // CanBurn if the coin can burn by user
-	IssueToHeight int64  `json:"issue_to_height,omitempty" yaml:"issue_to_height"` // IssueToHeight if this is not zero, creator only can issue this
-	InitSupply    Coin   `json:"init_supply" yaml:"init_supply"`                   // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
-	Desc          []byte `json:"desc" yaml:"desc"`                                 // Description
+	Symbol        Name   `json:"symbol" yaml:"symbol"`                   // Symbol coin symbol name
+	Creator       Name   `json:"creator" yaml:"creator"`                 // Creator coin creator account name
+	MaxSupply     Coin   `json:"max_supply" yaml:"max_supply"`           // MaxSupply coin max supply limit
+	CanIssue      bool   `json:"can_issue" yaml:"can_issue"`             // CanIssue if the coin can issue after create
+	CanLock       bool   `json:"can_lock" yaml:"can_lock"`               // CanLock if the coin can lock by user
+	CanBurn       bool   `json:"can_burn" yaml:"can_burn"`               // CanBurn if the coin can burn by user
+	IssueToHeight int64  `json:"issue_to_height" yaml:"issue_to_height"` // IssueToHeight if this is not zero, creator only can issue this
+	InitSupply    Coin   `json:"init_supply" yaml:"init_supply"`         // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+	Desc          []byte `json:"desc" yaml:"desc"`                       // Description
 }
 
-func (MsgCreateCoinData) Type() types.Name { return types.MustName("create@asset") }
+func (MsgCreateCoinData) Type() types.Name { return types.MustName("create") }
 
 func (msg MsgCreateCoinData) Sender() AccountID {
 	return NewAccountIDFromName(msg.Creator)
 }
 
 // NewMsgCreate new create coin msg
-func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, maxSupply types.Coin, canIssue, canLock, canBurn bool, issue2Height int64, initSupply types.Coin, desc []byte) MsgCreateCoin {
+func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, maxSupply Coin, canIssue, canLock, canBurn bool, issue2Height int64, initSupply Coin, desc []byte) MsgCreateCoin {
 	return MsgCreateCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -154,7 +170,7 @@ func (msg MsgIssueCoinData) Sender() AccountID {
 }
 
 // NewMsgIssue new issue msg
-func NewMsgIssue(auth types.AccAddress, creator, symbol types.Name, amount types.Coin) MsgIssueCoin {
+func NewMsgIssue(auth types.AccAddress, creator, symbol types.Name, amount Coin) MsgIssueCoin {
 	return MsgIssueCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -219,7 +235,7 @@ func (msg MsgBurnCoinData) Sender() AccountID {
 }
 
 // NewMsgBurn new issue msg
-func NewMsgBurn(auth types.AccAddress, id types.AccountID, amount types.Coin) MsgBurnCoin {
+func NewMsgBurn(auth types.AccAddress, id AccountID, amount Coin) MsgBurnCoin {
 	return MsgBurnCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -277,14 +293,14 @@ type MsgLockCoinData struct {
 }
 
 // Type imp for data KuMsgData
-func (m *MsgLockCoinData) Type() types.Name { return types.MustName("lock@coin") }
+func (m *MsgLockCoinData) Type() types.Name { return types.MustName("lock") }
 
 func (m MsgLockCoinData) Sender() AccountID {
 	return m.Id
 }
 
 // NewMsgLockCoin create new lock coin msg
-func NewMsgLockCoin(auth types.AccAddress, id types.AccountID, amount types.Coins, unlockBlockHeight int64) MsgLockCoin {
+func NewMsgLockCoin(auth types.AccAddress, id AccountID, amount Coins, unlockBlockHeight int64) MsgLockCoin {
 	return MsgLockCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -330,6 +346,7 @@ func (msg MsgLockCoin) ValidateBasic() error {
 		}
 	}
 
+	// now version user cannot lock its coin forever
 	if data.UnlockBlockHeight <= 0 {
 		return ErrAssetLockUnlockBlockHeightErr
 	}
@@ -348,14 +365,14 @@ type MsgUnlockCoinData struct {
 }
 
 // Type imp for data KuMsgData
-func (m *MsgUnlockCoinData) Type() types.Name { return types.MustName("unlock@coin") }
+func (m *MsgUnlockCoinData) Type() types.Name { return types.MustName("unlock") }
 
 func (m MsgUnlockCoinData) Sender() AccountID {
 	return m.Id
 }
 
 // NewMsgUnlockCoin create new lock coin msg
-func NewMsgUnlockCoin(auth types.AccAddress, id types.AccountID, amount types.Coins) MsgUnlockCoin {
+func NewMsgUnlockCoin(auth types.AccAddress, id AccountID, amount Coins) MsgUnlockCoin {
 	return MsgUnlockCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -420,7 +437,7 @@ func (msg MsgExerciseCoinData) Sender() AccountID {
 }
 
 // NewMsgBurn new issue msg
-func NewMsgExercise(auth types.AccAddress, id types.AccountID, amount types.Coin) MsgExerciseCoin {
+func NewMsgExercise(auth types.AccAddress, id AccountID, amount Coin) MsgExerciseCoin {
 	return MsgExerciseCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -465,6 +482,79 @@ func (msg MsgExerciseCoin) ValidateBasic() error {
 
 	if data.Amount.IsZero() {
 		return ErrAssetCoinNoZero
+	}
+
+	return nil
+}
+
+type MsgApprove struct {
+	types.KuMsg
+}
+
+type MsgApproveData struct {
+	Id      AccountID `json:"id" yaml:"id"`
+	Spender AccountID `json:"spender" yaml:"spender"`
+	Amount  Coins     `json:"amount" yaml:"amount"`
+}
+
+// Type imp for data KuMsgData
+func (MsgApproveData) Type() types.Name { return types.MustName("approve") }
+
+func (msg MsgApproveData) Sender() AccountID {
+	return msg.Id
+}
+
+// NewMsgApprove new approve msg
+func NewMsgApprove(auth types.AccAddress, id, spender AccountID, amount Coins) MsgApprove {
+	return MsgApprove{
+		*msg.MustNewKuMsg(
+			RouterKeyName,
+			msg.WithAuth(auth),
+			msg.WithData(Cdc(), &MsgApproveData{
+				Id:      id,
+				Spender: spender,
+				Amount:  amount,
+			}),
+		),
+	}
+}
+
+func (msg MsgApprove) GetData() (MsgApproveData, error) {
+	res := MsgApproveData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgApproveData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgApprove) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Id.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMsgAccountIDNil, "id accountID empty")
+	}
+
+	if data.Spender.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMsgAccountIDNil, "spender accountID empty")
+	}
+
+	if data.Id.Eq(data.Spender) {
+		return sdkerrors.Wrap(types.ErrKuMsgSpenderShouldNotEqual, "spender should not be equal to id")
+	}
+
+	// TODO: Now version, account can not be approve to a module account or other account with no auth.
+	// In future Maybe need, it is no need to check if to is a module account
+	// approve to a module account but module account cannot transfer coins
+
+	if data.Amount.IsAnyNegative() {
+		return ErrAssetCoinNoEnough
 	}
 
 	return nil

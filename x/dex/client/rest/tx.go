@@ -50,6 +50,12 @@ type ShutdownSymbolReq struct {
 	QuoteCode string       `json:"quote_code" yaml:"quote_code"`
 }
 
+type UpdateDexReq struct {
+	BaseReq     rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Creator     string       `json:"creator" yaml:"creator"`
+	Description string       `json:"description" yaml:"description"`
+}
+
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/create",
@@ -76,6 +82,10 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/symbol/shutdown",
 		shutdownSymbolHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
+	r.HandleFunc(
+		"/dex/update",
+		updateDexHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
 }
 
@@ -352,7 +362,7 @@ func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-// updateSymbolHandlerFn returns the shutdown currency handler
+// shutdownSymbolHandlerFn returns the shutdown currency handler
 func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
@@ -395,6 +405,51 @@ func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				req.BaseCode,
 				req.QuoteCode,
 			),
+		})
+	}
+}
+
+// updateDexHandlerFn returns the shutdown currency handler
+func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+
+			}
+		}()
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+
+		var req UpdateDexReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+		if types.MaxDexDescriptorLen < len(req.Description) {
+			err = types.ErrDexDescTooLong
+
+			return
+		}
+		req.BaseReq = req.BaseReq.Sanitize()
+		var name chainTypes.Name
+		if name, err = chainTypes.NewName(req.Creator); nil != err {
+			return
+		}
+		var addr chainTypes.AccAddress
+		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
+			return
+		}
+		var creatorAccountID chainTypes.AccountID
+		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
+			return
+		}
+		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+
+			types.NewMsgUpdateDexDescription(addr, name, []byte(req.Description)),
 		})
 	}
 }

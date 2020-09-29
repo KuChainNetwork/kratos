@@ -116,7 +116,7 @@ func (a AssetKeeper) CoinsToPower(ctx sdk.Context, from, to types.AccountID, amt
 		return sdkerrors.Wrap(types.ErrAssetCoinNoEnough, "CoinsToPower: sub coins")
 	}
 
-	if err := a.checkIsCanUseCoins(ctx, from, amt, coins); err != nil {
+	if err := a.checkIsCanUseCoins(ctx, from, amt, coins, false); err != nil {
 		return sdkerrors.Wrap(err, "coinsToPower")
 	}
 

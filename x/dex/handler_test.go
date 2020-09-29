@@ -4,16 +4,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tendermint/tendermint/libs/rand"
+
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	dexTypes "github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/tendermint/tendermint/libs/rand"
 )
 
-func CreateDexForTest(t *testing.T, app *simapp.SimApp, wallet *simapp.Wallet, isSuccess bool, account types.AccountID, stakings types.Coins, desc []byte) error {
+func CreateDexForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, account types.AccountID, stakings types.Coins, desc []byte) error {
 	ctx := app.NewTestContext()
+	wallet := app.GetWallet()
 
 	var (
 		acc     = account
@@ -162,14 +164,14 @@ func TestHandleCreateDex(t *testing.T) {
 	})
 
 	Convey("test transfer desc too long", t, func() {
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			false,
 			account4, types.NewInt64CoreCoins(111),
 			make([]byte, 520)), simapp.ShouldErrIs, dexTypes.ErrDexDescTooLong)
 	})
 
 	Convey("test transfer create two times", t, func() {
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			false,
 			account5, types.NewInt64CoreCoins(111),
 			[]byte("hello")), simapp.ShouldErrIs, dexTypes.ErrDexHadCreated)
@@ -180,12 +182,12 @@ func TestHandleCreateDexNumber(t *testing.T) {
 	app, _ := createAppForTest()
 
 	Convey("test create dex number", t, func() {
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			account4, types.NewInt64CoreCoins(111),
 			[]byte("account4")), ShouldBeNil)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			account5, types.NewInt64CoreCoins(111),
 			[]byte("account5")), ShouldBeNil)
@@ -219,7 +221,7 @@ func TestHandleUpdateDexDescription(t *testing.T) {
 			auth    = wallet.GetAuth(acc)
 		)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			acc, types.NewInt64CoreCoins(111),
 			[]byte("account4")), ShouldBeNil)
@@ -272,7 +274,7 @@ func TestHandleDestroyDex(t *testing.T) {
 			auth    = wallet.GetAuth(acc)
 		)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			acc, types.NewInt64CoreCoins(1000),
 			[]byte("account4")), ShouldBeNil)
@@ -324,7 +326,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 			auth    = wallet.GetAuth(acc)
 		)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			acc, types.NewInt64CoreCoins(1000),
 			[]byte("account4")), ShouldBeNil)
@@ -471,7 +473,7 @@ func TestHandleUpdateSymbol(t *testing.T) {
 			auth    = wallet.GetAuth(acc)
 		)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			acc, types.NewInt64CoreCoins(1000),
 			[]byte("account4")), ShouldBeNil)
@@ -604,7 +606,7 @@ func TestHandlePauseSymbol(t *testing.T) {
 			auth    = wallet.GetAuth(acc)
 		)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			acc, types.NewInt64CoreCoins(1000),
 			[]byte("account4")), ShouldBeNil)
@@ -730,7 +732,7 @@ func TestHandleRestoreSymbol(t *testing.T) {
 			auth    = wallet.GetAuth(acc)
 		)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			acc, types.NewInt64CoreCoins(1000),
 			[]byte("account4")), ShouldBeNil)
@@ -884,7 +886,7 @@ func TestShutdownSymbol(t *testing.T) {
 			auth    = wallet.GetAuth(acc)
 		)
 
-		So(CreateDexForTest(t, app, wallet,
+		So(CreateDexForTest(t, app,
 			true,
 			acc, types.NewInt64CoreCoins(1000),
 			[]byte("account4")), ShouldBeNil)

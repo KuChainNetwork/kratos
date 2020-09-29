@@ -23,6 +23,15 @@ type KuMsgTransfer struct {
 	Amount Coins     `json:"amount" yaml:"amount"`
 }
 
+// NewKuMsgTransfer create a kuMsgTransfer
+func NewKuMsgTransfer(from, to AccountID, amount Coins) KuMsgTransfer {
+	return KuMsgTransfer{
+		From:   from,
+		To:     to,
+		Amount: amount,
+	}
+}
+
 // KuMsg is the base msg for token transfer msg
 type KuMsg struct {
 	Auth      []sdk.AccAddress `json:"auth,omitempty" yaml:"auth"`
