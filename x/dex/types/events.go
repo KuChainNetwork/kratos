@@ -10,6 +10,7 @@ const (
 	EventTypeDestroyDex           = "destroyDex"
 	EventTypeDexSigIn             = "dexSigIn"
 	EventTypeDexSigOut            = "dexSigOut"
+	EventTypeDexDeal              = "dexDeal"
 )
 
 // TODO: use one in all modules

@@ -145,3 +145,67 @@ func (msg MsgDexSigOut) ValidateBasic() error {
 
 	return nil
 }
+
+type MsgDexDeal struct {
+	types.KuMsg
+}
+
+type MsgDexDealData struct {
+	Dex     AccountID `json:"dex" yaml:"dex"`
+	ExtData []byte    `json:"ext" yaml:"ext"`       // some external datas
+	ID      []byte    `json:"id" yaml:"id"`         // L2 block id for prove
+	Hash    []byte    `json:"hash" yaml:"hash"`     // L2 hash for prove
+	Proves  []byte    `json:"proves" yaml:"proves"` // L2 prove datas
+}
+
+// Type imp for data KuMsgData
+func (MsgDexDealData) Type() types.Name { return types.MustName("deal") }
+
+func (msg MsgDexDealData) Sender() AccountID {
+	return msg.Dex
+}
+
+// NewMsgDexSigOut new dex sig in msg
+func NewMsgDexDeal(auth types.AccAddress, dex AccountID, from, to AccountID, fromAsset, toAsset, feeFromFrom, feeFromTo Coin, ext []byte) MsgDexDeal {
+	return MsgDexDeal{
+		*msg.MustNewKuMsg(
+			RouterKeyName,
+			msg.WithAuth(auth),
+			// from -> dex -> to
+			msg.WithTransfer(from, dex, types.NewCoins(fromAsset.Add(feeFromFrom))),
+			msg.WithTransfer(dex, to, types.NewCoins(fromAsset)),
+			// to -> dex -> from
+			msg.WithTransfer(to, dex, types.NewCoins(toAsset.Add(feeFromTo))),
+			msg.WithTransfer(dex, from, types.NewCoins(toAsset)),
+			msg.WithData(Cdc(), &MsgDexDealData{
+				Dex:     dex,
+				ExtData: ext,
+			}),
+		),
+	}
+}
+
+func (msg MsgDexDeal) GetData() (MsgDexDealData, error) {
+	res := MsgDexDealData{}
+	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
+		return MsgDexDealData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+	}
+	return res, nil
+}
+
+func (msg MsgDexDeal) ValidateBasic() error {
+	if err := msg.KuMsg.ValidateTransfer(); err != nil {
+		return err
+	}
+
+	data, err := msg.GetData()
+	if err != nil {
+		return err
+	}
+
+	if data.Dex.Empty() {
+		return sdkerrors.Wrap(types.ErrKuMsgAccountIDNil, "dex accountID empty")
+	}
+
+	return nil
+}

@@ -102,10 +102,6 @@ func (k DexKeeper) SigIn(ctx sdk.Context, id, dex AccountID, amt Coins) error {
 		return errors.Wrapf(err, "asset Approve error")
 	}
 
-	if err := k.assetKeeper.LockCoins(ctx, id, -1, amt); err != nil {
-		return errors.Wrapf(err, "asset lock coins error")
-	}
-
 	return nil
 }
 
@@ -125,10 +121,6 @@ func (k DexKeeper) SigOut(ctx sdk.Context, isTimeout bool, id, dex AccountID, am
 	// change asset state
 	if err := k.assetKeeper.Approve(ctx, id, dex, curr, true); err != nil {
 		return errors.Wrapf(err, "asset Approve error")
-	}
-
-	if err := k.assetKeeper.UnLockFreezedCoins(ctx, id, amt); err != nil {
-		return errors.Wrapf(err, "asset lock coins error")
 	}
 
 	return nil

@@ -35,8 +35,23 @@ func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt t
 
 	logger.Debug("approve coins", "id", id, "spender", spender, "amount", amt)
 
+	approveSumCoins, err := a.GetApproveSum(ctx, id)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "approve %s get sum error", id)
+	}
+
 	apporveCoins, err := a.getApprove(ctx, id, spender)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "approve %s get error", id)
+	}
+
 	if apporveCoins != nil {
+		if approveAll, hasNeg := approveSumCoins.SafeSub(apporveCoins.Amount); hasNeg {
+			return sdkerrors.Wrap(types.ErrAssetApporveNotEnough, "sum approve less than old")
+		} else {
+			approveSumCoins = approveAll
+		}
+
 		if apporveCoins.IsLock != isLock {
 			return types.ErrAssetApporveCannotChangeLock
 		}
@@ -44,12 +59,20 @@ func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt t
 		apporveCoins = NewApproveData(amt)
 	}
 
+	// add new value
+	approveSumCoins = approveSumCoins.Add(amt...)
+
 	apporveCoins.IsLock = isLock
 	apporveCoins.Amount = amt
 
 	err = a.setApprove(ctx, id, spender, *apporveCoins)
 	if err != nil {
-		return sdkerrors.Wrapf(err, "approve %s to %s by %s error", id, spender, amt)
+		return sdkerrors.Wrapf(err, "approve set %s to %s by %s error", id, spender, amt)
+	}
+
+	err = a.updateApproveSum(ctx, id, approveSumCoins)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "approve sum set %s to %s by %s error", id, spender, amt)
 	}
 
 	return nil
