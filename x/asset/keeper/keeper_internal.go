@@ -245,6 +245,26 @@ func (a AssetKeeper) setApprove(ctx sdk.Context, account, spender types.AccountI
 	return nil
 }
 
+func (a AssetKeeper) updateApproveSum(ctx sdk.Context, account types.AccountID, sum types.Coins) error {
+	store := ctx.KVStore(a.key)
+	key := types.ApproveSumStoreKey(account)
+
+	bz, err := a.cdc.MarshalBinaryBare(sum)
+	if err != nil {
+		return sdkerrors.Wrap(err, "set coins marshal error")
+	}
+
+	if bz == nil {
+		if store.Has(key) {
+			store.Delete(key)
+		}
+		return nil
+	}
+
+	store.Set(key, bz)
+	return nil
+}
+
 func (a AssetKeeper) getApprove(ctx sdk.Context, account, spender types.AccountID) (*ApproveData, error) {
 	store := ctx.KVStore(a.key)
 	bz := store.Get(types.ApproveStoreKey(account, spender))
@@ -259,4 +279,20 @@ func (a AssetKeeper) getApprove(ctx sdk.Context, account, spender types.AccountI
 	}
 
 	return &res, nil
+}
+
+func (a AssetKeeper) GetApproveSum(ctx sdk.Context, account types.AccountID) (types.Coins, error) {
+	store := ctx.KVStore(a.key)
+	bz := store.Get(types.ApproveSumStoreKey(account))
+	if bz == nil {
+		return nil, nil
+	}
+
+	var res types.Coins
+
+	if err := a.cdc.UnmarshalBinaryBare(bz, &res); err != nil {
+		return nil, sdkerrors.Wrap(err, "get approve sum unmarshal")
+	}
+
+	return res, nil
 }

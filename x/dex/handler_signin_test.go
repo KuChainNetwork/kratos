@@ -76,13 +76,6 @@ func TestSignInMsg(t *testing.T) {
 		So(data, ShouldNotBeNil)
 		So(data.IsLock, ShouldBeTrue)
 		So(data.Amount, simapp.ShouldEq, amt)
-
-		all, locks, err := assetKeeper.GetLockCoins(ctx, account1)
-		So(err, ShouldBeNil)
-		So(all, simapp.ShouldEq, amt)
-		So(len(locks), ShouldEqual, 1)
-		So(locks[0].Coins, simapp.ShouldEq, amt)
-		So(locks[0].UnlockBlockHeight, ShouldBeLessThan, 0)
 	})
 }
 
@@ -104,13 +97,6 @@ func TestSignOutMsg(t *testing.T) {
 		So(data.IsLock, ShouldBeTrue)
 		So(data.Amount, simapp.ShouldEq, amt)
 
-		all, locks, err := assetKeeper.GetLockCoins(ctx, account1)
-		So(err, ShouldBeNil)
-		So(all, simapp.ShouldEq, amt)
-		So(len(locks), ShouldEqual, 1)
-		So(locks[0].Coins, simapp.ShouldEq, amt)
-		So(locks[0].UnlockBlockHeight, ShouldBeLessThan, 0)
-
 		out := types.NewInt64CoreCoins(77777)
 		left := amt.Sub(out)
 		So(SignOutMsgByDexForTest(t, app, true, account1, dexAccount1, out), ShouldBeNil)
@@ -123,13 +109,6 @@ func TestSignOutMsg(t *testing.T) {
 		So(data.IsLock, ShouldBeTrue)
 		So(data.Amount, simapp.ShouldEq, left)
 
-		all, locks, err = assetKeeper.GetLockCoins(ctx, account1)
-		So(err, ShouldBeNil)
-		So(all, simapp.ShouldEq, left)
-		So(len(locks), ShouldEqual, 1)
-		So(locks[0].Coins, simapp.ShouldEq, left)
-		So(locks[0].UnlockBlockHeight, ShouldBeLessThan, 0)
-
 		So(SignOutMsgByDexForTest(t, app, true, account1, dexAccount1, left), ShouldBeNil)
 
 		ctx = app.NewTestContext()
@@ -137,10 +116,5 @@ func TestSignOutMsg(t *testing.T) {
 		data, err = assetKeeper.GetApproveCoins(ctx, account1, dexAccount1)
 		So(err, ShouldBeNil)
 		So(data, ShouldBeNil)
-
-		all, locks, err = assetKeeper.GetLockCoins(ctx, account1)
-		So(err, ShouldBeNil)
-		So(all.IsZero(), ShouldBeTrue)
-		So(len(locks), ShouldEqual, 0)
 	})
 }

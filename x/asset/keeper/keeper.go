@@ -37,6 +37,7 @@ type AssetViewKeeper interface {
 	GetCoinStat(ctx sdk.Context, creator, symbol types.Name) (*types.CoinStat, error)
 	GetLockCoins(ctx sdk.Context, account types.AccountID) (types.Coins, []LockedCoins, error)
 	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (*ApproveData, error)
+	GetApproveSum(ctx sdk.Context, account types.AccountID) (types.Coins, error)
 }
 
 type AccountEnsurer interface {
@@ -143,7 +144,7 @@ func (a AssetKeeper) Burn(ctx sdk.Context, id types.AccountID, amount types.Coin
 		return sdkerrors.Wrap(types.ErrAssetCoinNoEnough, "burn coins error")
 	}
 
-	if err := a.checkIsCanUseCoins(ctx, id, NewCoins(amount), coins); err != nil {
+	if err := a.checkIsCanUseCoins(ctx, id, NewCoins(amount), coins, false); err != nil {
 		return sdkerrors.Wrap(err, "burn")
 	}
 
@@ -153,8 +154,11 @@ func (a AssetKeeper) Burn(ctx sdk.Context, id types.AccountID, amount types.Coin
 
 	return nil
 }
-
 func (a AssetKeeper) Transfer(ctx sdk.Context, from, to types.AccountID, amount types.Coins) error {
+	return a.TransferDetail(ctx, from, to, amount, false)
+}
+
+func (a AssetKeeper) TransferDetail(ctx sdk.Context, from, to types.AccountID, amount types.Coins, isApplyApprove bool) error {
 	logger := a.Logger(ctx)
 
 	logger.Debug("transfer coins", "from", from, "to", to, "amount", amount)
@@ -190,7 +194,7 @@ func (a AssetKeeper) Transfer(ctx sdk.Context, from, to types.AccountID, amount 
 		return sdkerrors.Wrap(types.ErrAssetCoinNoEnough, "transfer")
 	}
 
-	if err := a.checkIsCanUseCoins(ctx, from, amount, fromCoins); err != nil {
+	if err := a.checkIsCanUseCoins(ctx, from, amount, fromCoins, isApplyApprove); err != nil {
 		return sdkerrors.Wrap(err, "transfer")
 	}
 

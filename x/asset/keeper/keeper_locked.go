@@ -260,16 +260,27 @@ func (a AssetKeeper) CheckIsCanUseCoins(ctx sdk.Context, account types.AccountID
 		return sdkerrors.Wrap(err, "CheckIsCanUseCoins: get coins in lock coins")
 	}
 
-	return a.checkIsCanUseCoins(ctx, account, coins, currentCoins)
+	return a.checkIsCanUseCoins(ctx, account, coins, currentCoins, false)
 }
 
-func (a AssetKeeper) checkIsCanUseCoins(ctx sdk.Context, account types.AccountID, coins, currentCoins types.Coins) error {
+func (a AssetKeeper) checkIsCanUseCoins(ctx sdk.Context, account types.AccountID, coins, currentCoins types.Coins, isApplyApprove bool) error {
 	coinLocked, err := a.getCoinsLocked(ctx, account)
 	if err != nil {
 		return sdkerrors.Wrap(err, "CheckIsCanUseCoins: get coins locked")
 	}
 
-	if currentCoins.IsAllGTE(coinLocked.Add(coins...)) {
+	cannotUserCoins := coinLocked
+
+	if !isApplyApprove {
+		approveSumCoins, err := a.GetApproveSum(ctx, account)
+		if err != nil {
+			return sdkerrors.Wrap(err, "CheckIsCanUseCoins: get coins approve")
+		}
+
+		cannotUserCoins = cannotUserCoins.Add(approveSumCoins...)
+	}
+
+	if currentCoins.IsAllGTE(cannotUserCoins.Add(coins...)) {
 		return nil
 	} else {
 		return types.ErrAssetCoinsLocked

@@ -46,6 +46,11 @@ func (k DexKeeper) GetSigInSumForDex(ctx sdk.Context, dex AccountID) Coins {
 	return getCoinsFromKVStore(ctx, k.cdc, k.key, key)
 }
 
+func (k DexKeeper) GetSigInForDex(ctx sdk.Context, account, dex AccountID) Coins {
+	key := dexTypes.GenStoreKey(dexTypes.DexSigInStoreKeyPrefix, dex.Bytes(), account.Bytes())
+	return getCoinsFromKVStore(ctx, k.cdc, k.key, key)
+}
+
 func (k DexKeeper) updateSigInSumForDex(ctx sdk.Context, isSub bool, dex AccountID, amt Coins) error {
 	key := dexTypes.GenStoreKey(dexTypes.DexSigSumStoreKeyPrefix, dex.Bytes())
 	curr := getCoinsFromKVStore(ctx, k.cdc, k.key, key)
@@ -102,10 +107,6 @@ func (k DexKeeper) SigIn(ctx sdk.Context, id, dex AccountID, amt Coins) error {
 		return errors.Wrapf(err, "asset Approve error")
 	}
 
-	if err := k.assetKeeper.LockCoins(ctx, id, -1, amt); err != nil {
-		return errors.Wrapf(err, "asset lock coins error")
-	}
-
 	return nil
 }
 
@@ -127,8 +128,21 @@ func (k DexKeeper) SigOut(ctx sdk.Context, isTimeout bool, id, dex AccountID, am
 		return errors.Wrapf(err, "asset Approve error")
 	}
 
-	if err := k.assetKeeper.UnLockFreezedCoins(ctx, id, amt); err != nil {
-		return errors.Wrapf(err, "asset lock coins error")
+	return nil
+}
+
+func (k DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID, amtFrom, amtTo Coins) error {
+	if _, ok := k.getDex(ctx, dex.MustName()); !ok {
+		return errors.Wrapf(dexTypes.ErrDexNotExists, "dex %s not exists to sigin", dex.String())
+	}
+
+	// update sigIn state
+	if _, err := k.updateSigIn(ctx, true, from, dex, amtFrom); err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
+	}
+
+	if _, err := k.updateSigIn(ctx, true, to, dex, amtTo); err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, to, amtTo)
 	}
 
 	return nil

@@ -26,6 +26,8 @@ func NewHandler(k Keeper) msg.Handler {
 			return handleMsgDexSigIn(ctx, k, theMsg)
 		case *types.MsgDexSigOut:
 			return handleMsgDexSigOut(ctx, k, theMsg)
+		case *types.MsgDexDeal:
+			return handleMsgDexDeal(ctx, k, theMsg)
 		default:
 			return nil, errors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized asset message type: %T", msg)
 		}
@@ -192,6 +194,43 @@ func handleMsgDexSigOut(ctx chainTypes.Context, k Keeper, msg *types.MsgDexSigOu
 			sdk.NewAttribute(types.AttributeKeyDex, msgData.Dex.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
 			sdk.NewAttribute(types.AttributeKeyIsTimeout, strconv.FormatBool(msgData.IsTimeout)),
+		),
+	)
+
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}
+
+func handleMsgDexDeal(ctx chainTypes.Context, k Keeper, msg *types.MsgDexDeal) (*sdk.Result, error) {
+	logger := ctx.Logger()
+
+	msgData, err := msg.GetData()
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.RequireAuth(msgData.Dex)
+
+	logger.Debug("handle dex deal", "dex", msgData.Dex)
+
+	// Update sigIn status
+	acc1, ass1, acc2, ass2 := msg.GetDealByDex()
+	if err := k.Deal(ctx.Context(), msgData.Dex, acc1, acc2, ass1, ass2); err != nil {
+		return nil, err
+	}
+
+	fee1, fee2 := msg.GetDealFeeByDex()
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeDexDeal,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(types.AttributeKeyDex, msgData.Dex.String()),
+			sdk.NewAttribute(types.AttributeKeyDealRole1, acc1.String()),
+			sdk.NewAttribute(types.AttributeKeyDealToken1, ass1.String()),
+			sdk.NewAttribute(types.AttributeKeyDealFee1, fee1.String()),
+			sdk.NewAttribute(types.AttributeKeyDealRole2, acc2.String()),
+			sdk.NewAttribute(types.AttributeKeyDealToken2, ass2.String()),
+			sdk.NewAttribute(types.AttributeKeyDealFee2, fee2.String()),
 		),
 	)
 
