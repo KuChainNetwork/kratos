@@ -125,3 +125,20 @@ func (k DexKeeper) SigOut(ctx sdk.Context, isTimeout bool, id, dex AccountID, am
 
 	return nil
 }
+
+func (k DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID, amtFrom, amtTo Coins) error {
+	if _, ok := k.getDex(ctx, dex.MustName()); !ok {
+		return errors.Wrapf(dexTypes.ErrDexNotExists, "dex %s not exists to sigin", dex.String())
+	}
+
+	// update sigIn state
+	if _, err := k.updateSigIn(ctx, true, from, dex, amtFrom); err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
+	}
+
+	if _, err := k.updateSigIn(ctx, true, to, dex, amtTo); err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, to, amtTo)
+	}
+
+	return nil
+}

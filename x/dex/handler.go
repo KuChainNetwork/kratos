@@ -212,7 +212,11 @@ func handleMsgDexDeal(ctx chainTypes.Context, k Keeper, msg *types.MsgDexDeal) (
 
 	logger.Debug("handle dex deal", "dex", msgData.Dex)
 
-	// Now need do nothing but event
+	// Update sigIn status
+	acc1, ass1, acc2, ass2 := msg.GetDealByDex()
+	if err := k.Deal(ctx.Context(), msgData.Dex, acc1, acc2, ass1, ass2); err != nil {
+		return nil, err
+	}
 
 	// TODO: event to deal
 	ctx.EventManager().EmitEvent(
