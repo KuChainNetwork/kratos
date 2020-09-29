@@ -31,6 +31,18 @@ const (
 	AttributeKeyInit          = "init"
 	AttributeKeyDescription   = "desc"
 	AttributeKeyUser          = "user"
-	AttributeKeyDex           = "dex"
-	AttributeKeyIsTimeout     = "isTimeout"
+)
+
+const (
+	AttributeKeyDex       = "dex"
+	AttributeKeyIsTimeout = "isTimeout"
+)
+
+const (
+	AttributeKeyDealRole1  = "role1"
+	AttributeKeyDealFee1   = "fee1"
+	AttributeKeyDealToken1 = "token1"
+	AttributeKeyDealRole2  = "role2"
+	AttributeKeyDealFee2   = "fee2"
+	AttributeKeyDealToken2 = "token2"
 )

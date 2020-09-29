@@ -46,6 +46,11 @@ func (k DexKeeper) GetSigInSumForDex(ctx sdk.Context, dex AccountID) Coins {
 	return getCoinsFromKVStore(ctx, k.cdc, k.key, key)
 }
 
+func (k DexKeeper) GetSigInForDex(ctx sdk.Context, account, dex AccountID) Coins {
+	key := dexTypes.GenStoreKey(dexTypes.DexSigInStoreKeyPrefix, dex.Bytes(), account.Bytes())
+	return getCoinsFromKVStore(ctx, k.cdc, k.key, key)
+}
+
 func (k DexKeeper) updateSigInSumForDex(ctx sdk.Context, isSub bool, dex AccountID, amt Coins) error {
 	key := dexTypes.GenStoreKey(dexTypes.DexSigSumStoreKeyPrefix, dex.Bytes())
 	curr := getCoinsFromKVStore(ctx, k.cdc, k.key, key)

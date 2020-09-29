@@ -190,6 +190,11 @@ func (msg MsgDexDeal) GetDealByDex() (AccountID, Coins, AccountID, Coins) {
 	return trs[0].From, trs[0].Amount, trs[2].From, trs[2].Amount
 }
 
+func (msg MsgDexDeal) GetDealFeeByDex() (Coins, Coins) {
+	trs := msg.Transfers
+	return trs[0].Amount.Sub(trs[1].Amount), trs[2].Amount.Sub(trs[3].Amount)
+}
+
 func (msg MsgDexDeal) GetData() (MsgDexDealData, error) {
 	res := MsgDexDealData{}
 	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
