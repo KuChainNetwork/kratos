@@ -2,6 +2,7 @@ package dex_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/tendermint/tendermint/libs/rand"
 
@@ -312,5 +313,690 @@ func TestHandleDestroyDex(t *testing.T) {
 		So(dex, ShouldBeNil)
 		coins = app.AssetKeeper().GetCoinPowers(ctx, acc)
 		So(coins.IsEqual(types.NewInt64CoreCoins(1000)), ShouldBeTrue)
+	})
+}
+
+func TestHandleCreateSymbol(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test create symbol", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol := &dexTypes.Symbol{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&symbol.Base,
+			&symbol.Quote,
+			symbol.DomainAddress,
+			symbol.CreateTime)
+
+		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		symbol.Height = savedSymbol.Height // ignore height check
+		So(savedSymbol.Equal(symbol), ShouldBeTrue)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		symbol.Quote.Code = "2"
+		msgCreateSymbol = dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&symbol.Base,
+			&symbol.Quote,
+			symbol.DomainAddress,
+			symbol.CreateTime)
+
+		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedSymbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		symbol.Height = savedSymbol.Height // ignore height check
+		So(savedSymbol.Equal(symbol), ShouldBeTrue)
+
+		invalidSymbol := symbol
+		invalidSymbol.Base.Code = ""
+		So(dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&invalidSymbol.Base,
+			&invalidSymbol.Quote,
+			invalidSymbol.DomainAddress,
+			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+
+		invalidSymbol = symbol
+		invalidSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&invalidSymbol.Base,
+			&invalidSymbol.Quote,
+			invalidSymbol.DomainAddress,
+			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+
+		invalidSymbol = symbol
+		invalidSymbol.Base.Code = ""
+		invalidSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&invalidSymbol.Base,
+			&invalidSymbol.Quote,
+			invalidSymbol.DomainAddress,
+			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+
+		invalidSymbol = symbol
+		invalidSymbol.Base.Code = "1"
+		invalidSymbol.Base.TxUrl = ""
+		invalidSymbol.Quote.Code = "3"
+		So(dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&invalidSymbol.Base,
+			&invalidSymbol.Quote,
+			invalidSymbol.DomainAddress,
+			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+	})
+}
+
+func TestHandleUpdateSymbol(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test update symbol", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol := &dexTypes.Symbol{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&symbol.Base,
+			&symbol.Quote,
+			symbol.DomainAddress,
+			symbol.CreateTime)
+		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		symbol.Height = savedSymbol.Height // ignore height check
+		So(savedSymbol.Equal(symbol), ShouldBeTrue)
+
+		copiedSymbol := *symbol
+		copiedSymbol.Base.IconUrl = "base.icon.url"
+		copiedSymbol.Quote.IconUrl = "quote.icon.url"
+		msgUpdateSymbol := dexTypes.NewMsgUpdateSymbol(auth,
+			accName,
+			&copiedSymbol.Base,
+			&copiedSymbol.Quote)
+		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgUpdateSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedSymbol, ok = dex.Symbol(copiedSymbol.Base.Code, copiedSymbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(savedSymbol.Equal(&copiedSymbol), ShouldBeTrue)
+
+		copiedSymbol = *symbol
+		copiedSymbol.Base.Code = ""
+		So(dexTypes.NewMsgUpdateSymbol(auth,
+			accName,
+			&copiedSymbol.Base,
+			&copiedSymbol.Quote).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = *symbol
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgUpdateSymbol(auth,
+			accName,
+			&copiedSymbol.Base,
+			&copiedSymbol.Quote).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = *symbol
+		copiedSymbol.Base.Code = ""
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgUpdateSymbol(auth,
+			accName,
+			&copiedSymbol.Base,
+			&copiedSymbol.Quote).ValidateBasic(), ShouldNotBeNil)
+
+		var emptySymbol dexTypes.Symbol
+		emptySymbol.Base.Code = symbol.Base.Code
+		emptySymbol.Quote.Code = symbol.Quote.Code
+		So(dexTypes.NewMsgUpdateSymbol(auth,
+			accName,
+			&emptySymbol.Base,
+			&emptySymbol.Quote).ValidateBasic(), ShouldNotBeNil)
+	})
+}
+
+func TestHandlePauseSymbol(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test pause symbol handler", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol := dexTypes.Symbol{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&symbol.Base,
+			&symbol.Quote,
+			symbol.DomainAddress,
+			symbol.CreateTime)
+		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		symbol.Height = savedSymbol.Height // ignore height check
+		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
+
+		msgPauseSymbol := dexTypes.NewMsgPauseSymbol(auth,
+			accName,
+			symbol.Base.Code,
+			symbol.Quote.Code)
+		So(msgPauseSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgPauseSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(symbol.Paused(), ShouldBeTrue)
+
+		copiedSymbol := symbol
+		copiedSymbol.Base.Code = ""
+		So(dexTypes.NewMsgPauseSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = symbol
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgPauseSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = symbol
+		copiedSymbol.Base.Code = ""
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgPauseSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+	})
+}
+
+func TestHandleRestoreSymbol(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test restore symbol handler", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol := dexTypes.Symbol{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&symbol.Base,
+			&symbol.Quote,
+			symbol.DomainAddress,
+			symbol.CreateTime)
+		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		symbol.Height = savedSymbol.Height // ignore height check
+		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
+
+		msgPauseSymbol := dexTypes.NewMsgPauseSymbol(auth,
+			accName,
+			symbol.Base.Code,
+			symbol.Quote.Code)
+		So(msgPauseSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgPauseSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(symbol.Paused(), ShouldBeTrue)
+
+		msgRestoreSymbol := dexTypes.NewMsgRestoreSymbol(auth,
+			accName,
+			symbol.Base.Code,
+			symbol.Quote.Code)
+		So(msgRestoreSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgRestoreSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		So(symbol.Paused(), ShouldBeFalse)
+
+		copiedSymbol := symbol
+		copiedSymbol.Base.Code = ""
+		So(dexTypes.NewMsgRestoreSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = symbol
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgRestoreSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = symbol
+		copiedSymbol.Base.Code = ""
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgRestoreSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+	})
+}
+
+func TestShutdownSymbol(t *testing.T) {
+	app, _ := createAppForTest()
+
+	Convey("test shutdown symbol handler", t, func() {
+		var (
+			acc     = account4
+			accName = name4
+			auth    = wallet.GetAuth(acc)
+		)
+
+		So(CreateDexForTest(t, app,
+			true,
+			acc, types.NewInt64CoreCoins(1000),
+			[]byte("account4")), ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx := app.NewTestContext()
+		dex, ok := app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol := dexTypes.Symbol{
+			Base: dexTypes.BaseCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "BTC",
+					FullName: "BTC",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			Quote: dexTypes.QuoteCurrency{
+				CurrencyBase: dexTypes.CurrencyBase{
+					Code:     "1",
+					Name:     "USDT",
+					FullName: "USDT",
+					IconUrl:  "???",
+					TxUrl:    "???",
+				},
+			},
+			CreateTime:    time.Now(),
+			DomainAddress: "http:///www.foo.com",
+		}
+
+		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
+			accName,
+			&symbol.Base,
+			&symbol.Quote,
+			symbol.DomainAddress,
+			symbol.CreateTime)
+		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx := simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgCreateSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err := simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(ok, ShouldBeTrue)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeTrue)
+		symbol.Height = savedSymbol.Height // ignore height check
+		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
+
+		msgShutdownSymbol := dexTypes.NewMsgShutdownSymbol(auth,
+			accName,
+			symbol.Base.Code,
+			symbol.Quote.Code)
+		So(msgShutdownSymbol.ValidateBasic(), ShouldBeNil)
+
+		tx = simapp.NewTxForTest(
+			acc,
+			[]sdk.Msg{
+				&msgShutdownSymbol,
+			}, wallet.PrivKey(auth))
+		ctx = app.NewTestContext()
+		err = simapp.CheckTxs(t, app, ctx, tx)
+		So(err, ShouldBeNil)
+
+		simapp.AfterBlockCommitted(app, 1)
+
+		ctx = app.NewTestContext()
+		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		So(dex, ShouldNotBeNil)
+		So(ok, ShouldBeTrue)
+		So(dex.Creator, simapp.ShouldEq, accName)
+		So(dex.Number, ShouldEqual, 0)
+
+		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		So(ok, ShouldBeFalse)
+
+		copiedSymbol := symbol
+		copiedSymbol.Base.Code = ""
+		So(dexTypes.NewMsgShutdownSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = symbol
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgShutdownSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
+
+		copiedSymbol = symbol
+		copiedSymbol.Base.Code = ""
+		copiedSymbol.Quote.Code = ""
+		So(dexTypes.NewMsgShutdownSymbol(auth,
+			accName,
+			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 	})
 }

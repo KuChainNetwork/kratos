@@ -19,6 +19,17 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(&MsgDestroyDex{}, "dex/MsgDestroyDex", nil)
 	cdc.RegisterConcrete(&MsgDestroyDexData{}, "dex/MsgDestroyDexData", nil)
 
+	cdc.RegisterConcrete(&MsgCreateSymbol{}, "dex/MsgCreateSymbol", nil)
+	cdc.RegisterConcrete(&MsgCreateSymbolData{}, "dex/MsgCreateSymbolData", nil)
+	cdc.RegisterConcrete(&MsgUpdateSymbol{}, "dex/MsgUpdateSymbol", nil)
+	cdc.RegisterConcrete(&MsgUpdateSymbolData{}, "dex/MsgUpdateSymbolData", nil)
+	cdc.RegisterConcrete(&MsgPauseSymbol{}, "dex/MsgPauseSymbol", nil)
+	cdc.RegisterConcrete(&MsgPauseSymbolData{}, "dex/MsgPauseSymbolData", nil)
+	cdc.RegisterConcrete(&MsgRestoreSymbol{}, "dex/MsgRestoreSymbol", nil)
+	cdc.RegisterConcrete(&MsgRestoreSymbolData{}, "dex/MsgRestoreSymbolData", nil)
+	cdc.RegisterConcrete(&MsgShutdownSymbol{}, "dex/MsgShutdownSymbol", nil)
+	cdc.RegisterConcrete(&MsgShutdownSymbolData{}, "dex/MsgShutdownSymbolData", nil)
+
 	cdc.RegisterConcrete(&MsgDexSigIn{}, "dex/sigin", nil)
 	cdc.RegisterConcrete(&MsgDexSigInData{}, "dex/siginData", nil)
 	cdc.RegisterConcrete(&MsgDexSigOut{}, "dex/sigout", nil)

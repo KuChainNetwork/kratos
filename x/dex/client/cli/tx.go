@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bufio"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -31,6 +32,11 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		CreateDex(cdc),
 		UpdateDexDescriptionCmd(cdc),
 		DestroyDex(cdc),
+		CreateSymbol(cdc),
+		UpdateSymbol(cdc),
+		PauseSymbol(cdc),
+		RestoreSymbol(cdc),
+		ShutdownSymbol(cdc),
 	)
 
 	return txCmd
@@ -96,7 +102,7 @@ func UpdateDexDescriptionCmd(cdc *codec.Codec) *cobra.Command {
 			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
-				return errors.Wrapf(err, "update description account %s auth error", creator)
+				return errors.Wrapf(err, "update dex description account %s auth error", creator)
 			}
 
 			if len(args[1]) > types.MaxDexDescriptorLen {
@@ -130,12 +136,289 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
-				err = errors.Wrapf(err, "destroy account %s auth error", creator)
+				err = errors.Wrapf(err, "destroy dex account %s auth error", creator)
 				return
 			}
 
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
 				types.NewMsgDestroyDex(auth, creator),
+			})
+			return
+		},
+	}
+	return flags.PostCommands(cmd)[0]
+}
+
+// CreateSymbol returns a create symbol command
+func CreateSymbol(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "create_symbol [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
+			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url] [domain_address]",
+		Short: "Create dex symbol",
+		Args:  cobra.ExactArgs(12),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			var creator types.Name
+			if creator, err = chainTypes.NewName(args[0]); nil != err {
+				return
+			}
+
+			baseCode,
+				baseName,
+				baseFullName,
+				baseIconUrl,
+				baseTxUrl,
+				quoteCode,
+				quoteName,
+				quoteFullName,
+				quoteIconUrl,
+				quoteTxUrl,
+				domainAddress := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]
+
+			if 0 >= len(baseCode) ||
+				0 >= len(baseName) ||
+				0 >= len(baseFullName) ||
+				0 >= len(baseIconUrl) ||
+				0 >= len(baseTxUrl) ||
+				0 >= len(quoteCode) ||
+				0 >= len(quoteName) ||
+				0 >= len(quoteFullName) ||
+				0 >= len(quoteIconUrl) ||
+				0 >= len(quoteTxUrl) ||
+				0 >= len(domainAddress) {
+				err = errors.Errorf("all update failed are empty")
+				return
+			}
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			var auth chainTypes.AccAddress
+			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
+				err = errors.Wrapf(err, "create dex symbol account %s auth error", creator)
+				return
+			}
+
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgCreateSymbol(
+					auth,
+					creator,
+					&types.BaseCurrency{
+						CurrencyBase: types.CurrencyBase{
+							Code:     baseCode,
+							Name:     baseName,
+							FullName: baseFullName,
+							IconUrl:  baseIconUrl,
+							TxUrl:    baseTxUrl,
+						},
+					},
+					&types.QuoteCurrency{
+						CurrencyBase: types.CurrencyBase{
+							Code:     quoteCode,
+							Name:     quoteName,
+							FullName: quoteFullName,
+							IconUrl:  quoteIconUrl,
+							TxUrl:    quoteTxUrl,
+						},
+					},
+					domainAddress,
+					time.Time{}, // use server time
+				),
+			})
+
+			return
+		},
+	}
+	return flags.PostCommands(cmd)[0]
+}
+
+// UpdateSymbol returns a update symbol command
+func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "update_symbol [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
+			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url]",
+		Short: "Update dex symbol",
+		Args:  cobra.ExactArgs(11),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			var creator types.Name
+			if creator, err = chainTypes.NewName(args[0]); nil != err {
+				return
+			}
+
+			baseCode,
+				baseName,
+				baseFullName,
+				baseIconUrl,
+				baseTxUrl,
+				quoteCode,
+				quoteName,
+				quoteFullName,
+				quoteIconUrl,
+				quoteTxUrl := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
+
+			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+				err = errors.Errorf("base code or quote code is empty")
+				return
+			}
+
+			if 0 >= len(baseName) &&
+				0 >= len(baseFullName) &&
+				0 >= len(baseIconUrl) &&
+				0 >= len(baseTxUrl) &&
+				0 >= len(quoteName) &&
+				0 >= len(quoteFullName) &&
+				0 >= len(quoteIconUrl) &&
+				0 >= len(quoteTxUrl) {
+				err = errors.Errorf("all update failed are empty")
+				return
+			}
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			var auth chainTypes.AccAddress
+			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
+				err = errors.Wrapf(err, "update dex symbol account %s auth error", creator)
+				return
+			}
+
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgUpdateSymbol(
+					auth,
+					creator,
+					&types.BaseCurrency{
+						CurrencyBase: types.CurrencyBase{
+							Code:     baseCode,
+							Name:     baseName,
+							FullName: baseFullName,
+							IconUrl:  baseIconUrl,
+							TxUrl:    baseTxUrl,
+						},
+					},
+					&types.QuoteCurrency{
+						CurrencyBase: types.CurrencyBase{
+							Code:     quoteCode,
+							Name:     quoteName,
+							FullName: quoteFullName,
+							IconUrl:  quoteIconUrl,
+							TxUrl:    quoteTxUrl,
+						},
+					},
+				),
+			})
+			return
+		},
+	}
+	return flags.PostCommands(cmd)[0]
+}
+
+// PauseSymbol returns a pause symbol command
+func PauseSymbol(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pause_symbol [creator] [base_code] [quote_code]",
+		Short: "Pause dex symbol",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			var creator types.Name
+			if creator, err = chainTypes.NewName(args[0]); nil != err {
+				return
+			}
+
+			baseCode, quoteCode := args[1], args[2]
+			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+				err = errors.Errorf("base code or quote code is empty")
+				return
+			}
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			var auth chainTypes.AccAddress
+			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
+				err = errors.Wrapf(err, "pause symbol account %s auth error", creator)
+				return
+			}
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgPauseSymbol(auth, creator, baseCode, quoteCode),
+			})
+			return
+		},
+	}
+	return flags.PostCommands(cmd)[0]
+}
+
+// RestoreSymbol returns a restore symbol command
+func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "restore_symbol [creator] [base_code] [quote_code]",
+		Short: "Restore dex symbol",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			var creator types.Name
+			if creator, err = chainTypes.NewName(args[0]); nil != err {
+				return
+			}
+
+			baseCode, quoteCode := args[1], args[2]
+			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+				err = errors.Errorf("base code or quote code is empty")
+				return
+			}
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			var auth chainTypes.AccAddress
+			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
+				err = errors.Wrapf(err, "restore symbol account %s auth error", creator)
+				return
+			}
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgRestoreSymbol(auth, creator, baseCode, quoteCode),
+			})
+			return
+		},
+	}
+	return flags.PostCommands(cmd)[0]
+}
+
+// ShutdownSymbol returns a shutdown symbol command
+func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "shutdown_symbol [creator] [base_code] [quote_code]",
+		Short: "Shutdown dex symbol",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+
+			var creator types.Name
+			if creator, err = chainTypes.NewName(args[0]); nil != err {
+				return
+			}
+
+			baseCode, quoteCode := args[1], args[2]
+			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+				err = errors.Errorf("base code or quote code is empty")
+				return
+			}
+
+			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			var auth chainTypes.AccAddress
+			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
+				err = errors.Wrapf(err, "shutdown symbol account %s auth error", creator)
+				return
+			}
+			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
+				types.NewMsgShutdownSymbol(auth, creator, baseCode, quoteCode),
 			})
 			return
 		},
