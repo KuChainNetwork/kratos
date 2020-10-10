@@ -19,9 +19,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/app"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -96,7 +94,6 @@ func replayTxs(rootDir string) error {
 	fmt.Fprintln(os.Stderr, "Creating application")
 	kuApp := app.NewKuchainApp(
 		ctx.Logger, appDB, traceStoreWriter, true, uint(1),
-		baseapp.SetPruning(store.PruneEverything), // nothing
 	)
 
 	// Genesis
