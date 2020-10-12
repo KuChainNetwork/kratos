@@ -5,11 +5,12 @@ import (
 )
 
 type (
-	AccountID = types.AccountID
-	Name      = types.Name
-	Coin      = types.Coin
-	Coins     = types.Coins
-	DecCoins  = types.DecCoins
+	AccAddress = types.AccAddress
+	AccountID  = types.AccountID
+	Name       = types.Name
+	Coin       = types.Coin
+	Coins      = types.Coins
+	DecCoins   = types.DecCoins
 )
 
 var (
