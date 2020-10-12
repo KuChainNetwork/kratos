@@ -56,6 +56,21 @@ type UpdateDexReq struct {
 	Description string       `json:"description" yaml:"description"`
 }
 
+type SigInReq struct {
+	BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Account string       `json:"account" yaml:"account"`
+	Dex     string       `json:"dex" yaml:"dex"`
+	Amount  string       `json:"amount" yaml:"amount"`
+}
+
+type SigOutReq struct {
+	BaseReq   rest.BaseReq `json:"base_req" yaml:"base_req"`
+	Account   string       `json:"account" yaml:"account"`
+	Dex       string       `json:"dex" yaml:"dex"`
+	Amount    string       `json:"amount" yaml:"amount"`
+	IsTimeout bool         `json:"is_timeout" yaml:"is_timeout"`
+}
+
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/create",
@@ -87,6 +102,14 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		"/dex/update",
 		updateDexHandlerFn(cliCtx),
 	).Methods(http.MethodPost)
+	r.HandleFunc(
+		"/dex/sigin",
+		sigInHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
+	r.HandleFunc(
+		"/dex/sigout",
+		sigOutHandlerFn(cliCtx),
+	).Methods(http.MethodPost)
 }
 
 // createDexHandlerFn returns the create dex handler
@@ -99,38 +122,48 @@ func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				rest.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
+
 		var body []byte
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
 		}
+
 		var req CreateDexReq
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
+
 		req.BaseReq = req.BaseReq.Sanitize()
+
 		var creatorName chainTypes.Name
 		if creatorName, err = chainTypes.NewName(req.Creator); nil != err {
 			return
 		}
-		var addr chainTypes.AccAddress
-		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
-			return
-		}
+
 		var stakings types.Coins
 		if stakings, err = chainTypes.ParseCoins(req.Stakings); nil != err {
 			return
 		}
+
 		var creatorAccountID chainTypes.AccountID
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
+
 		if types.MaxDexDescriptorLen < len(req.Description) {
 			err = types.ErrDexDescTooLong
 			return
 		}
+
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+
+		var auth types.AccAddress
+		if auth, err = txutil.QueryAccountAuth(ctx, creatorAccountID); err != nil {
+			return
+		}
+
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgCreateDex(addr, creatorName, stakings, []byte(req.Description)),
+			types.NewMsgCreateDex(auth, creatorName, stakings, []byte(req.Description)),
 		})
 	}
 }
@@ -145,30 +178,38 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				rest.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
+
 		var body []byte
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
 		}
+
 		var req DestroyDexReq
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
+
 		req.BaseReq = req.BaseReq.Sanitize()
+
 		var name chainTypes.Name
 		if name, err = chainTypes.NewName(req.Creator); nil != err {
 			return
 		}
-		var addr chainTypes.AccAddress
-		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
-			return
-		}
+
 		var creatorAccountID chainTypes.AccountID
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
+
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+
+		var auth types.AccAddress
+		if auth, err = txutil.QueryAccountAuth(ctx, creatorAccountID); err != nil {
+			return
+		}
+
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-			types.NewMsgDestroyDex(addr, name),
+			types.NewMsgDestroyDex(auth, name),
 		})
 	}
 }
@@ -438,18 +479,132 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if name, err = chainTypes.NewName(req.Creator); nil != err {
 			return
 		}
+
 		var addr chainTypes.AccAddress
 		if addr, err = sdk.AccAddressFromBech32(req.BaseReq.From); nil != err {
 			return
 		}
+
 		var creatorAccountID chainTypes.AccountID
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
+
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
-
 			types.NewMsgUpdateDexDescription(addr, name, []byte(req.Description)),
+		})
+	}
+}
+
+// sigInHandlerFn returns the SigIn dex handler
+func sigInHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			}
+		}()
+
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+
+		var req SigInReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+
+		var (
+			auth         types.AccAddress
+			accountID    types.AccountID
+			dexAccountID types.AccountID
+			amt          types.Coins
+		)
+
+		if accountID, err = chainTypes.NewAccountIDFromStr(req.Account); err != nil {
+			return
+		}
+
+		if dexAccountID, err = chainTypes.NewAccountIDFromStr(req.Dex); err != nil {
+			return
+		}
+
+		if amt, err = chainTypes.ParseCoins(req.Amount); err != nil {
+			return
+		}
+
+		ctx := txutil.NewKuCLICtx(cliCtx)
+
+		if auth, err = txutil.QueryAccountAuth(ctx, accountID); err != nil {
+			return
+		}
+
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+			types.NewMsgDexSigIn(auth, accountID, dexAccountID, amt),
+		})
+	}
+}
+
+// sigOutHandlerFn returns the SigOut dex handler
+func sigOutHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		defer func() {
+			if nil != err {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			}
+		}()
+
+		var body []byte
+		if body, err = ioutil.ReadAll(r.Body); nil != err {
+			return
+		}
+
+		var req SigOutReq
+		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+			return
+		}
+
+		req.BaseReq = req.BaseReq.Sanitize()
+
+		var (
+			auth         types.AccAddress
+			accountID    types.AccountID
+			dexAccountID types.AccountID
+			amt          types.Coins
+		)
+
+		if accountID, err = chainTypes.NewAccountIDFromStr(req.Account); err != nil {
+			return
+		}
+
+		if dexAccountID, err = chainTypes.NewAccountIDFromStr(req.Dex); err != nil {
+			return
+		}
+
+		if amt, err = chainTypes.ParseCoins(req.Amount); err != nil {
+			return
+		}
+
+		ctx := txutil.NewKuCLICtx(cliCtx)
+
+		if req.IsTimeout {
+			if auth, err = txutil.QueryAccountAuth(ctx, accountID); err != nil {
+				return
+			}
+		} else {
+			if auth, err = txutil.QueryAccountAuth(ctx, dexAccountID); err != nil {
+				return
+			}
+		}
+
+		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+			types.NewMsgDexSigOut(auth, req.IsTimeout, accountID, dexAccountID, amt),
 		})
 	}
 }
