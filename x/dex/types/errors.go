@@ -24,4 +24,5 @@ var (
 
 var (
 	ErrDexSigInChangeToNegative = sdkerrors.Register(ModuleName, 16, "dex sigIn amt should cannot tobe changed to negative")
+	ErrDexSigOutByUserNoUnlock  = sdkerrors.Register(ModuleName, 17, "dex sig out by user is locked in current")
 )

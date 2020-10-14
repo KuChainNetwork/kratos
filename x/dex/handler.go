@@ -408,8 +408,6 @@ func handleMsgDexSigOut(ctx chainTypes.Context, k Keeper, msg *types.MsgDexSigOu
 		"user", msgData.User, "dex", msgData.Dex, "amount", msgData.Amount, "isTimeout", msgData.IsTimeout)
 
 	// Note: two mode, if just has user's auth, need to wait
-	// TODO: wait mode
-
 	if msgData.IsTimeout {
 		ctx.RequireAuth(msgData.User)
 	} else {
