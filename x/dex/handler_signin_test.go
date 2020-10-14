@@ -35,22 +35,26 @@ func SignInMsgForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, id, dex 
 }
 
 func SignOutMsgByDexForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, id, dex types.AccountID, amount types.Coins) error {
+	return SignOutMsgByDexExForTest(t, app, app.NewTestContext(), isSuccess, dex, id, dex, amount)
+}
+
+func SignOutMsgByDexExForTest(t *testing.T, app *simapp.SimApp, ctx sdk.Context, isSuccess bool, sigUser, id, dex types.AccountID, amount types.Coins) error {
 	wallet := app.GetWallet()
 
-	ctx := app.NewTestContext()
+	isByUser := id.Eq(sigUser)
 
 	msg := dexTypes.NewMsgDexSigOut(
-		wallet.GetAuth(dex),
-		false,
+		wallet.GetAuth(sigUser),
+		isByUser,
 		id,
 		dex,
 		amount)
 
 	tx := simapp.NewTxForTest(
-		dex,
+		sigUser,
 		[]sdk.Msg{
 			&msg,
-		}, wallet.PrivKey(wallet.GetAuth(dex)))
+		}, wallet.PrivKey(wallet.GetAuth(sigUser)))
 
 	if !isSuccess {
 		tx = tx.WithCannotPass()
