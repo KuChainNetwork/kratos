@@ -1,8 +1,6 @@
-package rest
+package block
 
 import (
-	"sync"
-
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/pkg/errors"
@@ -20,7 +18,6 @@ type DecodeData struct {
 }
 
 type DecodeBlock struct {
-	mtx        sync.Mutex
 	sdk.Header `json:"header"`
 	DecodeData `json:"data"`
 	Evidence   sdk.EvidenceData `json:"evidence"`
