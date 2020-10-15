@@ -14,6 +14,7 @@ import (
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/libs/cli"
 	tmflags "github.com/tendermint/tendermint/libs/cli/flags"
+	tmlog "github.com/tendermint/tendermint/libs/log"
 )
 
 func PersistentPreRunEFn(context *server.Context) func(*cobra.Command, []string) error {
@@ -22,19 +23,23 @@ func PersistentPreRunEFn(context *server.Context) func(*cobra.Command, []string)
 			return nil
 		}
 
-		zapLogger := mkZapLogger(viper.GetBool(cli.TraceFlag))
-
-		// process log level for cosmos-sdk
-		logLvCfg := viper.GetString("log_level")
-		logger, err := tmflags.ParseLogLevel(logLvCfg, NewLogger(zapLogger), cfg.DefaultLogLevel())
-		if err != nil {
-			return err
-		}
-
-		context.Logger = logger.With("module", "main")
+		context.Logger = NewLoggerByZap(viper.GetBool(cli.TraceFlag)).With("module", "main")
 		context.Config = chainCfg.DefaultConfig()
 		return nil
 	}
+}
+
+func NewLoggerByZap(isTrace bool) tmlog.Logger {
+	zapLogger := mkZapLogger(viper.GetBool(cli.TraceFlag))
+
+	// process log level for cosmos-sdk
+	logLvCfg := viper.GetString("log_level")
+	logger, err := tmflags.ParseLogLevel(logLvCfg, NewLogger(zapLogger), cfg.DefaultLogLevel())
+	if err != nil {
+		panic(err)
+	}
+
+	return logger
 }
 
 func mkZapLogger(isDebug bool) *zap.Logger {

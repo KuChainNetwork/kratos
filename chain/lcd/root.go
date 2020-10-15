@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -14,6 +13,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmrpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
 
+	kuLog "github.com/KuChainNetwork/kuchain/utils/log"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -33,7 +33,7 @@ type RestServer struct {
 func NewRestServer(cdc *codec.Codec) *RestServer {
 	r := mux.NewRouter()
 	cliCtx := context.NewCLIContext().WithCodec(cdc)
-	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout)).With("module", "rest-server")
+	logger := kuLog.NewLoggerByZap(false).With("module", "rest-server")
 
 	return &RestServer{
 		Mux:    r,
@@ -99,5 +99,19 @@ func ServeCommand(cdc *codec.Codec, registerRoutesFn func(*RestServer)) *cobra.C
 		},
 	}
 
-	return flags.RegisterRestServerFlags(cmd)
+	return registerRestServerFlags(cmd)
+}
+
+// registerRestServerFlags registers the flags required for rest server
+func registerRestServerFlags(cmd *cobra.Command) *cobra.Command {
+	cmd = flags.GetCommands(cmd)[0]
+
+	cmd.Flags().String(flags.FlagListenAddr, "tcp://localhost:1317", "The address for the server to listen on")
+	cmd.Flags().Uint(flags.FlagMaxOpenConnections, 1000, "The number of maximum open connections")
+	cmd.Flags().Uint(flags.FlagRPCReadTimeout, 10, "The RPC read timeout (in seconds)")
+	cmd.Flags().Uint(flags.FlagRPCWriteTimeout, 10, "The RPC write timeout (in seconds)")
+	cmd.Flags().Bool(flags.FlagUnsafeCORS, false, "Allows CORS requests from all domains. For development purposes only, use it at your own risk.")
+	cmd.Flags().String("log_level", "*:info", "Log Level for rest server")
+
+	return cmd
 }
