@@ -137,11 +137,13 @@ func (msg KuMsg) PrettifyJSON(cdc *codec.Codec) ([]byte, error) {
 		Router    Name            `json:"router" yaml:"router"`
 		Action    Name            `json:"action" yaml:"action"`
 		Data      json.RawMessage `json:"data" yaml:"data"`
+		DataRaw   []byte          `json:"data_raw" yaml:"data_raw"`
 	}{
 		Auth:      msg.Auth,
 		Transfers: msg.Transfers,
 		Router:    msg.Router,
 		Action:    msg.Action,
+		DataRaw:   msg.Data,
 	}
 
 	if len(msg.Data) > 0 {
