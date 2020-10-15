@@ -5,6 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/pkg/errors"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmliteProxy "github.com/tendermint/tendermint/lite/proxy"
 	sdk "github.com/tendermint/tendermint/types"
@@ -65,9 +66,9 @@ func getBlock(cliCtx context.CLIContext, height *int64) ([]byte, error) {
 	txs := res.Block.Txs
 	for _, tx := range txs {
 		var stdTx types.StdTx
-		err = cliCtx.Codec.UnmarshalBinaryBare(tx, &stdTx)
+		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(tx, &stdTx)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "unmarshal stdtx error")
 		}
 		stdTxs = append(stdTxs, stdTx)
 	}

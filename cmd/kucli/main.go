@@ -17,8 +17,8 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/KuChainNetwork/kuchain/app"
-	blockrest "github.com/KuChainNetwork/kuchain/chain/client/blockutil/client/rest"
 	kuKeys "github.com/KuChainNetwork/kuchain/chain/client/keys"
+	"github.com/KuChainNetwork/kuchain/chain/client/rest"
 	txcmd "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/cli"
 	txrest "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/rest"
 	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
@@ -131,7 +131,7 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 func registerRoutes(rs *lcd.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	txrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
-	blockrest.RegisterBlockRoutes(rs.CliCtx, rs.Mux)
+	rest.RegisterBlockRoutes(rs.CliCtx, rs.Mux)
 	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
