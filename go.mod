@@ -6,6 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.39.1
 	github.com/go-pg/pg/v10 v10.0.0-beta.1
 	github.com/gogo/protobuf v1.3.1
+	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.8.0
 	github.com/otiai10/copy v1.2.0
 	github.com/pkg/errors v0.9.1

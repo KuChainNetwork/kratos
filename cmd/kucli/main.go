@@ -11,19 +11,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/version"
-
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/KuChainNetwork/kuchain/app"
-	blockrest "github.com/KuChainNetwork/kuchain/chain/client/blockutil/client/rest"
 	kuKeys "github.com/KuChainNetwork/kuchain/chain/client/keys"
+	"github.com/KuChainNetwork/kuchain/chain/client/rest"
 	txcmd "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/cli"
-	txrest "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/rest"
 	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
+	"github.com/KuChainNetwork/kuchain/chain/lcd"
 	txCli "github.com/KuChainNetwork/kuchain/chain/transaction/client"
 )
 
@@ -131,8 +129,8 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
-	txrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
-	blockrest.RegisterBlockRoutes(rs.CliCtx, rs.Mux)
+	rest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
+	rest.RegisterBlockRoutes(rs.CliCtx, rs.Mux)
 	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 

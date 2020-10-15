@@ -1,12 +1,13 @@
-package rest
+package block
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
-	"net/http"
-	"strconv"
 )
 
 func QueryDecodeBlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
