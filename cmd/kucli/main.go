@@ -11,10 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/version"
-
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
@@ -24,6 +22,7 @@ import (
 	txcmd "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/cli"
 	txrest "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/rest"
 	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
+	"github.com/KuChainNetwork/kuchain/chain/lcd"
 	txCli "github.com/KuChainNetwork/kuchain/chain/transaction/client"
 )
 
