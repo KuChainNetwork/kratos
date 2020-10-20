@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/utils/version"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -171,9 +172,11 @@ func (k Keeper) IterateUnbondingDelegations(ctx sdk.Context, fn func(index int64
 func (k Keeper) HasMaxUnbondingDelegationEntries(ctx sdk.Context,
 	delegatorAddr AccountID, validatorAddr AccountID) bool {
 
-	name, ok := delegatorAddr.ToName()
-	if ok && constants.IsSystemAccount(name) {
-		return false
+	if ctx.BlockHeight() >= (version.DiffBlockBy051 - 5) {
+		name, ok := delegatorAddr.ToName()
+		if ok && constants.IsSystemAccount(name) {
+			return false
+		}
 	}
 
 	ubd, found := k.GetUnbondingDelegation(ctx, delegatorAddr, validatorAddr)
@@ -334,10 +337,13 @@ func (k Keeper) GetRedelegationsFromSrcValidator(ctx sdk.Context, valAddr Accoun
 func (k Keeper) HasReceivingRedelegation(ctx sdk.Context,
 	delAddr AccountID, valDstAddr AccountID) bool {
 
-	name, ok := delAddr.ToName()
-	if ok && constants.IsSystemAccount(name) {
-		return false
+	if ctx.BlockHeight() >= (version.DiffBlockBy051 - 5) {
+		name, ok := delAddr.ToName()
+		if ok && constants.IsSystemAccount(name) {
+			return false
+		}
 	}
+
 	store := ctx.KVStore(k.storeKey)
 	prefix := types.GetREDsByDelToValDstIndexKey(delAddr, valDstAddr)
 	iterator := sdk.KVStorePrefixIterator(store, prefix)
@@ -351,9 +357,11 @@ func (k Keeper) HasMaxRedelegationEntries(ctx sdk.Context,
 	delegatorAddr AccountID, validatorSrcAddr,
 	validatorDstAddr AccountID) bool {
 
-	name, ok := delegatorAddr.ToName()
-	if ok && constants.IsSystemAccount(name) {
-		return false
+	if ctx.BlockHeight() >= (version.DiffBlockBy051 - 5) {
+		name, ok := delegatorAddr.ToName()
+		if ok && constants.IsSystemAccount(name) {
+			return false
+		}
 	}
 
 	red, found := k.GetRedelegation(ctx, delegatorAddr, validatorSrcAddr, validatorDstAddr)
