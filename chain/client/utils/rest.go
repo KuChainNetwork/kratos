@@ -9,6 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 
+func OutputPrettifyJSON(cliCtx context.CLIContext, obj interface{}) ([]byte, error) {
+	return outputJSON(cliCtx, obj)
+}
+
 func outputJSON(cliCtx context.CLIContext, obj interface{}) ([]byte, error) {
 	var (
 		resp []byte
