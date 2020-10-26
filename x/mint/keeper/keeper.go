@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/mint/types"
 	"github.com/KuChainNetwork/kuchain/x/params"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -50,7 +51,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // get the minter
 func (k Keeper) GetMinter(ctx sdk.Context) (minter types.Minter) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	b := store.Get(types.MinterKey)
 	if b == nil {
 		panic("stored minter should not have been nil")
@@ -62,7 +63,7 @@ func (k Keeper) GetMinter(ctx sdk.Context) (minter types.Minter) {
 
 // set the minter
 func (k Keeper) SetMinter(ctx sdk.Context, minter types.Minter) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	b := k.cdc.MustMarshalBinaryLengthPrefixed(&minter)
 	store.Set(types.MinterKey, b)
 }

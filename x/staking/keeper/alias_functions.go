@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,7 +14,7 @@ import (
 
 // iterate through the validator set and perform the provided function
 func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validator exported.ValidatorI) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.ValidatorsKey)
 	defer iterator.Close()
 	i := int64(0)
@@ -29,7 +30,7 @@ func (k Keeper) IterateValidators(ctx sdk.Context, fn func(index int64, validato
 
 // iterate through the bonded validator set and perform the provided function
 func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index int64, validator exported.ValidatorI) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	maxValidators := k.MaxValidators(ctx)
 
 	iterator := sdk.KVStoreReversePrefixIterator(store, types.ValidatorsByPowerIndexKey)
@@ -121,7 +122,7 @@ func (k Keeper) DelegationFromAccountID(ctx sdk.Context, addrDel types.AccountID
 func (k Keeper) IterateDelegations(ctx sdk.Context, delAcc types.AccountID,
 	fn func(index int64, del exported.DelegationI) (stop bool)) {
 
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	delegatorPrefixKey := types.GetDelegationsKey(delAcc)
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
@@ -138,7 +139,7 @@ func (k Keeper) IterateDelegations(ctx sdk.Context, delAcc types.AccountID,
 // return all delegations used during genesis dump
 // TODO: remove this func, change all usage for iterate functionality
 func (k Keeper) GetAllSDKDelegations(ctx sdk.Context) (delegations []types.Delegation) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.DelegationKey)
 	defer iterator.Close()
 

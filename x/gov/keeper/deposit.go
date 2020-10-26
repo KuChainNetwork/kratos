@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -10,7 +11,7 @@ import (
 
 // GetDeposit gets the deposit of a specific depositor on a specific proposal
 func (keeper Keeper) GetDeposit(ctx sdk.Context, proposalID uint64, depositorAddr AccountID) (deposit types.Deposit, found bool) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	bz := store.Get(types.DepositKey(proposalID, depositorAddr))
 	if bz == nil {
 		return deposit, false
@@ -22,7 +23,7 @@ func (keeper Keeper) GetDeposit(ctx sdk.Context, proposalID uint64, depositorAdd
 
 // SetDeposit sets a Deposit to the gov store
 func (keeper Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	bz := keeper.cdc.MustMarshalBinaryBare(&deposit)
 	store.Set(types.DepositKey(deposit.ProposalID, deposit.Depositor), bz)
 }
@@ -47,7 +48,7 @@ func (keeper Keeper) GetDeposits(ctx sdk.Context, proposalID uint64) (deposits t
 
 // DeleteDeposits deletes all the deposits on a specific proposal without refunding them
 func (keeper Keeper) DeleteDeposits(ctx sdk.Context, proposalID uint64) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 
 	keeper.IterateDeposits(ctx, proposalID, func(deposit types.Deposit) bool {
 		err := keeper.supplyKeeper.BurnCoins(ctx, types.ModuleAccountID, deposit.Amount)
@@ -62,7 +63,7 @@ func (keeper Keeper) DeleteDeposits(ctx sdk.Context, proposalID uint64) {
 
 // IterateAllDeposits iterates over the all the stored deposits and performs a callback function
 func (keeper Keeper) IterateAllDeposits(ctx sdk.Context, cb func(deposit types.Deposit) (stop bool)) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.DepositsKeyPrefix)
 
 	defer iterator.Close()
@@ -78,7 +79,7 @@ func (keeper Keeper) IterateAllDeposits(ctx sdk.Context, cb func(deposit types.D
 
 // IterateDeposits iterates over the all the proposals deposits and performs a callback function
 func (keeper Keeper) IterateDeposits(ctx sdk.Context, proposalID uint64, cb func(deposit types.Deposit) (stop bool)) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.DepositsKey(proposalID))
 
 	defer iterator.Close()
@@ -144,7 +145,7 @@ func (keeper Keeper) AddDeposit(ctx sdk.Context, proposalID uint64, depositorAdd
 
 // RefundDeposits refunds and deletes all the deposits on a specific proposal
 func (keeper Keeper) RefundDeposits(ctx sdk.Context, proposalID uint64) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 
 	keeper.IterateDeposits(ctx, proposalID, func(deposit types.Deposit) bool {
 		err := keeper.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, deposit.Depositor, deposit.Amount)
