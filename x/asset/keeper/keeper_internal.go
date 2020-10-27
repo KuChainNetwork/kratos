@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -94,7 +95,7 @@ func (a AssetKeeper) burnCoinStat(ctx sdk.Context, amount types.Coin) error {
 }
 
 func (a AssetKeeper) setCoins(ctx sdk.Context, account types.AccountID, coin types.Coins) error {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz, err := a.cdc.MarshalBinaryBare(coin)
 	if err != nil {
 		return sdkerrors.Wrap(err, "set coins marshal error")
@@ -114,7 +115,7 @@ func (a AssetKeeper) setCoins(ctx sdk.Context, account types.AccountID, coin typ
 }
 
 func (a AssetKeeper) getCoins(ctx sdk.Context, account types.AccountID) (types.Coins, error) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz := store.Get(types.CoinStoreKey(account))
 	if bz == nil {
 		return types.Coins{}, nil
@@ -130,7 +131,7 @@ func (a AssetKeeper) getCoins(ctx sdk.Context, account types.AccountID) (types.C
 }
 
 func (a AssetKeeper) setStat(ctx sdk.Context, stat *types.CoinStat) error {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz, err := a.cdc.MarshalBinaryBare(*stat)
 	if err != nil {
 		return sdkerrors.Wrap(err, "set stat marshal error")
@@ -140,7 +141,7 @@ func (a AssetKeeper) setStat(ctx sdk.Context, stat *types.CoinStat) error {
 }
 
 func (a AssetKeeper) getStat(ctx sdk.Context, creator, symbol types.Name) (*types.CoinStat, error) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz := store.Get(types.CoinStatStoreKey(creator, symbol))
 	if bz == nil {
 		return nil, types.ErrAssetCoinNoExit
@@ -156,7 +157,7 @@ func (a AssetKeeper) getStat(ctx sdk.Context, creator, symbol types.Name) (*type
 }
 
 func (a AssetKeeper) setDescription(ctx sdk.Context, desc *types.CoinDescription) error {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz, err := a.cdc.MarshalBinaryBare(*desc)
 	if err != nil {
 		return sdkerrors.Wrap(err, "set desc marshal error")
@@ -166,7 +167,7 @@ func (a AssetKeeper) setDescription(ctx sdk.Context, desc *types.CoinDescription
 }
 
 func (a AssetKeeper) getDescription(ctx sdk.Context, creator, symbol types.Name) (*types.CoinDescription, error) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz := store.Get(types.CoinDescStoreKey(creator, symbol))
 	if bz == nil {
 		return nil, types.ErrAssetCoinNoExit
@@ -182,7 +183,7 @@ func (a AssetKeeper) getDescription(ctx sdk.Context, creator, symbol types.Name)
 }
 
 func (a AssetKeeper) setCoinsPower(ctx sdk.Context, account types.AccountID, coin types.Coins) error {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz, err := a.cdc.MarshalBinaryBare(coin)
 	if err != nil {
 		return sdkerrors.Wrap(err, "set coins marshal error")
@@ -202,7 +203,7 @@ func (a AssetKeeper) setCoinsPower(ctx sdk.Context, account types.AccountID, coi
 }
 
 func (a AssetKeeper) getCoinsPower(ctx sdk.Context, account types.AccountID) (types.Coins, error) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz := store.Get(types.CoinPowerStoreKey(account))
 	if bz == nil {
 		return types.Coins{}, nil

@@ -5,6 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/utils/version"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -43,6 +44,8 @@ func (sud SetUpContextDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	newCtx = SetGasMeter(simulate, ctx, gasTx.GetGas())
 	newCtx = newCtx.WithMinGasPrices(config.GetFeePriceMiniLimit())
 
+	version.MakeOk(ctx)
+
 	// Decorator will catch an OutOfGasPanic caused in the next antehandler
 	// AnteHandlers must have their own defer/recover in order for the BaseApp
 	// to know how much gas was used! This is because the GasMeter is created in
@@ -53,7 +56,7 @@ func (sud SetUpContextDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			switch rType := r.(type) {
 			case sdk.ErrorOutOfGas:
 				log := fmt.Sprintf(
-					"out of gas in location: %v; gasWanted: %d, gasUsed: %d",
+					"setup: out of gas in location: %v; gasWanted: %d, gasUsed: %d",
 					rType.Descriptor, gasTx.GetGas(), newCtx.GasMeter().GasConsumed())
 
 				err = sdkerrors.Wrap(sdkerrors.ErrOutOfGas, log)

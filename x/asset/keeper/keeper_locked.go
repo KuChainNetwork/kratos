@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -14,7 +15,7 @@ type accountLockedCoins struct {
 }
 
 func (a AssetKeeper) getCoinsLockedStat(ctx sdk.Context, id types.AccountID) (accountLockedCoins, error) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz := store.Get(types.CoinLockedStatStoreKey(id))
 	res := accountLockedCoins{
 		ID: id,
@@ -32,7 +33,7 @@ func (a AssetKeeper) getCoinsLockedStat(ctx sdk.Context, id types.AccountID) (ac
 }
 
 func (a AssetKeeper) setCoinsLockedStat(ctx sdk.Context, id types.AccountID, stat accountLockedCoins) error {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz, err := a.cdc.MarshalBinaryBare(stat)
 	if err != nil {
 		return sdkerrors.Wrap(err, "set coins locked state marshal error")
@@ -42,7 +43,7 @@ func (a AssetKeeper) setCoinsLockedStat(ctx sdk.Context, id types.AccountID, sta
 }
 
 func (a AssetKeeper) setCoinsLocked(ctx sdk.Context, account types.AccountID, coin types.Coins) error {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz, err := a.cdc.MarshalBinaryBare(coin)
 	if err != nil {
 		return sdkerrors.Wrap(err, "set coins locked marshal error")
@@ -62,7 +63,7 @@ func (a AssetKeeper) setCoinsLocked(ctx sdk.Context, account types.AccountID, co
 }
 
 func (a AssetKeeper) getCoinsLocked(ctx sdk.Context, account types.AccountID) (types.Coins, error) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	bz := store.Get(types.CoinLockedStoreKey(account))
 	if bz == nil {
 		return types.Coins{}, nil

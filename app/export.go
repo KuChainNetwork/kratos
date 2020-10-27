@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -78,7 +79,7 @@ func (app *KuchainApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList [
 
 	// Iterate through validators by power descending, reset bond heights, and
 	// update bond intra-tx counters.
-	store := ctx.KVStore(app.keys[staking.StoreKey])
+	store := store.NewStore(ctx, app.keys[staking.StoreKey])
 	iter := sdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
 	counter := int16(0)
 

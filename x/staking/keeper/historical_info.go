@@ -1,13 +1,14 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetHistoricalInfo gets the historical info at a given height
 func (k Keeper) GetHistoricalInfo(ctx sdk.Context, height int64) (types.HistoricalInfo, bool) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	key := types.GetHistoricalInfoKey(height)
 
 	value := store.Get(key)
@@ -21,7 +22,7 @@ func (k Keeper) GetHistoricalInfo(ctx sdk.Context, height int64) (types.Historic
 
 // SetHistoricalInfo sets the historical info at a given height
 func (k Keeper) SetHistoricalInfo(ctx sdk.Context, height int64, hi types.HistoricalInfo) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	key := types.GetHistoricalInfoKey(height)
 
 	value := types.MustMarshalHistoricalInfo(k.cdc, hi)
@@ -30,7 +31,7 @@ func (k Keeper) SetHistoricalInfo(ctx sdk.Context, height int64, hi types.Histor
 
 // DeleteHistoricalInfo deletes the historical info at a given height
 func (k Keeper) DeleteHistoricalInfo(ctx sdk.Context, height int64) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	key := types.GetHistoricalInfoKey(height)
 
 	store.Delete(key)
