@@ -70,12 +70,11 @@ func (object *QuoteCurrency) Equal(other *QuoteCurrency) bool {
 
 // Symbol
 type Symbol struct {
-	Base          BaseCurrency  `json:"base" yaml:"base"`
-	Quote         QuoteCurrency `json:"quote" yaml:"quote"`
-	DomainAddress string        `json:"domain_address" yaml:"domain_address"`
-	Height        int64         `json:"height" yaml:"height"`
-	CreateTime    time.Time     `json:"create_time" yaml:"create_time"`
-	IsPaused      bool          `json:"is_paused" yaml:"is_paused"`
+	Base       BaseCurrency  `json:"base" yaml:"base"`
+	Quote      QuoteCurrency `json:"quote" yaml:"quote"`
+	Height     int64         `json:"height" yaml:"height"`
+	CreateTime time.Time     `json:"create_time" yaml:"create_time"`
+	IsPaused   bool          `json:"is_paused" yaml:"is_paused"`
 }
 
 // WithBase set base currency param
@@ -87,12 +86,6 @@ func (object *Symbol) WithBase(base *BaseCurrency) *Symbol {
 // WithQuote set quote currency param
 func (object *Symbol) WithQuote(quote *QuoteCurrency) *Symbol {
 	object.Quote = *quote
-	return object
-}
-
-// WithDomainAddress set domain address
-func (object *Symbol) WithDomainAddress(address string) *Symbol {
-	object.DomainAddress = address
 	return object
 }
 
@@ -118,7 +111,6 @@ func (object *Symbol) WithPaused(paused bool) *Symbol {
 func (object *Symbol) Validate() bool {
 	return object.Quote.Validate() &&
 		object.Base.Validate() &&
-		0 < len(object.DomainAddress) &&
 		0 < object.Height &&
 		!object.CreateTime.IsZero()
 }
@@ -132,7 +124,6 @@ func (object *Symbol) Paused() bool {
 func (object *Symbol) Equal(other *Symbol) bool {
 	return object.Base.Equal(&other.Base) &&
 		object.Quote.Equal(&other.Quote) &&
-		object.DomainAddress == other.DomainAddress &&
 		object.Height == other.Height &&
 		object.CreateTime.Equal(other.CreateTime) &&
 		object.IsPaused == other.IsPaused
@@ -144,7 +135,6 @@ func NewEmptySymbol() *Symbol {
 }
 
 // NewSymbol new currency with base currency and quote currency
-func NewSymbol(base *BaseCurrency, quote *QuoteCurrency,
-	domainAddress string) *Symbol {
-	return &Symbol{Base: *base, Quote: *quote, DomainAddress: domainAddress}
+func NewSymbol(base *BaseCurrency, quote *QuoteCurrency) *Symbol {
+	return &Symbol{Base: *base, Quote: *quote}
 }

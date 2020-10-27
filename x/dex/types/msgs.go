@@ -219,9 +219,6 @@ func (msg MsgCreateSymbol) ValidateBasic() error {
 	if !data.Quote.Validate() {
 		return sdkerrors.Wrap(ErrSymbolQuoteInvalid, "quote part invalid")
 	}
-	if 0 >= len(data.DomainAddress) {
-		return sdkerrors.Wrap(ErrSymbolDomainAddressInvalid, "domain address invalid")
-	}
 	return nil
 }
 
@@ -235,11 +232,10 @@ func (msg MsgCreateSymbol) GetData() (MsgCreateSymbolData, error) {
 
 // MsgCreateSymbolData msg data for delete dex
 type MsgCreateSymbolData struct {
-	Creator       Name          `json:"creator" yaml:"creator"`
-	Base          BaseCurrency  `json:"base" yaml:"base"`
-	Quote         QuoteCurrency `json:"quote" yaml:"quote"`
-	DomainAddress string        `json:"domain_address" yaml:"domain_address"`
-	CreateTime    time.Time     `json:"create_time" yaml:"create_time"`
+	Creator    Name          `json:"creator" yaml:"creator"`
+	Base       BaseCurrency  `json:"base" yaml:"base"`
+	Quote      QuoteCurrency `json:"quote" yaml:"quote"`
+	CreateTime time.Time     `json:"create_time" yaml:"create_time"`
 }
 
 func (MsgCreateSymbolData) Type() types.Name { return types.MustName("create@symbol") }
@@ -253,18 +249,16 @@ func NewMsgCreateSymbol(auth types.AccAddress,
 	creator types.Name,
 	base *BaseCurrency,
 	quote *QuoteCurrency,
-	domainAddress string,
 	createTime time.Time,
 ) MsgCreateSymbol {
 	return MsgCreateSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(ModuleCdc, &MsgCreateSymbolData{
-				Creator:       creator,
-				Base:          *base,
-				Quote:         *quote,
-				DomainAddress: domainAddress,
-				CreateTime:    createTime,
+				Creator:    creator,
+				Base:       *base,
+				Quote:      *quote,
+				CreateTime: createTime,
 			})),
 	}
 }

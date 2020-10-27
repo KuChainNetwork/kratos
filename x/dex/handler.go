@@ -147,7 +147,7 @@ func handleMsgCreateSymbol(ctx chainTypes.Context,
 	if data, err = msg.GetData(); nil != err {
 		return
 	}
-	if !data.Base.Validate() || !data.Quote.Validate() || 0 >= len(data.DomainAddress) {
+	if !data.Base.Validate() || !data.Quote.Validate() {
 		err = errors.Wrapf(types.ErrSymbolIncorrect,
 			"msg create symbol %s data is incorrect",
 			data.Creator.String())
@@ -157,10 +157,9 @@ func handleMsgCreateSymbol(ctx chainTypes.Context,
 	logger.Debug("handle create symbol",
 		"creator", data.Creator)
 	if err = keeper.CreateSymbol(ctx.Context(), data.Creator, &types.Symbol{
-		Base:          data.Base,
-		Quote:         data.Quote,
-		DomainAddress: data.DomainAddress,
-		Height:        ctx.BlockHeight(),
+		Base:   data.Base,
+		Quote:  data.Quote,
+		Height: ctx.BlockHeight(),
 		CreateTime: func() time.Time {
 			if data.CreateTime.IsZero() {
 				return time.Now()
@@ -189,7 +188,6 @@ func handleMsgCreateSymbol(ctx chainTypes.Context,
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteFullName, data.Quote.FullName),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteIconUrl, data.Quote.IconUrl),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteTxUrl, data.Quote.TxUrl),
-			sdk.NewAttribute(types.AttributeKeySymbolDomainAddress, data.DomainAddress),
 		),
 	)
 	res = &sdk.Result{Events: ctx.EventManager().Events()}
