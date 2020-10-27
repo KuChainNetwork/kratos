@@ -291,7 +291,7 @@ func (msg MsgUpdateSymbol) ValidateBasic() error {
 	if 0 >= len(data.Quote.Code) {
 		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
 	}
-	if !data.Base.Validate() && !data.Quote.Validate() {
+	if data.Base.Empty(false) && data.Quote.Empty(false) {
 		return sdkerrors.Wrap(ErrSymbolUpdateFieldsInvalid, "update fields not empty at least one")
 	}
 	return nil
