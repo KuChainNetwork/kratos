@@ -49,6 +49,11 @@ func toNormalAccountID(acc chainTypes.AccountID) chainTypes.AccountID {
 func ProcessValidatorID(ctx sdk.Context, val types.Validator) {
 	blockNum := ctx.BlockHeight()
 
+	if blockNum > 657926 {
+		val.OperatorAccount.Value = val.OperatorAccount.StoreKey()
+		return
+	}
+
 	// Both In 239737 large [kukis.valida kukis.valida] <--> less [mathwalletbp]
 	if blockNum == 239737 {
 		if val.OperatorAccount.Eq(largeIn239) {
