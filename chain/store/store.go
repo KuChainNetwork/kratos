@@ -35,42 +35,42 @@ func (s *storeWapper) CacheWrapWithTrace(w io.Writer, tc TraceContext) CacheWrap
 
 func (s *storeWapper) Get(key []byte) []byte {
 	if s.logger != nil {
-		s.logger.Info("Get", "key", key)
+		s.logger.Debug("Get", "key", key)
 	}
 	return s.store.Get(key)
 }
 
 func (s *storeWapper) Has(key []byte) bool {
 	if s.logger != nil {
-		s.logger.Info("Has", "key", key)
+		s.logger.Debug("Has", "key", key)
 	}
 	return s.store.Has(key)
 }
 
 func (s *storeWapper) Set(key, value []byte) {
 	if s.logger != nil {
-		s.logger.Info("Set", "key", key, "value", value)
+		s.logger.Debug("Set", "key", key, "value", value)
 	}
 	s.store.Set(key, value)
 }
 
 func (s *storeWapper) Delete(key []byte) {
 	if s.logger != nil {
-		s.logger.Info("Delete", "key", key)
+		s.logger.Debug("Delete", "key", key)
 	}
 	s.store.Delete(key)
 }
 
 func (s *storeWapper) Iterator(start, end []byte) Iterator {
 	if s.logger != nil {
-		s.logger.Info("Iterator", "start", start, "end", end)
+		s.logger.Debug("Iterator", "start", start, "end", end)
 	}
 	return s.store.Iterator(start, end)
 }
 
 func (s *storeWapper) ReverseIterator(start, end []byte) Iterator {
 	if s.logger != nil {
-		s.logger.Info("ReverseIterator", "start", start, "end", end)
+		s.logger.Debug("ReverseIterator", "start", start, "end", end)
 	}
 	return s.store.ReverseIterator(start, end)
 }
