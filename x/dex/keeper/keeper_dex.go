@@ -58,6 +58,7 @@ func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 		err = errors.Wrapf(types.ErrDexDescTooLong, "dex %s description too long", creator.String())
 		return
 	}
+	ok = false
 	if dex.Description != description {
 		dex.Description = description
 		a.setDex(ctx, dex)
