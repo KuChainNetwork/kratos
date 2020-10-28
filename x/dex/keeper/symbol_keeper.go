@@ -54,7 +54,7 @@ func (a DexKeeper) UpdateSymbol(ctx sdk.Context,
 		{&symbol.Quote.IconUrl, update.Quote.IconUrl},
 		{&symbol.Quote.TxUrl, update.Quote.TxUrl},
 	} {
-		if *pair.Dst != pair.Src {
+		if 0 < len(pair.Src) && *pair.Dst != pair.Src {
 			*pair.Dst = pair.Src
 			updated = true
 		}
