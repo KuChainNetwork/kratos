@@ -32,8 +32,7 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 			symbol.Quote.Code)
 		return
 	}
-	coin := a.assetKeeper.GetCoinTotalSupply(ctx, creator, baseCode)
-	if 0 >= len(coin.Denom) || coin.IsZero() {
+	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, baseCode); nil != err {
 		err = errors.Wrapf(types.ErrSymbolNotSupply,
 			"create symbol dex %s coin symbol %s/%s not supply",
 			creator.String(),
@@ -41,7 +40,7 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 			symbol.Base.Code)
 		return
 	}
-	if coin = a.assetKeeper.GetCoinTotalSupply(ctx, creator, quoteCode); 0 >= len(coin.Denom) || coin.IsZero() {
+	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, quoteCode); nil != err {
 		err = errors.Wrapf(types.ErrSymbolNotSupply,
 			"create symbol dex %s coin symbol %s/%s not supply",
 			creator.String(),
