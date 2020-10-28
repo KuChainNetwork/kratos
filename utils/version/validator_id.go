@@ -46,7 +46,7 @@ func toNormalAccountID(acc chainTypes.AccountID) chainTypes.AccountID {
 	return chainTypes.AccountID{val}
 }
 
-func ProcessValidatorID(ctx sdk.Context, val types.Validator) {
+func ProcessValidatorID(ctx sdk.Context, val *types.Validator) {
 	blockNum := ctx.BlockHeight()
 
 	if blockNum > 657926 {
@@ -65,6 +65,7 @@ func ProcessValidatorID(ctx sdk.Context, val types.Validator) {
 	}
 
 	if _, ok := toLargeNumMap[blockNum]; ok {
+		ctx.Logger().Info("use large num accountid", "block", blockNum)
 		val.OperatorAccount.Value = val.OperatorAccount.StoreKey()
 	} else {
 		val.OperatorAccount = toNormalAccountID(val.OperatorAccount)

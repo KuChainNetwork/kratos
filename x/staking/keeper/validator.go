@@ -43,7 +43,7 @@ func (k Keeper) GetValidator(ctx sdk.Context, acc types.AccountID) (validator ty
 		valToReturn := val.val
 		// Doesn't mutate the cache's value
 		valToReturn.OperatorAccount = acc
-		version.ProcessValidatorID(ctx, valToReturn)
+		version.ProcessValidatorID(ctx, &valToReturn)
 		return valToReturn, true
 	}
 
@@ -60,7 +60,7 @@ func (k Keeper) GetValidator(ctx sdk.Context, acc types.AccountID) (validator ty
 	}
 
 	validator = types.MustUnmarshalValidator(k.cdc, value)
-	version.ProcessValidatorID(ctx, validator)
+	version.ProcessValidatorID(ctx, &validator)
 	return validator, true
 }
 
