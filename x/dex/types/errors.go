@@ -20,6 +20,7 @@ var (
 	ErrSymbolQuoteInvalid         = sdkerrors.Register(ModuleName, 13, "dex symbol quote part invalid")
 	ErrSymbolDomainAddressInvalid = sdkerrors.Register(ModuleName, 14, "dex symbol domain address invalid")
 	ErrSymbolUpdateFieldsInvalid  = sdkerrors.Register(ModuleName, 15, "dex symbol update fields invalid")
+	ErrSymbolDexDescriptionSame   = sdkerrors.Register(ModuleName, 18, "dex description is same")
 )
 
 var (

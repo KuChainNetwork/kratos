@@ -46,8 +46,9 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 // UpdateDexDescription update a dex description
 func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 	creator types.Name,
-	description string) (err error) {
-	dex, ok := a.getDex(ctx, creator)
+	description string) (err error, ok bool) {
+	var dex *types.Dex
+	dex, ok = a.getDex(ctx, creator)
 	if !ok {
 		err = errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
 		return
@@ -57,8 +58,12 @@ func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 		err = errors.Wrapf(types.ErrDexDescTooLong, "dex %s description too long", creator.String())
 		return
 	}
-	dex.Description = description
-	a.setDex(ctx, dex)
+	ok = false
+	if dex.Description != description {
+		dex.Description = description
+		a.setDex(ctx, dex)
+		ok = true
+	}
 	return
 }
 
