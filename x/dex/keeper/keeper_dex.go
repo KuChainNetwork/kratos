@@ -2,6 +2,7 @@ package keeper
 
 import (
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
 	"github.com/pkg/errors"
 
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
@@ -27,7 +28,9 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 		return
 	}
 	// check the dex can be destroyed
-	if !dex.CanDestroy(&ctx) {
+	if !dex.CanDestroy(func() chainTypes.Coins {
+		return a.GetSigInSumForDex(ctx, accountTypes.NewAccountIDFromName(creator))
+	}) {
 		err = errors.Wrapf(types.ErrDexCanNotBeDestroyed,
 			"dex %s can not be destroy", creator.String())
 		return

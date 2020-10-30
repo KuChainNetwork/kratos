@@ -1,6 +1,6 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 
 // Dex model
 type Dex struct {
@@ -28,10 +28,9 @@ func (d *Dex) WithNumber(n uint64) *Dex {
 }
 
 // CanDestroy check whether dex can destroy
-func (d *Dex) CanDestroy(ctx *sdk.Context) (ok bool) {
-	// TODO
-	ok = true
-	return
+func (d *Dex) CanDestroy(sumCallback func() chainTypes.Coins) (ok bool) {
+	sum := sumCallback()
+	return 0 == len(sum) || sum.IsZero()
 }
 
 // WithSymbol dex add symbol
