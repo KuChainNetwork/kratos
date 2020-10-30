@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -267,4 +268,9 @@ func (msg MsgDexDeal) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+// GetSigners
+func (msg MsgDexDeal) GetSigners() []sdk.AccAddress {
+	return msg.Auth
 }
