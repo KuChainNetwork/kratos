@@ -5,7 +5,6 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/KuChainNetwork/kuchain/utils/version"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -43,8 +42,6 @@ func (sud SetUpContextDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 
 	newCtx = SetGasMeter(simulate, ctx, gasTx.GetGas())
 	newCtx = newCtx.WithMinGasPrices(config.GetFeePriceMiniLimit())
-
-	version.MakeOk(ctx)
 
 	// Decorator will catch an OutOfGasPanic caused in the next antehandler
 	// AnteHandlers must have their own defer/recover in order for the BaseApp
