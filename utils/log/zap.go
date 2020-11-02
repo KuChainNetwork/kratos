@@ -7,13 +7,14 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func mkZapLogger(isDebug bool) *zap.Logger {
+// NewZapLogger create a logger by zap
+func NewZapLogger(isDebug bool) *zap.Logger {
 	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "tm",
-		LevelKey:       "lv",
+		TimeKey:        "logTm",
+		LevelKey:       "logLv",
 		NameKey:        "logger",
 		CallerKey:      "caller",
-		MessageKey:     "msg",
+		MessageKey:     "logMsg",
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeTime:     zapcore.EpochNanosTimeEncoder,
@@ -27,7 +28,11 @@ func mkZapLogger(isDebug bool) *zap.Logger {
 		encoderConfig.EncodeCaller = zapcore.FullCallerEncoder
 	}
 
-	config := zap.NewDevelopmentConfig()
+	config := zap.NewProductionConfig()
+
+	if isDebug {
+		config = zap.NewDevelopmentConfig()
+	}
 
 	config.Level = zap.NewAtomicLevelAt(zap.DebugLevel) // most small
 	config.EncoderConfig = encoderConfig
@@ -38,5 +43,5 @@ func mkZapLogger(isDebug bool) *zap.Logger {
 		panic(fmt.Sprintf("zap logger build err by %s", err.Error()))
 	}
 
-	return logger.WithOptions(zap.AddCallerSkip(2))
+	return logger
 }

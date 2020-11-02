@@ -145,7 +145,9 @@ func persistentPreRunEFn(context *server.Context) func(*cobra.Command, []string)
 			return nil
 		}
 
-		context.Logger = kuLog.NewLoggerByZap(viper.GetBool(cli.TraceFlag)).With("module", "main")
+		context.Logger = kuLog.NewLoggerByZap(
+			viper.GetBool(cli.TraceFlag),
+			viper.GetString("log_level")).With("module", "main")
 		context.Config = chainCfg.DefaultConfig()
 		return nil
 	}
