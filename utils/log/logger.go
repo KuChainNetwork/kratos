@@ -92,3 +92,9 @@ func (l *Logger) With(keyvals ...interface{}) tmlog.Logger {
 		logger: l.logger.With(fields...),
 	}
 }
+
+// WithCallerSkip if warp the log, to add the caller skip to show the right caller
+func (l *Logger) WithCallerSkip(skip int) *Logger {
+	l.logger = l.logger.WithOptions(zap.AddCallerSkip(skip))
+	return l
+}
