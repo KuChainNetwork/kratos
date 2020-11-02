@@ -11,7 +11,7 @@ import (
 
 func TestCoinStoreKey2AccountID(t *testing.T) {
 	accID := chainTypes.NewAccountIDFromName(chainTypes.MustName("abcdefg"))
-	key := genCoinStoreKey(CoinStatStoreKeyPrefix, accID.Value)
+	key := genCoinStoreKey(CoinStatStoreKeyPrefix, accID.StoreKey())
 
 	t.Logf("key %v", key)
 
@@ -30,7 +30,7 @@ func TestCoinStoreKey2AccountIDInAdd(t *testing.T) {
 	accAddressStr := "kuchain1xmc2z728py4gtwpc7jgytsan0282ww883qtv07"
 	accAddress, _ := sdk.AccAddressFromBech32(accAddressStr)
 	accID := chainTypes.NewAccountIDFromAccAdd(accAddress)
-	key := genCoinStoreKey(CoinStatStoreKeyPrefix, accID.Value)
+	key := genCoinStoreKey(CoinStatStoreKeyPrefix, accID.StoreKey())
 
 	t.Logf("key %v %v", key, accAddress)
 

@@ -78,7 +78,7 @@ func (k Keeper) GetAllUnbondingDelegations(ctx sdk.Context, delegator AccountID)
 	unbondingDelegations := make([]types.UnbondingDelegation, 0)
 
 	store := store.NewStore(ctx, k.storeKey)
-	delegatorPrefixKey := types.GetUBDsKey(delegator.Value)
+	delegatorPrefixKey := types.GetUBDsKey(delegator.StoreKey())
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
 
@@ -97,7 +97,7 @@ func (k Keeper) GetAllRedelegations(
 ) []types.Redelegation {
 
 	store := store.NewStore(ctx, k.storeKey)
-	delegatorPrefixKey := types.GetREDsKey(delegator.Value)
+	delegatorPrefixKey := types.GetREDsKey(delegator.StoreKey())
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
 

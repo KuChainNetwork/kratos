@@ -26,7 +26,7 @@ func TestingUpdateValidator(keeper Keeper, ctx sdk.Context, validator types.Vali
 	deleted := false
 	for ; iterator.Valid(); iterator.Next() {
 		valAddr := types.ParseValidatorPowerRankKey(iterator.Key())
-		if bytes.Equal(valAddr, validator.OperatorAccount.Value) {
+		if bytes.Equal(valAddr, validator.OperatorAccount.StoreKey()) {
 			if deleted {
 				panic("found duplicate power index key")
 			} else {

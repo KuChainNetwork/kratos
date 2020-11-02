@@ -108,7 +108,7 @@ func (k Keeper) SetValidatorByPowerIndex(ctx sdk.Context, validator types.Valida
 		return
 	}
 	store := store.NewStore(ctx, k.storeKey)
-	store.Set(types.GetValidatorsByPowerIndexKey(validator), validator.OperatorAccount.Value)
+	store.Set(types.GetValidatorsByPowerIndexKey(validator), validator.OperatorAccount.StoreKey())
 }
 
 // validator index
@@ -126,7 +126,7 @@ func (k Keeper) HasValidatorByPowerIndex(ctx sdk.Context, power []byte) bool {
 // validator index
 func (k Keeper) SetNewValidatorByPowerIndex(ctx sdk.Context, validator types.Validator) {
 	store := store.NewStore(ctx, k.storeKey)
-	store.Set(types.GetValidatorsByPowerIndexKey(validator), validator.OperatorAccount.Value)
+	store.Set(types.GetValidatorsByPowerIndexKey(validator), validator.OperatorAccount.StoreKey())
 }
 
 // Update the tokens of an existing validator, update the validators power index key
@@ -397,7 +397,7 @@ func (k Keeper) DeleteValidatorQueue(ctx sdk.Context, val types.Validator) {
 	timeSlice := k.GetValidatorQueueTimeSlice(ctx, val.UnbondingTime)
 	newTimeSlice := []types.AccountID{}
 	for _, addr := range timeSlice {
-		if !bytes.Equal(addr.Value, val.OperatorAccount.Value) {
+		if !bytes.Equal(addr.StoreKey(), val.OperatorAccount.StoreKey()) {
 			newTimeSlice = append(newTimeSlice, addr)
 		}
 	}

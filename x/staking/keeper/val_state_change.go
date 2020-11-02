@@ -133,9 +133,9 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) (updates []ab
 			panic("unexpected validator status")
 		}
 
+		valAddrBytes := valAccount.FixedKey()
+
 		// fetch the old power bytes
-		var valAddrBytes [types.AccountIDlen]byte
-		copy(valAddrBytes[:], valAccount.Value[:])
 		oldPowerBytes, found := last[valAddrBytes]
 
 		newPower := validator.ConsensusPower()

@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"fmt"
+	"time"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
@@ -13,7 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"time"
 )
 
 //_______________________________________________________
@@ -465,8 +466,8 @@ func TestValidator(t *testing.T) {
 		assert.Equal(t, 2, len(resValidators))
 		assert.Equal(t, sdk.NewInt(400).Mul(exported.PowerReduction), resValidators[0].BondedTokens(), "%v", resValidators)
 		assert.Equal(t, sdk.NewInt(200).Mul(exported.PowerReduction), resValidators[1].BondedTokens(), "%v", resValidators)
-		assert.Equal(t, validators[3].OperatorAccount, resValidators[0].OperatorAccount, "%v", resValidators)
-		assert.Equal(t, validators[4].OperatorAccount, resValidators[1].OperatorAccount, "%v", resValidators)
+		assert.Equal(t, validators[3].OperatorAccount.StoreKey(), resValidators[0].OperatorAccount.StoreKey(), "%v", resValidators)
+		assert.Equal(t, validators[4].OperatorAccount.StoreKey(), resValidators[1].OperatorAccount.StoreKey(), "%v", resValidators)
 	})
 	Convey("TestGetValidatorsEdgeCases", t, func() {
 		_, _, _, _, _, _, app := NewTestApp(wallet)

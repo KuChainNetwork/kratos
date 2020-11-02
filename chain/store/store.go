@@ -12,7 +12,7 @@ func NewStore(ctx sdk.Context, key sdk.StoreKey) KVStore {
 	return &storeWapper{
 		store:  ctx.KVStore(key),
 		num:    ctx.BlockHeight(),
-		logger: ctx.Logger().With("module", "kuStoreLog", "storeKey", key, "num", ctx.BlockHeight()),
+		logger: nil,
 	}
 }
 
