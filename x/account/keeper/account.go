@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
@@ -25,7 +26,7 @@ func (ak AccountKeeper) NewAccount(ctx sdk.Context, acc exported.Account) export
 
 // GetAccount get account from keeper
 func (ak AccountKeeper) GetAccount(ctx sdk.Context, id AccountID) exported.Account {
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 	bz := store.Get(types.AccountIDStoreKey(id))
 	if bz == nil {
 		return nil
@@ -43,7 +44,7 @@ func (ak AccountKeeper) GetAccountByName(ctx sdk.Context, name Name) exported.Ac
 // SetAccount implements sdk.AccountKeeper.
 func (ak AccountKeeper) SetAccount(ctx sdk.Context, acc exported.Account) {
 	n := acc.GetID()
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 
 	bz, err := ak.cdc.MarshalBinaryBare(acc)
 	if err != nil {
@@ -70,7 +71,7 @@ func (ak AccountKeeper) EnsureAccount(ctx sdk.Context, id AccountID) error {
 
 // IterateAccounts iterates over all the stored accounts and performs a callback function
 func (ak AccountKeeper) IterateAccounts(ctx sdk.Context, cb func(account exported.Account) (stop bool)) {
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 	iterator := sdk.KVStorePrefixIterator(store, types.AddressStoreKeyPrefix)
 
 	defer iterator.Close()
@@ -94,7 +95,7 @@ func (ak AccountKeeper) decodeAccount(bz []byte) (acc exported.Account) {
 
 // isAccountExist is account exist from keeper
 func (ak AccountKeeper) isAccountExist(ctx sdk.Context, id AccountID) bool {
-	return ctx.KVStore(ak.key).Has(types.AccountIDStoreKey(id))
+	return store.NewStore(ctx, ak.key).Has(types.AccountIDStoreKey(id))
 }
 func (ak AccountKeeper) IsAccountExist(ctx sdk.Context, id AccountID) bool {
 	return ak.isAccountExist(ctx, id)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
@@ -193,7 +194,7 @@ func (k Keeper) FundCommunityPool(ctx sdk.Context, amount Coins, sender chainTyp
 func (k Keeper) SetStartNotDistributionTimePoint(ctx sdk.Context, t time.Time) {
 	k.startNotDistriTimePoint = t
 
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	bz := k.cdc.MustMarshalJSON(k.startNotDistriTimePoint)
 
 	store.Set([]byte(key), bz)
@@ -202,7 +203,7 @@ func (k Keeper) SetStartNotDistributionTimePoint(ctx sdk.Context, t time.Time) {
 }
 
 func (k *Keeper) GetStartNotDistributionTimePoint(ctx sdk.Context) {
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	bz := store.Get([]byte(key))
 
 	k.cdc.UnmarshalJSON(bz, &k.startNotDistriTimePoint)

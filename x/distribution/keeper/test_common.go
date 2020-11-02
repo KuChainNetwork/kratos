@@ -1,36 +1,31 @@
 package keeper
 
 import (
-	"github.com/KuChainNetwork/kuchain/chain/constants"
-	"github.com/KuChainNetwork/kuchain/chain/fee"
-	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/KuChainNetwork/kuchain/x/account"
-	"github.com/KuChainNetwork/kuchain/x/asset"
-	sktypes "github.com/KuChainNetwork/kuchain/x/staking/types"
-	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-
 	"testing"
-
-	"github.com/stretchr/testify/require"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-	//"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
 
-	Accounttypes "github.com/KuChainNetwork/kuchain/x/account/types"
-	assettypes "github.com/KuChainNetwork/kuchain/x/asset/types"
+	"github.com/KuChainNetwork/kuchain/chain/constants"
+	"github.com/KuChainNetwork/kuchain/chain/fee"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/account"
+	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/x/asset"
+	assetTypes "github.com/KuChainNetwork/kuchain/x/asset/types"
+	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/KuChainNetwork/kuchain/x/params"
 	"github.com/KuChainNetwork/kuchain/x/staking"
+	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/KuChainNetwork/kuchain/x/supply"
-
-	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"github.com/tendermint/tendermint/crypto"
 )
 
 //nolint:deadcode,unused
@@ -107,8 +102,8 @@ var (
 func MakeTestCodec() *codec.Codec {
 	var cdc = codec.New()
 
-	Accounttypes.RegisterCodec(cdc)
-	assettypes.RegisterCodec(cdc)
+	accountTypes.RegisterCodec(cdc)
+	assetTypes.RegisterCodec(cdc)
 	staking.RegisterCodec(cdc)
 	supply.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
@@ -193,27 +188,27 @@ func CreateTestInputAdvanced(t *testing.T, isCheckTx bool, initPower int64,
 	sk.SetParams(ctx, staking.DefaultParams())
 
 	intNum1, _ := sdk.NewIntFromString("1000000000000000000000")
-	intNum2, _ := sdk.NewIntFromString("80000000000000000000000")
+	//intNum2, _ := sdk.NewIntFromString("80000000000000000000000")
 	intNum3, _ := sdk.NewIntFromString("60000000000000000000000")
 	intNumFee, _ := sdk.NewIntFromString("20000000000000000000000")
 	intMaxNum, _ := sdk.NewIntFromString("100000000000000000000000")
 
 	SymbolName, _ := chainTypes.NewName(constants.DefaultBondSymbol)
 
-	assetKeeper.Create(ctx, MasterName, SymbolName, assettypes.NewCoin(constants.DefaultBondDenom, intNum2),
-		true, true, true, 0, assettypes.NewCoin(constants.DefaultBondDenom, intMaxNum), []byte("create"))
+	assetKeeper.Create(ctx, MasterName, SymbolName, chainTypes.NewIntCoreCoin(intMaxNum),
+		true, true, true, 0, chainTypes.NewInt64CoreCoin(0), []byte("create"))
 
 	assetKeeper.Issue(ctx, MasterName, SymbolName,
-		assettypes.NewCoin(constants.DefaultBondDenom, intNum3))
+		chainTypes.NewIntCoreCoin(intNum3))
 
 	{
 		for _, addr := range TestAddrs {
-			Coins := chainTypes.NewCoins(chainTypes.NewCoin(constants.DefaultBondDenom, intNum1))
+			Coins := chainTypes.NewCoins(chainTypes.NewIntCoreCoin(intNum1))
 			err := assetKeeper.Transfer(ctx, Master, addr, Coins)
 			//fmt.Println("id", id, "account", addr.String())
 			require.Nil(t, err)
 		}
-		Coins := chainTypes.NewCoins(chainTypes.NewCoin(constants.DefaultBondDenom, intNumFee))
+		Coins := chainTypes.NewCoins(chainTypes.NewIntCoreCoin(intNumFee))
 		err := assetKeeper.Transfer(ctx, Master, supplyKeeper.GetModuleAccount(ctx, keeper.feeCollectorName).GetID(), Coins)
 		require.Nil(t, err)
 	}
@@ -240,14 +235,14 @@ func CreateTestInputAdvanced(t *testing.T, isCheckTx bool, initPower int64,
 	return ctx, AccountKeeper, assetKeeper, keeper, sk, pk, supplyKeeper
 }
 
-func GetDescription() sktypes.Description {
+func GetDescription() stakingTypes.Description {
 	FlagMoniker := "moniker"
 	FlagIdentity := "identity"
 	FlagWebsite := "website"
 	FlagSecurityContact := "security-contact"
 	FlagDetails := "details"
 
-	description := sktypes.NewDescription(
+	description := stakingTypes.NewDescription(
 		viper.GetString(FlagMoniker),
 		viper.GetString(FlagIdentity),
 		viper.GetString(FlagWebsite),

@@ -81,9 +81,9 @@ os:
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
-BUILD_OS := -osarch="linux/arm linux/amd64 windows/amd64"
+BUILD_OS := -osarch="linux/amd64 windows/amd64"
 ifneq ($(OS_NAME), darwin/x86_64)
-	BUILD_OS = -osarch="linux/arm linux/amd64 windows/amd64 darwin/amd64"
+	BUILD_OS = -osarch="linux/amd64 windows/amd64 darwin/amd64"
 endif
 
 all: clear-build build
