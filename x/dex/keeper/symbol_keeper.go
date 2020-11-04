@@ -16,6 +16,38 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 			creator.String())
 		return
 	}
+	// check base and quote are exists
+	var baseCode, quoteCode types.Name
+	if baseCode, err = types.NewName(symbol.Base.Code); nil != err {
+		err = errors.Wrapf(types.ErrSymbolFormat,
+			"create symbol dex %s symbol base code format error: %s",
+			creator.String(),
+			symbol.Base.Code)
+		return
+	}
+	if quoteCode, err = types.NewName(symbol.Quote.Code); nil != err {
+		err = errors.Wrapf(types.ErrSymbolFormat,
+			"create symbol dex %s symbol quote code format error: %s",
+			creator.String(),
+			symbol.Quote.Code)
+		return
+	}
+	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, baseCode); nil != err {
+		err = errors.Wrapf(types.ErrSymbolNotSupply,
+			"create symbol dex %s coin symbol %s/%s not supply",
+			creator.String(),
+			creator.String(),
+			symbol.Base.Code)
+		return
+	}
+	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, quoteCode); nil != err {
+		err = errors.Wrapf(types.ErrSymbolNotSupply,
+			"create symbol dex %s coin symbol %s/%s not supply",
+			creator.String(),
+			creator.String(),
+			symbol.Quote.Code)
+		return
+	}
 	if dex, ok = dex.WithSymbol(symbol); !ok {
 		err = types.ErrSymbolExists
 		return
