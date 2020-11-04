@@ -15,5 +15,6 @@ type IAssetKeeper interface {
 
 	GetLockCoins(ctx sdk.Context, account types.AccountID) (types.Coins, []keeper.LockedCoins, error)
 	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (*keeper.ApproveData, error)
+	GetCoins(ctx sdk.Context, account types.AccountID) (types.Coins, error)
 	GetCoinStat(ctx sdk.Context, creator, symbol types.Name) (*assetTypes.CoinStat, error)
 }

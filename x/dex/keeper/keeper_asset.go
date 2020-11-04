@@ -96,6 +96,13 @@ func (k DexKeeper) SigIn(ctx sdk.Context, id, dex AccountID, amt Coins) error {
 		return errors.Wrapf(dexTypes.ErrDexNotExists, "dex %s not exists to sigin", dex.String())
 	}
 
+	// check user balance
+	if balance, err := k.assetKeeper.GetCoins(ctx, id); nil != err {
+		return errors.Wrapf(err, "GetCoins error")
+	} else if !balance.IsAllGTE(amt) {
+		return errors.Wrapf(dexTypes.ErrDexSigInAmountNotEnough, "user sigIn amount not enough")
+	}
+
 	// update sigIn state
 	curr, err := k.updateSigIn(ctx, false, id, dex, amt)
 	if err != nil {
