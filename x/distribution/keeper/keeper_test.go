@@ -45,15 +45,17 @@ func TestWithdrawValidatorCommission1(t *testing.T) {
 	intNum, _ := sdk.NewIntFromString("100000000000000000000")
 	intNumMax, _ := sdk.NewIntFromString("300000000000000000000")
 
-	ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNum),
-		true, true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
+	err := ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNumMax),
+		true, true, true, 0, chainType.NewCoin(tCoins, chainType.NewInt(0)), []byte("mytoken"))
+	require.Nil(t, err)
 
-	ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNum),
-		true, true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
+	err = ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNum),
+		true, true, true, 0, chainType.NewCoin(sCoins, chainType.NewInt(0)), []byte("stake"))
+	require.Nil(t, err)
 
 	intNum0, _ := sdk.NewIntFromString("100033333333333333")
 	myTokenCoins := assettypes.Coins{assettypes.NewCoin(tCoins, intNum0)}
-	_, err := ask.IssueCoinPower(ctx, Master, myTokenCoins)
+	_, err = ask.IssueCoinPower(ctx, Master, myTokenCoins)
 	require.Nil(t, err)
 
 	stakeCoins := assettypes.Coins{assettypes.NewCoin(sCoins, intNum0)}
@@ -136,18 +138,19 @@ func TestWithdrawValidatorCommission2(t *testing.T) {
 
 	ctx, _, keeper, _, supplyKeeper, ask := CreateTestInputDefault(t, false, 1000)
 
-	intNum, _ := sdk.NewIntFromString("100000000000000000000")
 	intNumMax, _ := sdk.NewIntFromString("300000000000000000000")
 
-	ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNum),
-		true, true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
+	err := ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNumMax),
+		true, true, true, 0, assettypes.NewCoin(tCoins, chainType.NewInt(0)), []byte("mytoken"))
+	require.Nil(t, err)
 
-	ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNum),
-		true, true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
+	err = ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNumMax),
+		true, true, true, 0, assettypes.NewCoin(sCoins, chainType.NewInt(0)), []byte("stake"))
+	require.Nil(t, err)
 
 	intNum0, _ := sdk.NewIntFromString("100033333333333333")
 	TokenCoins := assettypes.Coins{assettypes.NewCoin(tCoins, intNum0)}
-	_, err := ask.IssueCoinPower(ctx, Master, TokenCoins)
+	_, err = ask.IssueCoinPower(ctx, Master, TokenCoins)
 	require.Nil(t, err)
 
 	StakeCoins := assettypes.Coins{assettypes.NewCoin(sCoins, intNum0)}
@@ -232,14 +235,15 @@ func TestGetTotalRewards(t *testing.T) {
 
 	ctx, _, keeper, _, supplyKeeper, ask := CreateTestInputDefault(t, false, 1000)
 
-	intNum, _ := sdk.NewIntFromString("100000000000000000000")
 	intNumMax, _ := sdk.NewIntFromString("300000000000000000000")
 
-	ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNum),
-		true, true, true, 0, assettypes.NewCoin(tCoins, intNumMax), []byte("mytoken"))
+	err := ask.Create(ctx, MasterName, myTokenName, assettypes.NewCoin(tCoins, intNumMax),
+		true, true, true, 0, assettypes.NewCoin(tCoins, chainType.NewInt(0)), []byte("mytoken"))
+	require.Nil(t, err)
 
-	ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNum),
-		true, true, true, 0, assettypes.NewCoin(sCoins, intNumMax), []byte("stake"))
+	err = ask.Create(ctx, MasterName, myStakeName, assettypes.NewCoin(sCoins, intNumMax),
+		true, true, true, 0, assettypes.NewCoin(sCoins, chainType.NewInt(0)), []byte("stake"))
+	require.Nil(t, err)
 
 	{
 		intNum0, _ := sdk.NewIntFromString("100033333333333333")
@@ -258,7 +262,7 @@ func TestGetTotalRewards(t *testing.T) {
 	myTokenCoins := assettypes.Coins{{Denom: tCoins, Amount: sdk.NewInt(int64(800000000))}}
 	stakeCoins := assettypes.Coins{{Denom: sCoins, Amount: sdk.NewInt(int64(600000000))}}
 
-	err := supplyKeeper.SendCoinsFromAccountToModule(ctx, Master, distrAcc.GetID().String(), myTokenCoins)
+	err = supplyKeeper.SendCoinsFromAccountToModule(ctx, Master, distrAcc.GetID().String(), myTokenCoins)
 	require.Nil(t, err)
 
 	err = supplyKeeper.SendCoinsFromAccountToModule(ctx, Master, distrAcc.GetID().String(), stakeCoins)

@@ -87,17 +87,28 @@ func handleMsgUpdateDexDescription(ctx chainTypes.Context,
 	}
 	// check description max length
 	if types.MaxDexDescriptorLen < len(msgData.Desc) {
-		err = types.ErrDexDescTooLong
+		err = errors.Wrapf(types.ErrDexDescTooLong,
+			"msg update dex %s description",
+			msgData.Creator)
 		return
 	}
 	logger.Debug("handle dex update description",
 		"creator", msgData.Creator,
 		"desc", string(msgData.Desc))
 	ctx.RequireAccount(msgData.Creator)
-	if err = keeper.UpdateDexDescription(ctx.Context(),
+	var ok bool
+	if err, ok = keeper.UpdateDexDescription(ctx.Context(),
 		msgData.Creator,
 		string(msgData.Desc)); nil != err {
-		err = errors.Wrapf(err, "msg update dex %s description", msgData.Creator)
+		err = errors.Wrapf(err,
+			"msg update dex %s description",
+			msgData.Creator)
+		return
+	}
+	if !ok {
+		err = errors.Wrapf(types.ErrSymbolDexDescriptionSame,
+			"msg update dex %s description",
+			msgData.Creator)
 		return
 	}
 	ctx.EventManager().EmitEvent(

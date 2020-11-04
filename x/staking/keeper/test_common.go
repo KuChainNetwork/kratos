@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // does a certain by-power index record exist
 func ValidatorByPowerIndexExists(ctx sdk.Context, keeper Keeper, power []byte) bool {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	return store.Has(power)
 }
 
@@ -19,13 +20,13 @@ func TestingUpdateValidator(keeper Keeper, ctx sdk.Context, validator types.Vali
 	keeper.SetValidator(ctx, validator)
 
 	// Remove any existing power key for validator.
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.ValidatorsByPowerIndexKey)
 	defer iterator.Close()
 	deleted := false
 	for ; iterator.Valid(); iterator.Next() {
 		valAddr := types.ParseValidatorPowerRankKey(iterator.Key())
-		if bytes.Equal(valAddr, validator.OperatorAccount.Value) {
+		if bytes.Equal(valAddr, validator.OperatorAccount.StoreKey()) {
 			if deleted {
 				panic("found duplicate power index key")
 			} else {

@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	tmrpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
 
@@ -33,7 +34,7 @@ type RestServer struct {
 func NewRestServer(cdc *codec.Codec) *RestServer {
 	r := mux.NewRouter()
 	cliCtx := context.NewCLIContext().WithCodec(cdc)
-	logger := kuLog.NewLoggerByZap(false).With("module", "rest-server")
+	logger := kuLog.NewLoggerByZap(viper.GetBool(cli.TraceFlag), viper.GetString("log_level")).With("module", "rest-server")
 
 	return &RestServer{
 		Mux:    r,

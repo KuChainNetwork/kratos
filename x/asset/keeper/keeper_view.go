@@ -3,6 +3,7 @@ package keeper
 import (
 	"errors"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -67,7 +68,7 @@ func (a AssetKeeper) GetCoinStat(ctx sdk.Context, creator, symbol types.Name) (*
 
 // GetCoinsTotalSupply get all coin stat data
 func (a AssetKeeper) GetCoinsTotalSupply(ctx sdk.Context) types.Coins {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinStatStoreKeyPrefix))
 
 	res := types.Coins{}
@@ -97,7 +98,7 @@ func (a AssetKeeper) GetCoinTotalSupply(ctx sdk.Context, creator, symbol types.N
 
 // IterateAllCoins iterate all account 's coins
 func (a AssetKeeper) IterateAllCoins(ctx sdk.Context, cb func(address types.AccountID, balance Coins) (stop bool)) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinStoreKeyPrefix))
 
 	defer iterator.Close()
@@ -125,7 +126,7 @@ func (a AssetKeeper) GetApproveCoins(ctx sdk.Context, account, spender types.Acc
 
 // IterateAllCoins iterate all account 's coins
 func (a AssetKeeper) IterateAllCoinPowers(ctx sdk.Context, cb func(address types.AccountID, balance Coins) (stop bool)) {
-	store := ctx.KVStore(a.key)
+	store := store.NewStore(ctx, a.key)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinPowerStoreKeyPrefix))
 
 	defer iterator.Close()

@@ -36,15 +36,18 @@ type AccountIDes struct {
 
 // NewAccountIDFromName create AccountID from Name
 func NewAccountIDFromName(n Name) (res AccountID) {
-	res.Value = make([]byte, len(n.Value))
+	res.Value = make([]byte, AccIDStoreKeyLen)
 	copy(res.Value, n.Value)
 	return res
 }
 
 // NewAccountIDFromByte create AccountID from byte
 func NewAccountIDFromByte(bytes []byte) AccountID {
+	bytesNew := make([]byte, math.MaxInt(len(bytes), AccIDStoreKeyLen))
+	copy(bytesNew, bytes)
+
 	return AccountID{
-		Value: bytes,
+		Value: bytesNew,
 	}
 }
 
@@ -53,7 +56,7 @@ func NewAccountIDFromAccAdd(add sdk.AccAddress) AccountID {
 	bs := make([]byte, 0, len(add)+1)
 	bs = append(bs, accountIDTypeAccAddress)
 	bs = append(bs, add...)
-	return AccountID{bs}
+	return NewAccountIDFromByte(bs)
 }
 
 // NewAccountIDFromAdd create AccountID from AccAddress
@@ -61,7 +64,7 @@ func NewAccountIDFromAdd(add sdk.Address) AccountID {
 	bs := make([]byte, 0, len(add.Bytes())+1)
 	bs = append(bs, accountIDTypeAccAddress)
 	bs = append(bs, add.Bytes()...)
-	return AccountID{bs}
+	return NewAccountIDFromByte(bs)
 }
 
 // NewAccountIDFromValAdd create AccountID from AccAddress
@@ -76,9 +79,7 @@ func NewAccountIDFromConsAdd(add sdk.ConsAddress) AccountID {
 
 // EmptyAccountID return a empty accountID
 func EmptyAccountID() AccountID {
-	return AccountID{
-		Value: []byte{accountIDTypeNil}[:],
-	}
+	return NewAccountIDFromByte([]byte{accountIDTypeNil}[:])
 }
 
 // NewAccountIDFromStr new accountID from string
@@ -240,15 +241,7 @@ func (a AccountID) Bytes() []byte {
 		return []byte{}
 	}
 
-	if addr, ok := a.ToAddress(); ok {
-		return addr.Bytes()
-	}
-
-	if name, ok := a.ToName(); ok {
-		return name.Bytes()
-	}
-
-	return []byte{}
+	return a.StoreKey()
 }
 
 // String imp Address interface
@@ -368,4 +361,10 @@ func (a AccountID) StoreKey() []byte {
 	bytes := make([]byte, math.MaxInt(len(a.Value), AccIDStoreKeyLen))
 	copy(bytes, a.Value)
 	return bytes[:]
+}
+
+// FixedKey get bytes for store key fixed
+func (a AccountID) FixedKey() (res [AccIDStoreKeyLen]byte) {
+	copy(res[:], a.Value)
+	return
 }

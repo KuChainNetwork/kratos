@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -12,7 +13,7 @@ func (k Keeper) GetDelegatorValidators(
 
 	validators := make([]types.Validator, maxRetrieve)
 
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	delegatorPrefixKey := types.GetDelegationsKey(delegatorAddr)
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
@@ -57,7 +58,7 @@ func (k Keeper) GetDelegatorValidator(
 func (k Keeper) GetAllDelegatorDelegations(ctx sdk.Context, delegator AccountID) []types.Delegation {
 	delegations := make([]types.Delegation, 0)
 
-	store := ctx.KVStore(k.storeKey)
+	store := store.NewStore(ctx, k.storeKey)
 	delegatorPrefixKey := types.GetDelegationsKey(delegator)
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) //smallest to largest
 	defer iterator.Close()
@@ -76,8 +77,8 @@ func (k Keeper) GetAllDelegatorDelegations(ctx sdk.Context, delegator AccountID)
 func (k Keeper) GetAllUnbondingDelegations(ctx sdk.Context, delegator AccountID) []types.UnbondingDelegation {
 	unbondingDelegations := make([]types.UnbondingDelegation, 0)
 
-	store := ctx.KVStore(k.storeKey)
-	delegatorPrefixKey := types.GetUBDsKey(delegator.Value)
+	store := store.NewStore(ctx, k.storeKey)
+	delegatorPrefixKey := types.GetUBDsKey(delegator.StoreKey())
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
 
@@ -95,8 +96,8 @@ func (k Keeper) GetAllRedelegations(
 	ctx sdk.Context, delegator AccountID, srcValAddress, dstValAddress AccountID,
 ) []types.Redelegation {
 
-	store := ctx.KVStore(k.storeKey)
-	delegatorPrefixKey := types.GetREDsKey(delegator.Value)
+	store := store.NewStore(ctx, k.storeKey)
+	delegatorPrefixKey := types.GetREDsKey(delegator.StoreKey())
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
 
