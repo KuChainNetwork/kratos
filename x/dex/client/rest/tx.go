@@ -29,11 +29,10 @@ type DestroyDexReq struct {
 }
 
 type CreateSymbolReq struct {
-	BaseReq       rest.BaseReq        `json:"base_req" yaml:"base_req"`
-	Creator       string              `json:"creator" yaml:"creator"`
-	Base          types.BaseCurrency  `json:"base" yaml:"base"`
-	Quote         types.QuoteCurrency `json:"quote" yaml:"quote"`
-	DomainAddress string              `json:"domain_address" yaml:"domain_address"`
+	BaseReq rest.BaseReq        `json:"base_req" yaml:"base_req"`
+	Creator string              `json:"creator" yaml:"creator"`
+	Base    types.BaseCurrency  `json:"base" yaml:"base"`
+	Quote   types.QuoteCurrency `json:"quote" yaml:"quote"`
 }
 
 type UpdateSymbolReq struct {
@@ -232,7 +231,7 @@ func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
-		if !req.Base.Validate() || !req.Quote.Validate() || 0 >= len(req.DomainAddress) {
+		if !req.Base.Validate() || !req.Quote.Validate() {
 			err = errors.Errorf("incorrect request fields")
 			return
 		}
@@ -255,7 +254,6 @@ func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				name,
 				&req.Base,
 				&req.Quote,
-				req.DomainAddress,
 				time.Time{}, // use server time
 			),
 		})
