@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
@@ -51,7 +52,7 @@ func (ak AccountKeeper) initAuthData(ctx sdk.Context, auth *types.Auth) {
 
 // getAuthData
 func (ak AccountKeeper) getAuthData(ctx sdk.Context, auth AccAddress) types.Auth {
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 
 	bz := store.Get(types.AuthSeqStoreKey(auth))
 	if bz == nil {
@@ -71,7 +72,7 @@ func (ak AccountKeeper) getAuthData(ctx sdk.Context, auth AccAddress) types.Auth
 
 // setAuthData
 func (ak AccountKeeper) setAuthData(ctx sdk.Context, auth AccAddress, data types.Auth) {
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 
 	bz, err := ak.cdc.MarshalBinaryBare(data)
 	if err != nil {
@@ -83,5 +84,5 @@ func (ak AccountKeeper) setAuthData(ctx sdk.Context, auth AccAddress, data types
 
 // isAuthExist
 func (ak AccountKeeper) isAuthExist(ctx sdk.Context, auth AccAddress) bool {
-	return ctx.KVStore(ak.key).Has(types.AuthSeqStoreKey(auth))
+	return store.NewStore(ctx, ak.key).Has(types.AuthSeqStoreKey(auth))
 }

@@ -231,8 +231,8 @@ func GetREDByValDstIndexKey(delAddr AccountID, valSrcAddr, valDstAddr AccountID)
 	// key is of the form REDSToValsDstKey || delAddr || valSrcAddr
 	key := make([]byte, len(REDSToValsDstKey)+2*AccIDStoreKeyLen)
 	copy(key[0:offset], REDSToValsDstKey)
-	copy(key[offset:offset+AccIDStoreKeyLen], delAddr.Value)
-	copy(key[offset+AccIDStoreKeyLen:offset+2*AccIDStoreKeyLen], valSrcAddr.Value)
+	copy(key[offset:offset+AccIDStoreKeyLen], delAddr.StoreKey())
+	copy(key[offset+AccIDStoreKeyLen:offset+2*AccIDStoreKeyLen], valSrcAddr.StoreKey())
 
 	return key
 }

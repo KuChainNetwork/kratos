@@ -5,6 +5,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
@@ -46,7 +47,7 @@ func (ak AccountKeeper) Logger(ctx sdk.Context) log.Logger {
 // If the global account number is not set, it initializes it with value 0.
 func (ak AccountKeeper) GetNextAccountNumber(ctx sdk.Context) uint64 {
 	var accNumber uint64
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 	bz := store.Get(types.GlobalAccountNumberKey)
 	if bz == nil {
 		// initialize the account numbers

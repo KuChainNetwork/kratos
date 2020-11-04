@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset/keeper"
+	assetTypes "github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -14,4 +15,6 @@ type IAssetKeeper interface {
 
 	GetLockCoins(ctx sdk.Context, account types.AccountID) (types.Coins, []keeper.LockedCoins, error)
 	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (*keeper.ApproveData, error)
+	GetCoins(ctx sdk.Context, account types.AccountID) (types.Coins, error)
+	GetCoinStat(ctx sdk.Context, creator, symbol types.Name) (*assetTypes.CoinStat, error)
 }

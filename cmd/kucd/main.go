@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 
 	//"github.com/KuChainNetwork/kuchain/x/staking"
 	"github.com/spf13/cobra"
@@ -49,7 +50,7 @@ func main() {
 	rootCmd := &cobra.Command{
 		Use:               "kucd",
 		Short:             "kuchain Daemon (server)",
-		PersistentPreRunE: kuLog.PersistentPreRunEFn(ctx),
+		PersistentPreRunE: persistentPreRunEFn(ctx),
 	}
 
 	rootCmd.AddCommand(genutilcli.InitCmd(ctx, genCdc, app.ModuleBasics, app.DefaultNodeHome))
@@ -136,4 +137,18 @@ func exportAppStateAndTMValidators(
 
 	kuApp := app.NewKuchainApp(logger, db, traceStore, true, uint(1))
 	return kuApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+}
+
+func persistentPreRunEFn(context *server.Context) func(*cobra.Command, []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		if cmd.Name() == version.Cmd.Name() {
+			return nil
+		}
+
+		context.Logger = kuLog.NewLoggerByZap(
+			viper.GetBool(cli.TraceFlag),
+			viper.GetString("log_level")).With("module", "main")
+		context.Config = chainCfg.DefaultConfig()
+		return nil
+	}
 }

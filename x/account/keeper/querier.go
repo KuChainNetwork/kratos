@@ -4,6 +4,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/account/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -55,7 +56,7 @@ func queryAuthByAddress(ctx sdk.Context, req abci.RequestQuery, ak AccountKeeper
 	}
 
 	auth := params.Address
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 
 	bz := store.Get(types.AuthSeqStoreKey(auth))
 	if bz == nil {
