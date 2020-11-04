@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	chaintypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -8,7 +9,7 @@ import (
 
 func (ak AccountKeeper) GetAccountsByAuth(ctx sdk.Context, auth chaintypes.AccAddress) []string {
 	var authAccounts types.AuthAccounts
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 
 	bz := store.Get(types.AuthAccountsStoreKey(auth))
 	if bz == nil {
@@ -24,7 +25,7 @@ func (ak AccountKeeper) GetAccountsByAuth(ctx sdk.Context, auth chaintypes.AccAd
 
 func (ak AccountKeeper) AddAccountByAuth(ctx sdk.Context, auth chaintypes.AccAddress, acc string) {
 	var authAccounts types.AuthAccounts
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 
 	bz := store.Get(types.AuthAccountsStoreKey(auth))
 	if bz == nil {
@@ -47,7 +48,7 @@ func (ak AccountKeeper) AddAccountByAuth(ctx sdk.Context, auth chaintypes.AccAdd
 
 func (ak AccountKeeper) DeleteAccountByAuth(ctx sdk.Context, auth chaintypes.AccAddress, acc string) {
 	var authAccounts types.AuthAccounts
-	store := ctx.KVStore(ak.key)
+	store := store.NewStore(ctx, ak.key)
 
 	bz := store.Get(types.AuthAccountsStoreKey(auth))
 	if bz == nil {

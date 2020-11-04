@@ -123,6 +123,20 @@ func TestCreateAsset(t *testing.T) {
 			simapp.ShouldErrIs, assetTypes.ErrAssetDescriptorTooLarge)
 	})
 
+	Convey("test create asset init supply too large", t, func() {
+		// create in last test
+		var (
+			symbol     = types.MustName("abcd")
+			demon      = types.CoinDenom(name4, symbol)
+			maxSupply  = types.NewCoin(demon, types.NewInt(10000000000000))
+			initSupply = types.NewCoin(demon, types.NewInt(10000000000001))
+			desc       = []byte(make([]byte, 1))
+		)
+
+		So(createCoinExt(t, app, false, account4, symbol, maxSupply, true, true, true, 100000, initSupply, desc),
+			simapp.ShouldErrIs, assetTypes.ErrAssetCoinMustSupplyNeedGTInitSupply)
+	})
+
 	Convey("test create symbol error asset", t, func() {
 		var (
 			symbol        = types.MustName("abc")
@@ -147,8 +161,6 @@ func TestCreateAsset(t *testing.T) {
 			simapp.ShouldErrIs, assetTypes.ErrAssetSymbolError)
 	})
 }
-
-// TODO: add coin stat setOpt test
 
 func TestIssueCoins(t *testing.T) {
 	app, _ := createAppForTest()

@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
+	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	stakeKeeprer "github.com/KuChainNetwork/kuchain/x/staking/keeper"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

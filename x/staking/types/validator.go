@@ -118,7 +118,7 @@ func (v Validators) Len() int {
 
 // Implements sort interface
 func (v Validators) Less(i, j int) bool {
-	return bytes.Compare(v[i].OperatorAccount.Value, v[j].OperatorAccount.Value) == -1
+	return bytes.Compare(v[i].OperatorAccount.StoreKey(), v[j].OperatorAccount.StoreKey()) == -1
 }
 
 // Implements sort interface

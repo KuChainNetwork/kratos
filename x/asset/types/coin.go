@@ -81,6 +81,11 @@ func CheckCoinStatOpts(createHeight int64, canIssue, canLock bool, issue2Height 
 			return ErrAssetIssueToHeightMustGTCurrentHeight
 		}
 	}
+
+	if !(init.IsZero() || max.IsGTE(init)) {
+		return ErrAssetMaxSupplyShouldGTEInitSupply
+	}
+
 	return nil
 }
 

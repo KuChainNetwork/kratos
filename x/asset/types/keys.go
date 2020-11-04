@@ -73,7 +73,7 @@ func coinStoreKey2AccountID(pre []byte, key []byte) AccountID {
 
 // CoinStoreKey get the key of coin store keeper for asset
 func CoinStoreKey(account chainTypes.AccountID) []byte {
-	return genCoinStoreKey(CoinStoreKeyPrefix, account.Value)
+	return genCoinStoreKey(CoinStoreKeyPrefix, account.StoreKey())
 }
 
 // AccountIDFromCoinStoreKey get accountID from key
@@ -83,7 +83,7 @@ func AccountIDFromCoinStoreKey(key []byte) chainTypes.AccountID {
 
 // CoinPowerStoreKey get the key of coin store keeper for asset
 func CoinPowerStoreKey(account chainTypes.AccountID) []byte {
-	return genCoinStoreKey(CoinPowerStoreKeyPrefix, account.Value)
+	return genCoinStoreKey(CoinPowerStoreKeyPrefix, account.StoreKey())
 }
 
 // AccountIDFromCoinPowerStoreKey get accountID from key
@@ -93,7 +93,7 @@ func AccountIDFromCoinPowerStoreKey(key []byte) chainTypes.AccountID {
 
 // CoinLockedStoreKey get the key of coin store keeper for asset
 func CoinLockedStoreKey(account chainTypes.AccountID) []byte {
-	return genCoinStoreKey(CoinLockedStoreKeyPrefix, account.Value)
+	return genCoinStoreKey(CoinLockedStoreKeyPrefix, account.StoreKey())
 }
 
 // AccountIDFromCoinLockedStoreKey get accountID from key
@@ -103,7 +103,7 @@ func AccountIDFromCoinLockedStoreKey(key []byte) chainTypes.AccountID {
 
 // CoinLockedStatStoreKey get the key of coin store keeper for asset
 func CoinLockedStatStoreKey(account chainTypes.AccountID) []byte {
-	return genCoinStoreKey(CoinLockedStatStoreKeyPrefix, account.Value)
+	return genCoinStoreKey(CoinLockedStatStoreKeyPrefix, account.StoreKey())
 }
 
 // AccountIDFromCoinLockedStatStoreKey get accountID from key

@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -68,7 +69,7 @@ func (keeper Keeper) GetVotes(ctx sdk.Context, proposalID uint64) (votes types.V
 
 // GetVote gets the vote from an address on a specific proposal
 func (keeper Keeper) GetVote(ctx sdk.Context, proposalID uint64, voterAddr AccountID) (vote types.Vote, found bool) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	bz := store.Get(types.VoteKey(proposalID, voterAddr))
 	if bz == nil {
 		return vote, false
@@ -80,14 +81,14 @@ func (keeper Keeper) GetVote(ctx sdk.Context, proposalID uint64, voterAddr Accou
 
 // SetVote sets a Vote to the gov store
 func (keeper Keeper) SetVote(ctx sdk.Context, vote types.Vote) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	bz := keeper.cdc.MustMarshalBinaryBare(&vote)
 	store.Set(types.VoteKey(vote.ProposalID, vote.Voter), bz)
 }
 
 // IterateAllVotes iterates over the all the stored votes and performs a callback function
 func (keeper Keeper) IterateAllVotes(ctx sdk.Context, cb func(vote types.Vote) (stop bool)) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.VotesKeyPrefix)
 
 	defer iterator.Close()
@@ -103,7 +104,7 @@ func (keeper Keeper) IterateAllVotes(ctx sdk.Context, cb func(vote types.Vote) (
 
 // IterateVotes iterates over the all the proposals votes and performs a callback function
 func (keeper Keeper) IterateVotes(ctx sdk.Context, proposalID uint64, cb func(vote types.Vote) (stop bool)) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.VotesKey(proposalID))
 
 	defer iterator.Close()
@@ -119,6 +120,6 @@ func (keeper Keeper) IterateVotes(ctx sdk.Context, proposalID uint64, cb func(vo
 
 // deleteVote deletes a vote from a given proposalID and voter from the store
 func (keeper Keeper) deleteVote(ctx sdk.Context, proposalID uint64, voterAddr AccountID) {
-	store := ctx.KVStore(keeper.storeKey)
+	store := store.NewStore(ctx, keeper.storeKey)
 	store.Delete(types.VoteKey(proposalID, voterAddr))
 }
