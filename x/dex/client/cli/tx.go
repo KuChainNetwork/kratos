@@ -155,9 +155,9 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "create_symbol [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
-			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url] [domain_address]",
+			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url]",
 		Short: "Create dex symbol",
-		Args:  cobra.ExactArgs(12),
+		Args:  cobra.ExactArgs(11),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
@@ -177,8 +177,7 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 				quoteName,
 				quoteFullName,
 				quoteIconUrl,
-				quoteTxUrl,
-				domainAddress := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]
+				quoteTxUrl := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
 
 			if 0 >= len(baseCode) ||
 				0 >= len(baseName) ||
@@ -189,8 +188,7 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 				0 >= len(quoteName) ||
 				0 >= len(quoteFullName) ||
 				0 >= len(quoteIconUrl) ||
-				0 >= len(quoteTxUrl) ||
-				0 >= len(domainAddress) {
+				0 >= len(quoteTxUrl) {
 				err = errors.Errorf("all update failed are empty")
 				return
 			}
@@ -224,7 +222,6 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 							TxUrl:    quoteTxUrl,
 						},
 					},
-					domainAddress,
 					time.Time{}, // use server time
 				),
 			})
