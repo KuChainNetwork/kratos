@@ -100,6 +100,7 @@ func NewMsgDexSigOut(auth types.AccAddress, isTimeout bool, user, dex AccountID,
 		*msg.MustNewKuMsg(
 			RouterKeyName,
 			msg.WithAuth(auth),
+			msg.WithTransfer(user, dex, Coins{}),
 			msg.WithData(Cdc(), &MsgDexSigOutData{
 				User:      user,
 				Dex:       dex,
