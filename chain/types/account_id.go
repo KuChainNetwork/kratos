@@ -262,7 +262,7 @@ func (a AccountID) String() string {
 }
 
 func (a AccountID) Marshal() ([]byte, error) {
-	return a.Value, nil
+	return a.Bytes(), nil
 }
 
 // Format imp Address interface
@@ -358,6 +358,10 @@ func NewAccountIDFromStoreKey(val []byte) AccountID {
 
 // StoreKey get bytes for store key
 func (a AccountID) StoreKey() []byte {
+	if a.Empty() {
+		return []byte{}
+	}
+
 	bytes := make([]byte, math.MaxInt(len(a.Value), AccIDStoreKeyLen))
 	copy(bytes, a.Value)
 	return bytes[:]

@@ -42,12 +42,18 @@ var (
 )
 
 var (
-	gDenom1 = types.CoinDenom(types.MustName("foo"), types.MustName("coin1"))
+	gDenom1 = types.CoinDenom(name4, types.MustName("coin1"))
+	gDenom2 = types.CoinDenom(name4, types.MustName("coin2"))
+	gDenom3 = types.CoinDenom(name4, types.MustName("coin3"))
+	gDenom4 = types.CoinDenom(name4, types.MustName("coin4"))
 )
 
 func createAppForTest() (*simapp.SimApp, sdk.Context) {
 	asset1 := types.NewCoins(
 		types.NewInt64Coin(gDenom1, 1000000000000000),
+		types.NewInt64Coin(gDenom2, 1000000000000000),
+		types.NewInt64Coin(gDenom3, 1000000000000000),
+		types.NewInt64Coin(gDenom4, 1000000000000000),
 		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
 	asset2 := types.NewCoins(
 		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))

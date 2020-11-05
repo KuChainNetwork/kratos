@@ -26,10 +26,11 @@ var (
 	ErrSymbolUpdateFieldsInvalid  = sdkerrors.Register(ModuleName, 17, "dex symbol update fields invalid")
 	ErrSymbolFormat               = sdkerrors.Register(ModuleName, 18, "dex symbol base_code/quote_code format error")
 	ErrSymbolNotSupply            = sdkerrors.Register(ModuleName, 19, "dex symbol base_code/quote_code not supply")
+	ErrSymbolDexDescriptionSame   = sdkerrors.Register(ModuleName, 20, "dex symbol to change is same as existing")
 )
 
 var (
-	ErrDexSigInChangeToNegative = sdkerrors.Register(ModuleName, 20, "dex sigIn amt should cannot tobe changed to negative")
-	ErrDexSigOutByUserNoUnlock  = sdkerrors.Register(ModuleName, 21, "dex sig out by user is locked in current")
-	ErrDexSigInAmountNotEnough  = sdkerrors.Register(ModuleName, 22, "dex sig in amount not enough")
+	ErrDexSigInChangeToNegative = sdkerrors.Register(ModuleName, 21, "dex sigIn amt should cannot tobe changed to negative")
+	ErrDexSigOutByUserNoUnlock  = sdkerrors.Register(ModuleName, 22, "dex sig out by user is locked in current")
+	ErrDexSigInAmountNotEnough  = sdkerrors.Register(ModuleName, 23, "dex sig in amount not enough")
 )

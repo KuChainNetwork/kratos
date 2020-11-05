@@ -22,14 +22,14 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 		err = errors.Wrapf(types.ErrSymbolFormat,
 			"create symbol dex %s symbol base code format error: %s",
 			creator.String(),
-			symbol.Base.Code)
+			err.Error())
 		return
 	}
 	if quoteCode, err = types.NewName(symbol.Quote.Code); nil != err {
 		err = errors.Wrapf(types.ErrSymbolFormat,
 			"create symbol dex %s symbol quote code format error: %s",
 			creator.String(),
-			symbol.Quote.Code)
+			err.Error())
 		return
 	}
 	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, baseCode); nil != err {
