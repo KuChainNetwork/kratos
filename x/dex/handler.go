@@ -106,7 +106,7 @@ func handleMsgUpdateDexDescription(ctx chainTypes.Context,
 		return
 	}
 	if !ok {
-		err = errors.Wrapf(types.ErrSymbolDexDescriptionSame,
+		err = errors.Wrapf(types.ErrDexDescriptionSame,
 			"msg update dex %s description",
 			msgData.Creator)
 		return
