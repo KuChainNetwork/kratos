@@ -359,15 +359,13 @@ func TestHandleCreateSymbol(t *testing.T) {
 					TxUrl:    "???",
 				},
 			},
-			CreateTime:    time.Now(),
-			DomainAddress: "http:///www.foo.com",
+			CreateTime: time.Now(),
 		}
 
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
 			&symbol.Quote,
-			symbol.DomainAddress,
 			symbol.CreateTime)
 
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
@@ -398,7 +396,6 @@ func TestHandleCreateSymbol(t *testing.T) {
 			accName,
 			&symbol.Base,
 			&symbol.Quote,
-			symbol.DomainAddress,
 			symbol.CreateTime)
 
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
@@ -428,7 +425,6 @@ func TestHandleCreateSymbol(t *testing.T) {
 			accName,
 			&invalidSymbol.Base,
 			&invalidSymbol.Quote,
-			invalidSymbol.DomainAddress,
 			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
 
 		invalidSymbol = symbol
@@ -437,7 +433,6 @@ func TestHandleCreateSymbol(t *testing.T) {
 			accName,
 			&invalidSymbol.Base,
 			&invalidSymbol.Quote,
-			invalidSymbol.DomainAddress,
 			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
 
 		invalidSymbol = symbol
@@ -447,7 +442,6 @@ func TestHandleCreateSymbol(t *testing.T) {
 			accName,
 			&invalidSymbol.Base,
 			&invalidSymbol.Quote,
-			invalidSymbol.DomainAddress,
 			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
 
 		invalidSymbol = symbol
@@ -458,7 +452,6 @@ func TestHandleCreateSymbol(t *testing.T) {
 			accName,
 			&invalidSymbol.Base,
 			&invalidSymbol.Quote,
-			invalidSymbol.DomainAddress,
 			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
 	})
 }
@@ -506,15 +499,13 @@ func TestHandleUpdateSymbol(t *testing.T) {
 					TxUrl:    "???",
 				},
 			},
-			CreateTime:    time.Now(),
-			DomainAddress: "http:///www.foo.com",
+			CreateTime: time.Now(),
 		}
 
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
 			&symbol.Quote,
-			symbol.DomainAddress,
 			symbol.CreateTime)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -641,15 +632,13 @@ func TestHandlePauseSymbol(t *testing.T) {
 					TxUrl:    "???",
 				},
 			},
-			CreateTime:    time.Now(),
-			DomainAddress: "http:///www.foo.com",
+			CreateTime: time.Now(),
 		}
 
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
 			&symbol.Quote,
-			symbol.DomainAddress,
 			symbol.CreateTime)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -767,15 +756,13 @@ func TestHandleRestoreSymbol(t *testing.T) {
 					TxUrl:    "???",
 				},
 			},
-			CreateTime:    time.Now(),
-			DomainAddress: "http:///www.foo.com",
+			CreateTime: time.Now(),
 		}
 
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
 			&symbol.Quote,
-			symbol.DomainAddress,
 			symbol.CreateTime)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -921,15 +908,13 @@ func TestShutdownSymbol(t *testing.T) {
 					TxUrl:    "???",
 				},
 			},
-			CreateTime:    time.Now(),
-			DomainAddress: "http:///www.foo.com",
+			CreateTime: time.Now(),
 		}
 
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
 			&symbol.Quote,
-			symbol.DomainAddress,
 			symbol.CreateTime)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
