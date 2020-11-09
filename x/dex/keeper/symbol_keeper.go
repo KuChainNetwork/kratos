@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"strings"
+
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/pkg/errors"
@@ -32,20 +35,32 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 			err.Error())
 		return
 	}
-	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, baseCode); nil != err {
+	baseFound := false
+	quoteFound := false
+	a.assetKeeper.IterateAllCoins(ctx, func(address chainType.AccountID, balance Coins) (stop bool) {
+		for _, coin := range balance {
+			denom := strings.Split(coin.Denom, "/")[1]
+			if quoteCode.String() == denom {
+				quoteFound = true
+				if baseFound && quoteFound {
+					return true
+				}
+			}
+			if baseCode.String() == denom {
+				baseFound = true
+				if baseFound && quoteFound {
+					return true
+				}
+			}
+		}
+		return
+	})
+	if !baseFound || !quoteFound {
 		err = errors.Wrapf(types.ErrSymbolNotSupply,
 			"create symbol dex %s coin symbol %s/%s not supply",
 			creator.String(),
 			creator.String(),
 			symbol.Base.Code)
-		return
-	}
-	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, quoteCode); nil != err {
-		err = errors.Wrapf(types.ErrSymbolNotSupply,
-			"create symbol dex %s coin symbol %s/%s not supply",
-			creator.String(),
-			creator.String(),
-			symbol.Quote.Code)
 		return
 	}
 	if dex, ok = dex.WithSymbol(symbol); !ok {
