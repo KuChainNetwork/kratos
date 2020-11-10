@@ -189,11 +189,13 @@ func handleMsgCreateSymbol(ctx chainTypes.Context,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyCreator, data.Creator.String()),
 			sdk.NewAttribute(types.AttributeKeySymbolCreateHeight, fmt.Sprint(ctx.BlockHeight())),
+			sdk.NewAttribute(types.AttributeKeySymbolBaseCreator, data.Base.Creator),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseCode, data.Base.Code),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseName, data.Base.Name),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseFullName, data.Base.FullName),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseIconUrl, data.Base.IconUrl),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseTxUrl, data.Base.TxUrl),
+			sdk.NewAttribute(types.AttributeKeySymbolQuoteCreator, data.Quote.Creator),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteCode, data.Quote.Code),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteName, data.Quote.Name),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteFullName, data.Quote.FullName),
@@ -213,7 +215,9 @@ func handleMsgUpdateSymbol(ctx chainTypes.Context,
 	if data, err = msg.GetData(); nil != err {
 		return
 	}
-	if 0 >= len(data.Base.Code) ||
+	if 0 >= len(data.Base.Creator) ||
+		0 >= len(data.Base.Code) ||
+		0 >= len(data.Quote.Creator) ||
 		0 >= len(data.Quote.Code) {
 		err = errors.Wrapf(types.ErrSymbolIncorrect,
 			"msg create symbol %s data is incorrect",
@@ -275,7 +279,10 @@ func handleMsgPauseSymbol(ctx chainTypes.Context,
 	if data, err = msg.GetData(); nil != err {
 		return
 	}
-	if 0 >= len(data.BaseCode) || 0 >= len(data.QuoteCode) {
+	if 0 >= len(data.BaseCreator) ||
+		0 >= len(data.BaseCode) ||
+		0 >= len(data.QuoteCreator) ||
+		0 >= len(data.QuoteCode) {
 		err = errors.Wrapf(types.ErrSymbolIncorrect,
 			"msg pause symbol base code or quote code is empty, creator %s",
 			data.Creator.String())
@@ -284,7 +291,12 @@ func handleMsgPauseSymbol(ctx chainTypes.Context,
 	logger := ctx.Logger()
 	logger.Debug("handle pause symbol",
 		"creator", data.Creator)
-	if err = keeper.PauseSymbol(ctx.Context(), data.Creator, data.BaseCode, data.QuoteCode); nil != err {
+	if err = keeper.PauseSymbol(ctx.Context(),
+		data.Creator,
+		data.BaseCreator,
+		data.BaseCode,
+		data.QuoteCreator,
+		data.QuoteCode); nil != err {
 		err = errors.Wrapf(err,
 			"msg shutdown symbol error, creator %s",
 			data.Creator.String())
@@ -295,6 +307,7 @@ func handleMsgPauseSymbol(ctx chainTypes.Context,
 			types.EventTypePauseSymbol,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyCreator, data.Creator.String()),
+			sdk.NewAttribute(types.AttributeKeySymbolBaseCreator, data.BaseCreator),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseCode, data.BaseCode),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseName, data.QuoteCode),
 		),
@@ -311,7 +324,10 @@ func handleMsgRestoreSymbol(ctx chainTypes.Context,
 	if data, err = msg.GetData(); nil != err {
 		return
 	}
-	if 0 >= len(data.BaseCode) || 0 >= len(data.QuoteCode) {
+	if 0 >= len(data.BaseCreator) ||
+		0 >= len(data.BaseCode) ||
+		0 >= len(data.QuoteCreator) ||
+		0 >= len(data.QuoteCode) {
 		err = errors.Wrapf(types.ErrSymbolIncorrect,
 			"msg restore symbol base code or quote code is empty, creator %s",
 			data.Creator.String())
@@ -320,7 +336,12 @@ func handleMsgRestoreSymbol(ctx chainTypes.Context,
 	logger := ctx.Logger()
 	logger.Debug("handle restore symbol",
 		"creator", data.Creator)
-	if err = keeper.RestoreSymbol(ctx.Context(), data.Creator, data.BaseCode, data.QuoteCode); nil != err {
+	if err = keeper.RestoreSymbol(ctx.Context(),
+		data.Creator,
+		data.BaseCreator,
+		data.BaseCode,
+		data.QuoteCreator,
+		data.QuoteCode); nil != err {
 		err = errors.Wrapf(err,
 			"msg restore symbol error, creator %s",
 			data.Creator.String())
@@ -331,6 +352,7 @@ func handleMsgRestoreSymbol(ctx chainTypes.Context,
 			types.EventTypeRestoreSymbol,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyCreator, data.Creator.String()),
+			sdk.NewAttribute(types.AttributeKeySymbolBaseCreator, data.BaseCreator),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseCode, data.BaseCode),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseName, data.QuoteCode),
 		),
@@ -347,7 +369,10 @@ func handleMsgShutdownSymbol(ctx chainTypes.Context,
 	if data, err = msg.GetData(); nil != err {
 		return
 	}
-	if 0 >= len(data.BaseCode) || 0 >= len(data.QuoteCode) {
+	if 0 >= len(data.BaseCreator) ||
+		0 >= len(data.BaseCode) ||
+		0 >= len(data.QuoteCreator) ||
+		0 >= len(data.QuoteCode) {
 		err = errors.Wrapf(types.ErrSymbolIncorrect,
 			"msg shutdown symbol base code or quote code is empty, creator %s",
 			data.Creator.String())
@@ -356,7 +381,12 @@ func handleMsgShutdownSymbol(ctx chainTypes.Context,
 	logger := ctx.Logger()
 	logger.Debug("handle shutdown symbol",
 		"creator", data.Creator)
-	if err = keeper.ShutdownSymbol(ctx.Context(), data.Creator, data.BaseCode, data.QuoteCode); nil != err {
+	if err = keeper.ShutdownSymbol(ctx.Context(),
+		data.Creator,
+		data.BaseCreator,
+		data.BaseCode,
+		data.QuoteCreator,
+		data.QuoteCode); nil != err {
 		err = errors.Wrapf(err,
 			"msg shutdown symbol error, creator %s",
 			data.Creator.String())
@@ -367,6 +397,7 @@ func handleMsgShutdownSymbol(ctx chainTypes.Context,
 			types.EventTypeShutdownSymbol,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyCreator, data.Creator.String()),
+			sdk.NewAttribute(types.AttributeKeySymbolBaseCreator, data.BaseCreator),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseCode, data.BaseCode),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseName, data.QuoteCode),
 		),

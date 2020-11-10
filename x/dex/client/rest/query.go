@@ -18,7 +18,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		getCreatorHandlerFn(cliCtx),
 	).Methods(http.MethodGet)
 	r.HandleFunc(
-		"/dex/symbol/{creator}/{baseCode}/{quoteCode}",
+		"/dex/symbol/{creator}/{baseCreator}/{baseCode}/{quoteCreator}/{quoteCode}",
 		getSymbolHandlerFn(cliCtx),
 	).Methods(http.MethodGet)
 }
@@ -48,7 +48,9 @@ func getSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["creator"]
+		baseCreator := vars["baseCreator"]
 		baseCode := vars["baseCode"]
+		quoteCreator := vars["quoteCreator"]
 		quoteCode := vars["quoteCode"]
 		if 0 >= len(name) ||
 			0 >= len(baseCode) ||
@@ -69,7 +71,7 @@ func getSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		currency, ok := dex.Symbol(baseCode, quoteCode)
+		currency, ok := dex.Symbol(baseCreator, baseCode, quoteCreator, quoteCode)
 		if !ok {
 			rest.WriteErrorResponse(w,
 				http.StatusNotFound,

@@ -345,8 +345,14 @@ func (msg MsgPauseSymbol) ValidateBasic() error {
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
+	if 0 >= len(data.BaseCreator) {
+		return sdkerrors.Wrap(ErrSymbolBaseCreatorEmpty, "")
+	}
 	if 0 >= len(data.BaseCode) {
 		return sdkerrors.Wrap(ErrSymbolBaseCodeEmpty, "base code not empty")
+	}
+	if 0 >= len(data.QuoteCreator) {
+		return sdkerrors.Wrap(ErrSymbolQuoteCreatorEmpty, "")
 	}
 	if 0 >= len(data.QuoteCode) {
 		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
@@ -362,32 +368,45 @@ func (msg MsgPauseSymbol) GetData() (MsgPauseSymbolData, error) {
 	return res, nil
 }
 
+// MsgOpSymbolData
+type MsgOpSymbolData struct {
+	Creator      Name   `json:"creator" yaml:"creator"`
+	BaseCreator  string `json:"base_creator" yaml:"base_creator"`
+	BaseCode     string `json:"base_code" yaml:"base_code"`
+	QuoteCreator string `json:"quote_creator" yaml:"quote_creator"`
+	QuoteCode    string `json:"quote_code" yaml:"quote_code"`
+}
+
+func (m MsgOpSymbolData) Sender() AccountID {
+	return types.NewAccountIDFromName(m.Creator)
+}
+
 // MsgPauseSymbolData msg data for pause dex symbol
 type MsgPauseSymbolData struct {
-	Creator   Name   `json:"creator" yaml:"creator"`
-	BaseCode  string `json:"base_code" yaml:"base_code"`
-	QuoteCode string `json:"quote_code" yaml:"quote_code"`
+	MsgOpSymbolData
 }
 
 func (MsgPauseSymbolData) Type() types.Name { return types.MustName("pause@symbol") }
 
-func (m MsgPauseSymbolData) Sender() AccountID {
-	return types.NewAccountIDFromName(m.Creator)
-}
-
 // NewMsgPauseSymbol new pause dex symbol msg
 func NewMsgPauseSymbol(auth types.AccAddress,
 	creator types.Name,
+	baseCreator,
 	baseCode,
+	quoteCreator,
 	quoteCode string,
 ) MsgPauseSymbol {
 	return MsgPauseSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(ModuleCdc, &MsgPauseSymbolData{
-				Creator:   creator,
-				BaseCode:  baseCode,
-				QuoteCode: quoteCode,
+				MsgOpSymbolData: MsgOpSymbolData{
+					Creator:      creator,
+					BaseCreator:  baseCreator,
+					BaseCode:     baseCode,
+					QuoteCreator: quoteCreator,
+					QuoteCode:    quoteCode,
+				},
 			})),
 	}
 }
@@ -408,8 +427,14 @@ func (msg MsgRestoreSymbol) ValidateBasic() error {
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
+	if 0 >= len(data.BaseCreator) {
+		return sdkerrors.Wrap(ErrSymbolBaseCreatorEmpty, "")
+	}
 	if 0 >= len(data.BaseCode) {
 		return sdkerrors.Wrap(ErrSymbolBaseCodeEmpty, "base code not empty")
+	}
+	if 0 >= len(data.QuoteCreator) {
+		return sdkerrors.Wrap(ErrSymbolQuoteCreatorEmpty, "")
 	}
 	if 0 >= len(data.QuoteCode) {
 		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
@@ -427,30 +452,30 @@ func (msg MsgRestoreSymbol) GetData() (MsgRestoreSymbolData, error) {
 
 // MsgRestoreSymbolData msg data for restore dex symbol
 type MsgRestoreSymbolData struct {
-	Creator   Name   `json:"creator" yaml:"creator"`
-	BaseCode  string `json:"base_code" yaml:"base_code"`
-	QuoteCode string `json:"quote_code" yaml:"quote_code"`
+	MsgOpSymbolData
 }
 
 func (MsgRestoreSymbolData) Type() types.Name { return types.MustName("restore@symbol") }
 
-func (m MsgRestoreSymbolData) Sender() AccountID {
-	return types.NewAccountIDFromName(m.Creator)
-}
-
 // NewMsgRestoreSymbol new restore dex symbol msg
 func NewMsgRestoreSymbol(auth types.AccAddress,
 	creator types.Name,
+	baseCreator,
 	baseCode,
+	quoteCreator,
 	quoteCode string,
 ) MsgRestoreSymbol {
 	return MsgRestoreSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(ModuleCdc, &MsgRestoreSymbolData{
-				Creator:   creator,
-				BaseCode:  baseCode,
-				QuoteCode: quoteCode,
+				MsgOpSymbolData: MsgOpSymbolData{
+					Creator:      creator,
+					BaseCreator:  baseCreator,
+					BaseCode:     baseCode,
+					QuoteCreator: quoteCreator,
+					QuoteCode:    quoteCode,
+				},
 			})),
 	}
 }
@@ -471,8 +496,14 @@ func (msg MsgShutdownSymbol) ValidateBasic() error {
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
+	if 0 >= len(data.BaseCreator) {
+		return sdkerrors.Wrap(ErrSymbolBaseCreatorEmpty, "")
+	}
 	if 0 >= len(data.BaseCode) {
 		return sdkerrors.Wrap(ErrSymbolBaseCodeEmpty, "base code not empty")
+	}
+	if 0 >= len(data.QuoteCreator) {
+		return sdkerrors.Wrap(ErrSymbolQuoteCreatorEmpty, "")
 	}
 	if 0 >= len(data.QuoteCode) {
 		return sdkerrors.Wrap(ErrSymbolQuoteCodeEmpty, "quote code not empty")
@@ -490,30 +521,30 @@ func (msg MsgShutdownSymbol) GetData() (MsgShutdownSymbolData, error) {
 
 // MsgUpdateSymbolData msg data for update dex symbol
 type MsgShutdownSymbolData struct {
-	Creator   Name   `json:"creator" yaml:"creator"`
-	BaseCode  string `json:"base_code" yaml:"base_code"`
-	QuoteCode string `json:"quote_code" yaml:"quote_code"`
+	MsgOpSymbolData
 }
 
 func (MsgShutdownSymbolData) Type() types.Name { return types.MustName("shutdown@symbol") }
 
-func (m MsgShutdownSymbolData) Sender() AccountID {
-	return types.NewAccountIDFromName(m.Creator)
-}
-
 // NewMsgUpdateSymbol new update dex symbol msg
 func NewMsgShutdownSymbol(auth types.AccAddress,
 	creator types.Name,
+	baseCreator,
 	baseCode,
+	quoteCreator,
 	quoteCode string,
 ) MsgShutdownSymbol {
 	return MsgShutdownSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(ModuleCdc, &MsgShutdownSymbolData{
-				Creator:   creator,
-				BaseCode:  baseCode,
-				QuoteCode: quoteCode,
+				MsgOpSymbolData: MsgOpSymbolData{
+					Creator:      creator,
+					BaseCreator:  baseCreator,
+					BaseCode:     baseCode,
+					QuoteCreator: quoteCreator,
+					QuoteCode:    quoteCode,
+				},
 			})),
 	}
 }
