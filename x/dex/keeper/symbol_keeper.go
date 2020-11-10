@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"strings"
+
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/pkg/errors"
@@ -17,35 +20,47 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 		return
 	}
 	// check base and quote are exists
-	var baseCode, quoteCode types.Name
-	if baseCode, err = types.NewName(symbol.Base.Code); nil != err {
+	values := strings.Split(symbol.Base.Code, "/")
+	if 2 != len(values) {
 		err = errors.Wrapf(types.ErrSymbolFormat,
-			"create symbol dex %s symbol base code format error: %s",
+			"create symbol dex %s coin symbol %s format error",
 			creator.String(),
-			err.Error())
+			symbol.Base.Code)
 		return
 	}
-	if quoteCode, err = types.NewName(symbol.Quote.Code); nil != err {
+	baseCode := values[1]
+	values = strings.Split(symbol.Quote.Code, "/")
+	if 2 != len(values) {
 		err = errors.Wrapf(types.ErrSymbolFormat,
-			"create symbol dex %s symbol quote code format error: %s",
+			"create symbol dex %s coin symbol %s format error",
 			creator.String(),
-			err.Error())
+			symbol.Quote.Code)
 		return
 	}
-	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, baseCode); nil != err {
+	quoteCode := values[1]
+	var baseCodeFound, quoteCodeFound bool
+	a.assetKeeper.IterateAllCoins(ctx, func(_ chainType.AccountID, balance Coins) (stop bool) {
+		for _, coin := range balance {
+			s := strings.Split(coin.Denom, "/")[1]
+			if s == baseCode {
+				baseCodeFound = true
+			}
+			if s == quoteCode {
+				quoteCodeFound = true
+			}
+			if baseCodeFound && quoteCodeFound {
+				stop = true
+				return
+			}
+		}
+		return
+	})
+	if !baseCodeFound || !quoteCodeFound {
 		err = errors.Wrapf(types.ErrSymbolNotSupply,
 			"create symbol dex %s coin symbol %s/%s not supply",
 			creator.String(),
 			creator.String(),
 			symbol.Base.Code)
-		return
-	}
-	if _, err = a.assetKeeper.GetCoinStat(ctx, creator, quoteCode); nil != err {
-		err = errors.Wrapf(types.ErrSymbolNotSupply,
-			"create symbol dex %s coin symbol %s/%s not supply",
-			creator.String(),
-			creator.String(),
-			symbol.Quote.Code)
 		return
 	}
 	if dex, ok = dex.WithSymbol(symbol); !ok {
