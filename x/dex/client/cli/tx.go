@@ -329,7 +329,7 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 // PauseSymbol returns a pause symbol command
 func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pause_symbol [creator] [base_creator] [base_code] [base_creator] [quote_code]",
+		Use:   "pause_symbol [creator] [base_creator] [base_code] [quote_creator] [quote_code]",
 		Short: "Pause dex symbol",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
