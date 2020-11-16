@@ -33,4 +33,5 @@ var (
 	ErrDexSigInChangeToNegative = sdkerrors.Register(ModuleName, 21, "dex sigIn amt should cannot tobe changed to negative")
 	ErrDexSigOutByUserNoUnlock  = sdkerrors.Register(ModuleName, 22, "dex sig out by user is locked in current")
 	ErrDexSigInAmountNotEnough  = sdkerrors.Register(ModuleName, 23, "dex sig in amount not enough")
+	ErrDexDealAmountNotEnough   = sdkerrors.Register(ModuleName, 26, "dex deal user amount not enough")
 )

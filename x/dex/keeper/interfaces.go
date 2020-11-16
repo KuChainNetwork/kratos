@@ -17,4 +17,6 @@ type IAssetKeeper interface {
 	GetApproveCoins(ctx sdk.Context, account, spender types.AccountID) (*keeper.ApproveData, error)
 	GetCoins(ctx sdk.Context, account types.AccountID) (types.Coins, error)
 	GetCoinStat(ctx sdk.Context, creator, symbol types.Name) (*assetTypes.CoinStat, error)
+
+	TransferDetail(ctx sdk.Context, from, to types.AccountID, amount types.Coins, isApplyApprove bool) error
 }

@@ -210,19 +210,73 @@ func (k DexKeeper) SigOut(ctx sdk.Context, isTimeout bool, id, dex AccountID, am
 	return nil
 }
 
-func (k DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID, amtFrom, amtTo Coins) error {
+func (k DexKeeper) Deal(ctx sdk.Context, msgData dexTypes.MsgDexDealData) error {
+	dex := msgData.Dex
 	if _, ok := k.getDex(ctx, dex.MustName()); !ok {
 		return errors.Wrapf(dexTypes.ErrDexNotExists, "dex %s not exists to sigin", dex.String())
 	}
 
-	// update sigIn state
-	if _, err := k.updateSigIn(ctx, true, from, dex, amtFrom); err != nil {
-		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
+	// check user balance
+	from := msgData.TransferData.From
+	amountFrom := msgData.TransferData.FromAsset.Add(msgData.TransferData.FromFee...)
+	fromKey := dexTypes.GenStoreKey(dexTypes.DexSigInStoreKeyPrefix, dex.Bytes(), from.Bytes())
+	currDexFrom := getCoinsFromKVStore(ctx, k.cdc, k.key, fromKey)
+	_, isNegative := currDexFrom.SafeSub(amountFrom)
+	if isNegative {
+		return errors.Wrapf(dexTypes.ErrDexDealAmountNotEnough,
+			"dex deal user amount not enough")
 	}
 
-	if _, err := k.updateSigIn(ctx, true, to, dex, amtTo); err != nil {
-		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, to, amtTo)
+	to := msgData.TransferData.To
+	amountTo := msgData.TransferData.ToAsset
+	toKey := dexTypes.GenStoreKey(dexTypes.DexSigInStoreKeyPrefix, dex.Bytes(), to.Bytes())
+	currDexTo := getCoinsFromKVStore(ctx, k.cdc, k.key, toKey)
+	_, isNegative = currDexTo.SafeSub(amountTo)
+	if isNegative {
+		return errors.Wrapf(dexTypes.ErrDexDealAmountNotEnough,
+			"dex deal user amount not enough")
 	}
+
+	// update sigIn state
+	_, err := k.updateSigIn(ctx, true, from, dex, amountFrom)
+	if err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amountFrom)
+	}
+
+	_, err = k.updateSigIn(ctx, true, to, dex, amountTo)
+	if err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, to, amountTo)
+	}
+
+	currFrom, err := k.updateSigIn(ctx, false, from, dex, amountTo)
+	if err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amountTo)
+	}
+
+	assetFrom, isNegative := msgData.TransferData.FromAsset.SafeSub(msgData.TransferData.ToFee)
+	if isNegative {
+		return sdkerrors.Wrap(dexTypes.ErrDexDealAmountNotEnough, "dex deal user coins error")
+	}
+	currTo, err := k.updateSigIn(ctx, false, to, dex, assetFrom)
+	if err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, assetFrom)
+	}
+
+	// change asset state
+	if err := k.assetKeeper.Approve(ctx, from, dex, currFrom, true); err != nil {
+		return errors.Wrapf(err, "asset Approve error")
+	}
+	if err := k.assetKeeper.Approve(ctx, to, dex, currTo, true); err != nil {
+		return errors.Wrapf(err, "asset Approve error")
+	}
+
+	// transfer from->dex->to
+	err = k.assetKeeper.TransferDetail(ctx, from, dex, amountFrom, true)
+	err = k.assetKeeper.TransferDetail(ctx, dex, to, assetFrom, false)
+
+	// transfer to->dex->from
+	err = k.assetKeeper.TransferDetail(ctx, to, dex, amountTo, true)
+	err = k.assetKeeper.TransferDetail(ctx, dex, from, amountTo, false)
 
 	return nil
 }

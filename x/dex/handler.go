@@ -454,24 +454,21 @@ func handleMsgDexDeal(ctx chainTypes.Context, k Keeper, msg *types.MsgDexDeal) (
 	logger.Debug("handle dex deal", "dex", msgData.Dex)
 
 	// Update sigIn status
-	acc1, ass1, acc2, ass2 := msg.GetDealByDex()
-	if err := k.Deal(ctx.Context(), msgData.Dex, acc1, acc2, ass1, ass2); err != nil {
+	if err := k.Deal(ctx.Context(), msgData); err != nil {
 		return nil, err
 	}
-
-	fee1, fee2 := msg.GetDealFeeByDex()
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeDexDeal,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(types.AttributeKeyDex, msgData.Dex.String()),
-			sdk.NewAttribute(types.AttributeKeyDealRole1, acc1.String()),
-			sdk.NewAttribute(types.AttributeKeyDealToken1, ass1.String()),
-			sdk.NewAttribute(types.AttributeKeyDealFee1, fee1.String()),
-			sdk.NewAttribute(types.AttributeKeyDealRole2, acc2.String()),
-			sdk.NewAttribute(types.AttributeKeyDealToken2, ass2.String()),
-			sdk.NewAttribute(types.AttributeKeyDealFee2, fee2.String()),
+			sdk.NewAttribute(types.AttributeKeyDealRole1, msgData.TransferData.From.String()),
+			sdk.NewAttribute(types.AttributeKeyDealToken1, msgData.TransferData.FromAsset.String()),
+			sdk.NewAttribute(types.AttributeKeyDealFee1, msgData.TransferData.FromFee.String()),
+			sdk.NewAttribute(types.AttributeKeyDealRole2, msgData.TransferData.To.String()),
+			sdk.NewAttribute(types.AttributeKeyDealToken2, msgData.TransferData.ToAsset.String()),
+			sdk.NewAttribute(types.AttributeKeyDealFee2, msgData.TransferData.ToFee.String()),
 		),
 	)
 

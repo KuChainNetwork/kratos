@@ -153,11 +153,33 @@ type MsgDexDeal struct {
 }
 
 type MsgDexDealData struct {
-	Dex     AccountID `json:"dex" yaml:"dex"`
-	ExtData []byte    `json:"ext" yaml:"ext"`       // some external datas
-	ID      []byte    `json:"id" yaml:"id"`         // L2 block id for prove
-	Hash    []byte    `json:"hash" yaml:"hash"`     // L2 hash for prove
-	Proves  []byte    `json:"proves" yaml:"proves"` // L2 prove datas
+	Dex          AccountID               `json:"dex" yaml:"dex"`
+	ExtData      []byte                  `json:"ext" yaml:"ext"`       // some external datas
+	ID           []byte                  `json:"id" yaml:"id"`         // L2 block id for prove
+	Hash         []byte                  `json:"hash" yaml:"hash"`     // L2 hash for prove
+	Proves       []byte                  `json:"proves" yaml:"proves"` // L2 prove datas
+	TransferData WithDexDealTransferData `json:"transfer_data" yaml:"transfer_data"`
+}
+
+// WithDexDealTransferData
+type WithDexDealTransferData struct {
+	From      AccountID
+	To        AccountID
+	FromAsset Coins
+	FromFee   Coins
+	ToAsset   Coins
+	ToFee     Coins
+}
+
+func WithDexDealTransfer(from, to AccountID, fromAsset, fromFee, toAsset, toFee Coins) WithDexDealTransferData {
+	return WithDexDealTransferData{
+		From:      from,
+		To:        to,
+		FromAsset: fromAsset,
+		FromFee:   fromFee,
+		ToAsset:   toAsset,
+		ToFee:     toFee,
+	}
 }
 
 // Type imp for data KuMsgData
@@ -173,15 +195,16 @@ func NewMsgDexDeal(auth types.AccAddress, dex AccountID, from, to AccountID, fro
 		*msg.MustNewKuMsg(
 			RouterKeyName,
 			msg.WithAuth(auth),
-			// from -> dex -> to
-			msg.WithTransfer(from, dex, types.NewCoins(fromAsset.Add(feeFromFrom))),
-			msg.WithTransfer(dex, to, types.NewCoins(fromAsset)),
-			// to -> dex -> from
-			msg.WithTransfer(to, dex, types.NewCoins(toAsset.Add(feeFromTo))),
-			msg.WithTransfer(dex, from, types.NewCoins(toAsset)),
 			msg.WithData(Cdc(), &MsgDexDealData{
 				Dex:     dex,
 				ExtData: ext,
+				TransferData: WithDexDealTransfer(from,
+					to,
+					types.NewCoins(fromAsset),
+					types.NewCoins(feeFromFrom),
+					types.NewCoins(toAsset),
+					types.NewCoins(feeFromTo),
+				),
 			}),
 		),
 	}
@@ -218,56 +241,6 @@ func (msg MsgDexDeal) ValidateBasic() error {
 	if data.Dex.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMsgAccountIDNil, "dex accountID empty")
 	}
-
-	// check transfer
-	trs := msg.Transfers
-
-	if len(trs) != 4 {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "transfer in deal should be 4 trans")
-	}
-
-	// a -> dex -> b
-	if trs[0].From.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should not be from in deal0")
-	}
-
-	if !trs[0].To.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should be to in deal0")
-	}
-
-	if !trs[1].From.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should be from in deal1")
-	}
-
-	if trs[1].To.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should not be to in deal1")
-	}
-
-	if !trs[0].Amount.IsAllGTE(trs[1].Amount) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "fee should larger than 0")
-	}
-
-	// b -> dex -> a
-	if trs[2].From.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should not be from in deal2")
-	}
-
-	if !trs[2].To.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should be to in deal2")
-	}
-
-	if !trs[3].From.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should be from in deal3")
-	}
-
-	if trs[3].To.Eq(data.Dex) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "dex should not be to in deal3")
-	}
-
-	if !trs[2].Amount.IsAllGTE(trs[3].Amount) {
-		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "fee should larger than 2")
-	}
-
 	return nil
 }
 
