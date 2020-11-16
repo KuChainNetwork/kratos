@@ -272,11 +272,23 @@ func (k DexKeeper) Deal(ctx sdk.Context, msgData dexTypes.MsgDexDealData) error 
 
 	// transfer from->dex->to
 	err = k.assetKeeper.TransferDetail(ctx, from, dex, amountFrom, true)
+	if err != nil {
+		return errors.Wrapf(err, "deal transfer error")
+	}
 	err = k.assetKeeper.TransferDetail(ctx, dex, to, assetFrom, false)
+	if err != nil {
+		return errors.Wrapf(err, "deal transfer error")
+	}
 
 	// transfer to->dex->from
 	err = k.assetKeeper.TransferDetail(ctx, to, dex, amountTo, true)
+	if err != nil {
+		return errors.Wrapf(err, "deal transfer error")
+	}
 	err = k.assetKeeper.TransferDetail(ctx, dex, from, amountTo, false)
+	if err != nil {
+		return errors.Wrapf(err, "deal transfer error")
+	}
 
 	return nil
 }
