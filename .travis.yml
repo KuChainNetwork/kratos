@@ -1,18 +1,11 @@
 language: go
 go:
   - "1.15.3"
-  - release
-  - tip
 
 notifications:
   email: false
 
 install: true
-
-matrix:
-  allow_failures:
-    - go: tip
-  fast_finish: true
 
 before_script:
   - GO_FILES=$(find . -iname '*.go' -type f | grep -v /vendor/) # All the .go files, excluding vendor/
