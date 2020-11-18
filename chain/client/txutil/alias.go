@@ -22,7 +22,7 @@ var (
 	NewTxBuilderFromCLI = transaction.NewTxBuilderFromCLI
 )
 
-// NewAccountRetriever initialises a new AccountRetriever instance.
+// NewAccountRetriever initializes a new AccountRetriever instance.
 func NewAccountRetriever(cliCtx KuCLIContext) accountTypes.AccountRetriever {
 	return accountTypes.NewAccountRetriever(cliCtx.CLIContext)
 }

@@ -204,8 +204,6 @@ func (fee StdFee) GasPrices() DecCoins {
 	return NewDecCoinsFromCoins(fee.Amount...).QuoDec(NewDec(int64(fee.Gas)))
 }
 
-//__________________________________________________________
-
 // StdSignDoc is replay-prevention structure.
 // It includes the result of msg.GetSignBytes(),
 // as well as the ChainID (prevent cross chain replay)

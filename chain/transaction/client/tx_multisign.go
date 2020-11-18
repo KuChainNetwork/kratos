@@ -73,6 +73,7 @@ func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) 
 		if err != nil {
 			return
 		}
+
 		if multisigInfo.GetType() != crkeys.TypeMulti {
 			return fmt.Errorf("%q must be of type %s: %s", args[1], crkeys.TypeMulti, multisigInfo.GetType())
 		}
@@ -106,9 +107,11 @@ func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) 
 				txBldr.ChainID(), txBldr.AccountNumber(), txBldr.Sequence(),
 				stdTx.Fee, stdTx.GetMsgs(), stdTx.GetMemo(),
 			)
+
 			if ok := stdSig.PubKey.VerifyBytes(sigBytes, stdSig.Signature); !ok {
 				return fmt.Errorf("couldn't verify signature")
 			}
+
 			if err := multisigSig.AddSignatureFromPubKey(stdSig.Signature, stdSig.PubKey, multisigPub.PubKeys); err != nil {
 				return err
 			}

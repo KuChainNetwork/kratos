@@ -79,7 +79,7 @@ func NewAccountIDFromConsAdd(add sdk.ConsAddress) AccountID {
 
 // EmptyAccountID return a empty accountID
 func EmptyAccountID() AccountID {
-	return NewAccountIDFromByte([]byte{accountIDTypeNil}[:])
+	return NewAccountIDFromByte([]byte{accountIDTypeNil})
 }
 
 // NewAccountIDFromStr new accountID from string

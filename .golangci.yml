@@ -66,8 +66,8 @@ linters-settings:
     # Enable to ensure that nolint directives are all used. Default is true.
     allow-unused: false
   funlen:
-    lines: 90
-    statements: 55
+    lines: 100
+    statements: 60
 
   misspell:
     # Correct spellings using locale preferences for US or UK.
