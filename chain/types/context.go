@@ -1,12 +1,11 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-type sdkContext = types.Context
+type sdkContext = sdk.Context
 
 // Context for kuchain msg handler
 type Context struct {
@@ -14,7 +13,7 @@ type Context struct {
 
 	msg    KuTransfMsg
 	auths  []AccAddress
-	auther AccountAuther
+	author AccountAuther
 
 	authStats *contextAuthStat
 }
@@ -25,10 +24,10 @@ type contextAuthStat struct {
 	allowedAccountAuths []Name
 }
 
-func NewKuMsgCtx(ctx types.Context, auther AccountAuther, msg sdk.Msg) Context {
+func NewKuMsgCtx(ctx sdk.Context, author AccountAuther, msg sdk.Msg) Context {
 	return Context{
 		sdkContext: ctx,
-		auther:     auther,
+		author:     author,
 		authStats: &contextAuthStat{
 			requireAuths:        make([]AccAddress, 0, 1),
 			requireAccountAuths: make([]Name, 0, 1),
@@ -38,7 +37,7 @@ func NewKuMsgCtx(ctx types.Context, auther AccountAuther, msg sdk.Msg) Context {
 }
 
 // Context get sdk context wrapped
-func (c Context) Context() types.Context {
+func (c Context) Context() sdk.Context {
 	return c.sdkContext
 }
 
@@ -89,7 +88,7 @@ func (c Context) CheckAuths() error {
 			continue
 		}
 
-		auth, err := c.auther.GetAuth(c.sdkContext, n)
+		auth, err := c.author.GetAuth(c.sdkContext, n)
 		if err != nil {
 			return sdkerrors.Wrapf(err, "missing account %s auth", n)
 		}
@@ -127,7 +126,8 @@ func (c Context) RequireAccount(account ...Name) {
 
 // Authorize make authorize for account to this msg, it call by handlers to allow kumsg can use this auth
 func (c Context) Authorize(account ...Name) {
-	// TODO: Now kuchain not support user-define code or contracts, so this no check if handler REALLY have auth to all account
+	// TODO: Now kuchain not support user-define code or contracts,
+	// so this no check if handler REALLY have auth to all account
 	c.authStats.allowedAccountAuths = append(c.authStats.allowedAccountAuths, account...)
 }
 

@@ -2,8 +2,8 @@ package common
 
 import (
 	"fmt"
-	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 
+	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,20 +12,15 @@ import (
 // QueryDelegationRewards queries a delegation rewards between a delegator and a
 // validator.
 func QueryDelegationRewards(cliCtx context.CLIContext, queryRoute, delAddr, valAddr string) ([]byte, int64, error) {
-	//delegatorAddr, err := sdk.AccAddressFromBech32(delAddr)
 	delegatorAddr, err := chainType.NewAccountIDFromStr(delAddr)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	validatorAddr, err := chainType.NewAccountIDFromStr(valAddr)
-	//validatorAddr, err := sdk.ValAddressFromBech32(valAddr)
 	if err != nil {
 		return nil, 0, err
 	}
-
-	//delegatorId, _ := chainType.NewAccountIDFromStr(delegatorAddr))
-	//validatorId, _ := chainType.NewAccountIDFromStr(string(validatorAddr))
 
 	fmt.Println("delegatorAddr:", delegatorAddr, "validatorAddr", validatorAddr)
 	params := types.NewQueryDelegationRewardsParams(delegatorAddr, validatorAddr)
@@ -40,19 +35,19 @@ func QueryDelegationRewards(cliCtx context.CLIContext, queryRoute, delAddr, valA
 
 // QueryDelegatorValidators returns delegator's list of validators
 // it submitted delegations to.
-func QueryDelegatorValidators(cliCtx context.CLIContext, queryRoute string, delegatorId chainType.AccountID) ([]byte, error) {
+func QueryDelegatorValidators(cliCtx context.CLIContext, queryRoute string, delegatorID chainType.AccountID) ([]byte, error) {
 	res, _, err := cliCtx.QueryWithData(
 		fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryDelegatorValidators),
-		cliCtx.Codec.MustMarshalJSON(types.NewQueryDelegatorParams(delegatorId)),
+		cliCtx.Codec.MustMarshalJSON(types.NewQueryDelegatorParams(delegatorID)),
 	)
 	return res, err
 }
 
 // QueryValidatorCommission returns a validator's commission.
-func QueryValidatorCommission(cliCtx context.CLIContext, queryRoute string, validatorId chainType.AccountID) ([]byte, error) {
+func QueryValidatorCommission(cliCtx context.CLIContext, queryRoute string, validatorID chainType.AccountID) ([]byte, error) {
 	res, _, err := cliCtx.QueryWithData(
 		fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryValidatorCommission),
-		cliCtx.Codec.MustMarshalJSON(types.NewQueryValidatorCommissionParams(validatorId)),
+		cliCtx.Codec.MustMarshalJSON(types.NewQueryValidatorCommissionParams(validatorID)),
 	)
 	return res, err
 }

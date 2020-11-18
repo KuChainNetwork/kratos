@@ -364,7 +364,7 @@ func (a AccountID) StoreKey() []byte {
 
 	bytes := make([]byte, math.MaxInt(len(a.Value), AccIDStoreKeyLen))
 	copy(bytes, a.Value)
-	return bytes[:]
+	return bytes
 }
 
 // FixedKey get bytes for store key fixed

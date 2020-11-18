@@ -8,7 +8,6 @@ import (
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -65,7 +64,7 @@ func queryAuthByAddress(ctx sdk.Context, req abci.RequestQuery, ak AccountKeeper
 
 	var an types.Auth
 	if err := ak.cdc.UnmarshalBinaryBare(bz, &an); err != nil {
-		return nil, errors.Wrapf(chainTypes.ErrKuMsgDataUnmarshal, "query auth data unmarshal by %s by %s", auth, err.Error())
+		return nil, sdkerrors.Wrapf(chainTypes.ErrKuMsgDataUnmarshal, "query auth data unmarshal by %s by %s", auth, err.Error())
 	}
 
 	jsonBz, err := codec.MarshalJSONIndent(ak.cdc, an)

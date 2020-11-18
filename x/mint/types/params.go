@@ -39,8 +39,9 @@ func ParamKeyTable() params.KeyTable {
 
 // NewParams new params for minting module
 func NewParams(
-	mintDenom string, inflationRateChange, inflationMax, inflationMin, goalBonded sdk.Dec, blocksPerYear uint64,
-) Params {
+	mintDenom string,
+	inflationRateChange, inflationMax, inflationMin, goalBonded sdk.Dec,
+	blocksPerYear uint64) Params {
 
 	return Params{
 		MintDenom:           mintDenom,
@@ -92,7 +93,6 @@ func (p Params) Validate() error {
 	}
 
 	return nil
-
 }
 
 // String implements the Stringer interface.

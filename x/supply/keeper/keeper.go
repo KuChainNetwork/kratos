@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/KuChainNetwork/kuchain/x/supply/exported"
-	supplyExported "github.com/KuChainNetwork/kuchain/x/supply/exported"
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -35,7 +34,6 @@ func NewKeeper(
 		permAddrs[name] = types.NewPermissionsForAddress(name, perms)
 	}
 
-	//cdc = supplystd.NewAppCodec(codec.New()) //fuck bugs by cancer@kuchain.io
 	return Keeper{
 		cdc:           cdc,
 		storeKey:      key,
@@ -57,7 +55,7 @@ func (k Keeper) GetSupply(ctx sdk.Context) exported.SupplyI {
 
 // ValidatePermissions validates that the module account has been granted
 // permissions within its set of allowed permissions.
-func (k Keeper) ValidatePermissions(macc supplyExported.ModuleAccountI) error {
+func (k Keeper) ValidatePermissions(macc exported.ModuleAccountI) error {
 	permAddr := k.permAddrs[macc.GetName().String()]
 	for _, perm := range macc.GetPermissions() {
 		if !permAddr.HasPermission(perm) {

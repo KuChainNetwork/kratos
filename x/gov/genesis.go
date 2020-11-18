@@ -36,6 +36,7 @@ func InitGenesis(ctx sdk.Context, bk types.BankKeeper, supplyKeeper types.Supply
 			k.InsertInactiveProposalQueue(ctx, proposal.ProposalID, proposal.DepositEndTime)
 		case StatusVotingPeriod:
 			k.InsertActiveProposalQueue(ctx, proposal.ProposalID, proposal.VotingEndTime)
+		default:
 		}
 		k.SetProposal(ctx, proposal)
 	}

@@ -2,12 +2,13 @@ package rest
 
 import (
 	"fmt"
+	"net/http"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {

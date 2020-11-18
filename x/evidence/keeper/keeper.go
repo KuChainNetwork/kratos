@@ -27,9 +27,7 @@ type Keeper struct {
 
 func NewKeeper(
 	storeKey sdk.StoreKey, paramSpace external.ParamsSubspace,
-	stakingKeeper types.StakingKeeper, slashingKeeper types.SlashingKeeper,
-) *Keeper {
-
+	stakingKeeper types.StakingKeeper, slashingKeeper types.SlashingKeeper) *Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -153,7 +151,7 @@ func (k Keeper) GetAllEvidence(ctx sdk.Context) (evidence []exported.Evidence) {
 // MustUnmarshalEvidence attempts to decode and return an Evidence object from
 // raw encoded bytes. It panics on error.
 func (k Keeper) MustUnmarshalEvidence(bz []byte) exported.Evidence {
-	evidence, err := types.Evidence_Cdc.UnmarshalEvidence(bz)
+	evidence, err := types.EvidenceCdc.UnmarshalEvidence(bz)
 	if err != nil {
 		panic(fmt.Errorf("failed to decode evidence: %w", err))
 	}
@@ -164,7 +162,7 @@ func (k Keeper) MustUnmarshalEvidence(bz []byte) exported.Evidence {
 // MustMarshalEvidence attempts to encode an Evidence object and returns the
 // raw encoded bytes. It panics on error.
 func (k Keeper) MustMarshalEvidence(evidence exported.Evidence) []byte {
-	bz, err := types.Evidence_Cdc.MarshalEvidence(evidence)
+	bz, err := types.EvidenceCdc.MarshalEvidence(evidence)
 	if err != nil {
 		panic(fmt.Errorf("failed to encode evidence: %w", err))
 	}

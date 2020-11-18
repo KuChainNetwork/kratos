@@ -55,7 +55,7 @@ func (data GenesisState) IsEmpty() bool {
 
 // ValidateGenesis performs basic validation of bank genesis data returning an
 // error for any failed validation criteria.
-func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
+func (data GenesisState) ValidateGenesis(bz json.RawMessage) error {
 	gs := DefaultGenesisState()
 	if err := ModuleCdc.UnmarshalJSON(bz, &gs); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)

@@ -6,7 +6,6 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/x/asset"
 	genutiltypes "github.com/KuChainNetwork/kuchain/x/genutil/types"
-	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	stakingtypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -33,7 +32,7 @@ func (FuncManager) MsgCreateValidatorVal(msg sdk.Msg) bool {
 func (FuncManager) GetMsgCreateValidatorMoniker(m sdk.Msg) (string, error) {
 	msg := m.(stakingtypes.KuMsgCreateValidator)
 
-	msgData := types.MsgCreateValidator{}
+	msgData := stakingtypes.MsgCreateValidator{}
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return "", sdkerrors.Wrapf(err, "msg CreateValidatorMoniker data unmarshal error")
 	}
@@ -43,7 +42,7 @@ func (FuncManager) GetMsgCreateValidatorMoniker(m sdk.Msg) (string, error) {
 func (FuncManager) MsgDelegateWithBalance(m sdk.Msg,
 	balancesMap map[string]asset.GenesisAsset) error {
 	kumsg := m.(stakingtypes.KuMsgDelegate)
-	msgData := types.MsgDelegate{}
+	msgData := stakingtypes.MsgDelegate{}
 	if err := kumsg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return sdkerrors.Wrapf(err, "msg DelegateWithBalance data unmarshal error")
 	}
@@ -78,6 +77,6 @@ func (FuncManager) MsgDelegateWithBalance(m sdk.Msg,
 // GetBondDenom
 func (FuncManager) GetBondDenom(appGenesisState map[string]json.RawMessage) string {
 	var stakingData stakingtypes.GenesisState
-	types.ModuleCdc.MustUnmarshalJSON(appGenesisState[stakingtypes.ModuleName], &stakingData)
+	stakingtypes.ModuleCdc.MustUnmarshalJSON(appGenesisState[stakingtypes.ModuleName], &stakingData)
 	return stakingData.Params.BondDenom
 }

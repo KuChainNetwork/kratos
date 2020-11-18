@@ -3,10 +3,9 @@ package keeper
 import (
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
-	"github.com/pkg/errors"
-
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/pkg/errors"
 )
 
 // CreateDex create a dex by creator

@@ -223,7 +223,7 @@ type MsgBurnCoin struct {
 }
 
 type MsgBurnCoinData struct {
-	Id     AccountID `json:"id" yaml:"id"`         // Symbol coin symbol name
+	ID     AccountID `json:"id" yaml:"id"`         // Symbol coin symbol name
 	Amount Coin      `json:"amount" yaml:"amount"` // MaxSupply coin max supply limit
 }
 
@@ -231,7 +231,7 @@ type MsgBurnCoinData struct {
 func (MsgBurnCoinData) Type() types.Name { return types.MustName("burn") }
 
 func (msg MsgBurnCoinData) Sender() AccountID {
-	return msg.Id
+	return msg.ID
 }
 
 // NewMsgBurn new issue msg
@@ -241,7 +241,7 @@ func NewMsgBurn(auth types.AccAddress, id AccountID, amount Coin) MsgBurnCoin {
 			RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(Cdc(), &MsgBurnCoinData{
-				Id:     id,
+				ID:     id,
 				Amount: amount,
 			}),
 		),
@@ -266,7 +266,7 @@ func (msg MsgBurnCoin) ValidateBasic() error {
 		return err
 	}
 
-	if data.Id.Empty() {
+	if data.ID.Empty() {
 		return types.ErrKuMsgAccountIDNil
 	}
 
@@ -287,7 +287,7 @@ type MsgLockCoin struct {
 }
 
 type MsgLockCoinData struct {
-	Id                AccountID `json:"id" yaml:"id"`                                         // Id lock account
+	ID                AccountID `json:"id" yaml:"id"`                                         // Id lock account
 	Amount            Coins     `json:"amount" yaml:"amount"`                                 // Amount coins to lock
 	UnlockBlockHeight int64     `json:"unlockBlockHeight,omitempty" yaml:"unlockBlockHeight"` // UnlockBlockHeight the block height the coins unlock
 }
@@ -296,7 +296,7 @@ type MsgLockCoinData struct {
 func (m *MsgLockCoinData) Type() types.Name { return types.MustName("lock") }
 
 func (m MsgLockCoinData) Sender() AccountID {
-	return m.Id
+	return m.ID
 }
 
 // NewMsgLockCoin create new lock coin msg
@@ -306,7 +306,7 @@ func NewMsgLockCoin(auth types.AccAddress, id AccountID, amount Coins, unlockBlo
 			RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(Cdc(), &MsgLockCoinData{
-				Id:                id,
+				ID:                id,
 				Amount:            amount,
 				UnlockBlockHeight: unlockBlockHeight,
 			}),
@@ -332,7 +332,7 @@ func (msg MsgLockCoin) ValidateBasic() error {
 		return err
 	}
 
-	if data.Id.Empty() {
+	if data.ID.Empty() {
 		return types.ErrKuMsgAccountIDNil
 	}
 
@@ -360,7 +360,7 @@ type MsgUnlockCoin struct {
 }
 
 type MsgUnlockCoinData struct {
-	Id     AccountID `json:"id" yaml:"id"`         // Id lock account
+	ID     AccountID `json:"id" yaml:"id"`         // Id lock account
 	Amount Coins     `json:"amount" yaml:"amount"` // Amount coins to lock
 }
 
@@ -368,7 +368,7 @@ type MsgUnlockCoinData struct {
 func (m *MsgUnlockCoinData) Type() types.Name { return types.MustName("unlock") }
 
 func (m MsgUnlockCoinData) Sender() AccountID {
-	return m.Id
+	return m.ID
 }
 
 // NewMsgUnlockCoin create new lock coin msg
@@ -378,7 +378,7 @@ func NewMsgUnlockCoin(auth types.AccAddress, id AccountID, amount Coins) MsgUnlo
 			RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(Cdc(), &MsgUnlockCoinData{
-				Id:     id,
+				ID:     id,
 				Amount: amount,
 			}),
 		),
@@ -403,7 +403,7 @@ func (msg MsgUnlockCoin) ValidateBasic() error {
 		return err
 	}
 
-	if data.Id.Empty() {
+	if data.ID.Empty() {
 		return types.ErrKuMsgAccountIDNil
 	}
 

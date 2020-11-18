@@ -188,12 +188,9 @@ func (k DexKeeper) SigOut(ctx sdk.Context, isTimeout bool, id, dex AccountID, am
 			return errors.Wrapf(dexTypes.ErrDexSigOutByUserNoUnlock,
 				"sigOut by user need wait to %d but %d", reqHeight+SigOutByUserUnlockHeight, ctx.BlockHeight())
 		}
-	} else {
-		// if has req, but sigout by dex
-		if _, ok := k.GetSigOutReqHeight(ctx, id); ok {
-			// cleanup req
-			k.setSigOutReqHeightToStore(ctx, id, 0)
-		}
+	} else if _, ok := k.GetSigOutReqHeight(ctx, id); ok {
+		// cleanup req
+		k.setSigOutReqHeightToStore(ctx, id, 0)
 	}
 
 	// update sigIn state

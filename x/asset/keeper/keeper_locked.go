@@ -180,7 +180,6 @@ func (a AssetKeeper) UnLockCoins(ctx sdk.Context, account types.AccountID, coins
 
 	err = a.setCoinsLockedStat(ctx, account, newStat)
 	return sdkerrors.Wrap(err, "UnlockedCoins")
-
 }
 
 // UnLockFreezedCoins unlock freezed coins which UnlockBlockHeight is < 0
@@ -283,7 +282,7 @@ func (a AssetKeeper) checkIsCanUseCoins(ctx sdk.Context, account types.AccountID
 
 	if currentCoins.IsAllGTE(cannotUserCoins.Add(coins...)) {
 		return nil
-	} else {
-		return types.ErrAssetCoinsLocked
 	}
+
+	return types.ErrAssetCoinsLocked
 }

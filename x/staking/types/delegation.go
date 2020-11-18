@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"bytes"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -132,7 +133,10 @@ func (d Delegations) String() (out string) {
 	return strings.TrimSpace(out)
 }
 
-func NewUnbondingDelegationEntry(creationHeight int64, completionTime time.Time, balance sdk.Int) UnbondingDelegationEntry {
+func NewUnbondingDelegationEntry(
+	creationHeight int64,
+	completionTime time.Time,
+	balance sdk.Int) UnbondingDelegationEntry {
 	return UnbondingDelegationEntry{
 		CreationHeight: creationHeight,
 		CompletionTime: completionTime,
@@ -206,8 +210,8 @@ type UnbondingDelegation struct {
 	Entries          []UnbondingDelegationEntry `json:"entries" yaml:"entries"`
 }
 
-func (d UnbondingDelegation) Equal(d2 UnbondingDelegation) bool {
-	bz1 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d)
+func (ubd UnbondingDelegation) Equal(d2 UnbondingDelegation) bool {
+	bz1 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&ubd)
 	bz2 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d2)
 	return bytes.Equal(bz1, bz2)
 }
@@ -254,7 +258,11 @@ type RedelegationEntry struct {
 	SharesDst      sdk.Dec   `json:"shares_dst" yaml:"shares_dst"`
 }
 
-func NewRedelegationEntry(creationHeight int64, completionTime time.Time, balance sdk.Int, sharesDst sdk.Dec) RedelegationEntry {
+func NewRedelegationEntry(
+	creationHeight int64,
+	completionTime time.Time,
+	balance sdk.Int,
+	sharesDst sdk.Dec) RedelegationEntry {
 	return RedelegationEntry{
 		CreationHeight: creationHeight,
 		CompletionTime: completionTime,
@@ -331,8 +339,8 @@ func UnmarshalRED(cdc *codec.Codec, value []byte) (red Redelegation, err error) 
 
 // nolint
 // inefficient but only used in tests
-func (d Redelegation) Equal(d2 Redelegation) bool {
-	bz1 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d)
+func (red Redelegation) Equal(d2 Redelegation) bool {
+	bz1 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&red)
 	bz2 := ModuleCdc.MustMarshalBinaryLengthPrefixed(&d2)
 	return bytes.Equal(bz1, bz2)
 }
@@ -431,8 +439,8 @@ type RedelegationResponse struct {
 
 // NewRedelegationResponse crates a new RedelegationEntryResponse instance.
 func NewRedelegationResponse(
-	delegatorAddr chainTypes.AccountID, validatorSrc, validatorDst chainTypes.AccountID, entries []RedelegationEntryResponse,
-) RedelegationResponse {
+	delegatorAddr, validatorSrc, validatorDst chainTypes.AccountID,
+	entries []RedelegationEntryResponse) RedelegationResponse {
 	return RedelegationResponse{
 		Redelegation: Redelegation{
 			DelegatorAccount:    delegatorAddr,
@@ -453,7 +461,8 @@ type RedelegationEntryResponse struct {
 
 // NewRedelegationEntryResponse creates a new RedelegationEntryResponse instance.
 func NewRedelegationEntryResponse(
-	creationHeight int64, completionTime time.Time, sharesDst sdk.Dec, initialBalance, balance sdk.Int) RedelegationEntryResponse {
+	creationHeight int64, completionTime time.Time, sharesDst sdk.Dec,
+	initialBalance, balance sdk.Int) RedelegationEntryResponse {
 	return RedelegationEntryResponse{
 		RedelegationEntry: NewRedelegationEntry(creationHeight, completionTime, initialBalance, sharesDst),
 		Balance:           balance,

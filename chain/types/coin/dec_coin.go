@@ -9,6 +9,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// nolint: golint
+
 // ----------------------------------------------------------------------------
 // Decimal Coin
 
@@ -22,7 +24,7 @@ func (d DecCoin) ToSDK() sdk.DecCoin {
 	return sdk.DecCoin{
 		Denom: d.Denom,
 		Amount: sdk.Dec{
-			d.Amount.Int,
+			Int: d.Amount.Int,
 		},
 	}
 }

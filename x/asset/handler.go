@@ -38,12 +38,6 @@ func NewHandler(k keeper.AssetCoinsKeeper) msg.Handler {
 	}
 }
 
-// handleKuMsg Handle KuMsg.
-func handleKuMsg(ctx chainTypes.Context) (*sdk.Result, error) {
-	// no need process transfer
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-}
-
 // handleMsgTransfer Handle for transfer.
 func handleMsgTransfer(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types.MsgTransfer) (*sdk.Result, error) {
 	// no need process transfer
@@ -161,10 +155,10 @@ func handleMsgBurn(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types
 	}
 
 	logger.Debug("handle coin burn",
-		"id", msgData.Id,
+		"id", msgData.ID,
 		"amount", msgData.Amount)
 
-	ctx.RequireAuth(msgData.Id)
+	ctx.RequireAuth(msgData.ID)
 
 	creator, symbol, err := types.CoinAccountsFromDenom(msgData.Amount.Denom)
 	if err != nil {
@@ -180,15 +174,15 @@ func handleMsgBurn(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types
 		return nil, sdkerrors.Wrapf(types.ErrAssetCoinCannotBeBurn, "coin %s cannot be burn", msgData.Amount.String())
 	}
 
-	if err := k.Burn(ctx.Context(), msgData.Id, msgData.Amount); err != nil {
-		return nil, sdkerrors.Wrapf(err, "msg burn coin %s", msgData.Id)
+	if err := k.Burn(ctx.Context(), msgData.ID, msgData.Amount); err != nil {
+		return nil, sdkerrors.Wrapf(err, "msg burn coin %s", msgData.ID)
 	}
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeIssue,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(types.AttributeKeyFrom, msgData.Id.String()),
+			sdk.NewAttribute(types.AttributeKeyFrom, msgData.ID.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
 		),
 	)
@@ -207,11 +201,11 @@ func handleMsgLockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *t
 	}
 
 	logger.Debug("handle coin lock",
-		"id", msgData.Id,
+		"id", msgData.ID,
 		"amount", msgData.Amount,
 		"height", msgData.UnlockBlockHeight)
 
-	ctx.RequireAuth(msgData.Id)
+	ctx.RequireAuth(msgData.ID)
 
 	for _, c := range msgData.Amount {
 		creator, symbol, err := chainTypes.CoinAccountsFromDenom(c.Denom)
@@ -229,15 +223,15 @@ func handleMsgLockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *t
 		}
 	}
 
-	if err := k.LockCoins(ctx.Context(), msgData.Id, msgData.UnlockBlockHeight, msgData.Amount); err != nil {
-		return nil, sdkerrors.Wrapf(err, "msg lock coin %s", msgData.Id)
+	if err := k.LockCoins(ctx.Context(), msgData.ID, msgData.UnlockBlockHeight, msgData.Amount); err != nil {
+		return nil, sdkerrors.Wrapf(err, "msg lock coin %s", msgData.ID)
 	}
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeLock,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(types.AttributeKeyFrom, msgData.Id.String()),
+			sdk.NewAttribute(types.AttributeKeyFrom, msgData.ID.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
 			sdk.NewAttribute(types.AttributeKeyUnlockHeight, strconv.Itoa(int(msgData.UnlockBlockHeight))),
 		),
@@ -256,20 +250,20 @@ func handleMsgUnlockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg 
 	}
 
 	logger.Debug("handle coin unlock",
-		"id", msgData.Id,
+		"id", msgData.ID,
 		"amount", msgData.Amount)
 
-	ctx.RequireAuth(msgData.Id)
+	ctx.RequireAuth(msgData.ID)
 
-	if err := k.UnLockCoins(ctx.Context(), msgData.Id, msgData.Amount); err != nil {
-		return nil, sdkerrors.Wrapf(err, "msg unlock coin %s", msgData.Id)
+	if err := k.UnLockCoins(ctx.Context(), msgData.ID, msgData.Amount); err != nil {
+		return nil, sdkerrors.Wrapf(err, "msg unlock coin %s", msgData.ID)
 	}
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeUnlock,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(types.AttributeKeyFrom, msgData.Id.String()),
+			sdk.NewAttribute(types.AttributeKeyFrom, msgData.ID.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
 		),
 	)
@@ -320,8 +314,12 @@ func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *ty
 	ctx.RequireAuth(msgData.Id)
 
 	apporveCoins, err := k.GetApproveCoins(ctx.Context(), msgData.Id, msgData.Spender)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "get approve coins")
+	}
+
 	if apporveCoins != nil {
-		if apporveCoins.IsLock == true {
+		if apporveCoins.IsLock {
 			return nil, types.ErrAssetApporveCannotChangeLock
 		}
 

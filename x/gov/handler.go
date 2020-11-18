@@ -119,4 +119,3 @@ func handleMsgVote(ctx sdk.Context, keeper Keeper, msg MsgVote) (*sdk.Result, er
 
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
-

@@ -76,7 +76,9 @@ be generated via the 'multisign' command.
 	cmd.Flags().String(flagOutfile, "", "The document will be written to the given file instead of STDOUT")
 
 	cmd = flags.PostCommands(cmd)[0]
-	cmd.MarkFlagRequired(flags.FlagFrom)
+	if err := cmd.MarkFlagRequired(flags.FlagFrom); err != nil {
+		panic(err)
+	}
 
 	return cmd
 }

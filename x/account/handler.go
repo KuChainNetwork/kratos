@@ -84,7 +84,10 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 }
 
 // handleMsgUpdateAccountAuth handler msg update account auth
-func handleMsgUpdateAccountAuth(ctx chainTypes.Context, k Keeper, msg *types.MsgUpdateAccountAuth) (*sdk.Result, error) {
+func handleMsgUpdateAccountAuth(
+	ctx chainTypes.Context,
+	k Keeper,
+	msg *types.MsgUpdateAccountAuth) (*sdk.Result, error) {
 	logger := ctx.Logger()
 
 	msgData := types.MsgUpdateAccountAuthData{}

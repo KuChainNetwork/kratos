@@ -57,21 +57,20 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 }
 
 // UpdateSymbol update symbol
-func (a DexKeeper) UpdateSymbol(ctx sdk.Context,
-	creator types.Name, update *types.Symbol) (err error) {
+func (a DexKeeper) UpdateSymbol(ctx sdk.Context, creator types.Name, update *types.Symbol) error {
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
-		err = errors.Wrapf(types.ErrDexNotExists,
+		return errors.Wrapf(types.ErrDexNotExists,
 			"update symbol dex %s not exists",
 			creator.String())
-		return
 	}
+
 	var symbol types.Symbol
 	if symbol, ok = dex.Symbol(update.Base.Code, update.Quote.Code); !ok {
-		err = errors.Wrapf(types.ErrSymbolNotExists,
+		return errors.Wrapf(types.ErrSymbolNotExists,
 			"update symbol not exists, dex %s", creator.String())
-		return
 	}
+
 	updated := false
 	for _, pair := range []struct {
 		Dst *string
@@ -91,17 +90,19 @@ func (a DexKeeper) UpdateSymbol(ctx sdk.Context,
 			updated = true
 		}
 	}
+
 	if !updated {
-		return
+		return nil
 	}
+
 	if !dex.UpdateSymbol(update.Base.Code, update.Quote.Code, &symbol) {
-		err = errors.Wrapf(types.ErrSymbolNotExists,
+		return errors.Wrapf(types.ErrSymbolNotExists,
 			"update symbol (%s/%s) not exists",
 			update.Base.Code, update.Quote.Code)
-		return
 	}
+
 	a.setDex(ctx, dex)
-	return
+	return nil
 }
 
 // PauseSymbol pause symbol

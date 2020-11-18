@@ -20,10 +20,10 @@ import (
 )
 
 var (
-	flagOnlyFromValidator = "only-from-validator"
-	flagIsValidator       = "is-validator"
-	flagCommission        = "commission"
-	flagMaxMessagesPerTx  = "max-msgs"
+	// flagOnlyFromValidator = "only-from-validator"
+	// flagIsValidator       = "is-validator"
+	flagCommission       = "commission"
+	flagMaxMessagesPerTx = "max-msgs"
 )
 
 const (
@@ -105,19 +105,19 @@ $ %s tx kudistribution withdraw-rewards validator  Delegator --from jack --commi
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
 			delAddr := cliCtx.GetFromAddress()
-			delId, _ := chainType.NewAccountIDFromStr(args[1])
-			valId, err := chainType.NewAccountIDFromStr(args[0])
+			delID, _ := chainType.NewAccountIDFromStr(args[1])
+			valID, err := chainType.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
 
-			msgs := []sdk.Msg{types.NewMsgWithdrawDelegatorReward(delAddr, delId, valId)}
+			msgs := []sdk.Msg{types.NewMsgWithdrawDelegatorReward(delAddr, delID, valID)}
 			if viper.GetBool(flagCommission) {
-				msgs = append(msgs, types.NewMsgWithdrawValidatorCommission(delAddr, valId))
+				msgs = append(msgs, types.NewMsgWithdrawValidatorCommission(delAddr, valID))
 			}
-			cliCtx = cliCtx.WithFromAccount(delId)
+			cliCtx = cliCtx.WithFromAccount(delID)
 
-			fmt.Println(delId)
+			fmt.Println(delID)
 			return txutil.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
 		},
 	}
