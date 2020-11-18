@@ -54,10 +54,10 @@ func QueryValidatorCommission(cliCtx context.CLIContext, queryRoute string, vali
 
 // WithdrawAllDelegatorRewards builds a multi-message slice to be used
 // to withdraw all delegations rewards for the given delegator.
-func WithdrawAllDelegatorRewards(cliCtx context.CLIContext, auth sdk.AccAddress, queryRoute string, delegatorId chainType.AccountID) ([]sdk.Msg, error) {
+func WithdrawAllDelegatorRewards(cliCtx context.CLIContext, auth sdk.AccAddress, queryRoute string, delegatorID chainType.AccountID) ([]sdk.Msg, error) {
 	// retrieve the comprehensive list of all validators which the
 	// delegator had submitted delegations to
-	bz, err := QueryDelegatorValidators(cliCtx, queryRoute, delegatorId)
+	bz, err := QueryDelegatorValidators(cliCtx, queryRoute, delegatorID)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func WithdrawAllDelegatorRewards(cliCtx context.CLIContext, auth sdk.AccAddress,
 
 	for _, valAcc := range validators {
 		fmt.Println("validator:", valAcc.String())
-		msg := types.NewMsgWithdrawDelegatorReward(auth, delegatorId, valAcc)
+		msg := types.NewMsgWithdrawDelegatorReward(auth, delegatorID, valAcc)
 		if err := msg.ValidateBasic(); err != nil {
 			return nil, err
 		}

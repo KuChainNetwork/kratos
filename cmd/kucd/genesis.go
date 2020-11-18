@@ -24,8 +24,8 @@ func AddGenesisCmds(
 	}
 
 	genCmd.AddCommand(
-		accountGen.GenGensisAccountCmd(ctx, cdc),
-		accountGen.GenGensisAddAccountCmd(ctx, cdc),
+		accountGen.GensisAccountCmd(ctx, cdc),
+		accountGen.GensisAddAccountCmd(ctx, cdc),
 		assetGen.GenGensisCoinCmd(ctx, cdc),
 		assetGen.GenGensisAccountAssetCmd(ctx, cdc),
 	)

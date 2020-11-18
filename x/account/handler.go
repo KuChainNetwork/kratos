@@ -42,7 +42,7 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 	if creator, ok := msgData.Creator.ToName(); ok && constants.IsSystemAccount(creator) {
 		// system account can create accounts
 	} else {
-		if msgData.Name.Len() != 12 {
+		if msgData.Name.Len() != constants.CommonAccountNameLen {
 			return nil, types.ErrAccountNameLenInvalid
 		}
 

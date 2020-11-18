@@ -29,12 +29,16 @@ type MsgCreateAccount struct {
 	types.KuMsg
 }
 
-func NewMsgCreateAccount(auth types.AccAddress, creator types.AccountID, name types.Name, accountAuth types.AccAddress) MsgCreateAccount {
+func NewMsgCreateAccount(
+	auth types.AccAddress,
+	creator types.AccountID,
+	name types.Name,
+	accountAuth types.AccAddress) MsgCreateAccount {
 	return MsgCreateAccount{
 		*msg.MustNewKuMsg(
 			types.MustName(RouterKey),
 			msg.WithAuth(auth),
-			msg.WithTransfer(creator, types.NewAccountIDFromName(name), Coins{}), // TODO: with first coin
+			msg.WithTransfer(creator, types.NewAccountIDFromName(name), Coins{}),
 			msg.WithData(Cdc(), &MsgCreateAccountData{
 				Creator: creator,
 				Name:    name,
@@ -91,7 +95,10 @@ type MsgUpdateAccountAuth struct {
 }
 
 // NewMsgUpdateAccountAuth create msg to update account auth
-func NewMsgUpdateAccountAuth(auth types.AccAddress, name types.Name, accountAuth types.AccAddress) MsgUpdateAccountAuth {
+func NewMsgUpdateAccountAuth(
+	auth types.AccAddress,
+	name types.Name,
+	accountAuth types.AccAddress) MsgUpdateAccountAuth {
 	return MsgUpdateAccountAuth{
 		*msg.MustNewKuMsg(
 			types.MustName(RouterKey),

@@ -17,8 +17,8 @@ const (
 	flagClientHome = "home-client"
 )
 
-// GenGenAccountCmd builds gen genesis account to genesis config
-func GenGensisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+// GensisAccountCmd builds gen genesis account to genesis config
+func GensisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-account",
 		Short: "Add a genesis account to chain",
@@ -62,8 +62,8 @@ func GenGensisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-// GenGenAccountCmd builds gen genesis account to genesis config
-func GenGensisAddAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+// GensisAddAccountCmd builds gen genesis account to genesis config
+func GensisAddAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-address",
 		Short: "Add a genesis account to chain",
