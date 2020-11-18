@@ -2,14 +2,21 @@ name: Go
 
 on:
   push:
-    branches: [ dex ]
+    branches:
+    - master
+    - dex
+    - release
+    - features/*
   pull_request:
-    branches: [ dex ]
+    branches:
+    - master
+    - dex
+    - release
+    - features/*
 
 jobs:
-
-  build:
-    name: Build
+  test:
+    name: test
     runs-on: ubuntu-latest
     steps:
 
@@ -27,3 +34,15 @@ jobs:
 
     - name: Test
       run: go test ./...
+
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v2
+      with:
+        version: v1.29
+
+    - name: codecov-umbrella
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
+        verbose: true
