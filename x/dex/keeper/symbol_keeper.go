@@ -78,12 +78,12 @@ func (a DexKeeper) UpdateSymbol(ctx sdk.Context, creator types.Name, update *typ
 	}{
 		{&symbol.Base.Name, update.Base.Name},
 		{&symbol.Base.FullName, update.Base.FullName},
-		{&symbol.Base.IconUrl, update.Base.IconUrl},
-		{&symbol.Base.TxUrl, update.Base.TxUrl},
+		{&symbol.Base.IconURL, update.Base.IconURL},
+		{&symbol.Base.TxURL, update.Base.TxURL},
 		{&symbol.Quote.Name, update.Quote.Name},
 		{&symbol.Quote.FullName, update.Quote.FullName},
-		{&symbol.Quote.IconUrl, update.Quote.IconUrl},
-		{&symbol.Quote.TxUrl, update.Quote.TxUrl},
+		{&symbol.Quote.IconURL, update.Quote.IconURL},
+		{&symbol.Quote.TxURL, update.Quote.TxURL},
 	} {
 		if 0 < len(pair.Src) && *pair.Dst != pair.Src {
 			*pair.Dst = pair.Src

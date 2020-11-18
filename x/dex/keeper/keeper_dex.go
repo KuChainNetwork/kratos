@@ -48,7 +48,7 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 // UpdateDexDescription update a dex description
 func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 	creator types.Name,
-	description string) (err error, ok bool) {
+	description string) (ok bool, err error) {
 	var dex *types.Dex
 	dex, ok = a.getDex(ctx, creator)
 	if !ok {
