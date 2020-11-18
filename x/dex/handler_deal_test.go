@@ -14,7 +14,7 @@ const (
 	feeRateDiv int64 = 10
 )
 
-func DexDealForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, dex, a1 types.AccountID, c1 types.Coin, a2 types.AccountID, c2 types.Coin) error {
+func DexDealForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, dex, a1 types.AccountID, c1 types.Coin, a2 types.AccountID, c2 types.Coin, c3, c4 types.Coin) error {
 	wallet := app.GetWallet()
 	ctx := app.NewTestContext()
 
@@ -23,8 +23,7 @@ func DexDealForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, dex, a1 ty
 		dex,
 		a1, a2,
 		c1, c2,
-		types.NewInt64Coin(c1.Denom, c1.Amount.Int64()/feeRateDiv),
-		types.NewInt64Coin(c2.Denom, c2.Amount.Int64()/feeRateDiv),
+		c3, c4,
 		[]byte("deal dex test"))
 
 	tx := simapp.NewTxForTest(
@@ -59,9 +58,9 @@ func TestDexDealMsg(t *testing.T) {
 
 		a11, a21 := types.NewInt64Coin(gDenom1, 600), types.NewInt64CoreCoin(1000)
 		f1 := types.NewInt64Coin(a11.Denom, a11.Amount.Int64()/feeRateDiv)
-		f2 := types.NewInt64Coin(a21.Denom, a21.Amount.Int64()/feeRateDiv)
+		f2 := types.NewInt64Coin(a11.Denom, a21.Amount.Int64()/feeRateDiv)
 
-		So(DexDealForTest(t, app, true, dexAccount1, account1, a11, account2, a21), ShouldBeNil)
+		So(DexDealForTest(t, app, true, dexAccount1, account1, a11, account2, a21, f1, f2), ShouldBeNil)
 
 		ctx = app.NewTestContext()
 
@@ -71,25 +70,25 @@ func TestDexDealMsg(t *testing.T) {
 
 		// coins
 		So(account1AssetOld.Add(a21), simapp.ShouldEq, account1AssetNew.Add(a11.Add(f1)))
-		So(account2AssetOld.Add(a11), simapp.ShouldEq, account2AssetNew.Add(a21.Add(f2)))
+		So(account2AssetOld.Add(a11).Sub(types.NewCoins(f2)), simapp.ShouldEq, account2AssetNew.Add(a21))
 		So(dexAssetNew, simapp.ShouldEq, (dexAssetOld.Add(f1).Add(f2)).Sub(simapp.DefaultTestFee))
 
 		// approve
 		account1Approve, err := app.AssetKeeper().GetApproveCoins(ctx, account1, dexAccount1)
 		So(err, ShouldBeNil)
 		So(account1Approve, ShouldNotBeNil)
-		So(account1Approve.Amount.Add(a11).Add(f1), simapp.ShouldEq, amt)
+		So(account1Approve.Amount.Add(a11).Add(f1), simapp.ShouldEq, amt.Add(a21))
 
 		account2Approve, err := app.AssetKeeper().GetApproveCoins(ctx, account2, dexAccount1)
 		So(err, ShouldBeNil)
 		So(account2Approve, ShouldNotBeNil)
-		So(account2Approve.Amount.Add(a21).Add(f2), simapp.ShouldEq, amt)
+		So(account2Approve.Amount.Add(a21), simapp.ShouldEq, amt.Add(a11).Sub(types.NewCoins(f2)))
 
 		// sigIn
 		sigInState1 := app.DexKeeper().GetSigInForDex(ctx, account1, dexAccount1)
 		sigInState2 := app.DexKeeper().GetSigInForDex(ctx, account2, dexAccount1)
 
-		So(sigInState1.Add(a11).Add(f1), simapp.ShouldEq, amt)
-		So(sigInState2.Add(a21).Add(f2), simapp.ShouldEq, amt)
+		So(sigInState1.Add(a11).Add(f1), simapp.ShouldEq, amt.Add(a21))
+		So(sigInState2.Add(a21), simapp.ShouldEq, amt.Add(a11).Sub(types.NewCoins(f2)))
 	})
 }
