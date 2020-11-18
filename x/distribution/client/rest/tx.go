@@ -5,7 +5,6 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
-	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -42,21 +41,21 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, queryRoute strin
 
 type (
 	withdrawRewardsReq struct {
-		BaseReq      rest.BaseReq `json:"base_req" yaml:"base_req"`
-		DelegatorAcc string       `json:"delegator_acc" yaml:"delegator_acc"`
-		ValidatorAcc string       `json:"validator_acc" yaml:"validator_acc"`
+		BaseReq      chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+		DelegatorAcc string             `json:"delegator_acc" yaml:"delegator_acc"`
+		ValidatorAcc string             `json:"validator_acc" yaml:"validator_acc"`
 	}
 
 	setWithdrawalAddrReq struct {
-		BaseReq      rest.BaseReq `json:"base_req" yaml:"base_req"`
-		DelegatorAcc string       `json:"delegator_acc" yaml:"delegator_acc"`
-		WithdrawAcc  string       `json:"withdraw_acc" yaml:"withdraw_acc"`
+		BaseReq      chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+		DelegatorAcc string             `json:"delegator_acc" yaml:"delegator_acc"`
+		WithdrawAcc  string             `json:"withdraw_acc" yaml:"withdraw_acc"`
 	}
 
 	fundCommunityPoolReq struct {
-		BaseReq      rest.BaseReq `json:"base_req" yaml:"base_req"`
-		Amount       string       `json:"amount" yaml:"amount"`
-		DepositorAcc string       `json:"depositor_acc" yaml:"depositor_acc"`
+		BaseReq      chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+		Amount       string             `json:"amount" yaml:"amount"`
+		DepositorAcc string             `json:"depositor_acc" yaml:"depositor_acc"`
 	}
 )
 
@@ -64,7 +63,7 @@ type (
 func withdrawDelegatorRewardsHandlerFn(cliCtx context.CLIContext, queryRoute string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req withdrawRewardsReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			return
 		}
 
@@ -72,20 +71,20 @@ func withdrawDelegatorRewardsHandlerFn(cliCtx context.CLIContext, queryRoute str
 
 		delegatorAcc, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(delegatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, delegatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		msg, err := common.WithdrawAllDelegatorRewards(cliCtx, auth, queryRoute, delegatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -98,7 +97,7 @@ func withdrawDelegationRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerF
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req withdrawRewardsReq
 
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			return
 		}
 
@@ -106,26 +105,26 @@ func withdrawDelegationRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerF
 
 		delegatorAcc, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		validatorAcc, err := chainTypes.NewAccountIDFromStr(req.ValidatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(delegatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, delegatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		msg := types.NewMsgWithdrawDelegatorReward(auth, delegatorAcc, validatorAcc)
 		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -138,7 +137,7 @@ func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.Handler
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req setWithdrawalAddrReq
 
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) { //bugs, x
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) { //bugs, x
 			return
 		}
 
@@ -146,26 +145,26 @@ func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.Handler
 
 		delegatorAcc, err := chainTypes.NewAccountIDFromStr(req.DelegatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		withdrawAcc, err := chainTypes.NewAccountIDFromStr(req.WithdrawAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(delegatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, delegatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		msg := types.NewMsgSetWithdrawAccountId(auth, delegatorAcc, withdrawAcc)
 		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -178,7 +177,7 @@ func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req withdrawRewardsReq
 
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			return
 		}
 
@@ -186,20 +185,20 @@ func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 
 		validatorAcc, err := chainTypes.NewAccountIDFromStr(req.ValidatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(validatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, validatorAcc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		msg := types.NewMsgWithdrawDelegatorReward(auth, validatorAcc, validatorAcc)
 		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -210,7 +209,7 @@ func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 func checkDelegatorAddressVar(w http.ResponseWriter, r *http.Request) (chainTypes.AccountID, bool) {
 	accID, err := chainTypes.NewAccountIDFromStr(mux.Vars(r)["delegatorAddr"])
 	if err != nil {
-		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return chainTypes.EmptyAccountID(), false
 	}
 
@@ -220,7 +219,7 @@ func checkDelegatorAddressVar(w http.ResponseWriter, r *http.Request) (chainType
 func checkValidatorAddressVar(w http.ResponseWriter, r *http.Request) (chainTypes.AccountID, bool) {
 	addr, err := chainTypes.NewAccountIDFromStr(mux.Vars(r)["validatorAddr"])
 	if err != nil {
-		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return chainTypes.EmptyAccountID(), false
 	}
 

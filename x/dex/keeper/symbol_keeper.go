@@ -72,24 +72,22 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 }
 
 // UpdateSymbol update symbol
-func (a DexKeeper) UpdateSymbol(ctx sdk.Context,
-	creator types.Name, update *types.Symbol) (err error) {
+func (a DexKeeper) UpdateSymbol(ctx sdk.Context, creator types.Name, update *types.Symbol) error {
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
-		err = errors.Wrapf(types.ErrDexNotExists,
+		return errors.Wrapf(types.ErrDexNotExists,
 			"update symbol dex %s not exists",
 			creator.String())
-		return
 	}
-	var symbol types.Symbol
-	if symbol, ok = dex.Symbol(update.Base.Creator,
-		update.Base.Code,
-		update.Quote.Creator,
-		update.Quote.Code); !ok {
-		err = errors.Wrapf(types.ErrSymbolNotExists,
+
+	symbol, ok := dex.Symbol(update.Base.Creator, update.Base.Code,
+		update.Quote.Creator, update.Quote.Code)
+
+	if !ok {
+		return errors.Wrapf(types.ErrSymbolNotExists,
 			"update symbol not exists, dex %s", creator.String())
-		return
 	}
+
 	updated := false
 	for _, pair := range []struct {
 		Dst *string
@@ -97,33 +95,35 @@ func (a DexKeeper) UpdateSymbol(ctx sdk.Context,
 	}{
 		{&symbol.Base.Name, update.Base.Name},
 		{&symbol.Base.FullName, update.Base.FullName},
-		{&symbol.Base.IconUrl, update.Base.IconUrl},
-		{&symbol.Base.TxUrl, update.Base.TxUrl},
+		{&symbol.Base.IconURL, update.Base.IconURL},
+		{&symbol.Base.TxURL, update.Base.TxURL},
 		{&symbol.Quote.Name, update.Quote.Name},
 		{&symbol.Quote.FullName, update.Quote.FullName},
-		{&symbol.Quote.IconUrl, update.Quote.IconUrl},
-		{&symbol.Quote.TxUrl, update.Quote.TxUrl},
+		{&symbol.Quote.IconURL, update.Quote.IconURL},
+		{&symbol.Quote.TxURL, update.Quote.TxURL},
 	} {
 		if 0 < len(pair.Src) && *pair.Dst != pair.Src {
 			*pair.Dst = pair.Src
 			updated = true
 		}
 	}
+
 	if !updated {
-		return
+		return nil
 	}
+
 	if !dex.UpdateSymbol(update.Base.Creator,
 		update.Base.Code,
 		update.Quote.Creator,
 		update.Quote.Code,
 		&symbol) {
-		err = errors.Wrapf(types.ErrSymbolNotExists,
+		return errors.Wrapf(types.ErrSymbolNotExists,
 			"update symbol (%s/%s) not exists",
 			update.Base.Code, update.Quote.Code)
-		return
 	}
+
 	a.setDex(ctx, dex)
-	return
+	return nil
 }
 
 // PauseSymbol pause symbol

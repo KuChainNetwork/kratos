@@ -67,7 +67,7 @@ func (sga SimGenesisAccount) Validate() error {
 	}
 
 	if sga.IsModule {
-		name, ok := sga.Id.ToName()
+		name, ok := sga.ID.ToName()
 		if !ok {
 			return errors.New("module account must be a name")
 		}

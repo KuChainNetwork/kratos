@@ -1,12 +1,13 @@
 package rest
 
 import (
+	"net/http"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func getCoinsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {

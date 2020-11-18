@@ -9,7 +9,6 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
-	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -39,17 +38,17 @@ var _ exported.ValidatorI = Validator{}
 // delegated divided by the current exchange rate. Voting power can be
 // calculated as total bonded shares multiplied by exchange rate.
 type Validator struct {
-	OperatorAccount   AccountID                `json:"operator_account" yaml:"operator_account"`
-	ConsensusPubkey   string                   `json:"consensus_pubkey,omitempty" yaml:"consensus_pubkey"`
-	Jailed            bool                     `json:"jailed,omitempty" yaml:"jailed"`
-	Status            stakingexport.BondStatus `json:"status,omitempty" yaml:"status"`
-	Tokens            sdk.Int                  `json:"tokens" yaml:"tokens"`
-	DelegatorShares   Dec                      `json:"delegator_shares" yaml:"delegator_shares"`
-	Description       Description              `json:"description" yaml:"description"`
-	UnbondingHeight   int64                    `json:"unbonding_height,omitempty" yaml:"unbonding_height"`
-	UnbondingTime     time.Time                `json:"unbonding_time" yaml:"unbonding_time"`
-	Commission        Commission               `json:"commission" yaml:"commission"`
-	MinSelfDelegation sdk.Int                  `json:"min_self_delegation" yaml:"min_self_delegation"`
+	OperatorAccount   AccountID           `json:"operator_account" yaml:"operator_account"`
+	ConsensusPubkey   string              `json:"consensus_pubkey,omitempty" yaml:"consensus_pubkey"`
+	Jailed            bool                `json:"jailed,omitempty" yaml:"jailed"`
+	Status            exported.BondStatus `json:"status,omitempty" yaml:"status"`
+	Tokens            sdk.Int             `json:"tokens" yaml:"tokens"`
+	DelegatorShares   Dec                 `json:"delegator_shares" yaml:"delegator_shares"`
+	Description       Description         `json:"description" yaml:"description"`
+	UnbondingHeight   int64               `json:"unbonding_height,omitempty" yaml:"unbonding_height"`
+	UnbondingTime     time.Time           `json:"unbonding_time" yaml:"unbonding_time"`
+	Commission        Commission          `json:"commission" yaml:"commission"`
+	MinSelfDelegation sdk.Int             `json:"min_self_delegation" yaml:"min_self_delegation"`
 }
 
 func NewValidator(operator types.AccountID, pubKey crypto.PubKey, description Description) Validator {
@@ -62,7 +61,7 @@ func NewValidator(operator types.AccountID, pubKey crypto.PubKey, description De
 		OperatorAccount:   operator,
 		ConsensusPubkey:   pkStr,
 		Jailed:            false,
-		Status:            stakingexport.Unbonded,
+		Status:            exported.Unbonded,
 		Tokens:            sdk.ZeroInt(),
 		DelegatorShares:   sdk.ZeroDec(),
 		Description:       description,
@@ -123,9 +122,7 @@ func (v Validators) Less(i, j int) bool {
 
 // Implements sort interface
 func (v Validators) Swap(i, j int) {
-	it := v[i]
-	v[i] = v[j]
-	v[j] = it
+	v[i], v[j] = v[j], v[i]
 }
 
 // return the redelegation
@@ -150,17 +147,17 @@ func UnmarshalValidator(cdc *codec.Codec, value []byte) (v Validator, err error)
 
 // IsBonded checks if the validator status equals Bonded
 func (v Validator) IsBonded() bool {
-	return v.GetStatus().Equal(stakingexport.Bonded)
+	return v.GetStatus().Equal(exported.Bonded)
 }
 
 // IsUnbonded checks if the validator status equals Unbonded
 func (v Validator) IsUnbonded() bool {
-	return v.GetStatus().Equal(stakingexport.Unbonded)
+	return v.GetStatus().Equal(exported.Unbonded)
 }
 
 // IsUnbonding checks if the validator status equals Unbonding
 func (v Validator) IsUnbonding() bool {
-	return v.GetStatus().Equal(stakingexport.Unbonding)
+	return v.GetStatus().Equal(exported.Unbonding)
 }
 
 // constant used in flags to indicate that description field should not be updated
@@ -336,12 +333,12 @@ func (v Validator) ConsensusPower() int64 {
 
 // potential consensus-engine power
 func (v Validator) PotentialConsensusPower() int64 {
-	return stakingexport.TokensToConsensusPower(v.Tokens)
+	return exported.TokensToConsensusPower(v.Tokens)
 }
 
 // UpdateStatus updates the location of the shares within a validator
 // to reflect the new status
-func (v Validator) UpdateStatus(newStatus stakingexport.BondStatus) Validator {
+func (v Validator) UpdateStatus(newStatus exported.BondStatus) Validator {
 	v.Status = newStatus
 	return v
 }
@@ -422,7 +419,7 @@ func (v Validator) MinEqual(other Validator) bool {
 // nolint - for ValidatorI
 func (v Validator) IsJailed() bool                        { return v.Jailed }
 func (v Validator) GetMoniker() string                    { return v.Description.Moniker }
-func (v Validator) GetStatus() stakingexport.BondStatus   { return v.Status }
+func (v Validator) GetStatus() exported.BondStatus        { return v.Status }
 func (v Validator) GetOperatorAccountID() types.AccountID { return v.OperatorAccount }
 func (v Validator) GetOperator() sdk.ValAddress {
 	operatorAccAddress, _ := v.OperatorAccount.ToAccAddress()

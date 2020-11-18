@@ -45,7 +45,6 @@ const (
 )
 
 var (
-	// functions aliases
 	RegisterInvariants            = keeper.RegisterInvariants
 	AllInvariants                 = keeper.AllInvariants
 	ModuleAccountInvariant        = keeper.ModuleAccountInvariant
@@ -111,18 +110,16 @@ var (
 	NewVote                       = types.NewVote
 	VoteOptionFromString          = types.VoteOptionFromString
 	ValidVoteOption               = types.ValidVoteOption
-
-	// variable aliases
-	ModuleCdc                   = types.ModuleCdc
-	ProposalsKeyPrefix          = types.ProposalsKeyPrefix
-	ActiveProposalQueuePrefix   = types.ActiveProposalQueuePrefix
-	InactiveProposalQueuePrefix = types.InactiveProposalQueuePrefix
-	ProposalIDKey               = types.ProposalIDKey
-	DepositsKeyPrefix           = types.DepositsKeyPrefix
-	VotesKeyPrefix              = types.VotesKeyPrefix
-	ParamStoreKeyDepositParams  = types.ParamStoreKeyDepositParams
-	ParamStoreKeyVotingParams   = types.ParamStoreKeyVotingParams
-	ParamStoreKeyTallyParams    = types.ParamStoreKeyTallyParams
+	ModuleCdc                     = types.ModuleCdc
+	ProposalsKeyPrefix            = types.ProposalsKeyPrefix
+	ActiveProposalQueuePrefix     = types.ActiveProposalQueuePrefix
+	InactiveProposalQueuePrefix   = types.InactiveProposalQueuePrefix
+	ProposalIDKey                 = types.ProposalIDKey
+	DepositsKeyPrefix             = types.DepositsKeyPrefix
+	VotesKeyPrefix                = types.VotesKeyPrefix
+	ParamStoreKeyDepositParams    = types.ParamStoreKeyDepositParams
+	ParamStoreKeyVotingParams     = types.ParamStoreKeyVotingParams
+	ParamStoreKeyTallyParams      = types.ParamStoreKeyTallyParams
 )
 
 type (

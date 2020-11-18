@@ -147,15 +147,18 @@ func (msg KuMsg) PrettifyJSON(cdc *codec.Codec) ([]byte, error) {
 	}
 
 	if len(msg.Data) > 0 {
-		var msgData KuMsgData = nil
+		var (
+			msgData KuMsgData = nil
+			err     error
+		)
+
 		if err := cdc.UnmarshalBinaryLengthPrefixed(msg.Data, &msgData); err != nil {
 			return []byte{}, errors.Wrapf(err, "unmarshal msg data")
 		}
 
-		if rawData, err := cdc.MarshalJSON(msgData); err != nil {
+		alias.Data, err = cdc.MarshalJSON(msgData)
+		if err != nil {
 			return []byte{}, errors.Wrapf(err, "marshal msg data error")
-		} else {
-			alias.Data = rawData
 		}
 	}
 

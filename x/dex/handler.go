@@ -97,7 +97,7 @@ func handleMsgUpdateDexDescription(ctx chainTypes.Context,
 		"desc", string(msgData.Desc))
 	ctx.RequireAccount(msgData.Creator)
 	var ok bool
-	if err, ok = keeper.UpdateDexDescription(ctx.Context(),
+	if ok, err = keeper.UpdateDexDescription(ctx.Context(),
 		msgData.Creator,
 		string(msgData.Desc)); nil != err {
 		err = errors.Wrapf(err,
@@ -193,14 +193,14 @@ func handleMsgCreateSymbol(ctx chainTypes.Context,
 			sdk.NewAttribute(types.AttributeKeySymbolBaseCode, data.Base.Code),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseName, data.Base.Name),
 			sdk.NewAttribute(types.AttributeKeySymbolBaseFullName, data.Base.FullName),
-			sdk.NewAttribute(types.AttributeKeySymbolBaseIconUrl, data.Base.IconUrl),
-			sdk.NewAttribute(types.AttributeKeySymbolBaseTxUrl, data.Base.TxUrl),
+			sdk.NewAttribute(types.AttributeKeySymbolBaseIconURL, data.Base.IconURL),
+			sdk.NewAttribute(types.AttributeKeySymbolBaseTxURL, data.Base.TxURL),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteCreator, data.Quote.Creator),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteCode, data.Quote.Code),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteName, data.Quote.Name),
 			sdk.NewAttribute(types.AttributeKeySymbolQuoteFullName, data.Quote.FullName),
-			sdk.NewAttribute(types.AttributeKeySymbolQuoteIconUrl, data.Quote.IconUrl),
-			sdk.NewAttribute(types.AttributeKeySymbolQuoteTxUrl, data.Quote.TxUrl),
+			sdk.NewAttribute(types.AttributeKeySymbolQuoteIconURL, data.Quote.IconURL),
+			sdk.NewAttribute(types.AttributeKeySymbolQuoteTxURL, data.Quote.TxURL),
 		),
 	)
 	res = &sdk.Result{Events: ctx.EventManager().Events()}
@@ -231,12 +231,12 @@ func handleMsgUpdateSymbol(ctx chainTypes.Context,
 	}{
 		{types.AttributeKeySymbolBaseName, data.Base.Name},
 		{types.AttributeKeySymbolBaseFullName, data.Base.FullName},
-		{types.AttributeKeySymbolBaseIconUrl, data.Base.IconUrl},
-		{types.AttributeKeySymbolBaseTxUrl, data.Base.TxUrl},
+		{types.AttributeKeySymbolBaseIconURL, data.Base.IconURL},
+		{types.AttributeKeySymbolBaseTxURL, data.Base.TxURL},
 		{types.AttributeKeySymbolQuoteName, data.Quote.Name},
 		{types.AttributeKeySymbolQuoteFullName, data.Quote.FullName},
-		{types.AttributeKeySymbolQuoteIconUrl, data.Quote.IconUrl},
-		{types.AttributeKeySymbolQuoteTxUrl, data.Quote.TxUrl},
+		{types.AttributeKeySymbolQuoteIconURL, data.Quote.IconURL},
+		{types.AttributeKeySymbolQuoteTxURL, data.Quote.TxURL},
 	} {
 		if 0 < len(e.Value) {
 			attributes = append(attributes, sdk.NewAttribute(e.Key, e.Value))
@@ -507,5 +507,4 @@ func handleMsgDexDeal(ctx chainTypes.Context, k Keeper, msg *types.MsgDexDeal) (
 	)
 
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-
 }

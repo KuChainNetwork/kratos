@@ -3,10 +3,9 @@ package keeper
 import (
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
-	"github.com/pkg/errors"
-
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/pkg/errors"
 )
 
 // CreateDex create a dex by creator
@@ -49,7 +48,7 @@ func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
 // UpdateDexDescription update a dex description
 func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 	creator types.Name,
-	description string) (err error, ok bool) {
+	description string) (ok bool, err error) {
 	var dex *types.Dex
 	dex, ok = a.getDex(ctx, creator)
 	if !ok {

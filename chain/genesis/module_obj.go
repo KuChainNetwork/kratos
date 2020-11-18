@@ -6,12 +6,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
-type GenesisData interface {
+type Data interface {
 	ValidateGenesis(json.RawMessage) error
 }
 
 type ModuleBasicBase struct {
-	defaultGenesis GenesisData
+	defaultGenesis Data
 	cdc            *codec.Codec
 }
 
@@ -33,7 +33,7 @@ func (g ModuleBasicBase) ValidateGenesis(bz json.RawMessage) error {
 	return g.defaultGenesis.ValidateGenesis(bz)
 }
 
-func NewModuleBasicBase(cdc *codec.Codec, defaultGenesis GenesisData) ModuleBasicBase {
+func NewModuleBasicBase(cdc *codec.Codec, defaultGenesis Data) ModuleBasicBase {
 	return ModuleBasicBase{
 		defaultGenesis: defaultGenesis,
 		cdc:            cdc,

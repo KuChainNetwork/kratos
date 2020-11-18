@@ -12,17 +12,18 @@ import (
 // SendCoinsFromModuleToAccount transfers coins from a ModuleAccount to an AccAddress.
 // It will panic if the module account does not exist.
 func (k Keeper) SendCoinsFromModuleToAccount(
-	ctx sdk.Context, senderModule string, recipient types.AccountID, amt Coins,
-) error {
+	ctx sdk.Context, senderModule string, recipient types.AccountID, amt Coins) error {
 
 	senderAcc := k.GetModuleAccount(ctx, senderModule)
 	if senderAcc == nil {
-		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", senderModule))
+		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress,
+			"module account %s does not exist", senderModule))
 	}
 
 	if err := k.bk.SendCoinPower(ctx, senderAcc.GetID(), recipient, amt); err != nil {
 		return sdkerrors.Wrapf(err,
-			"SendCoinsFromModuleToAccount %s to %s by %s", senderAcc.String(), recipient.String(), amt.String())
+			"SendCoinsFromModuleToAccount %s to %s by %s",
+			senderAcc.String(), recipient.String(), amt.String())
 	}
 
 	return nil
@@ -80,11 +81,13 @@ func (k Keeper) DelegateCoinsFromAccountToModule(
 ) error {
 	recipientAcc := k.GetModuleAccount(ctx, recipientModule)
 	if recipientAcc == nil {
-		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", recipientModule))
+		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress,
+			"module account %s does not exist", recipientModule))
 	}
 
 	if !recipientAcc.HasPermission(types.Staking) {
-		panic(sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "module account %s does not have permissions to receive delegated coins", recipientModule))
+		panic(sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+			"module account %s does not have permissions to receive delegated coins", recipientModule))
 	}
 
 	// Delegate will first send coins to ModuleAccountID
@@ -126,11 +129,13 @@ func (k Keeper) UndelegateCoinsFromModuleToAccount(
 func (k Keeper) MintCoins(ctx sdk.Context, moduleName string, amt *Coins) error {
 	acc := k.GetModuleAccount(ctx, moduleName)
 	if acc == nil {
-		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", moduleName))
+		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress,
+			"module account %s does not exist", moduleName))
 	}
 
 	if !acc.HasPermission(types.Minter) {
-		panic(sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "module account %s does not have permissions to mint tokens", moduleName))
+		panic(sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+			"module account %s does not have permissions to mint tokens", moduleName))
 	}
 
 	_, err := k.bk.IssueCoinPower(ctx, acc.GetID(), *amt)
@@ -148,11 +153,13 @@ func (k Keeper) MintCoins(ctx sdk.Context, moduleName string, amt *Coins) error 
 func (k Keeper) BurnCoins(ctx sdk.Context, moduleName types.AccountID, amt Coins) error {
 	acc := k.GetModuleAccount(ctx, moduleName.String())
 	if acc == nil {
-		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", moduleName))
+		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress,
+			"module account %s does not exist", moduleName))
 	}
 
 	if !acc.HasPermission(types.Burner) {
-		panic(sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "module account %s does not have permissions to burn tokens", moduleName))
+		panic(sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+			"module account %s does not have permissions to burn tokens", moduleName))
 	}
 
 	err := k.SendCoinsFromModuleToModule(ctx, moduleName.String(), types.BlackHole, amt)

@@ -6,13 +6,13 @@ import (
 )
 
 // SpendableCoins return account spendable coins
-func (a AssetKeeper) SpendableCoins(ctx sdk.Context, ID types.AccountID) Coins {
-	res, err := a.getCoins(ctx, ID)
+func (a AssetKeeper) SpendableCoins(ctx sdk.Context, id types.AccountID) Coins {
+	res, err := a.getCoins(ctx, id)
 	if err != nil {
 		return Coins{}
 	}
 
-	lockeds, err := a.getCoinsLocked(ctx, ID)
+	lockeds, err := a.getCoinsLocked(ctx, id)
 	if err != nil || lockeds == nil {
 		return res
 	}

@@ -7,7 +7,6 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/multisig"
@@ -47,11 +46,11 @@ func (tx StdTx) ValidateBasic() error {
 	stdSigs := tx.GetSignatures()
 
 	if tx.Fee.Gas > maxGasWanted {
-		return errors.Wrapf(ErrGasOverflow, "%d > %d", tx.Fee.Gas, maxGasWanted)
+		return sdkerrors.Wrapf(ErrGasOverflow, "%d > %d", tx.Fee.Gas, maxGasWanted)
 	}
 
 	if tx.Fee.Amount.IsAnyNegative() {
-		return errors.Wrapf(ErrInsufficientFee, "%s amount provided", tx.Fee.Amount)
+		return sdkerrors.Wrapf(ErrInsufficientFee, "%s amount provided", tx.Fee.Amount)
 	}
 
 	if len(stdSigs) == 0 {
@@ -162,8 +161,6 @@ func (tx StdTx) FeePayer() AccountID {
 	return NewAccountIDFromAccAdd(sdk.AccAddress{})
 }
 
-//__________________________________________________________
-
 // StdFee includes the amount of coins paid in fees and the maximum
 // gas to be used by the transaction. The ratio yields an effective "gasprice",
 // which must be above some miminum to be accepted into the mempool.
@@ -206,8 +203,6 @@ func (fee StdFee) Bytes() []byte {
 func (fee StdFee) GasPrices() DecCoins {
 	return NewDecCoinsFromCoins(fee.Amount...).QuoDec(NewDec(int64(fee.Gas)))
 }
-
-//__________________________________________________________
 
 // StdSignDoc is replay-prevention structure.
 // It includes the result of msg.GetSignBytes(),
@@ -255,14 +250,14 @@ func DefaultTxDecoder(cdc *codec.Codec) sdk.TxDecoder {
 		var tx = StdTx{}
 
 		if len(txBytes) == 0 {
-			return nil, errors.Wrap(ErrTxDecode, "txBytes are empty")
+			return nil, sdkerrors.Wrap(ErrTxDecode, "txBytes are empty")
 		}
 
 		// StdTx.Msg is an interface. The concrete types
 		// are registered by MakeTxCodec
 		err := cdc.UnmarshalBinaryLengthPrefixed(txBytes, &tx)
 		if err != nil {
-			return nil, errors.Wrap(err, "error decoding transaction")
+			return nil, sdkerrors.Wrap(err, "error decoding transaction")
 		}
 
 		return tx, nil

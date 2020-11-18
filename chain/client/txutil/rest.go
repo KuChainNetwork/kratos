@@ -4,21 +4,21 @@ import (
 	"log"
 	"net/http"
 
-	rest "github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // WriteGenerateStdTxResponse writes response for the generate only mode.
-func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br rest.BaseReq, msgs []sdk.Msg) {
-	gasAdj, ok := rest.ParseFloat64OrReturnBadRequest(w, br.GasAdjustment, flags.DefaultGasAdjustment)
+func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br types.BaseReq, msgs []sdk.Msg) {
+	gasAdj, ok := types.ParseFloat64OrReturnBadRequest(w, br.GasAdjustment, flags.DefaultGasAdjustment)
 	if !ok {
 		return
 	}
 
 	simAndExec, gas, err := flags.ParseGas(br.Gas)
 	if err != nil {
-		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		types.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -31,31 +31,31 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br r
 
 	if br.Simulate || simAndExec {
 		if gasAdj < 0 {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, errInvalidGasAdjustment.Error())
+			types.WriteErrorResponse(w, http.StatusBadRequest, errInvalidGasAdjustment.Error())
 			return
 		}
 
 		txBldr, err = EnrichWithGas(txBldr, cliCtx, msgs)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			types.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		if br.Simulate {
-			rest.WriteSimulationResponse(w, cliCtx.Codec, txBldr.Gas())
+			types.WriteSimulationResponse(w, cliCtx.Codec, txBldr.Gas())
 			return
 		}
 	}
 
 	stdMsg, err := txBldr.BuildSignMsg(msgs)
 	if err != nil {
-		rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		types.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	output, err := cliCtx.Codec.MarshalJSON(NewStdTx(stdMsg.Msg, stdMsg.Fee, nil, stdMsg.Memo))
 	if err != nil {
-		rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		types.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -63,5 +63,4 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br r
 	if _, err := w.Write(output); err != nil {
 		log.Printf("could not write response: %v", err)
 	}
-
 }

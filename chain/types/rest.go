@@ -62,9 +62,7 @@ type BaseReq struct {
 // NewBaseReq creates a new basic request instance and sanitizes its values
 func NewBaseReq(
 	from, memo, chainID string, gas, gasAdjustment string, accNumber, seq uint64,
-	fees Coins, gasPrices DecCoins, simulate bool, payer string,
-) BaseReq {
-
+	fees Coins, gasPrices DecCoins, simulate bool, payer string) BaseReq {
 	return BaseReq{
 		From:          strings.TrimSpace(from),
 		Memo:          strings.TrimSpace(memo),

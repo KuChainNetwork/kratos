@@ -15,7 +15,6 @@ const (
 )
 
 func NewLoggerByZap(isTrace bool, logLevelStr string) tmlog.Logger {
-
 	zapLogger := NewZapLogger(viper.GetBool(cli.TraceFlag))
 
 	// warp zap log to logger, it will add caller skip 1

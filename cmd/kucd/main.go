@@ -17,7 +17,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	//"github.com/KuChainNetwork/kuchain/x/staking"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -27,7 +26,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/KuChainNetwork/kuchain/app"
-	"github.com/KuChainNetwork/kuchain/chain/config"
 	chainCfg "github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types"
@@ -105,7 +103,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if err != nil {
 		panic(err)
 	}
-	config.SetFeePriceMiniLimit(miniGasPriceCoins)
+	chainCfg.SetFeePriceMiniLimit(miniGasPriceCoins)
 
 	pruningOpts, err := server.GetPruningOptionsFromFlags()
 	if err != nil {
@@ -122,9 +120,9 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 }
 
 func exportAppStateAndTMValidators(
-	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
-) (json.RawMessage, []tmtypes.GenesisValidator, error) {
-
+	logger log.Logger, db dbm.DB,
+	traceStore io.Writer, height int64,
+	forZeroHeight bool, jailWhiteList []string) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 	if height != -1 {
 		kuApp := app.NewKuchainApp(logger, db, traceStore, false, uint(1))
 		err := kuApp.LoadHeight(height)

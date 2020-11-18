@@ -18,7 +18,6 @@ const (
 )
 
 var (
-	// functions aliases
 	NewKeeper            = keeper.NewKeeper
 	NewQuerier           = keeper.NewQuerier
 	NewGenesisState      = types.NewGenesisState
@@ -32,7 +31,6 @@ var (
 	NewParams            = types.NewParams
 	DefaultParams        = types.DefaultParams
 
-	// variable aliases
 	ModuleCdc              = types.ModuleCdc
 	MinterKey              = types.MinterKey
 	KeyMintDenom           = types.KeyMintDenom

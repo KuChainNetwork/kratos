@@ -67,8 +67,6 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	return cli.GetQueryCmd(cdc)
 }
 
-//____________________________________________________________________________
-
 // AppModule implements an application module for the asset module.
 type AppModule struct {
 	AppModuleBasic
@@ -119,7 +117,6 @@ func (am AppModule) NewQuerierHandler() sdk.Querier {
 
 // InitGenesis performs genesis initialization for the asset module. It returns no validator updates.
 func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
-
 	// check if the module account exists
 	ctx.Logger().Info("genesis module account", "name", types.ModuleName)
 	if err := am.supplyKeeper.InitModuleAccount(ctx, types.ModuleName); err != nil {
@@ -143,8 +140,6 @@ func (AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
 func (AppModule) EndBlock(ctx sdk.Context, req abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return EndBlocker(ctx, req)
 }
-
-//____________________________________________________________________________
 
 // AppModuleSimulation functions
 

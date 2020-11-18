@@ -53,8 +53,8 @@ func NewGenesisAccounts(rootAuth types.AccAddress, accounts ...SimGenesisAccount
 	accountNumber++
 
 	for _, a := range accounts {
-		res.accounts = append(res.accounts, NewGenesisAccount(a.Id, a.GetAuth(), accountNumber))
-		res.assets = append(res.assets, assetTypes.NewGenesisAsset(a.Id, a.Assets...))
+		res.accounts = append(res.accounts, NewGenesisAccount(a.ID, a.GetAuth(), accountNumber))
+		res.assets = append(res.assets, assetTypes.NewGenesisAsset(a.ID, a.Assets...))
 
 		for _, as := range a.Assets {
 			coins2genesis[as.Denom] = as

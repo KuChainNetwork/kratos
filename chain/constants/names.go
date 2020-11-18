@@ -7,6 +7,10 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 )
 
+const (
+	CommonAccountNameLen = 12
+)
+
 var (
 	ChainNameStr      = keys.ChainNameStr
 	ChainMainNameStr  = keys.ChainMainNameStr

@@ -21,7 +21,7 @@ type AccountRetriever struct {
 	querier NodeQuerier
 }
 
-// NewAccountRetriever initialises a new AccountRetriever instance.
+// NewAccountRetriever initializes a new AccountRetriever instance.
 func NewAccountRetriever(querier NodeQuerier) AccountRetriever {
 	return AccountRetriever{querier: querier}
 }

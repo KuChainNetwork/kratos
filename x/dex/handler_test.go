@@ -347,8 +347,8 @@ func TestHandleCreateSymbol(t *testing.T) {
 					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
@@ -357,8 +357,8 @@ func TestHandleCreateSymbol(t *testing.T) {
 					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -448,7 +448,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 
 		invalidSymbol = symbol
 		invalidSymbol.Base.Code = "coin1"
-		invalidSymbol.Base.TxUrl = ""
+		invalidSymbol.Base.TxURL = ""
 		invalidSymbol.Quote.Code = "coin3"
 		So(dexTypes.NewMsgCreateSymbol(auth,
 			accName,
@@ -489,8 +489,8 @@ func TestHandleUpdateSymbol(t *testing.T) {
 					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
@@ -499,8 +499,8 @@ func TestHandleUpdateSymbol(t *testing.T) {
 					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -533,8 +533,8 @@ func TestHandleUpdateSymbol(t *testing.T) {
 		So(savedSymbol.Equal(symbol), ShouldBeTrue)
 
 		copiedSymbol := *symbol
-		copiedSymbol.Base.IconUrl = "base.icon.url"
-		copiedSymbol.Quote.IconUrl = "quote.icon.url"
+		copiedSymbol.Base.IconURL = "base.icon.url"
+		copiedSymbol.Quote.IconURL = "quote.icon.url"
 		msgUpdateSymbol := dexTypes.NewMsgUpdateSymbol(auth,
 			accName,
 			&copiedSymbol.Base,
@@ -624,8 +624,8 @@ func TestHandlePauseSymbol(t *testing.T) {
 					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
@@ -634,8 +634,8 @@ func TestHandlePauseSymbol(t *testing.T) {
 					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -758,8 +758,8 @@ func TestHandleRestoreSymbol(t *testing.T) {
 					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
@@ -768,8 +768,8 @@ func TestHandleRestoreSymbol(t *testing.T) {
 					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -922,8 +922,8 @@ func TestShutdownSymbol(t *testing.T) {
 					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
@@ -932,8 +932,8 @@ func TestShutdownSymbol(t *testing.T) {
 					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),

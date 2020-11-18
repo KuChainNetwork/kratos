@@ -37,7 +37,7 @@ const (
 )
 
 var (
-	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
+	// Bech32MainPrefix defines the Bech32 prefix of an account's address
 	Bech32MainPrefix = keys.ChainMainNameStr
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address

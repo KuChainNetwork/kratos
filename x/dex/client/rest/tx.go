@@ -10,66 +10,65 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
-	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type CreateDexReq struct {
-	BaseReq     rest.BaseReq `yaml:"base_req" json:"base_req"`
-	Creator     string       `yaml:"creator" json:"creator"`
-	Stakings    string       `yaml:"stakings" json:"stakings"`
-	Description string       `yaml:"description" json:"description"`
+	BaseReq     chainTypes.BaseReq `yaml:"base_req" json:"base_req"`
+	Creator     string             `yaml:"creator" json:"creator"`
+	Stakings    string             `yaml:"stakings" json:"stakings"`
+	Description string             `yaml:"description" json:"description"`
 }
 
 type DestroyDexReq struct {
-	BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
-	Creator string       `json:"creator" yml:"creator"`
+	BaseReq chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+	Creator string             `json:"creator" yml:"creator"`
 }
 
 type CreateSymbolReq struct {
-	BaseReq rest.BaseReq        `json:"base_req" yaml:"base_req"`
+	BaseReq chainTypes.BaseReq  `json:"base_req" yaml:"base_req"`
 	Creator string              `json:"creator" yaml:"creator"`
 	Base    types.BaseCurrency  `json:"base" yaml:"base"`
 	Quote   types.QuoteCurrency `json:"quote" yaml:"quote"`
 }
 
 type UpdateSymbolReq struct {
-	BaseReq rest.BaseReq        `json:"base_req" yaml:"base_req"`
+	BaseReq chainTypes.BaseReq  `json:"base_req" yaml:"base_req"`
 	Creator string              `json:"creator" yaml:"creator"`
 	Base    types.BaseCurrency  `json:"base" yaml:"base"`
 	Quote   types.QuoteCurrency `json:"quote" yaml:"quote"`
 }
 
 type ShutdownSymbolReq struct {
-	BaseReq      rest.BaseReq `json:"base_req" yaml:"base_req"`
-	Creator      string       `json:"creator" yaml:"creator"`
-	BaseCreator  string       `json:"base_creator" yaml:"base_creator"`
-	BaseCode     string       `json:"base_code" yaml:"base_code"`
-	QuoteCreator string       `json:"quote_creator" yaml:"quote_creator"`
-	QuoteCode    string       `json:"quote_code" yaml:"quote_code"`
+	BaseReq      chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+	Creator      string             `json:"creator" yaml:"creator"`
+	BaseCreator  string             `json:"base_creator" yaml:"base_creator"`
+	BaseCode     string             `json:"base_code" yaml:"base_code"`
+	QuoteCreator string             `json:"quote_creator" yaml:"quote_creator"`
+	QuoteCode    string             `json:"quote_code" yaml:"quote_code"`
 }
 
 type UpdateDexReq struct {
-	BaseReq     rest.BaseReq `json:"base_req" yaml:"base_req"`
-	Creator     string       `json:"creator" yaml:"creator"`
-	Description string       `json:"description" yaml:"description"`
+	BaseReq     chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+	Creator     string             `json:"creator" yaml:"creator"`
+	Description string             `json:"description" yaml:"description"`
 }
 
 type SigInReq struct {
-	BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
-	Account string       `json:"account" yaml:"account"`
-	Dex     string       `json:"dex" yaml:"dex"`
-	Amount  string       `json:"amount" yaml:"amount"`
+	BaseReq chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+	Account string             `json:"account" yaml:"account"`
+	Dex     string             `json:"dex" yaml:"dex"`
+	Amount  string             `json:"amount" yaml:"amount"`
 }
 
 type SigOutReq struct {
-	BaseReq   rest.BaseReq `json:"base_req" yaml:"base_req"`
-	Account   string       `json:"account" yaml:"account"`
-	Dex       string       `json:"dex" yaml:"dex"`
-	Amount    string       `json:"amount" yaml:"amount"`
-	IsTimeout bool         `json:"is_timeout" yaml:"is_timeout"`
+	BaseReq   chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+	Account   string             `json:"account" yaml:"account"`
+	Dex       string             `json:"dex" yaml:"dex"`
+	Amount    string             `json:"amount" yaml:"amount"`
+	IsTimeout bool               `json:"is_timeout" yaml:"is_timeout"`
 }
 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
@@ -120,7 +119,7 @@ func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, statusCode, err.Error())
+				chainTypes.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 
@@ -176,7 +175,7 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, statusCode, err.Error())
+				chainTypes.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 
@@ -222,7 +221,7 @@ func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, statusCode, err.Error())
+				chainTypes.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 		var body []byte
@@ -269,7 +268,7 @@ func updateSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, statusCode, err.Error())
+				chainTypes.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 		var body []byte
@@ -316,7 +315,7 @@ func pauseSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, statusCode, err.Error())
+				chainTypes.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 		var body []byte
@@ -365,7 +364,7 @@ func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, statusCode, err.Error())
+				chainTypes.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 		var body []byte
@@ -414,7 +413,7 @@ func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, statusCode, err.Error())
+				chainTypes.WriteErrorResponse(w, statusCode, err.Error())
 			}
 		}()
 		var body []byte
@@ -462,10 +461,10 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-
+				chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			}
 		}()
+
 		var body []byte
 		if body, err = ioutil.ReadAll(r.Body); nil != err {
 			return
@@ -475,11 +474,13 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
 			return
 		}
+
 		if types.MaxDexDescriptorLen < len(req.Description) {
 			err = types.ErrDexDescTooLong
 
 			return
 		}
+
 		req.BaseReq = req.BaseReq.Sanitize()
 		var name chainTypes.Name
 		if name, err = chainTypes.NewName(req.Creator); nil != err {
@@ -509,7 +510,7 @@ func sigInHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			}
 		}()
 
@@ -562,7 +563,7 @@ func sigOutHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var err error
 		defer func() {
 			if nil != err {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			}
 		}()
 

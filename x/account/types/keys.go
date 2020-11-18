@@ -22,7 +22,7 @@ var (
 	// AuthSeqStoreKeyPerfix seq num store prefix
 	AuthSeqStoreKeyPerfix = []byte{0x0B}
 
-	// Auth - Accounts store prefix
+	// AuthAccountsStoreKeyPerfix - Accounts store prefix
 	AuthAccountsStoreKeyPerfix = []byte{0x0C}
 
 	// GlobalAccountNumberKey param key for global account number

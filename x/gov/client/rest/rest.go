@@ -44,7 +44,7 @@ type PostProposalReq struct {
 
 // DepositReq defines the properties of a deposit request's body.
 type DepositReq struct {
-	ProposalId string       `json:"proposal_id" yaml:"proposal_id"`
+	ProposalID string       `json:"proposal_id" yaml:"proposal_id"`
 	BaseReq    rest.BaseReq `json:"base_req" yaml:"base_req"`
 	Depositor  string       `json:"depositor" yaml:"depositor"` // Address of the depositor
 	Amount     string       `json:"amount" yaml:"amount"`       // Coins to add to the proposal's deposit
@@ -52,7 +52,7 @@ type DepositReq struct {
 
 // VoteReq defines the properties of a vote request's body.
 type VoteReq struct {
-	ProposalId string       `json:"proposal_id" yaml:"proposal_id"`
+	ProposalID string       `json:"proposal_id" yaml:"proposal_id"`
 	BaseReq    rest.BaseReq `json:"base_req" yaml:"base_req"`
 	Voter      string       `json:"voter" yaml:"voter"`
 	Option     string       `json:"option" yaml:"option"`

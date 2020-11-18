@@ -9,6 +9,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// nolint: golint
+
 // ----------------------------------------------------------------------------
 // Decimal Coin
 
@@ -18,11 +20,11 @@ type DecCoin struct {
 	Amount Dec    `json:"amount"`
 }
 
-func (d DecCoin) ToSDK() sdk.DecCoin {
+func (coin DecCoin) ToSDK() sdk.DecCoin {
 	return sdk.DecCoin{
-		Denom: d.Denom,
+		Denom: coin.Denom,
 		Amount: sdk.Dec{
-			d.Amount.Int,
+			Int: coin.Amount.Int,
 		},
 	}
 }
@@ -167,9 +169,9 @@ func (coin DecCoin) IsValid() bool {
 // DecCoins defines a slice of coins with decimal values
 type DecCoins []DecCoin
 
-func (ds DecCoins) ToSDK() sdk.DecCoins {
-	res := make([]sdk.DecCoin, 0, len(ds))
-	for _, d := range ds {
+func (coins DecCoins) ToSDK() sdk.DecCoins {
+	res := make([]sdk.DecCoin, 0, len(coins))
+	for _, d := range coins {
 		res = append(res, d.ToSDK())
 	}
 	return res
