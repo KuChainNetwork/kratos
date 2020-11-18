@@ -30,11 +30,12 @@ jobs:
     - name: golangci-lint
       uses: golangci/golangci-lint-action@v2
       with:
+        fail_ci_if_error: false
         version: v1.29
 
     - name: codecov-umbrella
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: true
+        fail_ci_if_error: false
         verbose: true
