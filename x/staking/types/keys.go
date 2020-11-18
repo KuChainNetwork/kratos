@@ -136,8 +136,6 @@ func GetValidatorQueueTimeKey(timestamp time.Time) []byte {
 	return append(ValidatorQueueKey, bz...)
 }
 
-//______________________________________________________________________________
-
 // gets the key for delegator bond with validator
 // VALUE: staking/Delegation
 func GetDelegationKey(delAddr AccountID, valAddr AccountID) []byte {
@@ -148,8 +146,6 @@ func GetDelegationKey(delAddr AccountID, valAddr AccountID) []byte {
 func GetDelegationsKey(delAddr AccountID) []byte {
 	return append(DelegationKey, delAddr.StoreKey()...)
 }
-
-//______________________________________________________________________________
 
 // gets the key for an unbonding delegation by delegator and validator addr
 // VALUE: staking/UnbondingDelegation

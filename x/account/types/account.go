@@ -16,7 +16,7 @@ var (
 
 // KuAccount defines a account for kuchain
 type KuAccount struct {
-	Id            AccountID     `json:"id" yaml:"id"`
+	ID            AccountID     `json:"id" yaml:"id"`
 	AccountNumber uint64        `json:"account_number,omitempty" yaml:"account_number"`
 	Auths         []AccountAuth `json:"auths" yaml:"auths"`
 }
@@ -24,7 +24,7 @@ type KuAccount struct {
 // NewKuAccount new KuAccount by name
 func NewKuAccount(id types.AccountID) *KuAccount {
 	acc := &KuAccount{
-		Id: id,
+		ID: id,
 	}
 
 	return acc
@@ -37,7 +37,7 @@ func NewProtoKuAccount() exported.Account {
 
 // GetName - implements exported.Account
 func (m KuAccount) GetName() types.Name {
-	if n, ok := m.Id.ToName(); ok {
+	if n, ok := m.ID.ToName(); ok {
 		return n
 	}
 	return types.Name{}
@@ -45,30 +45,30 @@ func (m KuAccount) GetName() types.Name {
 
 // SetName - implements exported.Account
 func (m *KuAccount) SetName(n types.Name) error {
-	m.Id = types.NewAccountIDFromName(n)
+	m.ID = types.NewAccountIDFromName(n)
 	return nil
 }
 
 // GetID - implements exported.Account
 func (m KuAccount) GetID() types.AccountID {
-	return m.Id
+	return m.ID
 }
 
 // SetID - implements exported.Account
 func (m *KuAccount) SetID(id types.AccountID) error {
-	m.Id = id
+	m.ID = id
 	return nil
 }
 
 // GetAuth - implements exported.Account
 func (m KuAccount) GetAuth() types.AccAddress {
 	// if KuAccount ID is just a account address, directly return
-	if accAddress, ok := m.Id.ToAccAddress(); ok {
+	if accAddress, ok := m.ID.ToAccAddress(); ok {
 		return accAddress
 	}
 
 	if len(m.Auths) == 0 {
-		panic(sdkerrors.Wrapf(types.ErrMissingAuth, "no auth for account %s", m.Id))
+		panic(sdkerrors.Wrapf(types.ErrMissingAuth, "no auth for account %s", m.ID))
 	}
 
 	return m.Auths[0].Address
@@ -111,11 +111,11 @@ func (m KuAccount) String() string {
 
 func (m *KuAccount) makeStr(marFunc func(in interface{}) (out []byte, err error)) ([]byte, error) {
 	alias := struct {
-		Id            string        `json:"id" yaml:"id"`
+		ID            string        `json:"id" yaml:"id"`
 		Auths         []AccountAuth `json:"auths" yaml:"auths"`
 		AccountNumber uint64        `json:"account_number" yaml:"account_number"`
 	}{
-		Id:            m.Id.String(),
+		ID:            m.ID.String(),
 		Auths:         m.Auths,
 		AccountNumber: m.AccountNumber,
 	}

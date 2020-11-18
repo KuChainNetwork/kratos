@@ -87,7 +87,7 @@ func QueryTxCmd(cdc *codec.Codec) *cobra.Command {
 				return fmt.Errorf("no transaction found with hash %s", args[0])
 			}
 
-			return utils.PrintOutput(cliCtx, TxResponse(output))
+			return utils.PrintOutput(cliCtx, output)
 		},
 	}
 

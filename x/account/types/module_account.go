@@ -95,11 +95,6 @@ func (ma ModuleAccount) Validate() error {
 		return errors.New("module account name cannot be blank")
 	}
 
-	// TODO: Account Address
-	//if !ma.Address.Equals(sdk.AccAddress(crypto.AddressHash([]byte(ma.Name)))) {
-	//	return fmt.Errorf("address %s cannot be derived from the module name '%s'", ma.Address, ma.Name)
-	//}
-
 	return ma.KuAccount.Validate()
 }
 
@@ -127,7 +122,7 @@ func (ma ModuleAccount) MarshalYAML() (interface{}, error) {
 		Address:       add,
 		PubKey:        "",
 		AccountNumber: ma.AccountNumber,
-		Name:          ma.Id.String(),
+		Name:          ma.ID.String(),
 		Permissions:   ma.Permissions,
 	})
 
@@ -148,7 +143,7 @@ func (ma ModuleAccount) MarshalJSON() ([]byte, error) {
 		Address:       add,
 		PubKey:        "",
 		AccountNumber: ma.AccountNumber,
-		Name:          ma.Id.String(),
+		Name:          ma.ID.String(),
 		Permissions:   ma.Permissions,
 	})
 }

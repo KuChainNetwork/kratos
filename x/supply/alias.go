@@ -21,7 +21,6 @@ const (
 )
 
 var (
-	// functions aliases
 	RegisterInvariants    = keeper.RegisterInvariants
 	AllInvariants         = keeper.AllInvariants
 	TotalSupply           = keeper.TotalSupply
@@ -35,9 +34,7 @@ var (
 	DefaultGenesisState   = types.DefaultGenesisState
 	NewSupply             = types.NewSupply
 	DefaultSupply         = types.DefaultSupply
-
-	// variable aliases
-	ModuleCdc = types.ModuleCdc
+	ModuleCdc             = types.ModuleCdc
 )
 
 type (

@@ -12,6 +12,5 @@ type (
 type (
 	TraceContext = store.TraceContext
 	CacheWrap    = store.CacheWrap
-	StoreType    = store.StoreType
 	Iterator     = store.Iterator
 )

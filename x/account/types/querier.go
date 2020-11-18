@@ -14,12 +14,12 @@ const (
 
 // QueryAccountParams defines the params for querying accounts.
 type QueryAccountParams struct {
-	Id chainTypes.AccountID
+	ID chainTypes.AccountID
 }
 
 // NewQueryAccountParams creates a new instance of QueryAccountParams.
 func NewQueryAccountParams(id chainTypes.AccountID) QueryAccountParams {
-	return QueryAccountParams{Id: id}
+	return QueryAccountParams{ID: id}
 }
 
 // QueryAuthSeqParams defines the params for querying accounts.

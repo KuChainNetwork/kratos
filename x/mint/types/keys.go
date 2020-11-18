@@ -1,14 +1,14 @@
 package types
 
-// the one key to use for the keeper store
+// MinterKey the one key to use for the keeper store
 var MinterKey = []byte{0x00}
 
 // nolint
 const (
-	// module name
+	// ModuleName module name
 	ModuleName = "mint"
 
-	// default paramspace for params keeper
+	// DefaultParamspace default paramspace for params keeper
 	DefaultParamspace = ModuleName
 
 	// StoreKey is the default store key for mint
@@ -18,6 +18,7 @@ const (
 	QuerierRoute = StoreKey
 
 	// Query endpoints supported by the minting querier
+
 	QueryParameters       = "parameters"
 	QueryInflation        = "inflation"
 	QueryAnnualProvisions = "annual_provisions"

@@ -10,7 +10,7 @@ import (
 // Handler defines the core of the state transition function of an application.
 type Handler func(ctx Context, msg sdk.Msg) (*sdk.Result, error)
 
-func WarpHandler(transfer AssetTransfer, auther AccountAuther, h Handler) sdk.Handler {
+func WarpHandler(transfer AssetTransfer, author AccountAuther, h Handler) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -19,13 +19,13 @@ func WarpHandler(transfer AssetTransfer, auther AccountAuther, h Handler) sdk.Ha
 			}
 		}()
 
-		kuCtx := NewKuMsgCtx(ctx.WithEventManager(sdk.NewEventManager()), auther, msg)
+		kuCtx := NewKuMsgCtx(ctx.WithEventManager(sdk.NewEventManager()), author, msg)
 		kuCtx = kuCtx.WithAuths(msg.GetSigners())
 
 		kuMsg, ok := msg.(KuTransfMsg)
 
 		if ok {
-			if err := onHandlerKuMsg(kuCtx, transfer, auther, kuMsg); err != nil {
+			if err := onHandlerKuMsg(kuCtx, transfer, author, kuMsg); err != nil {
 				return nil, err
 			}
 		}
@@ -45,13 +45,13 @@ func WarpHandler(transfer AssetTransfer, auther AccountAuther, h Handler) sdk.Ha
 	}
 }
 
-func getAuthByAccountID(ctx Context, auther AccountAuther, id AccountID) (AccAddress, error) {
+func getAuthByAccountID(ctx Context, author AccountAuther, id AccountID) (AccAddress, error) {
 	if add, ok := id.ToAccAddress(); ok {
 		return add, nil
 	}
 
 	if name, ok := id.ToName(); ok {
-		authByAccount, err := auther.GetAuth(ctx.Context(), name)
+		authByAccount, err := author.GetAuth(ctx.Context(), name)
 		if err != nil {
 			return nil, err
 		}
@@ -62,8 +62,8 @@ func getAuthByAccountID(ctx Context, auther AccountAuther, id AccountID) (AccAdd
 	return nil, types.ErrMissingAuth
 }
 
-func checkTransferAuth(ctx Context, transfer AssetTransfer, auther AccountAuther, msg types.KuMsgTransfer) (bool, error) {
-	fromAuth, err := getAuthByAccountID(ctx, auther, msg.From)
+func checkTransferAuth(ctx Context, transfer AssetTransfer, author AccountAuther, msg types.KuMsgTransfer) (bool, error) {
+	fromAuth, err := getAuthByAccountID(ctx, author, msg.From)
 	if err != nil {
 		// no found from auth, there must be a error, even no need from auth
 		return false, sdkerrors.Wrapf(err, "get from auth error")
@@ -75,7 +75,7 @@ func checkTransferAuth(ctx Context, transfer AssetTransfer, auther AccountAuther
 	}
 
 	// if is from has approve to with amt
-	toAuth, err := getAuthByAccountID(ctx, auther, msg.To)
+	toAuth, err := getAuthByAccountID(ctx, author, msg.To)
 	if err != nil {
 		// no found to auth, there must be a error, even no need to auth
 		// that means account can not approve to module account
@@ -93,7 +93,7 @@ func checkTransferAuth(ctx Context, transfer AssetTransfer, auther AccountAuther
 }
 
 // onHandlerKuMsg handler Ku msg for transfer
-func onHandlerKuMsg(ctx Context, k AssetTransfer, auther AccountAuther, msg KuTransfMsg) error {
+func onHandlerKuMsg(ctx Context, k AssetTransfer, author AccountAuther, msg KuTransfMsg) error {
 	transfers := msg.GetTransfers()
 
 	for _, t := range transfers {
@@ -110,7 +110,7 @@ func onHandlerKuMsg(ctx Context, k AssetTransfer, auther AccountAuther, msg KuTr
 			return err
 		}
 
-		isApplyApprove, err := checkTransferAuth(ctx, k, auther, t)
+		isApplyApprove, err := checkTransferAuth(ctx, k, author, t)
 		if err != nil {
 			return err
 		}

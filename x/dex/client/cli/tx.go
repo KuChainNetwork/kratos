@@ -154,10 +154,10 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 // CreateSymbol returns a create symbol command
 func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create_symbol [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
-			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url]",
+		Use: "create_symbol [creator] [base_creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
+			" [quote_creator] [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [quote_tx_url]",
 		Short: "Create dex symbol",
-		Args:  cobra.ExactArgs(11),
+		Args:  cobra.ExactArgs(13),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
@@ -168,27 +168,31 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			baseCode,
+			baseCreator,
+				baseCode,
 				baseName,
 				baseFullName,
-				baseIconUrl,
-				baseTxUrl,
+				baseIconURL,
+				baseTxURL,
+				quoteCreator,
 				quoteCode,
 				quoteName,
 				quoteFullName,
-				quoteIconUrl,
-				quoteTxUrl := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
+				quoteIconURL,
+				quoteTxURL := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12]
 
-			if 0 >= len(baseCode) ||
+			if 0 >= len(baseCreator) ||
+				0 >= len(baseCode) ||
 				0 >= len(baseName) ||
 				0 >= len(baseFullName) ||
-				0 >= len(baseIconUrl) ||
-				0 >= len(baseTxUrl) ||
+				0 >= len(quoteCreator) ||
+				0 >= len(baseIconURL) ||
+				0 >= len(baseTxURL) ||
 				0 >= len(quoteCode) ||
 				0 >= len(quoteName) ||
 				0 >= len(quoteFullName) ||
-				0 >= len(quoteIconUrl) ||
-				0 >= len(quoteTxUrl) {
+				0 >= len(quoteIconURL) ||
+				0 >= len(quoteTxURL) {
 				err = errors.Errorf("all update failed are empty")
 				return
 			}
@@ -206,20 +210,22 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 					creator,
 					&types.BaseCurrency{
 						CurrencyBase: types.CurrencyBase{
+							Creator:  baseCreator,
 							Code:     baseCode,
 							Name:     baseName,
 							FullName: baseFullName,
-							IconUrl:  baseIconUrl,
-							TxUrl:    baseTxUrl,
+							IconURL:  baseIconURL,
+							TxURL:    baseTxURL,
 						},
 					},
 					&types.QuoteCurrency{
 						CurrencyBase: types.CurrencyBase{
+							Creator:  quoteCreator,
 							Code:     quoteCode,
 							Name:     quoteName,
 							FullName: quoteFullName,
-							IconUrl:  quoteIconUrl,
-							TxUrl:    quoteTxUrl,
+							IconURL:  quoteIconURL,
+							TxURL:    quoteTxURL,
 						},
 					},
 					time.Time{}, // use server time
@@ -235,10 +241,10 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 // UpdateSymbol returns a update symbol command
 func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "update_symbol [creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
-			" [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [base_tx_url]",
+		Use: "update_symbol [creator] [base_creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
+			" [quote_creator] [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [quote_tx_url]",
 		Short: "Update dex symbol",
-		Args:  cobra.ExactArgs(11),
+		Args:  cobra.ExactArgs(13),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
@@ -249,30 +255,34 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			baseCode,
+			baseCreator,
+				baseCode,
 				baseName,
 				baseFullName,
-				baseIconUrl,
-				baseTxUrl,
+				baseIconURL,
+				baseTxURL,
+				quoteCreator,
 				quoteCode,
 				quoteName,
 				quoteFullName,
-				quoteIconUrl,
-				quoteTxUrl := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
+				quoteIconURL,
+				quoteTxURL := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12]
 
 			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
 				err = errors.Errorf("base code or quote code is empty")
 				return
 			}
 
-			if 0 >= len(baseName) &&
+			if 0 >= len(baseCreator) &&
+				0 >= len(baseName) &&
 				0 >= len(baseFullName) &&
-				0 >= len(baseIconUrl) &&
-				0 >= len(baseTxUrl) &&
+				0 >= len(baseIconURL) &&
+				0 >= len(baseTxURL) &&
+				0 >= len(quoteCreator) &&
 				0 >= len(quoteName) &&
 				0 >= len(quoteFullName) &&
-				0 >= len(quoteIconUrl) &&
-				0 >= len(quoteTxUrl) {
+				0 >= len(quoteIconURL) &&
+				0 >= len(quoteTxURL) {
 				err = errors.Errorf("all update failed are empty")
 				return
 			}
@@ -290,20 +300,22 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 					creator,
 					&types.BaseCurrency{
 						CurrencyBase: types.CurrencyBase{
+							Creator:  baseCreator,
 							Code:     baseCode,
 							Name:     baseName,
 							FullName: baseFullName,
-							IconUrl:  baseIconUrl,
-							TxUrl:    baseTxUrl,
+							IconURL:  baseIconURL,
+							TxURL:    baseTxURL,
 						},
 					},
 					&types.QuoteCurrency{
 						CurrencyBase: types.CurrencyBase{
+							Creator:  quoteCreator,
 							Code:     quoteCode,
 							Name:     quoteName,
 							FullName: quoteFullName,
-							IconUrl:  quoteIconUrl,
-							TxUrl:    quoteTxUrl,
+							IconURL:  quoteIconURL,
+							TxURL:    quoteTxURL,
 						},
 					},
 				),
@@ -317,9 +329,9 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 // PauseSymbol returns a pause symbol command
 func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pause_symbol [creator] [base_code] [quote_code]",
+		Use:   "pause_symbol [creator] [base_creator] [base_code] [quote_creator] [quote_code]",
 		Short: "Pause dex symbol",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
@@ -330,9 +342,12 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			baseCode, quoteCode := args[1], args[2]
-			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
-				err = errors.Errorf("base code or quote code is empty")
+			baseCreator, baseCode, quoteCreator, quoteCode := args[1], args[2], args[3], args[4]
+			if 0 >= len(baseCreator) ||
+				0 >= len(baseCode) ||
+				0 >= len(quoteCreator) ||
+				0 >= len(quoteCode) {
+				err = errors.Errorf("base creator code or quote creator code is empty")
 				return
 			}
 
@@ -343,7 +358,7 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgPauseSymbol(auth, creator, baseCode, quoteCode),
+				types.NewMsgPauseSymbol(auth, creator, baseCreator, baseCode, quoteCreator, quoteCode),
 			})
 			return
 		},
@@ -354,9 +369,9 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 // RestoreSymbol returns a restore symbol command
 func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "restore_symbol [creator] [base_code] [quote_code]",
+		Use:   "restore_symbol [creator] [base_creator] [base_code] [quote_creator] [quote_code]",
 		Short: "Restore dex symbol",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
@@ -367,9 +382,12 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			baseCode, quoteCode := args[1], args[2]
-			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
-				err = errors.Errorf("base code or quote code is empty")
+			baseCreator, baseCode, quoteCreator, quoteCode := args[1], args[2], args[3], args[4]
+			if 0 >= len(baseCreator) ||
+				0 >= len(baseCode) ||
+				0 >= len(quoteCreator) ||
+				0 >= len(quoteCode) {
+				err = errors.Errorf("base creator code or quote creator code is empty")
 				return
 			}
 
@@ -380,7 +398,7 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgRestoreSymbol(auth, creator, baseCode, quoteCode),
+				types.NewMsgRestoreSymbol(auth, creator, baseCreator, baseCode, quoteCreator, quoteCode),
 			})
 			return
 		},
@@ -391,9 +409,9 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 // ShutdownSymbol returns a shutdown symbol command
 func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "shutdown_symbol [creator] [base_code] [quote_code]",
+		Use:   "shutdown_symbol [creator] [base_creator] [base_code] [quote_creator] [quote_code]",
 		Short: "Shutdown dex symbol",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
@@ -404,9 +422,12 @@ func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			baseCode, quoteCode := args[1], args[2]
-			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
-				err = errors.Errorf("base code or quote code is empty")
+			baseCreator, baseCode, quoteCreator, quoteCode := args[1], args[2], args[3], args[4]
+			if 0 >= len(baseCreator) ||
+				0 >= len(baseCode) ||
+				0 >= len(quoteCreator) ||
+				0 >= len(quoteCode) {
+				err = errors.Errorf("base creator code or quote creator code is empty")
 				return
 			}
 
@@ -417,7 +438,7 @@ func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
-				types.NewMsgShutdownSymbol(auth, creator, baseCode, quoteCode),
+				types.NewMsgShutdownSymbol(auth, creator, baseCreator, baseCode, quoteCreator, quoteCode),
 			})
 			return
 		},

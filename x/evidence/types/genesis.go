@@ -43,14 +43,14 @@ func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
 	return gs.Validate()
 }
 
-func (gs GenesisState) Validate() error {
-	for _, e := range gs.Evidence {
+func (g GenesisState) Validate() error {
+	for _, e := range g.Evidence {
 		if err := e.ValidateBasic(); err != nil {
 			return err
 		}
 	}
 
-	maxEvidence := gs.Params.MaxEvidenceAge
+	maxEvidence := g.Params.MaxEvidenceAge
 	if maxEvidence < 1*time.Minute {
 		return fmt.Errorf("max evidence age must be at least 1 minute, is %s", maxEvidence.String())
 	}

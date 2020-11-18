@@ -124,13 +124,11 @@ func displayParseKeyInfo(stringer fmt.Stringer) {
 		out, err = yaml.Marshal(&stringer)
 
 	case keys.OutputFormatJSON:
-
 		if viper.GetBool(flags.FlagIndentResponse) {
 			out, err = keys.KeysCdc.MarshalJSONIndent(stringer, "", "  ")
 		} else {
 			out = keys.KeysCdc.MustMarshalJSON(stringer)
 		}
-
 	}
 
 	if err != nil {

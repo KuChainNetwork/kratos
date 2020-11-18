@@ -35,11 +35,11 @@ func (app *KuchainApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhite
 
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
-//      in favour of export at a block height
+//      in favor of export at a block height
 func (app *KuchainApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
 
-	//Check if there is a whitelist
+	// Check if there is a whitelist
 	if len(jailWhiteList) > 0 {
 		applyWhiteList = true
 	}

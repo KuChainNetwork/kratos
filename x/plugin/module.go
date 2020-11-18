@@ -58,8 +58,6 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	return nil
 }
 
-//____________________________________________________________________________
-
 // AppModule implements an application module for the asset module.
 type AppModule struct {
 	AppModuleBasic
@@ -115,8 +113,6 @@ func (AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
 func (AppModule) EndBlock(ctx sdk.Context, req abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return EndBlocker(ctx, req)
 }
-
-//____________________________________________________________________________
 
 // AppModuleSimulation functions
 

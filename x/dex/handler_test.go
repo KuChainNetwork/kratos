@@ -343,20 +343,22 @@ func TestHandleCreateSymbol(t *testing.T) {
 		symbol := &dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin1",
+					Creator:  "test1",
+					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin2",
+					Creator:  "test2",
+					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -384,14 +386,14 @@ func TestHandleCreateSymbol(t *testing.T) {
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
-		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		symbol.Height = savedSymbol.Height // ignore height check
 		So(savedSymbol.Equal(symbol), ShouldBeTrue)
 
 		simapp.AfterBlockCommitted(app, 1)
 
-		symbol.Quote.Code = "coin3"
+		symbol.Quote.Code = "test1/coin3"
 		msgCreateSymbol = dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
@@ -414,7 +416,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
-		savedSymbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		savedSymbol, ok = dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		symbol.Height = savedSymbol.Height // ignore height check
 		So(savedSymbol.Equal(symbol), ShouldBeTrue)
@@ -446,7 +448,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 
 		invalidSymbol = symbol
 		invalidSymbol.Base.Code = "coin1"
-		invalidSymbol.Base.TxUrl = ""
+		invalidSymbol.Base.TxURL = ""
 		invalidSymbol.Quote.Code = "coin3"
 		So(dexTypes.NewMsgCreateSymbol(auth,
 			accName,
@@ -483,20 +485,22 @@ func TestHandleUpdateSymbol(t *testing.T) {
 		symbol := &dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin1",
+					Creator:  "test1",
+					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin1",
+					Creator:  "test2",
+					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -523,14 +527,14 @@ func TestHandleUpdateSymbol(t *testing.T) {
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
-		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		symbol.Height = savedSymbol.Height // ignore height check
 		So(savedSymbol.Equal(symbol), ShouldBeTrue)
 
 		copiedSymbol := *symbol
-		copiedSymbol.Base.IconUrl = "base.icon.url"
-		copiedSymbol.Quote.IconUrl = "quote.icon.url"
+		copiedSymbol.Base.IconURL = "base.icon.url"
+		copiedSymbol.Quote.IconURL = "quote.icon.url"
 		msgUpdateSymbol := dexTypes.NewMsgUpdateSymbol(auth,
 			accName,
 			&copiedSymbol.Base,
@@ -551,7 +555,7 @@ func TestHandleUpdateSymbol(t *testing.T) {
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
-		savedSymbol, ok = dex.Symbol(copiedSymbol.Base.Code, copiedSymbol.Quote.Code)
+		savedSymbol, ok = dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(savedSymbol.Equal(&copiedSymbol), ShouldBeTrue)
 
@@ -616,20 +620,22 @@ func TestHandlePauseSymbol(t *testing.T) {
 		symbol := dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin1",
+					Creator:  "test1",
+					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin1",
+					Creator:  "test2",
+					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -656,14 +662,16 @@ func TestHandlePauseSymbol(t *testing.T) {
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
-		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		symbol.Height = savedSymbol.Height // ignore height check
 		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
 
 		msgPauseSymbol := dexTypes.NewMsgPauseSymbol(auth,
 			accName,
+			symbol.Base.Creator,
 			symbol.Base.Code,
+			symbol.Quote.Creator,
 			symbol.Quote.Code)
 		So(msgPauseSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -685,7 +693,7 @@ func TestHandlePauseSymbol(t *testing.T) {
 		So(dex.Creator, simapp.ShouldEq, accName)
 		So(dex.Number, ShouldEqual, 0)
 
-		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		symbol, ok = dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(symbol.Paused(), ShouldBeTrue)
 
@@ -693,14 +701,18 @@ func TestHandlePauseSymbol(t *testing.T) {
 		copiedSymbol.Base.Code = ""
 		So(dexTypes.NewMsgPauseSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 
 		copiedSymbol = symbol
 		copiedSymbol.Quote.Code = ""
 		So(dexTypes.NewMsgPauseSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 
 		copiedSymbol = symbol
@@ -708,7 +720,9 @@ func TestHandlePauseSymbol(t *testing.T) {
 		copiedSymbol.Quote.Code = ""
 		So(dexTypes.NewMsgPauseSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 	})
 }
@@ -740,20 +754,22 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		symbol := dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin1",
+					Creator:  "test1",
+					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin1",
+					Creator:  "test2",
+					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -780,14 +796,16 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
-		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		symbol.Height = savedSymbol.Height // ignore height check
 		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
 
 		msgPauseSymbol := dexTypes.NewMsgPauseSymbol(auth,
 			accName,
+			symbol.Base.Creator,
 			symbol.Base.Code,
+			symbol.Quote.Creator,
 			symbol.Quote.Code)
 		So(msgPauseSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -809,13 +827,15 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		So(dex.Creator, simapp.ShouldEq, accName)
 		So(dex.Number, ShouldEqual, 0)
 
-		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		symbol, ok = dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(symbol.Paused(), ShouldBeTrue)
 
 		msgRestoreSymbol := dexTypes.NewMsgRestoreSymbol(auth,
 			accName,
+			symbol.Base.Creator,
 			symbol.Base.Code,
+			symbol.Quote.Creator,
 			symbol.Quote.Code)
 		So(msgRestoreSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -837,7 +857,7 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		So(dex.Creator, simapp.ShouldEq, accName)
 		So(dex.Number, ShouldEqual, 0)
 
-		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		symbol, ok = dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		So(symbol.Paused(), ShouldBeFalse)
 
@@ -845,14 +865,18 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		copiedSymbol.Base.Code = ""
 		So(dexTypes.NewMsgRestoreSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 
 		copiedSymbol = symbol
 		copiedSymbol.Quote.Code = ""
 		So(dexTypes.NewMsgRestoreSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 
 		copiedSymbol = symbol
@@ -860,7 +884,9 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		copiedSymbol.Quote.Code = ""
 		So(dexTypes.NewMsgRestoreSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 	})
 }
@@ -892,20 +918,22 @@ func TestShutdownSymbol(t *testing.T) {
 		symbol := dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin2",
+					Creator:  "test1",
+					Code:     "test1/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Code:     "coin3",
+					Creator:  "test2",
+					Code:     "test2/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
-					IconUrl:  "???",
-					TxUrl:    "???",
+					IconURL:  "???",
+					TxURL:    "???",
 				},
 			},
 			CreateTime: time.Now(),
@@ -932,14 +960,16 @@ func TestShutdownSymbol(t *testing.T) {
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
-		savedSymbol, ok := dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
 		symbol.Height = savedSymbol.Height // ignore height check
 		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
 
 		msgShutdownSymbol := dexTypes.NewMsgShutdownSymbol(auth,
 			accName,
+			symbol.Base.Creator,
 			symbol.Base.Code,
+			symbol.Quote.Creator,
 			symbol.Quote.Code)
 		So(msgShutdownSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -961,21 +991,25 @@ func TestShutdownSymbol(t *testing.T) {
 		So(dex.Creator, simapp.ShouldEq, accName)
 		So(dex.Number, ShouldEqual, 0)
 
-		symbol, ok = dex.Symbol(symbol.Base.Code, symbol.Quote.Code)
+		symbol, ok = dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeFalse)
 
 		copiedSymbol := symbol
 		copiedSymbol.Base.Code = ""
 		So(dexTypes.NewMsgShutdownSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 
 		copiedSymbol = symbol
 		copiedSymbol.Quote.Code = ""
 		So(dexTypes.NewMsgShutdownSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 
 		copiedSymbol = symbol
@@ -983,7 +1017,9 @@ func TestShutdownSymbol(t *testing.T) {
 		copiedSymbol.Quote.Code = ""
 		So(dexTypes.NewMsgShutdownSymbol(auth,
 			accName,
+			copiedSymbol.Base.Creator,
 			copiedSymbol.Base.Code,
+			copiedSymbol.Quote.Creator,
 			copiedSymbol.Quote.Code).ValidateBasic(), ShouldNotBeNil)
 	})
 }

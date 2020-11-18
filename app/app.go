@@ -67,9 +67,6 @@ var (
 		gov.ModuleName:            {supply.Burner},
 		mint.ModuleName:           {supply.Minter},
 	}
-	allowedReceivingModAcc = map[string]bool{
-		distr.ModuleName: true,
-	}
 )
 
 // Verify app interface at compile time

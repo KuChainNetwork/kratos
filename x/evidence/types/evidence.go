@@ -42,7 +42,7 @@ func (e Equivocation) String() string {
 
 // Hash returns the hash of an Equivocation object.
 func (e Equivocation) Hash() tmbytes.HexBytes {
-	return tmhash.Sum(Evidence_Cdc.amino.MustMarshalBinaryBare(&e))
+	return tmhash.Sum(EvidenceCdc.amino.MustMarshalBinaryBare(&e))
 }
 
 // ValidateBasic performs basic stateless validation checks on an Equivocation object.
@@ -109,15 +109,15 @@ type EvidenceEquivocation struct {
 	Equivocation *Equivocation `json:"equivocation,omitempty" yaml:"equivocation"`
 }
 
-func (m *Evidence) GetEquivocation() *Equivocation {
-	if x, ok := m.Sum.(*EvidenceEquivocation); ok {
+func (e *Evidence) GetEquivocation() *Equivocation {
+	if x, ok := e.Sum.(*EvidenceEquivocation); ok {
 		return x.Equivocation
 	}
 	return nil
 }
 
-func (this *Evidence) GetEvidence() exported.Evidence {
-	if x := this.GetEquivocation(); x != nil {
+func (e *Evidence) GetEvidence() exported.Evidence {
+	if x := e.GetEquivocation(); x != nil {
 		return x
 	}
 	return nil

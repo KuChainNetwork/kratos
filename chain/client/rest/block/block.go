@@ -15,9 +15,6 @@ import (
 type DecodeData struct {
 	Txs     []json.RawMessage  `json:"txs"`
 	TxsHash []tmbytes.HexBytes `json:"txs_hash"`
-
-	// Volatile
-	hash tmbytes.HexBytes
 }
 
 type DecodeBlock struct {

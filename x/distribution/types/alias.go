@@ -5,7 +5,6 @@ import (
 	GovTypes "github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/KuChainNetwork/kuchain/x/staking"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
-	StakingExported "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	StakingKP "github.com/KuChainNetwork/kuchain/x/staking/keeper"
 	StakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/KuChainNetwork/kuchain/x/supply"
@@ -40,8 +39,8 @@ type (
 )
 
 type (
-	StakingExportedValidatorI  = StakingExported.ValidatorI
-	StakingExportedDelegationI = StakingExported.DelegationI
+	StakingExportedValidatorI  = exported.ValidatorI
+	StakingExportedDelegationI = exported.DelegationI
 )
 
 type (

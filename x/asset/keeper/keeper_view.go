@@ -125,7 +125,9 @@ func (a AssetKeeper) GetApproveCoins(ctx sdk.Context, account, spender types.Acc
 }
 
 // IterateAllCoins iterate all account 's coins
-func (a AssetKeeper) IterateAllCoinPowers(ctx sdk.Context, cb func(address types.AccountID, balance Coins) (stop bool)) {
+func (a AssetKeeper) IterateAllCoinPowers(
+	ctx sdk.Context,
+	cb func(address types.AccountID, balance Coins) (stop bool)) {
 	store := store.NewStore(ctx, a.key)
 	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinPowerStoreKeyPrefix))
 

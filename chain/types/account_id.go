@@ -79,7 +79,7 @@ func NewAccountIDFromConsAdd(add sdk.ConsAddress) AccountID {
 
 // EmptyAccountID return a empty accountID
 func EmptyAccountID() AccountID {
-	return NewAccountIDFromByte([]byte{accountIDTypeNil}[:])
+	return NewAccountIDFromByte([]byte{accountIDTypeNil})
 }
 
 // NewAccountIDFromStr new accountID from string
@@ -364,7 +364,7 @@ func (a AccountID) StoreKey() []byte {
 
 	bytes := make([]byte, math.MaxInt(len(a.Value), AccIDStoreKeyLen))
 	copy(bytes, a.Value)
-	return bytes[:]
+	return bytes
 }
 
 // FixedKey get bytes for store key fixed

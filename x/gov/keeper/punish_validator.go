@@ -8,10 +8,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (keeper Keeper) SetPunishValidator(ctx sdk.Context, validator_to_punish types.PunishValidator) {
+func (keeper Keeper) SetPunishValidator(ctx sdk.Context, validator2punish types.PunishValidator) {
 	store := store.NewStore(ctx, keeper.storeKey)
-	bz := keeper.cdc.MustMarshalBinaryBare(&validator_to_punish)
-	store.Set(types.GetValidatorKey(validator_to_punish.ValidatorAccount), bz)
+	bz := keeper.cdc.MustMarshalBinaryBare(&validator2punish)
+	store.Set(types.GetValidatorKey(validator2punish.ValidatorAccount), bz)
 }
 
 func (keeper Keeper) GetPunishValidator(ctx sdk.Context, validatorAccount AccountID) (punishValidator types.PunishValidator, found bool) {

@@ -127,6 +127,8 @@ func (p *Plugins) Stop(ctx types.Context) {
 	p.wg.Wait()
 
 	for _, plg := range p.plugins {
-		plg.Stop(ctx)
+		if err := plg.Stop(ctx); err != nil {
+			p.logger.Error("stop plugin failed", "err", err)
+		}
 	}
 }

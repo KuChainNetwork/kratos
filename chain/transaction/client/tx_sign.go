@@ -76,7 +76,9 @@ be generated via the 'multisign' command.
 	cmd.Flags().String(flagOutfile, "", "The document will be written to the given file instead of STDOUT")
 
 	cmd = flags.PostCommands(cmd)[0]
-	cmd.MarkFlagRequired(flags.FlagFrom)
+	if err := cmd.MarkFlagRequired(flags.FlagFrom); err != nil {
+		panic(err)
+	}
 
 	return cmd
 }
@@ -188,10 +190,7 @@ func getSignatureJSON(cdc *codec.Codec, newTx types.StdTx, indent, generateSigna
 // printAndValidateSigs will validate the signatures of a given transaction over
 // its expected signers. In addition, if offline has not been supplied, the
 // signature is verified over the transaction sign bytes.
-func printAndValidateSigs(
-	cliCtx txutil.KuCLIContext, chainID string, stdTx types.StdTx, offline bool,
-) bool {
-
+func printAndValidateSigs(cliCtx txutil.KuCLIContext, chainID string, stdTx types.StdTx, offline bool) bool {
 	fmt.Println("Signers:")
 
 	signers := stdTx.GetSigners()

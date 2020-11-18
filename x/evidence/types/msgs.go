@@ -51,7 +51,7 @@ func (m MsgSubmitEvidenceBase) ValidateBasic() error {
 // GetSignBytes returns the raw bytes a signer is expected to sign when submitting
 // a MsgSubmitEvidenceBase message.
 func (m MsgSubmitEvidenceBase) GetSignBytes() []byte {
-	return sdk.MustSortJSON(Evidence_Cdc.amino.MustMarshalJSON(m))
+	return sdk.MustSortJSON(EvidenceCdc.amino.MustMarshalJSON(m))
 }
 
 // GetSigners returns the single expected signer for a MsgSubmitEvidenceBase.

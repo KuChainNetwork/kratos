@@ -206,7 +206,14 @@ func (k *Keeper) GetStartNotDistributionTimePoint(ctx sdk.Context) {
 	store := store.NewStore(ctx, k.storeKey)
 	bz := store.Get([]byte(key))
 
-	k.cdc.UnmarshalJSON(bz, &k.startNotDistriTimePoint)
+	if len(bz) == 0 {
+		return
+	}
+
+	if err := k.cdc.UnmarshalJSON(bz, &k.startNotDistriTimePoint); err != nil {
+		panic(sdkerrors.Wrapf(err, "get no distribution timepoint unmarshal"))
+	}
+
 	ctx.Logger().Debug("GetStartNotDistributionTimePoint",
 		"time", k.startNotDistriTimePoint.Nanosecond())
 }

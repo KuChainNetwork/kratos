@@ -1,12 +1,12 @@
 package types
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"bytes"
 	"github.com/KuChainNetwork/kuchain/chain/types/coin"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/external"

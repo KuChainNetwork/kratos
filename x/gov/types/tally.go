@@ -35,8 +35,8 @@ type TallyResult struct {
 	NoWithVeto sdk.Int `json:"no_with_veto" yaml:"no_with_veto"`
 }
 
-func (t TallyResult) Equal(other TallyResult) bool {
-	return t.Yes.Equal(other.Yes) && t.No.Equal(other.No) && t.Abstain.Equal(other.Abstain) && t.NoWithVeto.Equal(other.NoWithVeto)
+func (tr TallyResult) Equal(other TallyResult) bool {
+	return tr.Yes.Equal(other.Yes) && tr.No.Equal(other.No) && tr.Abstain.Equal(other.Abstain) && tr.NoWithVeto.Equal(other.NoWithVeto)
 }
 
 // NewTallyResult creates a new TallyResult instance
