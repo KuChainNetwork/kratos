@@ -42,10 +42,12 @@ type UpdateSymbolReq struct {
 }
 
 type ShutdownSymbolReq struct {
-	BaseReq   chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
-	Creator   string             `json:"creator" yaml:"creator"`
-	BaseCode  string             `json:"base_code" yaml:"base_code"`
-	QuoteCode string             `json:"quote_code" yaml:"quote_code"`
+	BaseReq      chainTypes.BaseReq `json:"base_req" yaml:"base_req"`
+	Creator      string             `json:"creator" yaml:"creator"`
+	BaseCreator  string             `json:"base_creator" yaml:"base_creator"`
+	BaseCode     string             `json:"base_code" yaml:"base_code"`
+	QuoteCreator string             `json:"quote_creator" yaml:"quote_creator"`
+	QuoteCode    string             `json:"quote_code" yaml:"quote_code"`
 }
 
 type UpdateDexReq struct {
@@ -346,7 +348,9 @@ func pauseSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgPauseSymbol(addr,
 				name,
+				req.BaseCreator,
 				req.BaseCode,
+				req.QuoteCreator,
 				req.QuoteCode,
 			),
 		})
@@ -393,7 +397,9 @@ func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgRestoreSymbol(addr,
 				name,
+				req.BaseCreator,
 				req.BaseCode,
+				req.QuoteCreator,
 				req.QuoteCode,
 			),
 		})
@@ -440,7 +446,9 @@ func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgShutdownSymbol(addr,
 				name,
+				req.BaseCreator,
 				req.BaseCode,
+				req.QuoteCreator,
 				req.QuoteCode,
 			),
 		})

@@ -40,8 +40,11 @@ func (d *Dex) WithSymbol(symbol *Symbol) (dex *Dex, ok bool) {
 	}
 	dex = d
 	for i := 0; i < len(d.Symbols); i++ {
-		if d.Symbols[i].Base.Code == symbol.Base.Code &&
-			d.Symbols[i].Quote.Code == symbol.Quote.Code {
+		s := &d.Symbols[i]
+		if s.Base.Creator == symbol.Base.Creator &&
+			s.Base.Code == symbol.Base.Code &&
+			s.Quote.Creator == symbol.Quote.Creator &&
+			s.Quote.Code == symbol.Quote.Code {
 			return
 		}
 	}
@@ -51,13 +54,16 @@ func (d *Dex) WithSymbol(symbol *Symbol) (dex *Dex, ok bool) {
 }
 
 // Symbol get dex symbol
-func (d *Dex) Symbol(baseCode, quoteCode string) (symbol Symbol, ok bool) {
+func (d *Dex) Symbol(baseCreator, baseCode, quoteCreator, quoteCode string) (symbol Symbol, ok bool) {
 	if 0 >= len(baseCode) || 0 >= len(quoteCode) {
 		return
 	}
 	for i := 0; i < len(d.Symbols); i++ {
-		if baseCode == d.Symbols[i].Base.Code &&
-			quoteCode == d.Symbols[i].Quote.Code {
+		s := &d.Symbols[i]
+		if baseCreator == s.Base.Creator &&
+			baseCode == s.Base.Code &&
+			quoteCreator == s.Quote.Creator &&
+			quoteCode == s.Quote.Code {
 			ok = true
 			symbol = d.Symbols[i]
 			return
@@ -67,16 +73,19 @@ func (d *Dex) Symbol(baseCode, quoteCode string) (symbol Symbol, ok bool) {
 }
 
 // UpdateSymbol update symbol
-func (d *Dex) UpdateSymbol(baseCode, quoteCode string,
+func (d *Dex) UpdateSymbol(baseCreator, baseCode, quoteCreator, quoteCode string,
 	symbol *Symbol) (ok bool) {
 	if 0 >= len(baseCode) || 0 >= len(quoteCode) || nil == symbol || !symbol.Validate() {
 		return
 	}
 	for i := 0; i < len(d.Symbols); i++ {
-		if baseCode == d.Symbols[i].Base.Code &&
-			quoteCode == d.Symbols[i].Quote.Code {
+		s := &d.Symbols[i]
+		if baseCreator == s.Base.Creator &&
+			baseCode == s.Base.Code &&
+			quoteCreator == s.Quote.Creator &&
+			quoteCode == s.Quote.Code {
 			ok = true
-			d.Symbols[i] = *symbol
+			*s = *symbol
 			return
 		}
 	}
@@ -84,13 +93,17 @@ func (d *Dex) UpdateSymbol(baseCode, quoteCode string,
 }
 
 // DeleteSymbol delete symbol
-func (d *Dex) DeleteSymbol(baseCode, quoteCode string) (ok bool) {
-	if 0 >= len(baseCode) || 0 >= len(quoteCode) {
+func (d *Dex) DeleteSymbol(baseCreator, baseCode, quoteCreator, quoteCode string) (ok bool) {
+	if 0 >= len(baseCreator) || 0 >= len(baseCode) || 0 >= len(quoteCreator) || 0 >= len(quoteCode) {
 		return
 	}
 	for i := 0; i < len(d.Symbols); i++ {
-		if baseCode == d.Symbols[i].Base.Code &&
-			quoteCode == d.Symbols[i].Quote.Code {
+		s := &d.Symbols[i]
+		if baseCreator == s.Base.Creator &&
+			baseCode == s.Base.Code &&
+			quoteCreator == s.Quote.Creator &&
+			quoteCode == s.Quote.Code {
+			ok = true
 			ok = true
 			d.Symbols = append(d.Symbols[:i], d.Symbols[i+1:]...)
 			return

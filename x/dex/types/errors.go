@@ -27,6 +27,8 @@ var (
 	ErrSymbolFormat               = sdkerrors.Register(ModuleName, 18, "dex symbol base_code/quote_code format error")
 	ErrSymbolNotSupply            = sdkerrors.Register(ModuleName, 19, "dex symbol base_code/quote_code not supply")
 	ErrSymbolDexDescriptionSame   = sdkerrors.Register(ModuleName, 20, "dex symbol to change is same as existing")
+	ErrSymbolBaseCreatorEmpty     = sdkerrors.Register(ModuleName, 24, "dex symbol base creator empty")
+	ErrSymbolQuoteCreatorEmpty    = sdkerrors.Register(ModuleName, 25, "dex symbol quote creator empty")
 )
 
 var (

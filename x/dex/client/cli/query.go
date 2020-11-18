@@ -61,9 +61,9 @@ func GetDexCmd(cdc *codec.Codec) *cobra.Command {
 // GetSymbol returns a query symbol
 func GetSymbol(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "symbol [creator] [base code] [quote code]",
+		Use:   "symbol [creator] [base creator] [base code] [quote creator] [quote code]",
 		Short: "Query dex symbol",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			getter := types.NewDexRetriever(cliCtx)
@@ -75,7 +75,11 @@ func GetSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			if 0 >= len(args[1]) || 0 >= len(args[2]) {
+			baseCreator, baseCode, quoteCreator, quoteCode := args[1], args[2], args[3], args[4]
+			if 0 >= len(baseCreator) ||
+				0 >= len(baseCode) ||
+				0 >= len(quoteCreator) ||
+				0 >= len(quoteCode) {
 				err = errors.Errorf("base code or quote code is empty")
 				return
 			}
@@ -86,7 +90,7 @@ func GetSymbol(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			symbol, ok := dex.Symbol(args[1], args[2])
+			symbol, ok := dex.Symbol(baseCreator, baseCode, quoteCreator, quoteCode)
 			if ok {
 				err = cliCtx.PrintOutput(symbol)
 			}
