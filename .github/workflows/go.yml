@@ -2,17 +2,9 @@ name: Go
 
 on:
   push:
-    branches:
-    - master
-    - dex
-    - release
-    - features/*
+    branches: [ dex, release, master, features/* ]
   pull_request:
-    branches:
-    - master
-    - dex
-    - release
-    - features/*
+    branches: [ dex, release, master, features/* ]
 
 jobs:
   test:
