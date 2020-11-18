@@ -3,13 +3,14 @@ package simapp
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"testing"
+
 	. "github.com/smartystreets/goconvey/convey"
 	tmkv "github.com/tendermint/tendermint/libs/kv"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
-	"io/ioutil"
-	"os"
-	"testing"
 
 	"github.com/KuChainNetwork/kuchain/test/simulation"
 	"github.com/cosmos/cosmos-sdk/codec"

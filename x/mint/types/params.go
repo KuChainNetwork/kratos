@@ -42,7 +42,6 @@ func NewParams(
 	mintDenom string,
 	inflationRateChange, inflationMax, inflationMin, goalBonded sdk.Dec,
 	blocksPerYear uint64) Params {
-
 	return Params{
 		MintDenom:           mintDenom,
 		InflationRateChange: inflationRateChange,
