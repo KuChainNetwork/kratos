@@ -106,9 +106,9 @@ func DeductFees(ctx sdk.Context, assetKeeper AssetKeeper, payer AccountID, fees 
 }
 
 func checkPayerAuth(ctx sdk.Context, ak AccountKeeper, tx sdk.Tx, simulate bool, payer AccountID) error {
-	//if !ctx.IsCheckTx() {
-	//	return nil
-	//}
+	// if !ctx.IsCheckTx() {
+	// 	return nil
+	// }
 
 	sigTx, ok := tx.(SigVerifiableTx)
 	if !ok {

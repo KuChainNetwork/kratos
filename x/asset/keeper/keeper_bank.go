@@ -14,19 +14,19 @@ func (a AssetKeeper) BlacklistedAddr(addr sdk.AccAddress) bool {
 }
 
 // GetAllBalances get all coins for a account
-func (a AssetKeeper) GetAllBalances(ctx sdk.Context, ID types.AccountID) Coins {
-	res, _ := a.GetCoins(ctx, ID)
+func (a AssetKeeper) GetAllBalances(ctx sdk.Context, id types.AccountID) Coins {
+	res, _ := a.GetCoins(ctx, id)
 	return res
 }
 
 // GetBalance get coins balance for account
-func (a AssetKeeper) GetBalance(ctx sdk.Context, ID types.AccountID, denom string) Coin {
+func (a AssetKeeper) GetBalance(ctx sdk.Context, id types.AccountID, denom string) Coin {
 	creator, symbol, err := types.CoinAccountsFromDenom(denom)
 	if err != nil {
 		panic(err)
 	}
 
-	res, _ := a.GetCoin(ctx, ID, creator, symbol)
+	res, _ := a.GetCoin(ctx, id, creator, symbol)
 	return res
 }
 
@@ -46,10 +46,10 @@ func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt t
 	}
 
 	if apporveCoins != nil {
-		if approveAll, hasNeg := approveSumCoins.SafeSub(apporveCoins.Amount); hasNeg {
+		var hasNeg bool
+		approveSumCoins, hasNeg = approveSumCoins.SafeSub(apporveCoins.Amount)
+		if hasNeg {
 			return sdkerrors.Wrap(types.ErrAssetApporveNotEnough, "sum approve less than old")
-		} else {
-			approveSumCoins = approveAll
 		}
 
 		if apporveCoins.IsLock != isLock {

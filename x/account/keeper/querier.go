@@ -8,7 +8,6 @@ import (
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -35,9 +34,9 @@ func queryAccount(ctx sdk.Context, req abci.RequestQuery, keeper AccountKeeper) 
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
 
-	account := keeper.GetAccount(ctx, params.Id)
+	account := keeper.GetAccount(ctx, params.ID)
 	if account == nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "account %s does not exist", params.Id)
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "account %s does not exist", params.ID)
 	}
 
 	bz, err := codec.MarshalJSONIndent(keeper.cdc, account)
@@ -65,7 +64,8 @@ func queryAuthByAddress(ctx sdk.Context, req abci.RequestQuery, ak AccountKeeper
 
 	var an types.Auth
 	if err := ak.cdc.UnmarshalBinaryBare(bz, &an); err != nil {
-		return nil, errors.Wrapf(chainTypes.ErrKuMsgDataUnmarshal, "query auth data unmarshal by %s by %s", auth, err.Error())
+		return nil, sdkerrors.Wrapf(chainTypes.ErrKuMsgDataUnmarshal,
+			"query auth data unmarshal by %s by %s", auth, err.Error())
 	}
 
 	jsonBz, err := codec.MarshalJSONIndent(ak.cdc, an)

@@ -7,8 +7,8 @@ type CurrencyBase struct {
 	Code     string `json:"code" yaml:"code"`
 	Name     string `json:"name" yaml:"name"`
 	FullName string `json:"full_name" yaml:"full_name"`
-	IconUrl  string `json:"icon_url" yaml:"icon_url"`
-	TxUrl    string `json:"tx_url" yaml:"tx_url"`
+	IconURL  string `json:"icon_url" yaml:"icon_url"`
+	TxURL    string `json:"tx_url" yaml:"tx_url"`
 }
 
 // Validate validate
@@ -16,8 +16,8 @@ func (object *CurrencyBase) Validate() bool {
 	return 0 < len(object.Code) &&
 		0 < len(object.Name) &&
 		0 < len(object.FullName) &&
-		0 < len(object.IconUrl) &&
-		0 < len(object.TxUrl)
+		0 < len(object.IconURL) &&
+		0 < len(object.TxURL)
 }
 
 // Equals check whether self equals other
@@ -25,8 +25,8 @@ func (object *CurrencyBase) Equal(other *CurrencyBase) bool {
 	return object.Code == other.Code &&
 		object.Name == other.Name &&
 		object.FullName == other.FullName &&
-		object.IconUrl == other.IconUrl &&
-		object.TxUrl == other.TxUrl
+		object.IconURL == other.IconURL &&
+		object.TxURL == other.TxURL
 }
 
 // Empty whether all members are invalid
@@ -34,8 +34,8 @@ func (object *CurrencyBase) Empty(checkCode bool) bool {
 	return (checkCode && 0 >= len(object.Code)) &&
 		0 >= len(object.Name) &&
 		0 >= len(object.FullName) &&
-		0 >= len(object.IconUrl) &&
-		0 >= len(object.TxUrl)
+		0 >= len(object.IconURL) &&
+		0 >= len(object.TxURL)
 }
 
 // BaseCurrency

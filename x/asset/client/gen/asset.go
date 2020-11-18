@@ -12,16 +12,16 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 )
 
-// GenGensisAccountAssetCmd builds gen genesis account asset to genesis config
-func GenGensisAccountAssetCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+// GensisAccountAssetCmd builds gen genesis account asset to genesis config
+func GensisAccountAssetCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-account-coin",
 		Short: "Add a genesis coin for a account to chain",
 		Args:  cobra.ExactArgs(2),
-		Long: fmt.Sprintf(`This command add a genesis coin to chain'.
+		Long: `This command add a genesis coin to chain'.
 
 		It creates a some genesis coin for a account, then put the data to genesis.json
-	`),
+	`,
 
 		RunE: func(_ *cobra.Command, args []string) error {
 			config := ctx.Config

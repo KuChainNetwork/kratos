@@ -15,8 +15,8 @@ type CommissionRates struct {
 	MaxChangeRate Dec `json:"max_change_rate" yaml:"max_change_rate"`
 }
 
-func (c CommissionRates) Equal(other CommissionRates) bool {
-	return c.Rate.Equal(other.Rate) && c.MaxRate.Equal(other.MaxRate) && c.MaxChangeRate.Equal(other.MaxChangeRate)
+func (cr CommissionRates) Equal(other CommissionRates) bool {
+	return cr.Rate.Equal(other.Rate) && cr.MaxRate.Equal(other.MaxRate) && cr.MaxChangeRate.Equal(other.MaxChangeRate)
 }
 
 // NewCommissionRates returns an initialized validator commission rates.

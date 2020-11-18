@@ -20,3 +20,4 @@ testchain/
 # Chain testing directories
 test_chain/testing
 scripts/testnet
+coverage.txt

@@ -9,7 +9,7 @@ type Dex struct {
 	Description string   `json:"description" yaml:"description"` // Dex Description
 	Number      uint64   `json:"number" yaml:"number"`           // Dex number
 	Sequence    uint64   `json:"sequence" yaml:"sequence"`       // Dex sequence
-	Symbols     []Symbol `json:"symbols" yaml"symbols"`          // Dex symbols
+	Symbols     []Symbol `json:"symbols" yaml:"symbols"`         // Dex symbols
 }
 
 // NewDex creator a new dex
@@ -30,7 +30,7 @@ func (d *Dex) WithNumber(n uint64) *Dex {
 // CanDestroy check whether dex can destroy
 func (d *Dex) CanDestroy(sumCallback func() chainTypes.Coins) (ok bool) {
 	sum := sumCallback()
-	return 0 == len(sum) || sum.IsZero()
+	return len(sum) == 0 || sum.IsZero()
 }
 
 // WithSymbol dex add symbol

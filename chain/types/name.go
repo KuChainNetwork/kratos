@@ -55,7 +55,7 @@ func NewNameFromBytes(b []byte) Name {
 	res := Name{
 		make([]byte, NameStrLenMax),
 	}
-	copy(res.Value[:], b)
+	copy(res.Value, b)
 	return res
 }
 
@@ -342,7 +342,7 @@ func (n *Name) UnmarshalYAML(data []byte) error {
 
 // Bytes returns the raw address bytes.
 func (n Name) Bytes() []byte {
-	return n.Value[:]
+	return n.Value
 }
 
 // Format implements the fmt.Formatter interface.
@@ -352,8 +352,8 @@ func (n Name) Format(s fmt.State, verb rune) {
 	case 's':
 		s.Write([]byte(n.String()))
 	case 'p':
-		s.Write([]byte(fmt.Sprintf("%p", n.Value[:])))
+		s.Write([]byte(fmt.Sprintf("%p", n.Value)))
 	default:
-		s.Write([]byte(fmt.Sprintf("%X", n.Value[:])))
+		s.Write([]byte(fmt.Sprintf("%X", n.Value)))
 	}
 }

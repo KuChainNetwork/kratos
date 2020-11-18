@@ -37,7 +37,8 @@ type CoinStat struct {
 	CanLock       bool  `json:"can_lock,omitempty" yaml:"can_lock"`
 	CanBurn       bool  `json:"can_burn,omitempty" yaml:"can_burn"`
 	IssueToHeight int64 `json:"issue_to_height,omitempty" yaml:"issue_to_height"`
-	InitSupply    Coin  `json:"init_supply" yaml:"init_supply"` // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+	// InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+	InitSupply Coin `json:"init_supply" yaml:"init_supply"`
 }
 
 // NewCoinStat creates a Coin status
@@ -117,7 +118,7 @@ func (c *CoinStat) GetCurrentMaxSupplyLimit(currentHeight int64) types.Coin {
 	return c.InitSupply.Add(types.NewCoin(needIssue.Denom, addedIssue))
 }
 
-func (m CoinStat) String() string {
-	res, _ := yaml.Marshal(m)
+func (c CoinStat) String() string {
+	res, _ := yaml.Marshal(c)
 	return string(res)
 }

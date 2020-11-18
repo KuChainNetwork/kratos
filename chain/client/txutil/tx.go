@@ -84,7 +84,7 @@ func CompleteAndBroadcastTxCLI(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk
 		buf := bufio.NewReader(os.Stdin)
 		ok, err := input.GetConfirmation("confirm transaction before signing and broadcasting", buf)
 		if err != nil || !ok {
-			_, _ = fmt.Fprintf(os.Stderr, "%s\n", "cancelled transaction")
+			_, _ = fmt.Fprintf(os.Stderr, "%s\n", "canceled transaction")
 			return err
 		}
 	}
@@ -119,9 +119,7 @@ func EnrichWithGas(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) (TxBui
 // both the estimate obtained by the query and the adjusted amount.
 func CalculateGas(
 	queryFunc func(string, []byte) ([]byte, int64, error), cdc *codec.Codec,
-	txBytes []byte, adjustment float64,
-) (estimate, adjusted uint64, err error) {
-
+	txBytes []byte, adjustment float64) (estimate, adjusted uint64, err error) {
 	// run a simulation (via /app/simulate query) to
 	// estimate gas and update TxBuilder accordingly
 	rawRes, _, err := queryFunc("/app/simulate", txBytes)
@@ -201,9 +199,7 @@ func SignStdTx(
 // populate account and sequence numbers from a foreign account.
 func SignStdTxWithSignerAddress(
 	txBldr TxBuilder, cliCtx KuCLIContext,
-	addr sdk.AccAddress, name string, stdTx StdTx, offline bool,
-) (signedStdTx StdTx, err error) {
-
+	addr sdk.AccAddress, name string, stdTx StdTx, offline bool) (signedStdTx StdTx, err error) {
 	// check whether the address is a signer
 	if !isTxSigner(addr, stdTx.GetSigners()) {
 		return signedStdTx, fmt.Errorf("%s: %s", errInvalidSigner, name)
@@ -242,9 +238,7 @@ func ReadStdTxFromFile(cdc *codec.Codec, filename string) (stdTx StdTx, err erro
 }
 
 func populateAccountFromState(
-	txBldr TxBuilder, cliCtx KuCLIContext, id types.AccountID,
-) (TxBuilder, error) {
-
+	txBldr TxBuilder, cliCtx KuCLIContext, id types.AccountID) (TxBuilder, error) {
 	num, seq, err := NewAccountRetriever(cliCtx).GetAuthNumberSequence(id)
 	if err != nil {
 		return txBldr, err

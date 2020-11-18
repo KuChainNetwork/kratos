@@ -39,7 +39,7 @@ func QueryTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusNotFound, fmt.Sprintf("no transaction found with hash %s", hashHexStr))
 		}
 
-		utils.PostProcessResponseBare(w, cliCtx, cli.TxResponse(output))
+		utils.PostProcessResponseBare(w, cliCtx, output)
 	}
 }
 

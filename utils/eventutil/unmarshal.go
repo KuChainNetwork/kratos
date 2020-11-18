@@ -40,10 +40,8 @@ func UnmarshalKVMap(kvs map[string]string, v interface{}) error {
 					}
 					f.Set(reflect.Append(f, elem))
 				}
-			} else {
-				if err := populate(f, value); err != nil {
-					return fmt.Errorf("%s: %v", tag, err)
-				}
+			} else if err := populate(f, value); err != nil {
+				return fmt.Errorf("%s: %v", tag, err)
 			}
 		}
 	}

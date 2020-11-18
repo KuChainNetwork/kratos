@@ -43,7 +43,6 @@ const (
 )
 
 var (
-	// functions aliases
 	RegisterInvariants                 = keeper.RegisterInvariants
 	AllInvariants                      = keeper.AllInvariants
 	ModuleAccountInvariants            = keeper.ModuleAccountInvariants
@@ -175,30 +174,27 @@ var (
 	MustUnmarshalValidator             = types.MustUnmarshalValidator
 	UnmarshalValidator                 = types.UnmarshalValidator
 	NewDescription                     = types.NewDescription
-
-	// variable aliases
-	ModuleCdc                        = types.ModuleCdc
-	LastValidatorPowerKey            = types.LastValidatorPowerKey
-	LastTotalPowerKey                = types.LastTotalPowerKey
-	ValidatorsKey                    = types.ValidatorsKey
-	ValidatorsByConsAddrKey          = types.ValidatorsByConsAddrKey
-	ValidatorsByPowerIndexKey        = types.ValidatorsByPowerIndexKey
-	DelegationKey                    = types.DelegationKey
-	UnbondingDelegationKey           = types.UnbondingDelegationKey
-	UnbondingDelegationByValIndexKey = types.UnbondingDelegationByValIndexKey
-	RedelegationKey                  = types.RedelegationKey
-	RedelegationByValSrcIndexKey     = types.RedelegationByValSrcIndexKey
-	RedelegationByValDstIndexKey     = types.RedelegationByValDstIndexKey
-	UnbondingQueueKey                = types.UnbondingQueueKey
-	RedelegationQueueKey             = types.RedelegationQueueKey
-	ValidatorQueueKey                = types.ValidatorQueueKey
-	HistoricalInfoKey                = types.HistoricalInfoKey
-	KeyUnbondingTime                 = types.KeyUnbondingTime
-	KeyMaxValidators                 = types.KeyMaxValidators
-	KeyMaxEntries                    = types.KeyMaxEntries
-	KeyBondDenom                     = types.KeyBondDenom
-
-	ValidateGenesis = types.ValidateGenesis
+	ModuleCdc                          = types.ModuleCdc
+	LastValidatorPowerKey              = types.LastValidatorPowerKey
+	LastTotalPowerKey                  = types.LastTotalPowerKey
+	ValidatorsKey                      = types.ValidatorsKey
+	ValidatorsByConsAddrKey            = types.ValidatorsByConsAddrKey
+	ValidatorsByPowerIndexKey          = types.ValidatorsByPowerIndexKey
+	DelegationKey                      = types.DelegationKey
+	UnbondingDelegationKey             = types.UnbondingDelegationKey
+	UnbondingDelegationByValIndexKey   = types.UnbondingDelegationByValIndexKey
+	RedelegationKey                    = types.RedelegationKey
+	RedelegationByValSrcIndexKey       = types.RedelegationByValSrcIndexKey
+	RedelegationByValDstIndexKey       = types.RedelegationByValDstIndexKey
+	UnbondingQueueKey                  = types.UnbondingQueueKey
+	RedelegationQueueKey               = types.RedelegationQueueKey
+	ValidatorQueueKey                  = types.ValidatorQueueKey
+	HistoricalInfoKey                  = types.HistoricalInfoKey
+	KeyUnbondingTime                   = types.KeyUnbondingTime
+	KeyMaxValidators                   = types.KeyMaxValidators
+	KeyMaxEntries                      = types.KeyMaxEntries
+	KeyBondDenom                       = types.KeyBondDenom
+	ValidateGenesis                    = types.ValidateGenesis
 )
 
 type (

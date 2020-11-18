@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
-	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -58,9 +57,9 @@ func ModuleAccountInvariants(k Keeper) sdk.Invariant {
 
 		k.IterateValidators(ctx, func(_ int64, validator exported.ValidatorI) bool {
 			switch validator.GetStatus() {
-			case stakingexport.Bonded:
+			case exported.Bonded:
 				bonded = bonded.Add(validator.GetTokens())
-			case stakingexport.Unbonding, stakingexport.Unbonded:
+			case exported.Unbonding, exported.Unbonded:
 				notBonded = notBonded.Add(validator.GetTokens())
 			default:
 				panic("invalid validator status")

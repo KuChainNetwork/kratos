@@ -171,24 +171,24 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 			baseCode,
 				baseName,
 				baseFullName,
-				baseIconUrl,
-				baseTxUrl,
+				baseIconURL,
+				baseTxURL,
 				quoteCode,
 				quoteName,
 				quoteFullName,
-				quoteIconUrl,
-				quoteTxUrl := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
+				quoteIconURL,
+				quoteTxURL := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
 
 			if 0 >= len(baseCode) ||
 				0 >= len(baseName) ||
 				0 >= len(baseFullName) ||
-				0 >= len(baseIconUrl) ||
-				0 >= len(baseTxUrl) ||
+				0 >= len(baseIconURL) ||
+				0 >= len(baseTxURL) ||
 				0 >= len(quoteCode) ||
 				0 >= len(quoteName) ||
 				0 >= len(quoteFullName) ||
-				0 >= len(quoteIconUrl) ||
-				0 >= len(quoteTxUrl) {
+				0 >= len(quoteIconURL) ||
+				0 >= len(quoteTxURL) {
 				err = errors.Errorf("all update failed are empty")
 				return
 			}
@@ -209,8 +209,8 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 							Code:     baseCode,
 							Name:     baseName,
 							FullName: baseFullName,
-							IconUrl:  baseIconUrl,
-							TxUrl:    baseTxUrl,
+							IconURL:  baseIconURL,
+							TxURL:    baseTxURL,
 						},
 					},
 					&types.QuoteCurrency{
@@ -218,8 +218,8 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 							Code:     quoteCode,
 							Name:     quoteName,
 							FullName: quoteFullName,
-							IconUrl:  quoteIconUrl,
-							TxUrl:    quoteTxUrl,
+							IconURL:  quoteIconURL,
+							TxURL:    quoteTxURL,
 						},
 					},
 					time.Time{}, // use server time
@@ -252,13 +252,13 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 			baseCode,
 				baseName,
 				baseFullName,
-				baseIconUrl,
-				baseTxUrl,
+				baseIconURL,
+				baseTxURL,
 				quoteCode,
 				quoteName,
 				quoteFullName,
-				quoteIconUrl,
-				quoteTxUrl := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
+				quoteIconURL,
+				quoteTxURL := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
 
 			if 0 >= len(baseCode) || 0 >= len(quoteCode) {
 				err = errors.Errorf("base code or quote code is empty")
@@ -267,12 +267,12 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 
 			if 0 >= len(baseName) &&
 				0 >= len(baseFullName) &&
-				0 >= len(baseIconUrl) &&
-				0 >= len(baseTxUrl) &&
+				0 >= len(baseIconURL) &&
+				0 >= len(baseTxURL) &&
 				0 >= len(quoteName) &&
 				0 >= len(quoteFullName) &&
-				0 >= len(quoteIconUrl) &&
-				0 >= len(quoteTxUrl) {
+				0 >= len(quoteIconURL) &&
+				0 >= len(quoteTxURL) {
 				err = errors.Errorf("all update failed are empty")
 				return
 			}
@@ -293,8 +293,8 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 							Code:     baseCode,
 							Name:     baseName,
 							FullName: baseFullName,
-							IconUrl:  baseIconUrl,
-							TxUrl:    baseTxUrl,
+							IconURL:  baseIconURL,
+							TxURL:    baseTxURL,
 						},
 					},
 					&types.QuoteCurrency{
@@ -302,8 +302,8 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 							Code:     quoteCode,
 							Name:     quoteName,
 							FullName: quoteFullName,
-							IconUrl:  quoteIconUrl,
-							TxUrl:    quoteTxUrl,
+							IconURL:  quoteIconURL,
+							TxURL:    quoteTxURL,
 						},
 					},
 				),

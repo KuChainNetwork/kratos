@@ -108,10 +108,21 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Uint64(FlagPruningKeepRecent, 0, "Number of recent heights to keep on disk (ignored if pruning is not 'custom')")
 	cmd.Flags().Uint64(FlagPruningKeepEvery, 0, "Offset heights to keep on disk after 'keep-every' (ignored if pruning is not 'custom')")
 	cmd.Flags().Uint64(FlagPruningInterval, 0, "Height interval at which pruned heights are removed from disk (ignored if pruning is not 'custom')")
-	viper.BindPFlag(FlagPruning, cmd.Flags().Lookup(FlagPruning))
-	viper.BindPFlag(FlagPruningKeepRecent, cmd.Flags().Lookup(FlagPruningKeepRecent))
-	viper.BindPFlag(FlagPruningKeepEvery, cmd.Flags().Lookup(FlagPruningKeepEvery))
-	viper.BindPFlag(FlagPruningInterval, cmd.Flags().Lookup(FlagPruningInterval))
+	if err := viper.BindPFlag(FlagPruning, cmd.Flags().Lookup(FlagPruning)); err != nil {
+		panic(err)
+	}
+
+	if err := viper.BindPFlag(FlagPruningKeepRecent, cmd.Flags().Lookup(FlagPruningKeepRecent)); err != nil {
+		panic(err)
+	}
+
+	if err := viper.BindPFlag(FlagPruningKeepEvery, cmd.Flags().Lookup(FlagPruningKeepEvery)); err != nil {
+		panic(err)
+	}
+
+	if err := viper.BindPFlag(FlagPruningInterval, cmd.Flags().Lookup(FlagPruningInterval)); err != nil {
+		panic(err)
+	}
 
 	// add support for all Tendermint-specific command line options
 	tcmd.AddNodeFlags(cmd)

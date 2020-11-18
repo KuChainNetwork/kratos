@@ -20,7 +20,6 @@ func AddCommands(
 	ctx *server.Context, cdc *codec.Codec,
 	rootCmd *cobra.Command,
 	appCreator server.AppCreator, appExport server.AppExporter) {
-
 	rootCmd.PersistentFlags().String("log_level", ctx.Config.LogLevel, "Log level")
 
 	tendermintCmd := &cobra.Command{
@@ -96,7 +95,6 @@ against which this app has been compiled.
 				} else {
 					bs, err = yaml.Marshal(&vs)
 				}
-
 			} else {
 				bs = []byte(constants.KuchainBuildVersion)
 			}

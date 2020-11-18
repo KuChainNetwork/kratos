@@ -9,7 +9,6 @@ const (
 )
 
 var (
-	// functions aliases
 	NewGenesisState             = types.NewGenesisState
 	NewGenesisStateFromStdTx    = types.NewGenesisStateFromStdTx
 	NewInitConfig               = types.NewInitConfig
@@ -19,7 +18,6 @@ var (
 	GenesisStateFromGenFile     = types.GenesisStateFromGenFile
 	ValidateGenesis             = types.ValidateGenesis
 
-	// variable aliases
 	ModuleCdc = types.ModuleCdc
 )
 
