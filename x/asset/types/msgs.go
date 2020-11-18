@@ -10,9 +10,19 @@ import (
 const RouterKey = ModuleName
 
 var (
-	RouterKeyName                    = types.MustName(RouterKey)
-	_, _, _, _, _    types.KuMsgData = (*MsgCreateCoinData)(nil), (*MsgIssueCoinData)(nil), (*MsgBurnCoinData)(nil), (*MsgLockCoinData)(nil), (*MsgUnlockCoinData)(nil)
-	_, _, _, _, _, _ types.Msg       = (*MsgTransfer)(nil), (*MsgCreateCoin)(nil), (*MsgIssueCoin)(nil), (*MsgBurnCoin)(nil), (*MsgLockCoin)(nil), (*MsgUnlockCoin)(nil)
+	RouterKeyName                 = types.MustName(RouterKey)
+	_, _, _, _, _ types.KuMsgData = (*MsgCreateCoinData)(nil),
+		(*MsgIssueCoinData)(nil),
+		(*MsgBurnCoinData)(nil),
+		(*MsgLockCoinData)(nil),
+		(*MsgUnlockCoinData)(nil)
+
+	_, _, _, _, _, _ types.Msg = (*MsgTransfer)(nil),
+		(*MsgCreateCoin)(nil),
+		(*MsgIssueCoin)(nil),
+		(*MsgBurnCoin)(nil),
+		(*MsgLockCoin)(nil),
+		(*MsgUnlockCoin)(nil)
 )
 
 type (
@@ -63,15 +73,16 @@ type MsgCreateCoin struct {
 }
 
 type MsgCreateCoinData struct {
-	Symbol        Name   `json:"symbol" yaml:"symbol"`                   // Symbol coin symbol name
-	Creator       Name   `json:"creator" yaml:"creator"`                 // Creator coin creator account name
-	MaxSupply     Coin   `json:"max_supply" yaml:"max_supply"`           // MaxSupply coin max supply limit
-	CanIssue      bool   `json:"can_issue" yaml:"can_issue"`             // CanIssue if the coin can issue after create
-	CanLock       bool   `json:"can_lock" yaml:"can_lock"`               // CanLock if the coin can lock by user
-	CanBurn       bool   `json:"can_burn" yaml:"can_burn"`               // CanBurn if the coin can burn by user
-	IssueToHeight int64  `json:"issue_to_height" yaml:"issue_to_height"` // IssueToHeight if this is not zero, creator only can issue this
-	InitSupply    Coin   `json:"init_supply" yaml:"init_supply"`         // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
-	Desc          []byte `json:"desc" yaml:"desc"`                       // Description
+	Symbol        Name  `json:"symbol" yaml:"symbol"`                   // Symbol coin symbol name
+	Creator       Name  `json:"creator" yaml:"creator"`                 // Creator coin creator account name
+	MaxSupply     Coin  `json:"max_supply" yaml:"max_supply"`           // MaxSupply coin max supply limit
+	CanIssue      bool  `json:"can_issue" yaml:"can_issue"`             // CanIssue if the coin can issue after create
+	CanLock       bool  `json:"can_lock" yaml:"can_lock"`               // CanLock if the coin can lock by user
+	CanBurn       bool  `json:"can_burn" yaml:"can_burn"`               // CanBurn if the coin can burn by user
+	IssueToHeight int64 `json:"issue_to_height" yaml:"issue_to_height"` // IssueToHeight if this is not zero, creator only can issue this
+	// InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+	InitSupply Coin   `json:"init_supply" yaml:"init_supply"`
+	Desc       []byte `json:"desc" yaml:"desc"` // Description
 }
 
 func (MsgCreateCoinData) Type() types.Name { return types.MustName("create") }
@@ -81,7 +92,11 @@ func (msg MsgCreateCoinData) Sender() AccountID {
 }
 
 // NewMsgCreate new create coin msg
-func NewMsgCreate(auth types.AccAddress, creator types.Name, symbol types.Name, maxSupply Coin, canIssue, canLock, canBurn bool, issue2Height int64, initSupply Coin, desc []byte) MsgCreateCoin {
+func NewMsgCreate(auth types.AccAddress,
+	creator types.Name, symbol types.Name,
+	maxSupply Coin, canIssue,
+	canLock, canBurn bool,
+	issue2Height int64, initSupply Coin, desc []byte) MsgCreateCoin {
 	return MsgCreateCoin{
 		*msg.MustNewKuMsg(
 			RouterKeyName,
@@ -287,7 +302,7 @@ type MsgLockCoin struct {
 }
 
 type MsgLockCoinData struct {
-	ID                AccountID `json:"id" yaml:"id"`                                         // Id lock account
+	ID                AccountID `json:"id" yaml:"id"`                                         // ID lock account
 	Amount            Coins     `json:"amount" yaml:"amount"`                                 // Amount coins to lock
 	UnlockBlockHeight int64     `json:"unlockBlockHeight,omitempty" yaml:"unlockBlockHeight"` // UnlockBlockHeight the block height the coins unlock
 }
@@ -425,7 +440,7 @@ type MsgExerciseCoin struct {
 }
 
 type MsgExerciseCoinData struct {
-	Id     AccountID `json:"id" yaml:"id"`
+	ID     AccountID `json:"id" yaml:"id"`
 	Amount Coin      `json:"amount" yaml:"amount"`
 }
 
@@ -433,7 +448,7 @@ type MsgExerciseCoinData struct {
 func (MsgExerciseCoinData) Type() types.Name { return types.MustName("exercise") }
 
 func (msg MsgExerciseCoinData) Sender() AccountID {
-	return msg.Id
+	return msg.ID
 }
 
 // NewMsgBurn new issue msg
@@ -443,7 +458,7 @@ func NewMsgExercise(auth types.AccAddress, id AccountID, amount Coin) MsgExercis
 			RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(Cdc(), &MsgExerciseCoinData{
-				Id:     id,
+				ID:     id,
 				Amount: amount,
 			}),
 		),
@@ -468,7 +483,7 @@ func (msg MsgExerciseCoin) ValidateBasic() error {
 		return err
 	}
 
-	if data.Id.Empty() {
+	if data.ID.Empty() {
 		return types.ErrKuMsgAccountIDNil
 	}
 
@@ -492,7 +507,7 @@ type MsgApprove struct {
 }
 
 type MsgApproveData struct {
-	Id      AccountID `json:"id" yaml:"id"`
+	ID      AccountID `json:"id" yaml:"id"`
 	Spender AccountID `json:"spender" yaml:"spender"`
 	Amount  Coins     `json:"amount" yaml:"amount"`
 }
@@ -501,7 +516,7 @@ type MsgApproveData struct {
 func (MsgApproveData) Type() types.Name { return types.MustName("approve") }
 
 func (msg MsgApproveData) Sender() AccountID {
-	return msg.Id
+	return msg.ID
 }
 
 // NewMsgApprove new approve msg
@@ -511,7 +526,7 @@ func NewMsgApprove(auth types.AccAddress, id, spender AccountID, amount Coins) M
 			RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(Cdc(), &MsgApproveData{
-				Id:      id,
+				ID:      id,
 				Spender: spender,
 				Amount:  amount,
 			}),
@@ -537,7 +552,7 @@ func (msg MsgApprove) ValidateBasic() error {
 		return err
 	}
 
-	if data.Id.Empty() {
+	if data.ID.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMsgAccountIDNil, "id accountID empty")
 	}
 
@@ -545,7 +560,7 @@ func (msg MsgApprove) ValidateBasic() error {
 		return sdkerrors.Wrap(types.ErrKuMsgAccountIDNil, "spender accountID empty")
 	}
 
-	if data.Id.Eq(data.Spender) {
+	if data.ID.Eq(data.Spender) {
 		return sdkerrors.Wrap(types.ErrKuMsgSpenderShouldNotEqual, "spender should not be equal to id")
 	}
 

@@ -37,7 +37,8 @@ type CoinStat struct {
 	CanLock       bool  `json:"can_lock,omitempty" yaml:"can_lock"`
 	CanBurn       bool  `json:"can_burn,omitempty" yaml:"can_burn"`
 	IssueToHeight int64 `json:"issue_to_height,omitempty" yaml:"issue_to_height"`
-	InitSupply    Coin  `json:"init_supply" yaml:"init_supply"` // InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+	// InitSupply coin init supply, if issue_to_height is not zero, this will be the start supply for issue
+	InitSupply Coin `json:"init_supply" yaml:"init_supply"`
 }
 
 // NewCoinStat creates a Coin status

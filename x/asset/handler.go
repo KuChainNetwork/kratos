@@ -142,7 +142,6 @@ func handleMsgIssue(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *type
 	)
 
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-
 }
 
 // handleMsgBurn Handle Msg Burn coin
@@ -188,7 +187,6 @@ func handleMsgBurn(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types
 	)
 
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
-
 }
 
 // handleMsgLockCoin Handle Msg lock coin
@@ -241,7 +239,9 @@ func handleMsgLockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *t
 }
 
 // handleMsgUnlockCoin Handle Msg lock coin
-func handleMsgUnlockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types.MsgUnlockCoin) (*sdk.Result, error) {
+func handleMsgUnlockCoin(
+	ctx chainTypes.Context,
+	k keeper.AssetCoinsKeeper, msg *types.MsgUnlockCoin) (*sdk.Result, error) {
 	logger := ctx.Logger()
 
 	msgData := types.MsgUnlockCoinData{}
@@ -271,7 +271,9 @@ func handleMsgUnlockCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg 
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgExerciseCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types.MsgExerciseCoin) (*sdk.Result, error) {
+func handleMsgExerciseCoin(
+	ctx chainTypes.Context,
+	k keeper.AssetCoinsKeeper, msg *types.MsgExerciseCoin) (*sdk.Result, error) {
 	logger := ctx.Logger()
 
 	msgData, err := msg.GetData()
@@ -280,19 +282,19 @@ func handleMsgExerciseCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, ms
 	}
 
 	logger.Debug("handle coin exercise",
-		"id", msgData.Id, "amount", msgData.Amount)
+		"id", msgData.ID, "amount", msgData.Amount)
 
-	ctx.RequireAuth(msgData.Id)
+	ctx.RequireAuth(msgData.ID)
 
-	if err := k.ExerciseCoinPower(ctx.Context(), msgData.Id, msgData.Amount); err != nil {
-		return nil, sdkerrors.Wrapf(err, "msg exercise coin %s", msgData.Id)
+	if err := k.ExerciseCoinPower(ctx.Context(), msgData.ID, msgData.Amount); err != nil {
+		return nil, sdkerrors.Wrapf(err, "msg exercise coin %s", msgData.ID)
 	}
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeExercise,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(types.AttributeKeyFrom, msgData.Id.String()),
+			sdk.NewAttribute(types.AttributeKeyFrom, msgData.ID.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
 		),
 	)
@@ -300,7 +302,9 @@ func handleMsgExerciseCoin(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, ms
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *types.MsgApprove) (*sdk.Result, error) {
+func handleMsgApprove(
+	ctx chainTypes.Context,
+	k keeper.AssetCoinsKeeper, msg *types.MsgApprove) (*sdk.Result, error) {
 	logger := ctx.Logger()
 
 	msgData, err := msg.GetData()
@@ -309,11 +313,11 @@ func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *ty
 	}
 
 	logger.Debug("handle coin approve",
-		"id", msgData.Id, "spender", msgData.Spender, "amount", msgData.Amount)
+		"id", msgData.ID, "spender", msgData.Spender, "amount", msgData.Amount)
 
-	ctx.RequireAuth(msgData.Id)
+	ctx.RequireAuth(msgData.ID)
 
-	apporveCoins, err := k.GetApproveCoins(ctx.Context(), msgData.Id, msgData.Spender)
+	apporveCoins, err := k.GetApproveCoins(ctx.Context(), msgData.ID, msgData.Spender)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "get approve coins")
 	}
@@ -328,7 +332,7 @@ func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *ty
 		}
 	}
 
-	err = k.Approve(ctx.Context(), msgData.Id, msgData.Spender, msgData.Amount, false)
+	err = k.Approve(ctx.Context(), msgData.ID, msgData.Spender, msgData.Amount, false)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "msg approve handler error")
 	}
@@ -337,7 +341,7 @@ func handleMsgApprove(ctx chainTypes.Context, k keeper.AssetCoinsKeeper, msg *ty
 		sdk.NewEvent(
 			types.EventTypeApprove,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(types.AttributeKeyFrom, msgData.Id.String()),
+			sdk.NewAttribute(types.AttributeKeyFrom, msgData.ID.String()),
 			sdk.NewAttribute(types.AttributeKeySpender, msgData.Spender.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msgData.Amount.String()),
 		),

@@ -46,10 +46,10 @@ func (a AssetKeeper) Approve(ctx sdk.Context, id, spender types.AccountID, amt t
 	}
 
 	if apporveCoins != nil {
-		if approveAll, hasNeg := approveSumCoins.SafeSub(apporveCoins.Amount); hasNeg {
+		var hasNeg bool
+		approveSumCoins, hasNeg = approveSumCoins.SafeSub(apporveCoins.Amount)
+		if hasNeg {
 			return sdkerrors.Wrap(types.ErrAssetApporveNotEnough, "sum approve less than old")
-		} else {
-			approveSumCoins = approveAll
 		}
 
 		if apporveCoins.IsLock != isLock {

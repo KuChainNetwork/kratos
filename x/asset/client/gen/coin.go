@@ -12,8 +12,8 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 )
 
-// GenGenCoinCmd builds gen genesis coin type to genesis config
-func GenGensisCoinCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+// GenCoinCmd builds gen genesis coin type to genesis config
+func GensisCoinCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-coin",
 		Short: "Add a genesis coin type to chain",
