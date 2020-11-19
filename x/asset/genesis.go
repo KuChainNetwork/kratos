@@ -58,6 +58,7 @@ func ExportGenesis(ctx sdk.Context, ak Keeper) GenesisState {
 		return false
 	})
 
+	// FIXME: Change Locked Block height to zero
 	locks := make([]GenesisLocks, 0, 512)
 	ak.IterateCoinLockedStats(ctx, func(id types.AccountID, lock []assetTypes.LockedCoins) bool {
 		locks = append(locks, NewBaseGenesisLocks(id, lock))
