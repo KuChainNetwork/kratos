@@ -52,9 +52,16 @@ func ExportGenesis(ctx sdk.Context, ak Keeper) GenesisState {
 		return false
 	})
 
+	coinpowers := make([]GenesisAsset, 0, 5120)
+	ak.IterateAllCoinPowers(ctx, func(add types.AccountID, c types.Coins) bool {
+		coinpowers = append(coinpowers, assetTypes.NewGenesisAsset(add, c...))
+		return false
+	})
+
 	res := GenesisState{
-		GenesisCoins:  coinsStats,
-		GenesisAssets: assets,
+		GenesisCoins:      coinsStats,
+		GenesisAssets:     assets,
+		GenesisCoinPowers: coinpowers,
 	}
 
 	return res

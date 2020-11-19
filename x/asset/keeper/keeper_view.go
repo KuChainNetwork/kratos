@@ -154,7 +154,7 @@ func (a AssetKeeper) IterateAllCoinPowers(ctx sdk.Context, cb func(address types
 			coins types.Coins
 		)
 
-		id := types.AccountIDFromCoinStoreKey(iterator.Key())
+		id := types.AccountIDFromCoinPowerStoreKey(iterator.Key())
 
 		if err := a.cdc.UnmarshalBinaryBare(iterator.Value(), &coins); err != nil {
 			panic(errors.New("unmarshal coins in store error"))

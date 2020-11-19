@@ -10,15 +10,17 @@ import (
 
 // GenesisState is the bank state that must be provided at genesis.
 type GenesisState struct {
-	GenesisAssets []GenesisAsset `json:"genesisAssets"`
-	GenesisCoins  []GenesisCoin  `json:"genesisCoins"`
+	GenesisAssets     []GenesisAsset `json:"genesisAssets"`
+	GenesisCoins      []GenesisCoin  `json:"genesisCoins"`
+	GenesisCoinPowers []GenesisAsset `json:"genesisCoinPowers"`
 }
 
 // NewGenesisState creates a new genesis state.
 func NewGenesisState() GenesisState {
 	return GenesisState{
-		GenesisAssets: make([]GenesisAsset, 0),
-		GenesisCoins:  make([]GenesisCoin, 0),
+		GenesisAssets:     make([]GenesisAsset, 0),
+		GenesisCoins:      make([]GenesisCoin, 0),
+		GenesisCoinPowers: make([]GenesisAsset, 0),
 	}
 }
 
