@@ -37,6 +37,8 @@ func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
 	}
 
+	// TODO: check genesis
+
 	return nil
 }
 
@@ -81,18 +83,14 @@ func (g BaseGenesisAsset) GetCoins() Coins { return g.Coins }
 
 // GensisAssetCoin
 type BaseGensisAssetCoin struct {
-	Creator     Name   `json:"creator"`
-	Symbol      Name   `json:"symbol"`
-	MaxSupply   Coin   `json:"maxSupply"`
-	Description string `json:"description"`
+	Stat        CoinStat `json:"stat"`
+	Description string   `json:"description"`
 }
 
-func NewGenesisCoin(creator, symbol Name, maxSupplyAmount Int, description string) BaseGensisAssetCoin {
+func NewGenesisCoin(stat *CoinStat, description []byte) BaseGensisAssetCoin {
 	return BaseGensisAssetCoin{
-		Creator:     creator,
-		Symbol:      symbol,
-		MaxSupply:   NewCoin(CoinDenom(creator, symbol), maxSupplyAmount),
-		Description: description,
+		Stat:        *stat,
+		Description: string(description),
 	}
 }
 
@@ -102,9 +100,9 @@ func (g BaseGensisAssetCoin) Validate() error {
 		return fmt.Errorf("genesis coin description too length")
 	}
 
-	denom := CoinDenom(g.Creator, g.Symbol)
+	denom := CoinDenom(g.Stat.Creator, g.Stat.Symbol)
 
-	if denom != g.MaxSupply.Denom {
+	if denom != g.Stat.MaxSupply.Denom {
 		return fmt.Errorf("genesis max supply coin denom error")
 	}
 
@@ -116,13 +114,13 @@ func (g BaseGensisAssetCoin) Validate() error {
 }
 
 // GetCreator imp GenesisCoin
-func (g BaseGensisAssetCoin) GetCreator() Name { return g.Creator }
+func (g BaseGensisAssetCoin) GetCreator() Name { return g.Stat.Creator }
 
 // GetSymbol imp GenesisCoin
-func (g BaseGensisAssetCoin) GetSymbol() Name { return g.Symbol }
+func (g BaseGensisAssetCoin) GetSymbol() Name { return g.Stat.Symbol }
 
 // GetMaxSupply imp GenesisCoin
-func (g BaseGensisAssetCoin) GetMaxSupply() Coin { return g.MaxSupply }
+func (g BaseGensisAssetCoin) GetMaxSupply() Coin { return g.Stat.MaxSupply }
 
 // GetDescription imp GenesisCoin
 func (g BaseGensisAssetCoin) GetDescription() string { return g.Description }

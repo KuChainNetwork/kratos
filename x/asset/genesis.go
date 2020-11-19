@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
+	assetTypes "github.com/KuChainNetwork/kuchain/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -39,7 +40,24 @@ func InitGenesis(ctx sdk.Context, ak Keeper, bz json.RawMessage) {
 
 // ExportGenesis returns a GenesisState for a given context and keeper
 func ExportGenesis(ctx sdk.Context, ak Keeper) GenesisState {
-	return GenesisState{}
+	coinsStats := make([]GenesisCoin, 0, 512)
+	ak.IterateAllAssets(ctx, func(stat *assetTypes.CoinStat, desc []byte) bool {
+		coinsStats = append(coinsStats, assetTypes.NewGenesisCoin(stat, desc))
+		return false
+	})
+
+	assets := make([]GenesisAsset, 0, 5120)
+	ak.IterateAllCoins(ctx, func(add types.AccountID, c types.Coins) bool {
+		assets = append(assets, assetTypes.NewGenesisAsset(add, c...))
+		return false
+	})
+
+	res := GenesisState{
+		GenesisCoins:  coinsStats,
+		GenesisAssets: assets,
+	}
+
+	return res
 }
 
 // GenesisBalancesIterator implements genesis account iteration.

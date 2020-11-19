@@ -32,4 +32,5 @@ type (
 
 	GenesisState = types.GenesisState
 	GenesisAsset = types.GenesisAsset
+	GenesisCoin  = types.GenesisCoin
 )

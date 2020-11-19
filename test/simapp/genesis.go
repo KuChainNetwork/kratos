@@ -64,7 +64,7 @@ func NewGenesisAccounts(rootAuth types.AccAddress, accounts ...SimGenesisAccount
 	}
 
 	for _, c := range coins2genesis {
-		createor, symbol, err := types.CoinAccountsFromDenom(c.Denom)
+		creator, symbol, err := types.CoinAccountsFromDenom(c.Denom)
 		if err != nil {
 			panic(errors.Wrapf(err, "coin symbol err %s", c.Denom))
 		}
@@ -75,7 +75,15 @@ func NewGenesisAccounts(rootAuth types.AccAddress, accounts ...SimGenesisAccount
 			max = types.NewInt(0)
 		}
 
-		res.coins = append(res.coins, assetTypes.NewGenesisCoin(createor, symbol, max, fmt.Sprintf("desc for %s", c.Denom)))
+		res.coins = append(res.coins, assetTypes.NewGenesisCoin(
+			&assetTypes.CoinStat{
+				Creator:      creator,
+				Symbol:       symbol,
+				CreateHeight: 1,
+				Supply:       types.NewCoin(c.Denom, types.NewInt(0)),
+				MaxSupply:    types.NewCoin(c.Denom, max),
+			},
+			[]byte(fmt.Sprintf("desc for %s", c.Denom))))
 	}
 
 	return res
