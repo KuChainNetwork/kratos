@@ -8,11 +8,36 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+type GenesisLocks interface {
+	GetID() AccountID
+	LockedByHeight() []LockedCoins
+}
+
+type BaseGenesisLocks struct {
+	ID      AccountID     `json:"id" yaml:"id"`
+	Lockeds []LockedCoins `json:"lockeds" yaml:"lockeds"`
+}
+
+func NewBaseGenesisLocks(id AccountID, lockeds []LockedCoins) BaseGenesisLocks {
+	return BaseGenesisLocks{
+		ID:      id,
+		Lockeds: lockeds,
+	}
+}
+
+func (g BaseGenesisLocks) GetID() AccountID { return g.ID }
+
+func (g BaseGenesisLocks) LockedByHeight() []LockedCoins {
+	return g.Lockeds
+}
+
 // GenesisState is the bank state that must be provided at genesis.
 type GenesisState struct {
 	GenesisAssets     []GenesisAsset `json:"genesisAssets"`
 	GenesisCoins      []GenesisCoin  `json:"genesisCoins"`
 	GenesisCoinPowers []GenesisAsset `json:"genesisCoinPowers"`
+	GenesisLocks      []GenesisLocks `json:"genesisLocks"`
+	GenesisLockAssets []GenesisAsset `json:"genesisLockAssets"`
 }
 
 // NewGenesisState creates a new genesis state.
@@ -21,6 +46,8 @@ func NewGenesisState() GenesisState {
 		GenesisAssets:     make([]GenesisAsset, 0),
 		GenesisCoins:      make([]GenesisCoin, 0),
 		GenesisCoinPowers: make([]GenesisAsset, 0),
+		GenesisLocks:      make([]GenesisLocks, 0),
+		GenesisLockAssets: make([]GenesisAsset, 0),
 	}
 }
 

@@ -100,7 +100,7 @@ func (ak AccountKeeper) IterateAuths(ctx sdk.Context, cb func(auth types.Auth) b
 		perfix := iterator.Key()[0]
 		address := chainTypes.AccAddress(iterator.Key()[1:])
 
-		ctx.Logger().Info("export auth",
+		ctx.Logger().Debug("export auth",
 			"perfix", perfix,
 			"auth", address,
 			"value", fmt.Sprintf("%X", iterator.Value()))

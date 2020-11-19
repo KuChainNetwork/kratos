@@ -47,14 +47,26 @@ func ExportGenesis(ctx sdk.Context, ak Keeper) GenesisState {
 	})
 
 	assets := make([]GenesisAsset, 0, 5120)
-	ak.IterateAllCoins(ctx, func(add types.AccountID, c types.Coins) bool {
-		assets = append(assets, assetTypes.NewGenesisAsset(add, c...))
+	ak.IterateAllCoins(ctx, func(id types.AccountID, c types.Coins) bool {
+		assets = append(assets, assetTypes.NewGenesisAsset(id, c...))
 		return false
 	})
 
 	coinpowers := make([]GenesisAsset, 0, 5120)
-	ak.IterateAllCoinPowers(ctx, func(add types.AccountID, c types.Coins) bool {
-		coinpowers = append(coinpowers, assetTypes.NewGenesisAsset(add, c...))
+	ak.IterateAllCoinPowers(ctx, func(id types.AccountID, c types.Coins) bool {
+		coinpowers = append(coinpowers, assetTypes.NewGenesisAsset(id, c...))
+		return false
+	})
+
+	locks := make([]GenesisLocks, 0, 512)
+	ak.IterateCoinLockedStats(ctx, func(id types.AccountID, lock []assetTypes.LockedCoins) bool {
+		locks = append(locks, NewBaseGenesisLocks(id, lock))
+		return false
+	})
+
+	lockAssets := make([]GenesisAsset, 0, 512)
+	ak.IterateCoinLockeds(ctx, func(id types.AccountID, c types.Coins) bool {
+		lockAssets = append(lockAssets, assetTypes.NewGenesisAsset(id, c...))
 		return false
 	})
 
@@ -62,6 +74,8 @@ func ExportGenesis(ctx sdk.Context, ak Keeper) GenesisState {
 		GenesisCoins:      coinsStats,
 		GenesisAssets:     assets,
 		GenesisCoinPowers: coinpowers,
+		GenesisLocks:      locks,
+		GenesisLockAssets: lockAssets,
 	}
 
 	return res

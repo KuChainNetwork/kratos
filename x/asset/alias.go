@@ -23,6 +23,7 @@ var (
 	NewGenesisState     = types.NewGenesisState
 	NewGenesisCoin      = types.NewGenesisCoin
 	NewGenesisAsset     = types.NewGenesisAsset
+	NewBaseGenesisLocks = types.NewBaseGenesisLocks
 	DefaultGenesisState = types.DefaultGenesisState
 )
 
@@ -33,4 +34,5 @@ type (
 	GenesisState = types.GenesisState
 	GenesisAsset = types.GenesisAsset
 	GenesisCoin  = types.GenesisCoin
+	GenesisLocks = types.GenesisLocks
 )
