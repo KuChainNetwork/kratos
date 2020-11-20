@@ -6,9 +6,15 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
 )
 
+type GenesisAuth struct {
+	Auth
+}
+
 // GenesisState genesis state for account module
 type GenesisState struct {
-	Accounts exported.GenesisAccounts `json:"accounts"`
+	Accounts      exported.GenesisAccounts `json:"accounts"`
+	Auths         []exported.GenesisAuth   `json:"auths"`
+	AccountNumber uint64                   `json:"account_num"`
 }
 
 func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {

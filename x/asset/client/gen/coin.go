@@ -5,6 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset"
+	assetTypes "github.com/KuChainNetwork/kuchain/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/spf13/cobra"
@@ -62,7 +63,14 @@ func addCoin(cdc *codec.Codec, state *asset.GenesisState, creator, symbol types.
 		}
 	}
 
-	c := asset.NewGenesisCoin(creator, symbol, maxSupply.Amount, desc)
+	c := asset.NewGenesisCoin(&assetTypes.CoinStat{
+		Creator:      creator,
+		Symbol:       symbol,
+		CreateHeight: 1,
+		Supply:       types.NewCoin(maxSupply.Denom, types.NewInt(0)),
+		MaxSupply:    maxSupply,
+	}, []byte(desc))
+
 	if err := c.Validate(); err != nil {
 		return err
 	}

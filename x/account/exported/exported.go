@@ -5,6 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 )
 
 // AccountAuthKeeper is interface for trx auth and account state.
@@ -77,4 +78,25 @@ func (ga GenesisAccounts) Append(acc GenesisAccount) GenesisAccounts {
 type GenesisAccount interface {
 	Account
 	Validate() error
+}
+
+type GenesisAuth interface {
+	GetAddress() sdk.AccAddress
+	GetPubKey() crypto.PubKey
+	GetSequence() uint64
+	GetNumber() uint64
+}
+
+type GenesisAuths []GenesisAuth
+
+func (a GenesisAuths) Len() int {
+	return len(a)
+}
+
+func (a GenesisAuths) Less(i, j int) bool {
+	return a[i].GetNumber() < a[j].GetNumber()
+}
+
+func (a GenesisAuths) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
 }

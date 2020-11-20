@@ -11,9 +11,12 @@ var ModuleCdc = codec.New()
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterInterface((*GenesisAsset)(nil), nil)
 	cdc.RegisterInterface((*GenesisCoin)(nil), nil)
+	cdc.RegisterInterface((*GenesisLocks)(nil), nil)
+
 	cdc.RegisterConcrete(&GenesisState{}, "asset/genesisState", nil)
 	cdc.RegisterConcrete(&BaseGensisAssetCoin{}, "asset/genesisCoin", nil)
 	cdc.RegisterConcrete(&BaseGenesisAsset{}, "asset/genesisAsset", nil)
+	cdc.RegisterConcrete(&BaseGenesisLocks{}, "asset/genesisLock", nil)
 
 	cdc.RegisterConcrete(&KuMsg{}, "kuchain/msg", nil)
 

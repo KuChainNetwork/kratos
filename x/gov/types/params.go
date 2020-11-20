@@ -120,6 +120,10 @@ func DefaultTallyParams() TallyParams {
 	return NewTallyParams(DefaultQuorum, DefaultThreshold, DefaultVeto, DefaultEmergengcy, DefaultPunishPeriod, DefaultSlashFraction)
 }
 
+func DefaultPunishValidators() []PunishValidator {
+	return make([]PunishValidator, 0)
+}
+
 // Equal checks equality of TallyParams
 func (tp TallyParams) Equal(other TallyParams) bool {
 	return tp.Quorum.Equal(other.Quorum) && tp.Threshold.Equal(other.Threshold) && tp.Veto.Equal(other.Veto)

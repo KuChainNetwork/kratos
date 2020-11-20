@@ -218,6 +218,17 @@ func (k *Keeper) GetStartNotDistributionTimePoint(ctx sdk.Context) {
 		"time", k.startNotDistriTimePoint.Nanosecond())
 }
 
+func (k Keeper) QueryStartNotDistributionTimePoint(ctx sdk.Context) time.Time {
+	var res time.Time
+
+	store := store.NewStore(ctx, k.storeKey)
+	bz := store.Get([]byte(key))
+
+	k.cdc.UnmarshalJSON(bz, &res)
+
+	return res
+}
+
 func (k Keeper) CanDistribution(ctx sdk.Context) (bool, time.Time) {
 	if k.startNotDistriTimePoint.Nanosecond() <= 0 {
 		return true, k.startNotDistriTimePoint

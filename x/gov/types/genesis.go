@@ -9,22 +9,24 @@ import (
 
 // GenesisState - all staking state that must be provided at genesis
 type GenesisState struct {
-	StartingProposalID uint64        `json:"starting_proposal_id" yaml:"starting_proposal_id"`
-	Deposits           Deposits      `json:"deposits" yaml:"deposits"`
-	Votes              Votes         `json:"votes" yaml:"votes"`
-	Proposals          Proposals     `json:"proposals" yaml:"proposals"`
-	DepositParams      DepositParams `json:"deposit_params" yaml:"deposit_params"`
-	VotingParams       VotingParams  `json:"voting_params" yaml:"voting_params"`
-	TallyParams        TallyParams   `json:"tally_params" yaml:"tally_params"`
+	StartingProposalID uint64            `json:"starting_proposal_id" yaml:"starting_proposal_id"`
+	Deposits           Deposits          `json:"deposits" yaml:"deposits"`
+	Votes              Votes             `json:"votes" yaml:"votes"`
+	Proposals          Proposals         `json:"proposals" yaml:"proposals"`
+	DepositParams      DepositParams     `json:"deposit_params" yaml:"deposit_params"`
+	VotingParams       VotingParams      `json:"voting_params" yaml:"voting_params"`
+	TallyParams        TallyParams       `json:"tally_params" yaml:"tally_params"`
+	PunishValidators   []PunishValidator `json:"punish_validators" yaml:"punish_validators"`
 }
 
 // NewGenesisState creates a new genesis state for the governance module
-func NewGenesisState(startingProposalID uint64, dp DepositParams, vp VotingParams, tp TallyParams) GenesisState {
+func NewGenesisState(startingProposalID uint64, dp DepositParams, vp VotingParams, tp TallyParams, pvs []PunishValidator) GenesisState {
 	return GenesisState{
 		StartingProposalID: startingProposalID,
 		DepositParams:      dp,
 		VotingParams:       vp,
 		TallyParams:        tp,
+		PunishValidators:   pvs,
 	}
 }
 
@@ -35,6 +37,7 @@ func DefaultGenesisState() GenesisState {
 		DefaultDepositParams(),
 		DefaultVotingParams(),
 		DefaultTallyParams(),
+		DefaultPunishValidators(),
 	)
 }
 

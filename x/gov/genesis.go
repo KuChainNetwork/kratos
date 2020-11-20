@@ -64,6 +64,12 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		proposalsVotes = append(proposalsVotes, votes...)
 	}
 
+	pvs := make([]types.PunishValidator, 0, 64)
+	k.IterateAllPunishValidators(ctx, func(v types.PunishValidator) bool {
+		pvs = append(pvs, v)
+		return false
+	})
+
 	return GenesisState{
 		StartingProposalID: startingProposalID,
 		Deposits:           proposalsDeposits,
@@ -72,5 +78,6 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		DepositParams:      depositParams,
 		VotingParams:       votingParams,
 		TallyParams:        tallyParams,
+		PunishValidators:   pvs,
 	}
 }
