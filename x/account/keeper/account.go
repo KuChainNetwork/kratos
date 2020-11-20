@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/KuChainNetwork/kuchain/chain/store"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
@@ -79,6 +81,40 @@ func (ak AccountKeeper) IterateAccounts(ctx sdk.Context, cb func(account exporte
 		account := ak.decodeAccount(iterator.Value())
 
 		if cb(account) {
+			break
+		}
+	}
+}
+
+func (ak AccountKeeper) IterateAuths(ctx sdk.Context, cb func(auth types.Auth) bool) {
+	store := store.NewStore(ctx, ak.key)
+	iterator := sdk.KVStorePrefixIterator(store, types.AuthSeqStoreKeyPerfix)
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var (
+			bz = iterator.Value()
+			an types.Auth
+		)
+
+		perfix := iterator.Key()[0]
+		address := chainTypes.AccAddress(iterator.Key()[1:])
+
+		ctx.Logger().Debug("export auth",
+			"perfix", perfix,
+			"auth", address,
+			"value", fmt.Sprintf("%X", iterator.Value()))
+
+		if bz == nil {
+			an = types.NewAuth(address)
+			ak.initAuthData(ctx, &an)
+		} else {
+			if err := ak.cdc.UnmarshalBinaryBare(bz, &an); err != nil {
+				panic(sdkerrors.Wrap(err, "get auth data unmarshal"))
+			}
+		}
+
+		if cb(an) {
 			break
 		}
 	}

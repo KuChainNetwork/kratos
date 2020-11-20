@@ -117,6 +117,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		types.NewDepositParams(minDeposit, depositPeriod),
 		types.NewVotingParams(votingPeriod),
 		types.NewTallyParams(quorum, threshold, veto, emergency, punishPeriod, quorum),
+		types.DefaultPunishValidators(),
 	)
 
 	fmt.Printf("Selected randomly generated governance parameters:\n%s\n", codec.MustMarshalJSONIndent(simState.Cdc, govGenesis))

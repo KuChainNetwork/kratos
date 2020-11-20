@@ -26,8 +26,9 @@ type (
 )
 
 var (
-	NewAccountIDFromStoreKey = types.NewAccountIDFromStoreKey
-	MustName                 = types.MustName
+	NewAccountIDFromStoreKey  = types.NewAccountIDFromStoreKey
+	NewAccountIDFromStoreByte = types.NewAccountIDFromStoreByte
+	MustName                  = types.MustName
 )
 
 const (

@@ -3,8 +3,6 @@ package keeper
 import (
 	"time"
 
-	gogotypes "github.com/gogo/protobuf/types"
-
 	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -77,14 +75,14 @@ func (k Keeper) IterateValidatorMissedBlockBitArray(ctx sdk.Context,
 	index := int64(0)
 	// Array may be sparse
 	for ; index < k.SignedBlocksWindow(ctx); index++ {
-		var missed gogotypes.BoolValue
+		var missed bool
 		bz := store.Get(types.GetValidatorMissedBlockBitArrayKey(address, index))
 		if bz == nil {
 			continue
 		}
 
-		k.cdc.MustUnmarshalBinaryBare(bz, &missed)
-		if handler(index, missed.Value) {
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &missed)
+		if handler(index, missed) {
 			break
 		}
 	}

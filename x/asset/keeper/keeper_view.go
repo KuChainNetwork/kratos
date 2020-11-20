@@ -1,12 +1,10 @@
 package keeper
 
 import (
-	"errors"
-
 	"github.com/KuChainNetwork/kuchain/chain/store"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/pkg/errors"
 )
 
 // GetCoins get coins by account id
@@ -18,7 +16,7 @@ func (a AssetKeeper) GetCoins(ctx sdk.Context, account types.AccountID) (types.C
 func (a AssetKeeper) GetCoin(ctx sdk.Context, account types.AccountID, creator, symbol types.Name) (types.Coin, error) {
 	coins, err := a.getCoins(ctx, account)
 	if err != nil {
-		return types.Coin{}, sdkerrors.Wrapf(err, "get coin %s %s-%s", account, creator, symbol)
+		return types.Coin{}, errors.Wrapf(err, "get coin %s %s-%s", account, creator, symbol)
 	}
 	denomd := types.CoinDenom(creator, symbol)
 
@@ -39,7 +37,7 @@ func (a AssetKeeper) GetCoinPowers(ctx sdk.Context, account types.AccountID) typ
 func (a AssetKeeper) GetCoinPower(ctx sdk.Context, account types.AccountID, creator, symbol types.Name) (types.Coin, error) {
 	coins, err := a.getCoinsPower(ctx, account)
 	if err != nil {
-		return types.Coin{}, sdkerrors.Wrapf(err, "get coin power %s %s-%s", account, creator, symbol)
+		return types.Coin{}, errors.Wrapf(err, "get coin power %s %s-%s", account, creator, symbol)
 	}
 	denomd := types.CoinDenom(creator, symbol)
 
@@ -91,9 +89,35 @@ func (a AssetKeeper) GetCoinsTotalSupply(ctx sdk.Context) types.Coins {
 func (a AssetKeeper) GetCoinTotalSupply(ctx sdk.Context, creator, symbol types.Name) types.Coin {
 	stat, err := a.getStat(ctx, creator, symbol)
 	if err != nil {
-		panic(sdkerrors.Wrapf(err, "get coin total supply %s/%s", creator, symbol))
+		panic(errors.Wrapf(err, "get coin total supply %s/%s", creator, symbol))
 	}
 	return stat.Supply
+}
+
+func (a AssetKeeper) IterateAllAssets(ctx sdk.Context, cb func(stat *types.CoinStat, desc []byte) (stop bool)) {
+	store := store.NewStore(ctx, a.key)
+	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinStatStoreKeyPrefix))
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var (
+			cs types.CoinStat
+		)
+
+		if err := a.cdc.UnmarshalBinaryBare(iterator.Value(), &cs); err != nil {
+			panic(errors.New("unmarshal coins in store error"))
+		}
+
+		// find desc
+		desc, err := a.GetCoinDesc(ctx, cs.Creator, cs.Symbol)
+		if err != nil {
+			panic(errors.Wrapf(err, "get coin desc %s %s err", cs.Creator, cs.Symbol))
+		}
+
+		if cb(&cs, desc.Description) {
+			break
+		}
+	}
 }
 
 // IterateAllCoins iterate all account 's coins
@@ -130,13 +154,66 @@ func (a AssetKeeper) IterateAllCoinPowers(ctx sdk.Context, cb func(address types
 			coins types.Coins
 		)
 
-		id := types.AccountIDFromCoinStoreKey(iterator.Key())
+		id := types.AccountIDFromCoinPowerStoreKey(iterator.Key())
 
 		if err := a.cdc.UnmarshalBinaryBare(iterator.Value(), &coins); err != nil {
 			panic(errors.New("unmarshal coins in store error"))
 		}
 
 		if cb(id, coins) {
+			break
+		}
+	}
+}
+
+// IterateCoinLockeds iterate all account 's locked coins
+func (a AssetKeeper) IterateCoinLockedStats(
+	ctx sdk.Context,
+	cb func(address types.AccountID, locks []LockedCoins) (stop bool)) {
+	store := store.NewStore(ctx, a.key)
+	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinLockedStatStoreKeyPrefix))
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var (
+			locks accountLockedCoins
+		)
+
+		id := types.AccountIDFromCoinPowerStoreKey(iterator.Key())
+
+		if err := a.cdc.UnmarshalBinaryBare(iterator.Value(), &locks); err != nil {
+			panic(errors.New("unmarshal locks in store error"))
+		}
+
+		if !locks.ID.Eq(id) {
+			panic(errors.Errorf("id not equal %s to %s", locks.ID, id))
+		}
+
+		if cb(id, locks.Lockeds) {
+			break
+		}
+	}
+}
+
+func (a AssetKeeper) IterateCoinLockeds(
+	ctx sdk.Context,
+	cb func(address types.AccountID, locks types.Coins) (stop bool)) {
+	store := store.NewStore(ctx, a.key)
+	iterator := sdk.KVStorePrefixIterator(store, types.GetKeyPrefix(types.CoinLockedStoreKeyPrefix))
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var (
+			locks types.Coins
+		)
+
+		id := types.AccountIDFromCoinPowerStoreKey(iterator.Key())
+
+		if err := a.cdc.UnmarshalBinaryBare(iterator.Value(), &locks); err != nil {
+			panic(errors.New("unmarshal locks in store error"))
+		}
+
+		if cb(id, locks) {
 			break
 		}
 	}

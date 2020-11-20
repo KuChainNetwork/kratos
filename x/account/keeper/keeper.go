@@ -46,6 +46,15 @@ func (ak AccountKeeper) Logger(ctx sdk.Context) log.Logger {
 // GetNextAccountNumber returns and increments the global account number counter.
 // If the global account number is not set, it initializes it with value 0.
 func (ak AccountKeeper) GetNextAccountNumber(ctx sdk.Context) uint64 {
+	accNumber := ak.QueryCurrNextAccountNumber(ctx)
+	bz := ak.cdc.MustMarshalBinaryLengthPrefixed(accNumber + 1)
+
+	store := store.NewStore(ctx, ak.key)
+	store.Set(types.GlobalAccountNumberKey, bz)
+	return accNumber
+}
+
+func (ak AccountKeeper) QueryCurrNextAccountNumber(ctx sdk.Context) uint64 {
 	var accNumber uint64
 	store := store.NewStore(ctx, ak.key)
 	bz := store.Get(types.GlobalAccountNumberKey)
@@ -58,9 +67,6 @@ func (ak AccountKeeper) GetNextAccountNumber(ctx sdk.Context) uint64 {
 			panic(err)
 		}
 	}
-
-	bz = ak.cdc.MustMarshalBinaryLengthPrefixed(accNumber + 1)
-	store.Set(types.GlobalAccountNumberKey, bz)
 	return accNumber
 }
 

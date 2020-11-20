@@ -347,15 +347,19 @@ func (a AccountID) MustName() Name {
 	return res
 }
 
-// NewAccountIDFromStoreKey creates a new accountID from store key
+// NewAccountIDFromStoreKey creates a new accountID from store key, skip the first prefix
 func NewAccountIDFromStoreKey(val []byte) AccountID {
-	v := val[1:]
+	return NewAccountIDFromStoreByte(val[1:])
+}
+
+// NewAccountIDFromStoreByte creates a new accountID from store key
+func NewAccountIDFromStoreByte(v []byte) AccountID {
 	if len(v) != AccIDStoreKeyLen {
-		panic("unexpected AccountID store key length")
+		panic(errors.Errorf("unexpected AccountID store key length %x %d", v, len(v)))
 	}
 
 	if v[0] >= accountIDTypeIdxLen {
-		panic("unexpected AccountID prefix store key length")
+		panic(errors.Errorf("unexpected AccountID prefix store key length %d", v[0]))
 	}
 
 	return AccountID{

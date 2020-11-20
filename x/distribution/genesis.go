@@ -137,5 +137,8 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 		},
 	)
 
-	return types.NewGenesisState(params, feePool, dwi, pp, outstanding, acc, his, cur, dels, slashes)
+	return types.NewGenesisState(
+		params, feePool, dwi, pp,
+		outstanding, acc, his, cur, dels, slashes,
+		keeper.QueryStartNotDistributionTimePoint(ctx))
 }
