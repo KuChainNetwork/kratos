@@ -101,3 +101,37 @@ func TestDexDealMsg(t *testing.T) {
 		So(sigInState2.Add(a21).Add(f2), simapp.ShouldEq, amt.Add(a11))
 	})
 }
+
+func TestDexDealErr(t *testing.T) {
+	Convey("test dex deal err by no dex", t, func() {
+		app, _ := createAppForTest()
+		a11, a21 := types.NewInt64Coin(gDenom1, 600), types.NewInt64CoreCoin(1000)
+		So(DexDealForTest(t, app, false, dexAccount1, account1, a11, account2, a21), ShouldNotBeNil)
+	})
+
+	Convey("test dex deal err by no from sigIn", t, func() {
+		app, _ := createAppForTest()
+		So(CreateDexForTest(t, app, true, dexAccount1, types.NewInt64CoreCoins(1000000000), []byte("dex for test")), ShouldBeNil)
+		amt := types.NewCoins(types.NewInt64CoreCoin(1000000), types.NewInt64Coin(gDenom1, 1000000000000000))
+
+		// So(SignInMsgForTest(t, app, true, account1, dexAccount1, amt), ShouldBeNil)
+		So(SignInMsgForTest(t, app, true, account2, dexAccount1, amt), ShouldBeNil)
+
+		a11, a21 := types.NewInt64Coin(gDenom1, 600), types.NewInt64CoreCoin(1000)
+		So(DexDealForTest(t, app, false, dexAccount1, account1, a11, account2, a21),
+			simapp.ShouldErrIs, types.ErrMissingAuth)
+	})
+
+	Convey("test dex deal err by no to sigIn", t, func() {
+		app, _ := createAppForTest()
+		So(CreateDexForTest(t, app, true, dexAccount1, types.NewInt64CoreCoins(1000000000), []byte("dex for test")), ShouldBeNil)
+		amt := types.NewCoins(types.NewInt64CoreCoin(1000000), types.NewInt64Coin(gDenom1, 1000000000000000))
+
+		So(SignInMsgForTest(t, app, true, account1, dexAccount1, amt), ShouldBeNil)
+		// So(SignInMsgForTest(t, app, true, account2, dexAccount1, amt), ShouldBeNil)
+
+		a11, a21 := types.NewInt64Coin(gDenom1, 600), types.NewInt64CoreCoin(1000)
+		So(DexDealForTest(t, app, false, dexAccount1, account1, a11, account2, a21),
+			simapp.ShouldErrIs, types.ErrMissingAuth)
+	})
+}
