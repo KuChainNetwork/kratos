@@ -484,13 +484,15 @@ func handleMsgDexDeal(ctx chainTypes.Context, k Keeper, msg *types.MsgDexDeal) (
 
 	logger.Debug("handle dex deal", "dex", msgData.Dex)
 
+	// Auto SigIn for each account
+
 	// Update sigIn status
 	acc1, ass1, acc2, ass2 := msg.GetDealByDex()
-	if err := k.Deal(ctx.Context(), msgData.Dex, acc1, acc2, ass1, ass2); err != nil {
+	fee1, fee2 := msg.GetDealFeeByDex()
+
+	if err := k.Deal(ctx.Context(), msgData.Dex, acc1, acc2, ass1, ass2, fee1, fee2); err != nil {
 		return nil, err
 	}
-
-	fee1, fee2 := msg.GetDealFeeByDex()
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
