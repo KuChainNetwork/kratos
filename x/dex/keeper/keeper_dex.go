@@ -20,29 +20,30 @@ func (a DexKeeper) CreateDex(ctx sdk.Context, creator types.Name, staking types.
 }
 
 // DestroyDex delete a dex by creator
-func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) (err error) {
+func (a DexKeeper) DestroyDex(ctx sdk.Context, creator types.Name) error {
 	dex, ok := a.getDex(ctx, creator)
 	if !ok {
-		err = errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
-		return
+		return errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
 	}
+
 	// check the dex can be destroyed
 	if !dex.CanDestroy(func() chainTypes.Coins {
 		return a.GetSigInSumForDex(ctx, accountTypes.NewAccountIDFromName(creator))
 	}) {
-		err = errors.Wrapf(types.ErrDexCanNotBeDestroyed,
+		return errors.Wrapf(types.ErrDexCanNotBeDestroyed,
 			"dex %s can not be destroy", creator.String())
-		return
 	}
+
 	// transfer asset to coin power
-	if err = a.assetKeeper.CoinsToPower(ctx,
+	if err := a.assetKeeper.CoinsToPower(ctx,
 		types.ModuleAccountID,
 		chainTypes.NewAccountIDFromName(creator),
-		dex.Staking); nil != err {
-		return
+		dex.Staking); err != nil {
+		return errors.Wrapf(err, "transfer coin power error")
 	}
+
 	a.deleteDex(ctx, dex)
-	return
+	return nil
 }
 
 // UpdateDexDescription update a dex description
@@ -55,11 +56,6 @@ func (a DexKeeper) UpdateDexDescription(ctx sdk.Context,
 
 	if dex, found = a.getDex(ctx, creator); !found {
 		return errors.Wrapf(types.ErrDexNotExists, "dex %s not exists", creator.String())
-	}
-	// check description max length
-	if types.MaxDexDescriptorLen < len(description) {
-		return errors.Wrapf(types.ErrDexDescTooLong,
-			"dex %s description too long", creator.String())
 	}
 
 	if dex.Description == description {

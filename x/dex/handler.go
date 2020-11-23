@@ -53,10 +53,12 @@ func handleMsgCreateDex(ctx chainTypes.Context, k Keeper, msg *types.MsgCreateDe
 	if err := msg.UnmarshalData(ModuleCdc, &msgData); err != nil {
 		return nil, errors.Wrapf(err, "msg create coin data unmarshal error")
 	}
+
 	logger.Debug("handle dex create",
 		"creator", msgData.Creator,
 		"stakings", msgData.Stakings,
 		"desc", string(msgData.Desc))
+
 	ctx.RequireAccount(msgData.Creator)
 
 	if err := k.CreateDex(ctx.Context(),
@@ -86,13 +88,6 @@ func handleMsgUpdateDexDescription(ctx chainTypes.Context,
 		return nil, errors.Wrapf(err, "msg dex update description data unmarshal error")
 	}
 
-	// check description max length
-	if types.MaxDexDescriptorLen < len(msgData.Desc) {
-		return nil, errors.Wrapf(types.ErrDexDescTooLong,
-			"msg update dex %s description",
-			msgData.Creator)
-	}
-
 	logger.Debug("handle dex update description",
 		"creator", msgData.Creator,
 		"desc", string(msgData.Desc))
@@ -120,19 +115,20 @@ func handleMsgUpdateDexDescription(ctx chainTypes.Context,
 // handleMsgDestroyDex handle Msg destroy dex
 func handleMsgDestroyDex(ctx chainTypes.Context,
 	keeper Keeper,
-	msg *types.MsgDestroyDex) (res *sdk.Result, err error) {
+	msg *types.MsgDestroyDex) (*sdk.Result, error) {
 	logger := ctx.Logger()
+
 	msgData := types.MsgDestroyDexData{}
-	if err = msg.UnmarshalData(ModuleCdc, &msgData); nil != err {
-		err = errors.Wrapf(err, "msg dex destroy unmarshal error")
-		return
+	if err := msg.UnmarshalData(ModuleCdc, &msgData); nil != err {
+		return nil, errors.Wrapf(err, "msg dex destroy unmarshal error")
 	}
-	logger.Debug("handle dex destroy",
-		"creator", msgData.Creator)
-	if err = keeper.DestroyDex(ctx.Context(), msgData.Creator); nil != err {
-		err = errors.Wrapf(err, "msg destroy dex %s", msgData.Creator)
-		return
+
+	logger.Debug("handle dex destroy", "creator", msgData.Creator)
+
+	if err := keeper.DestroyDex(ctx.Context(), msgData.Creator); nil != err {
+		return nil, errors.Wrapf(err, "msg destroy dex %s", msgData.Creator)
 	}
+
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeDestroyDex,
@@ -140,8 +136,8 @@ func handleMsgDestroyDex(ctx chainTypes.Context,
 			sdk.NewAttribute(types.AttributeKeyCreator, msgData.Creator.String()),
 		),
 	)
-	res = &sdk.Result{Events: ctx.EventManager().Events()}
-	return
+
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 // handleMsgCreateSymbol handle Msg create symbol
