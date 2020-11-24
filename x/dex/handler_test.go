@@ -8,10 +8,28 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
+	"github.com/KuChainNetwork/kuchain/x/dex"
 	dexTypes "github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func TestHandlerDataError(t *testing.T) {
+	app, _ := createAppForTest()
+	simapp.TestHandlerDataErr(t, dex.NewHandler(*app.DexKeeper()),
+		&dexTypes.MsgCreateDex{},
+		&dexTypes.MsgUpdateDexDescription{},
+		&dexTypes.MsgDestroyDex{},
+		&dexTypes.MsgCreateSymbol{},
+		&dexTypes.MsgUpdateSymbol{},
+		&dexTypes.MsgPauseSymbol{},
+		&dexTypes.MsgRestoreSymbol{},
+		&dexTypes.MsgShutdownSymbol{},
+		&dexTypes.MsgDexSigIn{},
+		&dexTypes.MsgDexSigOut{},
+		&dexTypes.MsgDexDeal{},
+	)
+}
 
 func CreateDexForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, account types.AccountID, stakings types.Coins, desc []byte) error {
 	ctx := app.NewTestContext()
