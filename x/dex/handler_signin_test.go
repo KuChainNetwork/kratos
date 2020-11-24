@@ -83,6 +83,24 @@ func TestSignInMsg(t *testing.T) {
 	})
 }
 
+func TestSignInMsgErr(t *testing.T) {
+	Convey("test signIn msg err by no dex", t, func() {
+		app, _ := createAppForTest()
+		// So(CreateDexForTest(t, app, true, dexAccount1, types.NewInt64CoreCoins(1000000000), []byte("dex for test")), ShouldBeNil)
+
+		amt := types.NewInt64CoreCoins(1000000)
+		So(SignInMsgForTest(t, app, false, account1, dexAccount1, amt), simapp.ShouldErrIs, dexTypes.ErrDexNotExists)
+	})
+
+	Convey("test signIn msg err by not enough", t, func() {
+		app, _ := createAppForTest()
+		So(CreateDexForTest(t, app, true, dexAccount1, types.NewInt64CoreCoins(1000000000), []byte("dex for test")), ShouldBeNil)
+
+		amt := types.NewInt64CoreCoins(100000000000)
+		So(SignInMsgForTest(t, app, false, account1, dexAccount1, amt), simapp.ShouldErrIs, dexTypes.ErrDexSigInAmountNotEnough)
+	})
+}
+
 func TestSignOutMsg(t *testing.T) {
 	app, _ := createAppForTest()
 

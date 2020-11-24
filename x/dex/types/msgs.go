@@ -112,8 +112,7 @@ func (m MsgUpdateDexDescriptionData) Sender() AccountID {
 
 // NewMsgUpdateDexDescription new update dex description msg
 func NewMsgUpdateDexDescription(auth types.AccAddress,
-	creator types.Name,
-	desc []byte) MsgUpdateDexDescription {
+	creator types.Name, desc []byte) MsgUpdateDexDescription {
 	return MsgUpdateDexDescription{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),

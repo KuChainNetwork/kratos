@@ -205,6 +205,11 @@ func (msg MsgDexDeal) GetData() (MsgDexDealData, error) {
 	return res, nil
 }
 
+const (
+	// msgDexDealTransfNum all deal msg should have 4 coin transfer
+	msgDexDealTransfNum = 4
+)
+
 func (msg MsgDexDeal) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
@@ -222,7 +227,7 @@ func (msg MsgDexDeal) ValidateBasic() error {
 	// check transfer
 	trs := msg.Transfers
 
-	if len(trs) != 4 {
+	if len(trs) != msgDexDealTransfNum {
 		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "transfer in deal should be 4 trans")
 	}
 

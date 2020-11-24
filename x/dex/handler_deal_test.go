@@ -69,27 +69,69 @@ func TestDexDealMsg(t *testing.T) {
 		account2AssetNew := app.AssetKeeper().GetAllBalances(ctx, account2)
 		dexAssetNew := app.AssetKeeper().GetAllBalances(ctx, dexAccount1)
 
+		ctx.Logger().Info("amt", "amt", amt)
+		ctx.Logger().Info("deal a1", "from", a11, "fee", f1)
+		ctx.Logger().Info("deal a2", "from", a21, "fee", f2)
+
 		// coins
 		So(account1AssetOld.Add(a21), simapp.ShouldEq, account1AssetNew.Add(a11.Add(f1)))
 		So(account2AssetOld.Add(a11), simapp.ShouldEq, account2AssetNew.Add(a21.Add(f2)))
 		So(dexAssetNew, simapp.ShouldEq, (dexAssetOld.Add(f1).Add(f2)).Sub(simapp.DefaultTestFee))
 
 		// approve
+		// approve should add to each deal account
 		account1Approve, err := app.AssetKeeper().GetApproveCoins(ctx, account1, dexAccount1)
 		So(err, ShouldBeNil)
 		So(account1Approve, ShouldNotBeNil)
-		So(account1Approve.Amount.Add(a11).Add(f1), simapp.ShouldEq, amt)
+		// now approve should for account1 == (amt+a21-a11-f1)
+		So(account1Approve.Amount.Add(a11).Add(f1), simapp.ShouldEq, amt.Add(a21))
 
 		account2Approve, err := app.AssetKeeper().GetApproveCoins(ctx, account2, dexAccount1)
 		So(err, ShouldBeNil)
 		So(account2Approve, ShouldNotBeNil)
-		So(account2Approve.Amount.Add(a21).Add(f2), simapp.ShouldEq, amt)
+		// now approve should for account2 == (amt+a11-a21-f2)
+		So(account2Approve.Amount.Add(a21).Add(f2), simapp.ShouldEq, amt.Add(a11))
 
 		// sigIn
 		sigInState1 := app.DexKeeper().GetSigInForDex(ctx, account1, dexAccount1)
 		sigInState2 := app.DexKeeper().GetSigInForDex(ctx, account2, dexAccount1)
 
-		So(sigInState1.Add(a11).Add(f1), simapp.ShouldEq, amt)
-		So(sigInState2.Add(a21).Add(f2), simapp.ShouldEq, amt)
+		// same as approve
+		So(sigInState1.Add(a11).Add(f1), simapp.ShouldEq, amt.Add(a21))
+		So(sigInState2.Add(a21).Add(f2), simapp.ShouldEq, amt.Add(a11))
+	})
+}
+
+func TestDexDealErr(t *testing.T) {
+	Convey("test dex deal err by no dex", t, func() {
+		app, _ := createAppForTest()
+		a11, a21 := types.NewInt64Coin(gDenom1, 600), types.NewInt64CoreCoin(1000)
+		So(DexDealForTest(t, app, false, dexAccount1, account1, a11, account2, a21), ShouldNotBeNil)
+	})
+
+	Convey("test dex deal err by no from sigIn", t, func() {
+		app, _ := createAppForTest()
+		So(CreateDexForTest(t, app, true, dexAccount1, types.NewInt64CoreCoins(1000000000), []byte("dex for test")), ShouldBeNil)
+		amt := types.NewCoins(types.NewInt64CoreCoin(1000000), types.NewInt64Coin(gDenom1, 1000000000000000))
+
+		// So(SignInMsgForTest(t, app, true, account1, dexAccount1, amt), ShouldBeNil)
+		So(SignInMsgForTest(t, app, true, account2, dexAccount1, amt), ShouldBeNil)
+
+		a11, a21 := types.NewInt64Coin(gDenom1, 600), types.NewInt64CoreCoin(1000)
+		So(DexDealForTest(t, app, false, dexAccount1, account1, a11, account2, a21),
+			simapp.ShouldErrIs, types.ErrMissingAuth)
+	})
+
+	Convey("test dex deal err by no to sigIn", t, func() {
+		app, _ := createAppForTest()
+		So(CreateDexForTest(t, app, true, dexAccount1, types.NewInt64CoreCoins(1000000000), []byte("dex for test")), ShouldBeNil)
+		amt := types.NewCoins(types.NewInt64CoreCoin(1000000), types.NewInt64Coin(gDenom1, 1000000000000000))
+
+		So(SignInMsgForTest(t, app, true, account1, dexAccount1, amt), ShouldBeNil)
+		// So(SignInMsgForTest(t, app, true, account2, dexAccount1, amt), ShouldBeNil)
+
+		a11, a21 := types.NewInt64Coin(gDenom1, 600), types.NewInt64CoreCoin(1000)
+		So(DexDealForTest(t, app, false, dexAccount1, account1, a11, account2, a21),
+			simapp.ShouldErrIs, types.ErrMissingAuth)
 	})
 }
