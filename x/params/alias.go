@@ -13,7 +13,6 @@ const (
 )
 
 var (
-	// functions aliases
 	NewKeeper       = keeper.NewKeeper
 	NewKeyTable     = types.NewKeyTable
 	NewParamSetPair = types.NewParamSetPair

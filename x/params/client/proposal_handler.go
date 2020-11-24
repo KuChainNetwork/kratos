@@ -6,5 +6,5 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/params/external"
 )
 
-// param change proposal handler
+// ProposalHandler param change proposal handler
 var ProposalHandler = external.GovNewProposalHandler(cli.GetCmdSubmitProposal, rest.ProposalRESTHandler)
