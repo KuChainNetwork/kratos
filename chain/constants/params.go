@@ -14,3 +14,7 @@ const (
 	DefaultSigVerifyCostED25519   = keys.DefaultSigVerifyCostED25519
 	DefaultSigVerifyCostSecp256k1 = keys.DefaultSigVerifyCostSecp256k1
 )
+
+const (
+	SignedWindowMax = 10
+)
