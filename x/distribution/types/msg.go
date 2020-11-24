@@ -13,7 +13,7 @@ type findAccount func(acc chainType.AccountID) bool
 var FindAcc findAccount
 
 // Verify interface at compile time
-var _, _, _ sdk.Msg = &MsgSetWithdrawAccountId{}, &MsgWithdrawDelegatorReward{}, &MsgWithdrawValidatorCommission{}
+var _, _, _ sdk.Msg = &MsgSetWithdrawAccountID{}, &MsgWithdrawDelegatorReward{}, &MsgWithdrawValidatorCommission{}
 
 type MsgSetWithdrawAccountIdData struct {
 	DelegatorAccountid chainType.AccountID `json:"delegator_accountid" yaml:"delegator_accountid"`
@@ -34,11 +34,11 @@ func (m *MsgSetWithdrawAccountIdData) Unmarshal(b []byte) error {
 	return ModuleCdc.UnmarshalJSON(b, m)
 }
 
-type MsgSetWithdrawAccountId struct {
+type MsgSetWithdrawAccountID struct {
 	KuMsg
 }
 
-func (m MsgSetWithdrawAccountId) GetData() (MsgSetWithdrawAccountIdData, error) {
+func (m MsgSetWithdrawAccountID) GetData() (MsgSetWithdrawAccountIdData, error) {
 	res := MsgSetWithdrawAccountIdData{}
 	if err := m.UnmarshalData(Cdc(), &res); err != nil {
 		return MsgSetWithdrawAccountIdData{}, sdkerrors.Wrapf(chainType.ErrKuMsgDataUnmarshal, "%s", err.Error())
@@ -46,7 +46,7 @@ func (m MsgSetWithdrawAccountId) GetData() (MsgSetWithdrawAccountIdData, error) 
 	return res, nil
 }
 
-func (m MsgSetWithdrawAccountId) ValidateBasic() error {
+func (m MsgSetWithdrawAccountID) ValidateBasic() error {
 	data, err := m.GetData()
 	if err == nil {
 		_, ok := data.WithdrawAccountid.ToName()
@@ -66,8 +66,8 @@ func (m MsgSetWithdrawAccountId) ValidateBasic() error {
 	return m.KuMsg.ValidateTransfer()
 }
 
-func NewMsgSetWithdrawAccountId(auth AccAddress, delAddr, withdrawAddr AccountID) MsgSetWithdrawAccountId {
-	return MsgSetWithdrawAccountId{
+func NewMsgSetWithdrawAccountID(auth AccAddress, delAddr, withdrawAddr AccountID) MsgSetWithdrawAccountID {
+	return MsgSetWithdrawAccountID{
 		*msg.MustNewKuMsg(
 			MustName(RouterKey),
 			msg.WithAuth(auth),

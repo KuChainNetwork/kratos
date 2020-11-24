@@ -99,7 +99,7 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeperAccountID, bk types.Ban
 		}
 
 		simToAccountId := chainTypes.NewAccountIDFromAccAdd(simToAccount.Address)
-		msg := types.NewMsgSetWithdrawAccountId(account.GetAuth(), simAId, simToAccountId)
+		msg := types.NewMsgSetWithdrawAccountID(account.GetAuth(), simAId, simToAccountId)
 
 		tx := helpers.GenTx(
 			[]sdk.Msg{msg},

@@ -31,7 +31,6 @@ func (k Keeper) IncrementValidatorPeriod(ctx sdk.Context, val types.StakingExpor
 	// calculate current ratio
 	var current types.DecCoins
 	if val.GetTokens().IsZero() {
-
 		// can't calculate ratio for zero-token validators
 		// ergo we instead add to the community pool
 		feePool := k.GetFeePool(ctx)

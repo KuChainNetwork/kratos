@@ -83,7 +83,7 @@ linters-settings:
     settings:
       mnd:
         checks: [assign,case,condition,operation,return]
-        ignored-numbers: 1,2,64,0xff,512
+        ignored-numbers: 1,2,8,64,0xff,512
   lll:
     # max line length, lines longer will be reported. Default is 120.
     # '\t' is counted as 1 character by default, and can be changed with the tab-width option

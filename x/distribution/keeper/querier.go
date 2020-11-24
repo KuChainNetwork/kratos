@@ -59,7 +59,6 @@ func queryParams(ctx sdk.Context, path []string, req abci.RequestQuery, k Keeper
 }
 
 func queryValidatorOutstandingRewards(ctx sdk.Context, path []string, req abci.RequestQuery, k Keeper) ([]byte, error) {
-
 	var params types.QueryValidatorOutstandingRewardsParams
 	err := k.cdc.UnmarshalJSON(req.Data, &params)
 
@@ -118,7 +117,6 @@ func queryValidatorSlashes(ctx sdk.Context, path []string, req abci.RequestQuery
 	var events types.ValidatorSlashEvents
 	k.IterateValidatorSlashEventsBetween(ctx, params.ValidatorAddress, params.StartingHeight, params.EndingHeight,
 		func(height uint64, event types.ValidatorSlashEvent) (stop bool) {
-
 			events.ValidatorSlashEvents = append(events.ValidatorSlashEvents, event)
 			return false
 		},
@@ -188,7 +186,6 @@ func queryDelegatorTotalRewards(ctx sdk.Context, _ []string, req abci.RequestQue
 	k.stakingKeeper.IterateDelegations(
 		ctx, params.DelegatorAddress,
 		func(_ int64, del types.StakingExportedDelegationI) (stop bool) {
-
 			valID := del.GetValidatorAccountID()
 			val := k.stakingKeeper.Validator(ctx, valID)
 			ctx.Logger().Debug("queryDelegatorTotalRewards", "valId", del.GetValidatorAccountID(), "del", del.GetDelegatorAccountID())

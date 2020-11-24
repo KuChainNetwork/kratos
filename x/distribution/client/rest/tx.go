@@ -36,7 +36,6 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, queryRoute strin
 		"/distribution/validators/rewards",
 		withdrawValidatorRewardsHandlerFn(cliCtx),
 	).Methods("POST")
-
 }
 
 type (
@@ -137,7 +136,7 @@ func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.Handler
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req setWithdrawalAddrReq
 
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) { //bugs, x
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
 			return
 		}
 
@@ -162,7 +161,7 @@ func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.Handler
 			return
 		}
 
-		msg := types.NewMsgSetWithdrawAccountId(auth, delegatorAcc, withdrawAcc)
+		msg := types.NewMsgSetWithdrawAccountID(auth, delegatorAcc, withdrawAcc)
 		if err := msg.ValidateBasic(); err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
