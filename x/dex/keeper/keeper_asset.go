@@ -217,18 +217,56 @@ func (a DexKeeper) SigOut(ctx sdk.Context, isTimeout bool, id, dex AccountID, am
 	return nil
 }
 
-func (a DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID, amtFrom, amtTo Coins) error {
+func (a DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID,
+	amtFrom, amtTo, feeFrom, feeTo Coins) error {
 	if _, ok := a.getDex(ctx, dex.MustName()); !ok {
 		return errors.Wrapf(dexTypes.ErrDexNotExists, "dex %s not exists to sigin", dex.String())
 	}
 
-	// update sigIn state
+	// update sigIn state to FromAccount, should sub amtFrom(include fee), and add gotted(amtTo-toFee)
+	approveAddForFrom := amtTo.Sub(feeTo)
+	approveNowForFrom, err := a.assetKeeper.GetApproveCoins(ctx, from, dex)
+	if err != nil {
+		return errors.Wrapf(err, "get approve data error acc: %s, dex: %s", from, dex)
+	}
+
+	if approveNowForFrom != nil && !approveNowForFrom.Amount.IsZero() {
+		approveAddForFrom = approveAddForFrom.Add(approveNowForFrom.Amount...)
+	}
+
+	if err := a.assetKeeper.Approve(ctx, from, dex, approveAddForFrom, true); err != nil {
+		return errors.Wrapf(err, "asset Approve error")
+	}
+
 	if _, err := a.updateSigIn(ctx, true, from, dex, amtFrom); err != nil {
 		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
 	}
 
+	if _, err := a.updateSigIn(ctx, false, from, dex, amtTo.Sub(feeTo)); err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
+	}
+
+	// update sigIn state to ToAccount, should sub amtTo(include fee), and add gotted(amtFrom-fromFee)
+	approveAddForTo := amtFrom.Sub(feeFrom)
+	approveNowForTo, err := a.assetKeeper.GetApproveCoins(ctx, to, dex)
+	if err != nil {
+		return errors.Wrapf(err, "get approve data error acc: %s, dex: %s", to, dex)
+	}
+
+	if approveNowForTo != nil && !approveNowForTo.Amount.IsZero() {
+		approveAddForTo = approveAddForTo.Add(approveNowForTo.Amount...)
+	}
+
+	if err := a.assetKeeper.Approve(ctx, to, dex, approveAddForTo, true); err != nil {
+		return errors.Wrapf(err, "asset Approve error")
+	}
+
 	if _, err := a.updateSigIn(ctx, true, to, dex, amtTo); err != nil {
 		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, to, amtTo)
+	}
+
+	if _, err := a.updateSigIn(ctx, false, to, dex, amtFrom.Sub(feeFrom)); err != nil {
+		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
 	}
 
 	return nil

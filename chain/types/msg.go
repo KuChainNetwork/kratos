@@ -65,6 +65,10 @@ func (msg KuMsg) GetData() []byte {
 	return msg.Data
 }
 
+func (msg *KuMsg) SetData(data []byte) {
+	msg.Data = data
+}
+
 // GetSignBytes Implements Msg.
 func (msg KuMsg) GetSignBytes() []byte {
 	bz, err := json.Marshal(msg)

@@ -8,10 +8,28 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
+	"github.com/KuChainNetwork/kuchain/x/dex"
 	dexTypes "github.com/KuChainNetwork/kuchain/x/dex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func TestHandlerDataError(t *testing.T) {
+	app, _ := createAppForTest()
+	simapp.TestHandlerDataErr(t, dex.NewHandler(*app.DexKeeper()),
+		&dexTypes.MsgCreateDex{},
+		&dexTypes.MsgUpdateDexDescription{},
+		&dexTypes.MsgDestroyDex{},
+		&dexTypes.MsgCreateSymbol{},
+		&dexTypes.MsgUpdateSymbol{},
+		&dexTypes.MsgPauseSymbol{},
+		&dexTypes.MsgRestoreSymbol{},
+		&dexTypes.MsgShutdownSymbol{},
+		&dexTypes.MsgDexSigIn{},
+		&dexTypes.MsgDexSigOut{},
+		&dexTypes.MsgDexDeal{},
+	)
+}
 
 func CreateDexForTest(t *testing.T, app *simapp.SimApp, isSuccess bool, account types.AccountID, stakings types.Coins, desc []byte) error {
 	ctx := app.NewTestContext()
@@ -235,31 +253,40 @@ func TestHandleUpdateDexDescription(t *testing.T) {
 		So(ok, ShouldBeTrue)
 		So(dex.Creator, simapp.ShouldEq, accName)
 
-		msgUpdateDexDescription := dexTypes.NewMsgUpdateDexDescription(auth,
-			accName,
-			[]byte("xxx.yyy.zzz"))
+		// test update dex description
+		msgUpdateDexDescription := dexTypes.NewMsgUpdateDexDescription(
+			auth, accName, []byte("xxx.yyy.zzz"))
 		So(msgUpdateDexDescription.ValidateBasic(), ShouldBeNil)
 
 		tx := simapp.NewTxForTest(
-			acc,
-			[]sdk.Msg{
-				&msgUpdateDexDescription,
-			}, wallet.PrivKey(auth))
-		ctx = app.NewTestContext()
-		err := simapp.CheckTxs(t, app, ctx, tx)
+			acc, []sdk.Msg{&msgUpdateDexDescription}, wallet.PrivKey(auth))
+
+		err := simapp.CheckTxs(t, app, app.NewTestContext(), tx)
 		So(err, ShouldBeNil)
 
 		simapp.AfterBlockCommitted(app, 1)
 
-		ctx = app.NewTestContext()
-		dex, ok = app.DexKeeper().GetDex(ctx, accName)
+		dex, ok = app.DexKeeper().GetDex(app.NewTestContext(), accName)
 		So(ok, ShouldBeTrue)
 		So(dex, ShouldNotBeNil)
 		So(dex.Description, ShouldEqual, "xxx.yyy.zzz")
 
+		// check errors
+		txNoChange := simapp.NewTxForTest(
+			acc, []sdk.Msg{&msgUpdateDexDescription}, wallet.PrivKey(auth)).WithCannotPass()
+		So(simapp.CheckTxs(t, app, app.NewTestContext(), txNoChange),
+			simapp.ShouldErrIs, dexTypes.ErrDexDescriptionSame)
+
+		msgNoExist := dexTypes.NewMsgUpdateDexDescription(addr3, name3, []byte("xxx.yyy.zzz"))
+		txNoExist := simapp.NewTxForTest(
+			account3, []sdk.Msg{
+				&msgNoExist,
+			}, wallet.PrivKey(addr3)).WithCannotPass()
+		So(simapp.CheckTxs(t, app, app.NewTestContext(), txNoExist),
+			simapp.ShouldErrIs, dexTypes.ErrDexNotExists)
+
 		msgUpdateDexDescription = dexTypes.NewMsgUpdateDexDescription(auth,
-			accName,
-			[]byte(rand.Str(dexTypes.MaxDexDescriptorLen)))
+			accName, []byte(rand.Str(dexTypes.MaxDexDescriptorLen)))
 		So(msgUpdateDexDescription.ValidateBasic(), ShouldNotBeNil)
 	})
 }
@@ -291,6 +318,13 @@ func TestHandleDestroyDex(t *testing.T) {
 		coins := app.AssetKeeper().GetCoinPowers(ctx, acc)
 		So(coins.IsZero(), ShouldBeTrue)
 
+		// check destroy dex errors
+
+		// no exist
+
+		// cannot destroy
+
+		// check destroy
 		msgDestroyDex := dexTypes.NewMsgDestroyDex(
 			auth,
 			accName)
@@ -311,7 +345,9 @@ func TestHandleDestroyDex(t *testing.T) {
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeFalse)
 		So(dex, ShouldBeNil)
+
 		coins = app.AssetKeeper().GetCoinPowers(ctx, acc)
+
 		So(coins.IsEqual(types.NewInt64CoreCoins(1000)), ShouldBeTrue)
 	})
 }
