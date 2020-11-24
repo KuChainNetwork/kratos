@@ -13,7 +13,6 @@ import (
 // It will panic if the module account does not exist.
 func (k Keeper) SendCoinsFromModuleToAccount(
 	ctx sdk.Context, senderModule string, recipient types.AccountID, amt Coins) error {
-
 	senderAcc := k.GetModuleAccount(ctx, senderModule)
 	if senderAcc == nil {
 		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress,
@@ -34,7 +33,6 @@ func (k Keeper) SendCoinsFromModuleToAccount(
 func (k Keeper) SendCoinsFromModuleToModule(
 	ctx sdk.Context, senderModule, recipientModule string, amt Coins,
 ) error {
-
 	senderAcc := k.GetModuleAccount(ctx, senderModule)
 	if senderAcc == nil {
 		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", senderModule))
@@ -105,7 +103,6 @@ func (k Keeper) DelegateCoinsFromAccountToModule(
 func (k Keeper) UndelegateCoinsFromModuleToAccount(
 	ctx sdk.Context, senderModule string, recipientAcc types.AccountID, amt Coins,
 ) error {
-
 	acc := k.GetModuleAccount(ctx, senderModule)
 	if acc == nil {
 		panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", senderModule))

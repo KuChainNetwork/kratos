@@ -12,7 +12,6 @@ import (
 func NewQuerier(k Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
-
 		case types.QueryTotalSupply:
 			return queryTotalSupply(ctx, req, k)
 
