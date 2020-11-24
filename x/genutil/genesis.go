@@ -13,7 +13,6 @@ func InitGenesis(
 	ctx sdk.Context, cdc *codec.Codec, stakingKeeper types2.StakingKeeper,
 	deliverTx deliverTxfn, genesisState GenesisState,
 ) []abci.ValidatorUpdate {
-
 	var validators []abci.ValidatorUpdate
 	if len(genesisState.GenTxs) > 0 {
 		validators = DeliverGenTxs(ctx, cdc, genesisState.GenTxs, stakingKeeper, deliverTx)

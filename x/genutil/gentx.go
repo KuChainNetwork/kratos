@@ -14,7 +14,6 @@ import (
 func SetGenTxsInAppGenesisState(
 	cdc *codec.Codec, appGenesisState map[string]json.RawMessage, genTxs []txutil.StdTx,
 ) (map[string]json.RawMessage, error) {
-
 	genesisState := GetGenesisStateFromAppState(cdc, appGenesisState)
 	genTxsBz := make([]json.RawMessage, 0, len(genTxs))
 
@@ -40,7 +39,6 @@ func DeliverGenTxs(
 	ctx sdk.Context, cdc *codec.Codec, genTxs []json.RawMessage,
 	stakingKeeper types.StakingKeeper, deliverTx deliverTxfn,
 ) []abci.ValidatorUpdate {
-
 	logger := ctx.Logger()
 
 	for _, genTx := range genTxs {

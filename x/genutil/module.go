@@ -50,8 +50,6 @@ func (AppModuleBasic) GetTxCmd(_ *codec.Codec) *cobra.Command { return nil }
 // GetQueryCmd returns no root query command for the genutil module.
 func (AppModuleBasic) GetQueryCmd(_ *codec.Codec) *cobra.Command { return nil }
 
-//____________________________________________________________________________
-
 // AppModule implements an application module for the genutil module.
 type AppModule struct {
 	AppModuleBasic
@@ -64,7 +62,6 @@ type AppModule struct {
 // NewAppModule creates a new AppModule object
 func NewAppModule(accountKeeper types.AccountKeeper, stakingKeeper types.StakingKeeper,
 	deliverTx deliverTxfn, stakingFuncManager types.StakingFuncManager) module.AppModule {
-
 	return module.NewGenesisOnlyAppModule(AppModule{
 		AppModuleBasic: NewAppModuleBasic(stakingFuncManager),
 		accountKeeper:  accountKeeper,

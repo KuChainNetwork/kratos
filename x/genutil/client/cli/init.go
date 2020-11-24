@@ -39,7 +39,6 @@ type printInfo struct {
 
 func newPrintInfo(moniker, chainID, nodeID, genTxsDir string,
 	appMessage json.RawMessage) printInfo {
-
 	return printInfo{
 		Moniker:    moniker,
 		ChainID:    chainID,
