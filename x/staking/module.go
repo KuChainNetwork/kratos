@@ -70,7 +70,6 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	return cli.GetQueryCmd(StoreKey, cdc)
 }
 
-//_____________________________________
 // extra helpers
 
 // CreateValidatorMsgHelpers - used for gen-tx
@@ -92,12 +91,12 @@ func (AppModuleBasic) BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext,
 }
 
 // BuildDelegateMsg - used for gen-tx
-func (AppModuleBasic) BuildDelegateMsg(cliCtx txutil.KuCLIContext,
-	txBldr txutil.TxBuilder, address chainTypes.AccAddress, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
+func (AppModuleBasic) BuildDelegateMsg(
+	cliCtx txutil.KuCLIContext,
+	txBldr txutil.TxBuilder, address chainTypes.AccAddress,
+	delAccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
 	return cli.BuildDelegateMsg(cliCtx, txBldr, address, delAccountID, valAccountID)
 }
-
-//____________________________________________________________________________
 
 // AppModule implements an application module for the staking module.
 type AppModule struct {
@@ -111,7 +110,6 @@ type AppModule struct {
 
 // NewAppModule creates a new AppModule object
 func NewAppModule(keeper Keeper, ak types.AccountKeeper, bk types.BankKeeper, sk types.SupplyKeeper) AppModule {
-
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
@@ -176,8 +174,6 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return EndBlocker(ctx, am.keeper)
 }
-
-//____________________________________________________________________________
 
 // AppModuleSimulation functions
 

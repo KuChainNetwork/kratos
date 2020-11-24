@@ -345,7 +345,6 @@ func (v Validator) UpdateStatus(newStatus exported.BondStatus) Validator {
 
 // AddTokensFromDel adds tokens to a validator
 func (v Validator) AddTokensFromDel(amount sdk.Int) (Validator, sdk.Dec) {
-
 	// calculate the shares to issue
 	var issuedShares sdk.Dec
 	if v.DelegatorShares.IsZero() {

@@ -161,7 +161,6 @@ func NewUnbondingDelegation(
 	delegatorAddr chainTypes.AccountID, validatorAddr chainTypes.AccountID,
 	creationHeight int64, minTime time.Time, balance sdk.Int,
 ) UnbondingDelegation {
-
 	return UnbondingDelegation{
 		DelegatorAccount: delegatorAddr,
 		ValidatorAccount: validatorAddr,
@@ -295,7 +294,6 @@ func NewRedelegation(
 	delegatorAddr chainTypes.AccountID, validatorSrcAddr, validatorDstAddr chainTypes.AccountID,
 	creationHeight int64, minTime time.Time, balance sdk.Int, sharesDst sdk.Dec,
 ) Redelegation {
-
 	return Redelegation{
 		DelegatorAccount:    delegatorAddr,
 		ValidatorSrcAccount: validatorSrcAddr,

@@ -11,6 +11,24 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
+func genesisAppendValidator(ctx sdk.Context, keeper Keeper, isExport bool, validator types.Validator) {
+	keeper.SetValidator(ctx, validator)
+
+	// Manually set indices for the first time
+	keeper.SetValidatorByConsAddr(ctx, validator)
+	keeper.SetValidatorByPowerIndex(ctx, validator)
+
+	// Call the creation hook if not exported
+	if !isExport {
+		keeper.AfterValidatorCreated(ctx, validator.OperatorAccount)
+	}
+
+	// update timeslice if necessary
+	if validator.IsUnbonding() {
+		keeper.InsertValidatorQueue(ctx, validator)
+	}
+}
+
 // InitGenesis sets the pool and parameters for the provided keeper.  For each
 // validator in data, it sets that validator in the keeper along with manually
 // setting the indexes. In addition, it also sets any delegations found in
@@ -20,7 +38,6 @@ func InitGenesis(
 	ctx sdk.Context, keeper Keeper, accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper, supplyKeeper types.SupplyKeeper, data types.GenesisState,
 ) (res []abci.ValidatorUpdate) {
-
 	bondedTokens := sdk.ZeroInt()
 	notBondedTokens := sdk.ZeroInt()
 
@@ -35,21 +52,7 @@ func InitGenesis(
 	keeper.SetLastTotalPower(ctx, data.LastTotalPower)
 
 	for _, validator := range data.Validators {
-		keeper.SetValidator(ctx, validator)
-
-		// Manually set indices for the first time
-		keeper.SetValidatorByConsAddr(ctx, validator)
-		keeper.SetValidatorByPowerIndex(ctx, validator)
-
-		// Call the creation hook if not exported
-		if !data.Exported {
-			keeper.AfterValidatorCreated(ctx, validator.OperatorAccount)
-		}
-
-		// update timeslice if necessary
-		if validator.IsUnbonding() {
-			keeper.InsertValidatorQueue(ctx, validator)
-		}
+		genesisAppendValidator(ctx, keeper, data.Exported, validator)
 
 		switch validator.GetStatus() {
 		case statkingexport.Bonded:
@@ -66,6 +69,7 @@ func InitGenesis(
 		if !data.Exported {
 			keeper.BeforeDelegationCreated(ctx, delegation.DelegatorAccount, delegation.ValidatorAccount)
 		}
+
 		keeper.SetDelegation(ctx, delegation)
 
 		// Call the after-modification hook if not exported

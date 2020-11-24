@@ -16,5 +16,6 @@ const (
 )
 
 const (
-	SignedWindowMax = 10
+	SignedWindowMax       = 10
+	CommissionUpdateHours = 24
 )

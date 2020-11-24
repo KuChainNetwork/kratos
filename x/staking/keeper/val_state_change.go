@@ -87,7 +87,6 @@ func (k Keeper) BlockValidatorUpdates(ctx sdk.Context) []abci.ValidatorUpdate {
 // at the previous block height or were removed from the validator set entirely
 // are returned to Tendermint.
 func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) (updates []abci.ValidatorUpdate) {
-
 	maxValidators := k.GetParams(ctx).MaxValidators
 	totalPower := sdk.ZeroInt()
 	amtFromBondedToNotBonded, amtFromNotBondedToBonded := sdk.ZeroInt(), sdk.ZeroInt()
@@ -101,11 +100,9 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) (updates []ab
 	iterator := k.ValidatorsPowerStoreIterator(ctx)
 	defer iterator.Close()
 	for count := 0; iterator.Valid() && count < int(maxValidators); iterator.Next() {
-
 		// everything that is iterated in this loop is becoming or already a
 		// part of the bonded validator set
 
-		//valAddr := sdk.ValAddress(iterator.Value())
 		valAccount := NewAccountIDFromByte(iterator.Value())
 		validator := k.mustGetValidator(ctx, valAccount)
 

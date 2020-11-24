@@ -3,11 +3,11 @@
 # options for analysis running
 run:
   # default concurrency is a available CPU number
-  concurrency: 4
+  concurrency: 6
   # timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 1m
   # exit code when at least one issue was found, default is 1
-  issues-exit-code: 1
+  issues-exit-code: 5
   # include test files or not, default is true
   tests: true
   # list of build tags, all linters use it. Default is empty list.
@@ -68,7 +68,7 @@ linters-settings:
     # Enable to ensure that nolint directives are all used. Default is true.
     allow-unused: false
   funlen:
-    lines: 100
+    lines: 120
     statements: 60
   exhaustive:
     # check switch statements in generated files also
