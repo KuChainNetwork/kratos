@@ -155,6 +155,8 @@ func (vo VoteOption) String() string {
 		return "No"
 	case OptionNoWithVeto:
 		return "NoWithVeto"
+	case OptionEmpty:
+		return ""
 	default:
 		return ""
 	}

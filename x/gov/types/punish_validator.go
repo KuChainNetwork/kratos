@@ -45,12 +45,12 @@ func (v Punishvalidators) String() string {
 	return out
 }
 
-func (p Punishvalidators) Equal(other Punishvalidators) bool {
-	if len(p) != len(other) {
+func (v Punishvalidators) Equal(other Punishvalidators) bool {
+	if len(v) != len(other) {
 		return false
 	}
 
-	for i, proposal := range p {
+	for i, proposal := range v {
 		if !proposal.Equal(other[i]) {
 			return false
 		}
