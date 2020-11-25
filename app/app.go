@@ -205,8 +205,6 @@ func NewKuchainApp(
 		app.supplyKeeper, constants.FeeSystemAccountStr,
 	)
 
-	// NOTE: Any module instantiated in the module manager that is later modified
-	// must be passed by reference here.
 	app.mm = appcreator.GenAppModules(app)
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
