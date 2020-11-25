@@ -175,9 +175,9 @@ func NewMsgDexDeal(auth types.AccAddress, dex AccountID, from, to AccountID, fro
 			msg.WithAuth(auth),
 			// from -> dex -> to
 			msg.WithTransfer(from, dex, types.NewCoins(fromAsset.Add(feeFromFrom))),
-			msg.WithTransfer(dex, to, types.NewCoins(fromAsset)),
+			msg.WithTransfer(dex, to, types.NewCoins(fromAsset.Sub(feeFromTo))),
 			// to -> dex -> from
-			msg.WithTransfer(to, dex, types.NewCoins(toAsset.Add(feeFromTo))),
+			msg.WithTransfer(to, dex, types.NewCoins(toAsset)),
 			msg.WithTransfer(dex, from, types.NewCoins(toAsset)),
 			msg.WithData(Cdc(), &MsgDexDealData{
 				Dex:     dex,
