@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"testing"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 )
@@ -25,14 +26,6 @@ func TestMsgSetWithdrawAddress(t *testing.T) {
 		{emptyAcc, Acc4, false},
 		{Acc5, emptyAcc, false},
 		{emptyAcc, emptyAcc, false},
-	}
-
-	types.FindAcc = func(acc chainTypes.AccountID) bool {
-		_, ok := acc.ToName()
-		if ok {
-			return ak.IsAccountExist(ctx, acc)
-		}
-		return false
 	}
 
 	for i, tc := range tests {
@@ -65,13 +58,6 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 		{Acc2, emptyAcc, false},
 		{emptyAcc, emptyAcc, false},
 	}
-	types.FindAcc = func(acc chainTypes.AccountID) bool {
-		_, ok := acc.ToName()
-		if ok {
-			return ak.IsAccountExist(ctx, acc)
-		}
-		return false
-	}
 
 	for i, tc := range tests {
 		Name, _ := tc.delegatorAddr.ToName()
@@ -99,14 +85,6 @@ func TestMsgWithdrawValidatorCommission(t *testing.T) {
 	}{
 		{Acc1, true},
 		{emptyAcc, false},
-	}
-
-	types.FindAcc = func(acc chainTypes.AccountID) bool {
-		_, ok := acc.ToName()
-		if ok {
-			return ak.IsAccountExist(ctx, acc)
-		}
-		return false
 	}
 
 	for i, tc := range tests {
