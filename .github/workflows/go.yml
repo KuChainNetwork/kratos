@@ -2,7 +2,7 @@ name: Go
 
 on:
   push:
-    branches: [ dex, release, master, features/* ]
+    branches: [ release, master ]
   pull_request:
     branches: [ dex, release, master, features/* ]
 
