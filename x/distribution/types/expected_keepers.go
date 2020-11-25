@@ -60,6 +60,9 @@ type StakingKeeperAccountID interface {
 	GetLastValidatorPower(ctx sdk.Context, valID AccountID) int64
 
 	GetAllSDKDelegations(ctx sdk.Context) []StakingDelegation
+	GetAllDelegatorDelegations(ctx sdk.Context, delegator AccountID) []StakingDelegation
+	GetAllValidators(ctx sdk.Context) []Validator
+	GetAllValidatorInterfaces(ctx sdk.Context) []StakingExportedValidatorI
 }
 
 // StakingHooks event hooks for staking validator object (noalias) by cancer

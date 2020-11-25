@@ -3,10 +3,8 @@ package types
 import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	GovTypes "github.com/KuChainNetwork/kuchain/x/gov/types"
-	"github.com/KuChainNetwork/kuchain/x/staking"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
-	StakingKP "github.com/KuChainNetwork/kuchain/x/staking/keeper"
-	StakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
+	stakingTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/KuChainNetwork/kuchain/x/supply"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	Sim "github.com/cosmos/cosmos-sdk/x/simulation"
@@ -44,18 +42,10 @@ type (
 )
 
 type (
-	StakingDelegation        = staking.Delegation
-	StakingDescription       = staking.Description
-	StakingKPKeeper          = StakingKP.Keeper
-	StakingTypesStakingHooks = StakingTypes.StakingHooks
-)
-
-var (
-	StakingNewHandler            = staking.NewHandler
-	StakingNewCommissionRates    = staking.NewCommissionRates
-	StakingNewMsgCreateValidator = staking.NewMsgCreateValidator
-	StakingEndBlocker            = staking.EndBlocker
-	StakingNewMsgDelegate        = staking.NewMsgDelegate
+	StakingDelegation        = stakingTypes.Delegation
+	StakingDescription       = stakingTypes.Description
+	Validator                = stakingTypes.Validator
+	StakingTypesStakingHooks = exported.StakingHooks
 )
 
 var (

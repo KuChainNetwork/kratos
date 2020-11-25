@@ -13,6 +13,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	appcreator "github.com/KuChainNetwork/kuchain/app/app_creator"
 	"github.com/KuChainNetwork/kuchain/chain/ante"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
@@ -25,6 +26,7 @@ import (
 	distr "github.com/KuChainNetwork/kuchain/x/distribution"
 	"github.com/KuChainNetwork/kuchain/x/evidence"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
+	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"github.com/KuChainNetwork/kuchain/x/gov"
 	"github.com/KuChainNetwork/kuchain/x/mint"
 	"github.com/KuChainNetwork/kuchain/x/params"
@@ -70,7 +72,10 @@ var (
 )
 
 // Verify app interface at compile time
-var _ simapp.App = (*KuchainApp)(nil)
+var (
+	_ simapp.App                 = (*KuchainApp)(nil)
+	_ appcreator.KuAppWithKeeper = (*KuchainApp)(nil)
+)
 
 // KuchainApp extended ABCI application
 type KuchainApp struct {
@@ -135,11 +140,7 @@ func NewKuchainApp(
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 
-	keys := sdk.NewKVStoreKeys(
-		bam.MainStoreKey, staking.StoreKey, slashing.StoreKey, evidence.StoreKey, gov.StoreKey,
-		account.StoreKey, asset.StoreKey, supply.StoreKey, params.StoreKey, mint.StoreKey, distr.StoreKey, params.StoreKey,
-	)
-	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey, staking.TStoreKey, params.TStoreKey)
+	keys, tKeys := appcreator.GenStoreKeys()
 
 	app := &KuchainApp{
 		BaseApp:        bApp,
@@ -149,16 +150,6 @@ func NewKuchainApp(
 		tKeys:          tKeys,
 		subspaces:      make(map[string]params.Subspace),
 	}
-
-	// init params keeper and subspaces
-	app.paramsKeeper = params.NewKeeper(cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
-	app.subspaces[account.ModuleName] = app.paramsKeeper.Subspace(account.DefaultParamspace)
-	app.subspaces[distr.ModuleName] = app.paramsKeeper.Subspace(distr.DefaultParamspace)
-	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
-	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
-	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
-	app.subspaces[mint.ModuleName] = app.paramsKeeper.Subspace(mint.DefaultParamspace)
-	app.subspaces[gov.ModuleName] = app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 
 	// add keepers
 	app.accountKeeper = account.NewAccountKeeper(cdc, keys[account.StoreKey])
@@ -189,8 +180,7 @@ func NewKuchainApp(
 	evidenceKeeper := evidence.NewKeeper(
 		keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.slashingKeeper,
 	)
-	evidenceRouter := evidence.NewRouter()
-
+	evidenceKeeper.SetRouter(evidence.NewRouter())
 	app.evidenceKeeper = *evidenceKeeper
 
 	// register the proposal types
@@ -210,8 +200,6 @@ func NewKuchainApp(
 		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
-	// TODO: register evidence routes
-	evidenceKeeper.SetRouter(evidenceRouter)
 	app.mintKeeper = mint.NewKeeper(
 		cdc, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &app.stakingKeeper,
 		app.supplyKeeper, constants.FeeSystemAccountStr,
@@ -219,56 +207,10 @@ func NewKuchainApp(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
-	app.mm = module.NewManager(
-		account.NewAppModule(app.accountKeeper, app.assetKeeper),
-		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, app.stakingFuncManager),
-		asset.NewAppModule(app.accountKeeper, app.assetKeeper),
-		supply.NewAppModule(app.supplyKeeper, app.assetKeeper, app.accountKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.stakingKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.assetKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
-		mint.NewAppModule(app.mintKeeper, app.supplyKeeper),
-		evidence.NewAppModule(app.evidenceKeeper, app.accountKeeper, app.assetKeeper),
-		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
-		dex.NewAppModule(app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.dexKeeper),
-		plugin.NewAppModule(),
-	)
-
-	// plugin.ModuleName MUST be the last
-	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName, evidence.ModuleName, dex.ModuleName, plugin.ModuleName)
-	app.mm.SetOrderEndBlockers(staking.ModuleName, gov.ModuleName, dex.ModuleName, plugin.ModuleName)
-
-	// NOTE: The genutils module must occur after staking so that pools are
-	// properly initialized with tokens from genesis accounts.
-	app.mm.SetOrderInitGenesis(
-		account.ModuleName,
-		asset.ModuleName,
-		distr.ModuleName,
-		staking.ModuleName,
-		slashing.ModuleName, evidence.ModuleName, gov.ModuleName,
-		supply.ModuleName,
-		genutil.ModuleName,
-		mint.ModuleName,
-		dex.ModuleName,
-	)
-
-	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
+	app.mm = appcreator.GenAppModules(app)
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
-	//
-	// NOTE: This is not required for apps that don't use the simulator for fuzz testing
-	// transactions.
-	app.sm = module.NewSimulationManager(
-		account.NewAppModule(app.accountKeeper, app.assetKeeper),
-		supply.NewAppModule(app.supplyKeeper, app.assetKeeper, app.accountKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.assetKeeper, app.stakingKeeper),
-		mint.NewAppModule(app.mintKeeper, app.supplyKeeper),
-		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.assetKeeper, app.supplyKeeper),
-	)
-
-	app.sm.RegisterStoreDecoders()
+	app.sm = appcreator.GenAppSimulationMng(app)
 
 	// initialize stores
 	app.MountKVStores(keys)
@@ -277,9 +219,7 @@ func NewKuchainApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-
 	app.SetAnteHandler(ante.NewHandler(app.accountKeeper, app.assetKeeper))
-
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
@@ -290,7 +230,6 @@ func NewKuchainApp(
 	}
 
 	constants.LogVersion(app.Logger())
-
 	return app
 }
 
@@ -337,4 +276,56 @@ func (app *KuchainApp) Codec() *codec.Codec {
 // SimulationManager implements the SimulationApp interface
 func (app *KuchainApp) SimulationManager() *module.SimulationManager {
 	return app.sm
+}
+
+func (app *KuchainApp) AccountKeeper() account.Keeper {
+	return app.accountKeeper
+}
+
+func (app *KuchainApp) AssetKeeper() asset.Keeper {
+	return app.assetKeeper
+}
+
+func (app *KuchainApp) SupplyKeeper() supply.Keeper {
+	return app.supplyKeeper
+}
+
+func (app *KuchainApp) DistrKeeper() distr.Keeper {
+	return app.distrKeeper
+}
+
+func (app *KuchainApp) MintKeeper() mint.Keeper {
+	return app.mintKeeper
+}
+
+func (app *KuchainApp) ParamsKeeper() *params.Keeper {
+	return &app.paramsKeeper
+}
+
+func (app *KuchainApp) StakingKeeper() *staking.Keeper {
+	return &app.stakingKeeper
+}
+
+func (app *KuchainApp) SlashingKeeper() slashing.Keeper {
+	return app.slashingKeeper
+}
+
+func (app *KuchainApp) EvidenceKeeper() evidence.Keeper {
+	return app.evidenceKeeper
+}
+
+func (app *KuchainApp) GovKeeper() gov.Keeper {
+	return app.govKeeper
+}
+
+func (app *KuchainApp) DexKeeper() dex.Keeper {
+	return app.dexKeeper
+}
+
+func (app *KuchainApp) GetDeliverTx() appcreator.DeliverTxfn {
+	return app.BaseApp.DeliverTx
+}
+
+func (app *KuchainApp) GetStakingFuncMng() types.StakingFuncManager {
+	return app.stakingFuncManager
 }

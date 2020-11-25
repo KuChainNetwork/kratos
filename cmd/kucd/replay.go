@@ -16,6 +16,7 @@ import (
 	tmsm "github.com/tendermint/tendermint/state"
 	tmstore "github.com/tendermint/tendermint/store"
 	tm "github.com/tendermint/tendermint/types"
+	db "github.com/tendermint/tm-db"
 
 	"github.com/KuChainNetwork/kuchain/app"
 
@@ -34,18 +35,26 @@ func replayCmd() *cobra.Command {
 	}
 }
 
+func copyRootDIR(rootDir string) error {
+	// Copy the rootDir to a new directory, to preserve the old one.
+	fmt.Fprintln(os.Stderr, "Copying rootdir over")
+	oldRootDir := rootDir
+
+	rootDir = oldRootDir + "_replay"
+	if tmos.FileExists(rootDir) {
+		tmos.Exit(fmt.Sprintf("temporary copy dir %v already exists", rootDir))
+	}
+
+	if err := cpm.Copy(oldRootDir, rootDir); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func replayTxs(rootDir string) error {
 	if false {
-		// Copy the rootDir to a new directory, to preserve the old one.
-		fmt.Fprintln(os.Stderr, "Copying rootdir over")
-		oldRootDir := rootDir
-
-		rootDir = oldRootDir + "_replay"
-		if tmos.FileExists(rootDir) {
-			tmos.Exit(fmt.Sprintf("temporary copy dir %v already exists", rootDir))
-		}
-
-		if err := cpm.Copy(oldRootDir, rootDir); err != nil {
+		if err := copyRootDIR(rootDir); err != nil {
 			return err
 		}
 	}
@@ -101,6 +110,7 @@ func replayTxs(rootDir string) error {
 	if err != nil {
 		return err
 	}
+
 	genState, err := tmsm.MakeGenesisState(genDoc)
 	if err != nil {
 		return err
@@ -109,10 +119,11 @@ func replayTxs(rootDir string) error {
 
 	cc := proxy.NewLocalClientCreator(kuApp)
 	proxyApp := proxy.NewAppConns(cc)
-	err = proxyApp.Start()
-	if err != nil {
+
+	if err := proxyApp.Start(); err != nil {
 		return err
 	}
+
 	defer func() {
 		err = proxyApp.Stop()
 		if err != nil {
@@ -120,6 +131,14 @@ func replayTxs(rootDir string) error {
 		}
 	}()
 
+	return replayExeBlocks(ctx, tmDB, bcDB, genDoc, genState, proxyApp)
+}
+
+func replayExeBlocks(ctx *server.Context,
+	tmDB, bcDB db.DB,
+	genDoc *tm.GenesisDoc,
+	genState tmsm.State,
+	proxyApp proxy.AppConns) error {
 	state := tmsm.LoadState(tmDB)
 	if state.LastBlockHeight == 0 {
 		// Send InitChain msg
@@ -176,7 +195,10 @@ func replayTxs(rootDir string) error {
 
 		t2 := time.Now()
 
-		var retainHeight int64
+		var (
+			retainHeight int64
+			err          error
+		)
 		state, retainHeight, err = blockExec.ApplyBlock(state, blockmeta.BlockID, block)
 		if err != nil {
 			return err

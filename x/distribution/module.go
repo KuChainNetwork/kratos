@@ -70,7 +70,7 @@ type AppModule struct {
 	keeper        Keeper
 	accountKeeper types.AccountKeeperAccountID
 	bankKeeper    types.BankKeeperAccountID
-	stakingKeeper types.StakingKPKeeper
+	stakingKeeper types.StakingKeeperAccountID
 	supplyKeeper  types.SupplyKeeperAccountID
 }
 
@@ -80,7 +80,7 @@ func NewAppModule(
 	accountKeeper types.AccountKeeperAccountID,
 	bankKeeper types.BankKeeperAccountID,
 	supplyKeeper types.SupplyKeeperAccountID,
-	stakingKeeper types.StakingKPKeeper,
+	stakingKeeper types.StakingKeeperAccountID,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},

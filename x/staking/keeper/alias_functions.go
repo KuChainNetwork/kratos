@@ -95,6 +95,17 @@ func (k Keeper) GetValidatorSet() types.ValidatorSet {
 	return k
 }
 
+// Returns all Validators
+func (k Keeper) GetAllValidatorInterfaces(ctx sdk.Context) []exported.ValidatorI {
+	vals := k.GetAllValidators(ctx)
+	res := make([]exported.ValidatorI, 0, len(vals))
+	for _, v := range vals {
+		res = append(res, v)
+	}
+
+	return res
+}
+
 // Delegation get the delegation interface for a particular set of delegator and validator addresses
 func (k Keeper) Delegation(ctx sdk.Context, delAccount types.AccountID, valAccount types.AccountID) exported.DelegationI {
 	bond, ok := k.GetDelegation(ctx, delAccount, valAccount)

@@ -51,6 +51,7 @@ type StakingKeeper interface {
 
 	// MaxValidators returns the maximum amount of bonded validators
 	MaxValidators(sdk.Context) uint32
+	GetAllValidatorInterfaces(ctx sdk.Context) []external.StakingValidatorl
 }
 
 // StakingHooks event hooks for staking validator object (noalias)

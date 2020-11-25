@@ -8,7 +8,6 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/x/slashing/client/cli"
 	"github.com/KuChainNetwork/kuchain/x/slashing/client/rest"
-	"github.com/KuChainNetwork/kuchain/x/slashing/external"
 	"github.com/KuChainNetwork/kuchain/x/slashing/simulation"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -72,11 +71,11 @@ type AppModule struct {
 	keeper        Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
-	stakingKeeper external.StakingKeeper
+	stakingKeeper types.StakingKeeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper Keeper, ak types.AccountKeeper, bk types.BankKeeper, sk external.StakingKeeper) AppModule {
+func NewAppModule(keeper Keeper, ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,

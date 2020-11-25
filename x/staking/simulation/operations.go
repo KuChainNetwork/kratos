@@ -189,9 +189,9 @@ func SimulateMsgEditValidator(ak types.AccountKeeper, bk types.BankKeeper, k kee
 
 		address := val.GetOperator()
 
-		newCommissionRate := simulation.RandomDecAmount(r, val.Commission.MaxRate)
+		newCommissionRate := simulation.RandomDecAmount(r, val.GetCommissionMaxRate())
 
-		if err := val.Commission.ValidateNewRate(newCommissionRate, ctx.BlockHeader().Time); err != nil {
+		if err := val.CommissionValidateNewRate(newCommissionRate, ctx.BlockHeader().Time); err != nil {
 			// skip as the commission is invalid
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
@@ -325,7 +325,7 @@ func SimulateMsgUndelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper
 		}
 		valAddr := validator.GetOperatorAccountID()
 
-		delegations := k.GetValidatorDelegations(ctx, validator.OperatorAccount)
+		delegations := k.GetValidatorDelegations(ctx, validator.GetOperatorAccountID())
 
 		// get random delegator from validator
 		delegation := delegations[r.Intn(len(delegations))]

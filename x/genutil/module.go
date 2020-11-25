@@ -56,12 +56,12 @@ type AppModule struct {
 
 	accountKeeper types.AccountKeeper
 	stakingKeeper types.StakingKeeper
-	deliverTx     deliverTxfn
+	deliverTx     DeliverTxfn
 }
 
 // NewAppModule creates a new AppModule object
 func NewAppModule(accountKeeper types.AccountKeeper, stakingKeeper types.StakingKeeper,
-	deliverTx deliverTxfn, stakingFuncManager types.StakingFuncManager) module.AppModule {
+	deliverTx DeliverTxfn, stakingFuncManager types.StakingFuncManager) module.AppModule {
 	return module.NewGenesisOnlyAppModule(AppModule{
 		AppModuleBasic: NewAppModuleBasic(stakingFuncManager),
 		accountKeeper:  accountKeeper,

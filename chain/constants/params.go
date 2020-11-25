@@ -1,6 +1,8 @@
 package constants
 
-import "github.com/KuChainNetwork/kuchain/chain/constants/keys"
+import (
+	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
+)
 
 const (
 	IssueCoinsWaitBlockNums = keys.IssueCoinsWaitBlockNums // how many blocks after coins created that can issue

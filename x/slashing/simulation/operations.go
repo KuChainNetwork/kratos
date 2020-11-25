@@ -25,7 +25,7 @@ const (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simulation.AppParams, cdc *codec.Codec, ak types.AccountKeeper,
-	bk types.BankKeeper, k keeper.Keeper, sk external.StakingKeeper,
+	bk types.BankKeeper, k keeper.Keeper, sk types.StakingKeeper,
 ) simulation.WeightedOperations {
 
 	var weightMsgUnjail int
@@ -45,13 +45,12 @@ func WeightedOperations(
 
 // SimulateMsgUnjail generates a MsgUnjail with random values
 // nolint: interfacer
-func SimulateMsgUnjail(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper, sk external.StakingKeeper) simulation.Operation {
+func SimulateMsgUnjail(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Keeper, sk types.StakingKeeper) simulation.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
 		accs []simulation.Account, chainID string,
 	) (simulation.OperationMsg, []simulation.FutureOperation, error) {
-
-		validator, ok := external.StakingRandomValidator(r, sk, ctx)
+		validator, ok := external.RandomValidator(r, sk, ctx)
 		if !ok {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil // skip
 		}

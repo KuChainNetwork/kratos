@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -21,4 +22,8 @@ var (
 	NewAccountIDFromByte = types.NewAccountIDFromByte
 	NewCoin              = types.NewCoin
 	NewCoins             = types.NewCoins
+)
+
+type (
+	StakingHooks = exported.StakingHooks
 )
