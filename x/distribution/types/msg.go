@@ -8,10 +8,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-type findAccount func(acc chainType.AccountID) bool
-
-var FindAcc findAccount
-
 // Verify interface at compile time
 var _, _, _ sdk.Msg = &MsgSetWithdrawAccountId{}, &MsgWithdrawDelegatorReward{}, &MsgWithdrawValidatorCommission{}
 
@@ -54,13 +50,9 @@ func (m MsgSetWithdrawAccountId) ValidateBasic() error {
 			if data.DelegatorAccountid.Equal(&data.WithdrawAccountid) {
 				return chainType.ErrKuMsgDataSameAccount
 			}
-
-			if FindAcc != nil {
-				if !FindAcc(data.WithdrawAccountid) {
-					return chainType.ErrKuMsgDataNotFindAccount
-				}
-			}
 		}
+	} else {
+		return err
 	}
 
 	return m.KuMsg.ValidateTransfer()
@@ -103,24 +95,9 @@ type MsgWithdrawDelegatorReward struct {
 }
 
 func (m MsgWithdrawDelegatorReward) ValidateBasic() error {
-	data, err := m.GetData()
-	if err == nil {
-		_, ok := data.DelegatorAccountId.ToName()
-		if ok {
-			if FindAcc != nil {
-				if !FindAcc(data.DelegatorAccountId) {
-					return chainType.ErrKuMsgDataNotFindAccount
-				}
-			}
-		}
-		_, ok = data.ValidatorAccountId.ToName()
-		if ok {
-			if FindAcc != nil {
-				if !FindAcc(data.ValidatorAccountId) {
-					return chainType.ErrKuMsgDataNotFindAccount
-				}
-			}
-		}
+	_, err := m.GetData()
+	if err != nil {
+		return err
 	}
 
 	return m.KuMsg.ValidateTransfer()
@@ -178,16 +155,9 @@ func (m MsgWithdrawValidatorCommission) GetData() (MsgWithdrawValidatorCommissio
 }
 
 func (m MsgWithdrawValidatorCommission) ValidateBasic() error {
-	data, err := m.GetData()
-	if err == nil {
-		_, ok := data.ValidatorAccountId.ToName()
-		if ok {
-			if FindAcc != nil {
-				if !FindAcc(data.ValidatorAccountId) {
-					return chainType.ErrKuMsgDataNotFindAccount
-				}
-			}
-		}
+	_, err := m.GetData()
+	if err != nil {
+		return err
 	}
 
 	return m.KuMsg.ValidateTransfer()
