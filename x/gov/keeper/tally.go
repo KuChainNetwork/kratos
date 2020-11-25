@@ -10,7 +10,12 @@ import (
 
 // Tally iterates over the votes and updates the tally of a proposal based on the voting power of the
 // voters
-func (keeper Keeper) Tally(ctx sdk.Context, proposal types.Proposal) (passes bool, burnDeposits bool, tallyResults types.TallyResult, punishBp []AccountID, punish bool, vetobp []AccountID) {
+func (keeper Keeper) Tally(
+	ctx sdk.Context, proposal types.Proposal) (
+	passes, burnDeposits bool,
+	tallyResults types.TallyResult,
+	punishBp []AccountID,
+	punish bool, vetobp []AccountID) {
 	results := make(map[types.VoteOption]sdk.Dec)
 	results[types.OptionYes] = sdk.ZeroDec()
 	results[types.OptionAbstain] = sdk.ZeroDec()
@@ -33,7 +38,7 @@ func (keeper Keeper) Tally(ctx sdk.Context, proposal types.Proposal) (passes boo
 	})
 
 	keeper.IterateVotes(ctx, proposal.ProposalID, func(vote types.Vote) bool {
-		//if validator, just record it in the map
+		// if validator, just record it in the map
 		valAddrStr := vote.Voter.String()
 		if val, ok := currValidators[valAddrStr]; ok {
 			val.Vote = vote.Option
@@ -121,7 +126,7 @@ func (keeper Keeper) EmergencyPass(ctx sdk.Context, proposalID uint64) (passes b
 	})
 
 	keeper.IterateVotes(ctx, proposalID, func(vote types.Vote) bool {
-		//if validator, just record it in the map
+		// if validator, just record it in the map
 		valAddrStr := vote.Voter.String()
 		if val, ok := currValidators[valAddrStr]; ok {
 			val.Vote = vote.Option
@@ -159,9 +164,13 @@ func (keeper Keeper) EmergencyPass(ctx sdk.Context, proposalID uint64) (passes b
 	return false, tallyResults
 }
 
-//add jail information
+// Jail add jail information
 func (keeper Keeper) Jail(ctx sdk.Context, validatorAccount AccountID, proposalID uint64) {
-	punishValdator := types.NewPunishValidator(validatorAccount, ctx.BlockHeader().Height, ctx.BlockHeader().Time.Add(keeper.DowntimeJailDuration(ctx)), proposalID)
+	punishValdator := types.NewPunishValidator(
+		validatorAccount,
+		ctx.BlockHeader().Height,
+		ctx.BlockHeader().Time.Add(keeper.DowntimeJailDuration(ctx)),
+		proposalID)
 	keeper.SetPunishValidator(ctx, punishValdator)
 	keeper.sk.JailByAccount(ctx, validatorAccount)
 }

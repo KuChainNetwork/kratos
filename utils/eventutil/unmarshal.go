@@ -106,9 +106,9 @@ func populate(v reflect.Value, value string) error {
 		}
 		v.SetBool(b)
 		return nil
+	default:
+		return populateTypes(v, value)
 	}
-
-	return populateTypes(v, value)
 }
 
 func populateTypes(v reflect.Value, value string) error {

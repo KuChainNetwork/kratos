@@ -79,9 +79,8 @@ type QueryRedelegationParams struct {
 	DstValidatorAddr types.AccountID
 }
 
-func NewQueryRedelegationParams(delegatorAddr types.AccountID,
-	srcValidatorAddr, dstValidatorAddr types.AccountID) QueryRedelegationParams {
-
+func NewQueryRedelegationParams(
+	delegatorAddr, srcValidatorAddr, dstValidatorAddr types.AccountID) QueryRedelegationParams {
 	return QueryRedelegationParams{
 		DelegatorAddr:    delegatorAddr,
 		SrcValidatorAddr: srcValidatorAddr,

@@ -7,7 +7,11 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 )
 
-var _, _, _, _, _ chainTypes.KuMsgData = (*MsgCreateValidator)(nil), (*MsgEditValidator)(nil), (*MsgDelegate)(nil), (*MsgBeginRedelegate)(nil), (*MsgUndelegate)(nil)
+var _, _, _, _, _ chainTypes.KuMsgData = (*MsgCreateValidator)(nil),
+	(*MsgEditValidator)(nil),
+	(*MsgDelegate)(nil),
+	(*MsgBeginRedelegate)(nil),
+	(*MsgUndelegate)(nil)
 
 // MsgCreateValidator defines an SDK message for creating a new validator.
 type MsgCreateValidator struct {
@@ -24,7 +28,6 @@ func NewMsgCreateValidator(
 	valAddr chainTypes.AccountID, pubKey crypto.PubKey,
 	description Description, commission sdk.Dec, delAcc chainTypes.AccountID,
 ) MsgCreateValidator {
-
 	var pkStr string
 	if pubKey != nil {
 		pkStr = sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, pubKey)
@@ -57,7 +60,7 @@ func (msg MsgCreateValidator) GetSigners() []sdk.AccAddress {
 	// delegator is first signer so delegator pays fees
 	addrs := []sdk.AccAddress{}
 	delegatorAccAddress, ok := msg.DelegatorAccount.ToAccAddress()
-	if ok { //name   ctx
+	if ok {
 		addrs = append(addrs, delegatorAccAddress)
 	}
 

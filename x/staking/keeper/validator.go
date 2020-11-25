@@ -17,14 +17,14 @@ import (
 // simulation. Note this is quite biased though, as the simulator does more slashes than a
 // live chain should, however we require the slashing to be fast as noone pays gas for it.
 type cachedValidator struct {
-	val        types.Validator
-	marshalled string // marshalled amino bytes for the validator object (not operator address)
+	val       types.Validator
+	marshaled string // marshaled amino bytes for the validator object (not operator address)
 }
 
-func newCachedValidator(val types.Validator, marshalled string) cachedValidator {
+func newCachedValidator(val types.Validator, marshaled string) cachedValidator {
 	return cachedValidator{
-		val:        val,
-		marshalled: marshalled,
+		val:       val,
+		marshaled: marshaled,
 	}
 }
 
@@ -54,7 +54,7 @@ func (k Keeper) GetValidator(ctx sdk.Context, acc types.AccountID) (validator ty
 	// if the cache is too big, pop off the last element from it
 	if k.validatorCacheList.Len() > aminoCacheSize {
 		valToRemove := k.validatorCacheList.Remove(k.validatorCacheList.Front()).(cachedValidator)
-		delete(k.validatorCache, valToRemove.marshalled)
+		delete(k.validatorCache, valToRemove.marshaled)
 	}
 
 	validator = types.MustUnmarshalValidator(k.cdc, value)
@@ -132,7 +132,6 @@ func (k Keeper) SetNewValidatorByPowerIndex(ctx sdk.Context, validator types.Val
 // Update the tokens of an existing validator, update the validators power index key
 func (k Keeper) AddValidatorTokensAndShares(ctx sdk.Context, validator types.Validator,
 	tokensToAdd sdk.Int) (valOut types.Validator, addedShares sdk.Dec) {
-
 	k.DeleteValidatorByPowerIndex(ctx, validator)
 	validator, addedShares = validator.AddTokensFromDel(tokensToAdd)
 	k.SetValidator(ctx, validator)
@@ -143,7 +142,6 @@ func (k Keeper) AddValidatorTokensAndShares(ctx sdk.Context, validator types.Val
 // Update the tokens of an existing validator, update the validators power index key
 func (k Keeper) RemoveValidatorTokensAndShares(ctx sdk.Context, validator types.Validator,
 	sharesToRemove sdk.Dec) (valOut types.Validator, removedTokens sdk.Int) {
-
 	k.DeleteValidatorByPowerIndex(ctx, validator)
 	validator, removedTokens = validator.RemoveDelShares(sharesToRemove)
 	k.SetValidator(ctx, validator)
@@ -154,7 +152,6 @@ func (k Keeper) RemoveValidatorTokensAndShares(ctx sdk.Context, validator types.
 // Update the tokens of an existing validator, update the validators power index key
 func (k Keeper) RemoveValidatorTokens(ctx sdk.Context,
 	validator types.Validator, tokensToRemove sdk.Int) types.Validator {
-
 	k.DeleteValidatorByPowerIndex(ctx, validator)
 	validator = validator.RemoveTokens(tokensToRemove)
 	k.SetValidator(ctx, validator)
@@ -166,7 +163,6 @@ func (k Keeper) RemoveValidatorTokens(ctx sdk.Context,
 // An error is returned if the new commission rate is invalid.
 func (k Keeper) UpdateValidatorCommission(ctx sdk.Context,
 	validator types.Validator, newRate sdk.Dec) (types.Commission, error) {
-
 	commission := validator.Commission
 	blockTime := ctx.BlockHeader().Time
 
@@ -183,7 +179,6 @@ func (k Keeper) UpdateValidatorCommission(ctx sdk.Context,
 // remove the validator record and associated indexes
 // except for the bonded validator index which is only handled in ApplyAndReturnTendermintUpdates
 func (k Keeper) RemoveValidator(ctx sdk.Context, address types.AccountID) {
-
 	// first retrieve the old validator record
 	validator, found := k.GetValidator(ctx, address)
 	if !found {
@@ -256,7 +251,6 @@ func (k Keeper) GetBondedValidatorsByPower(ctx sdk.Context) []types.Validator {
 
 	i := 0
 	for ; iterator.Valid() && i < int(maxValidators); iterator.Next() {
-		//address := iterator.Value()
 		address := NewAccountIDFromByte(iterator.Value())
 		validator := k.mustGetValidator(ctx, address)
 
@@ -274,7 +268,6 @@ func (k Keeper) ValidatorsPowerStoreIterator(ctx sdk.Context) sdk.Iterator {
 	return sdk.KVStoreReversePrefixIterator(store, types.ValidatorsByPowerIndexKey)
 }
 
-//_______________________________________________________________________
 // Last Validator Index
 
 // Load the last validator power.
@@ -341,7 +334,6 @@ func (k Keeper) GetLastValidators(ctx sdk.Context) (validators []types.Validator
 
 	i := 0
 	for ; iterator.Valid(); iterator.Next() {
-
 		// sanity check
 		if i >= int(maxValidators) {
 			panic("more validators than maxValidators found")
@@ -355,7 +347,6 @@ func (k Keeper) GetLastValidators(ctx sdk.Context) (validators []types.Validator
 	return validators[:i] // trim
 }
 
-//_______________________________________________________________________
 // Validator Queue
 
 // gets a specific validator queue timeslice. A timeslice is a slice of ValAddresses corresponding to unbonding validators

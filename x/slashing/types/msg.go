@@ -6,7 +6,7 @@ import (
 )
 
 // verify interface at compile time
-//var _ sdk.Msg = &MsgUnjail{}
+// var _ sdk.Msg = &MsgUnjail{}
 var _ chainType.KuMsgData = (*MsgUnjail)(nil)
 
 // MsgUnjail - struct for unjailing jailed validator

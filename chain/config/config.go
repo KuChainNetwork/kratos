@@ -14,6 +14,13 @@ import (
 )
 
 const (
+	ConsensusTimeoutPropose   = 1500 * time.Millisecond
+	ConsensusTimeoutPrecommit = 750 * time.Millisecond
+	ConsensusTimeoutPrevote   = 750 * time.Millisecond
+	ConsensusTimeoutCommit    = 3 * time.Second
+)
+
+const (
 	// Will Set For https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 	CoinType = 556
 
@@ -95,10 +102,10 @@ func interceptLoadConfig() (conf *cfg.Config, err error) {
 		conf.P2P.RecvRate = 5120000
 		conf.P2P.SendRate = 5120000
 		conf.TxIndex.IndexAllKeys = true
-		conf.Consensus.TimeoutPropose = 1500 * time.Millisecond
-		conf.Consensus.TimeoutPrecommit = 750 * time.Millisecond
-		conf.Consensus.TimeoutPrevote = 750 * time.Millisecond
-		conf.Consensus.TimeoutCommit = 3 * time.Second
+		conf.Consensus.TimeoutPropose = ConsensusTimeoutPropose
+		conf.Consensus.TimeoutPrecommit = ConsensusTimeoutPrecommit
+		conf.Consensus.TimeoutPrevote = ConsensusTimeoutPrevote
+		conf.Consensus.TimeoutCommit = ConsensusTimeoutCommit
 		cfg.WriteConfigFile(configFilePath, conf)
 		// Fall through, just so that its parsed into memory.
 	}

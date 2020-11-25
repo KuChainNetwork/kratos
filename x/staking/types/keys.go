@@ -136,18 +136,18 @@ func GetValidatorQueueTimeKey(timestamp time.Time) []byte {
 	return append(ValidatorQueueKey, bz...)
 }
 
-// gets the key for delegator bond with validator
+// GetDelegationKey gets the key for delegator bond with validator
 // VALUE: staking/Delegation
 func GetDelegationKey(delAddr AccountID, valAddr AccountID) []byte {
 	return append(GetDelegationsKey(delAddr), valAddr.StoreKey()...)
 }
 
-// gets the prefix for a delegator for all validators
+// GetDelegationsKey gets the prefix for a delegator for all validators
 func GetDelegationsKey(delAddr AccountID) []byte {
 	return append(DelegationKey, delAddr.StoreKey()...)
 }
 
-// gets the key for an unbonding delegation by delegator and validator addr
+// GetUBDKey gets the key for an unbonding delegation by delegator and validator addr
 // VALUE: staking/UnbondingDelegation
 func GetUBDKey(delAddr []byte, valAddr []byte) []byte {
 	return append(
@@ -155,13 +155,13 @@ func GetUBDKey(delAddr []byte, valAddr []byte) []byte {
 		valAddr...)
 }
 
-// gets the index-key for an unbonding delegation, stored by validator-index
+// GetUBDByValIndexKey gets the index-key for an unbonding delegation, stored by validator-index
 // VALUE: none (key rearrangement used)
 func GetUBDByValIndexKey(delAddr AccountID, valAddr AccountID) []byte {
 	return append(GetUBDsByValIndexKey(valAddr), delAddr.StoreKey()...)
 }
 
-// rearranges the ValIndexKey to get the UBDKey
+// GetUBDKeyFromValIndexKey rearranges the ValIndexKey to get the UBDKey
 func GetUBDKeyFromValIndexKey(indexKey []byte) []byte {
 	addrs := indexKey[1:] // remove prefix bytes
 	if len(addrs) != 2*AccIDStoreKeyLen {
@@ -172,27 +172,23 @@ func GetUBDKeyFromValIndexKey(indexKey []byte) []byte {
 	return GetUBDByValIndexKey(NewAccountIDFromByte(delAddr), NewAccountIDFromByte(valAddr))
 }
 
-//______________
-
-// gets the prefix for all unbonding delegations from a delegator
+// GetUBDsKey gets the prefix for all unbonding delegations from a delegator
 func GetUBDsKey(delAddr []byte) []byte {
 	return append(UnbondingDelegationKey, delAddr...)
 }
 
-// gets the prefix keyspace for the indexes of unbonding delegations for a validator
+// GetUBDsByValIndexKey gets the prefix keyspace for the indexes of unbonding delegations for a validator
 func GetUBDsByValIndexKey(valAddr AccountID) []byte {
 	return append(UnbondingDelegationByValIndexKey, valAddr.StoreKey()...)
 }
 
-// gets the prefix for all unbonding delegations from a delegator
+// GetUnbondingDelegationTimeKey gets the prefix for all unbonding delegations from a delegator
 func GetUnbondingDelegationTimeKey(timestamp time.Time) []byte {
 	bz := sdk.FormatTimeBytes(timestamp)
 	return append(UnbondingQueueKey, bz...)
 }
 
-//________________________________________________________________________________
-
-// gets the key for a redelegation
+// GetREDKey gets the key for a redelegation
 // VALUE: staking/RedelegationKey
 func GetREDKey(delAddr []byte, valSrcAddr, valDstAddr []byte) []byte {
 	key := make([]byte, 1+AccIDStoreKeyLen*3)
@@ -264,9 +260,7 @@ func GetRedelegationTimeKey(timestamp time.Time) []byte {
 	return append(RedelegationQueueKey, bz...)
 }
 
-//______________
-
-// gets the prefix keyspace for redelegations from a delegator
+// GetREDsKey gets the prefix keyspace for redelegations from a delegator
 func GetREDsKey(delAddr []byte) []byte {
 	return append(RedelegationKey, delAddr...)
 }
@@ -281,15 +275,13 @@ func GetREDsToValDstIndexKey(valDstAddr AccountID) []byte {
 	return append(RedelegationByValDstIndexKey, valDstAddr.StoreKey()...)
 }
 
-// gets the prefix keyspace for all redelegations redelegating towards a destination validator
+// GetREDsByDelToValDstIndexKey gets the prefix keyspace for all redelegations redelegating towards a destination validator
 // from a particular delegator
 func GetREDsByDelToValDstIndexKey(delAddr AccountID, valDstAddr AccountID) []byte {
 	return append(
 		GetREDsToValDstIndexKey(valDstAddr),
 		delAddr.StoreKey()...)
 }
-
-//________________________________________________________________________________
 
 // GetHistoricalInfoKey gets the key for the historical info
 func GetHistoricalInfoKey(height int64) []byte {

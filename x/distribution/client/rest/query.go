@@ -180,7 +180,6 @@ func validatorInfoHandlerFn(cliCtx context.CLIContext, queryRoute string) http.H
 		}
 
 		// self bond rewards
-		//delAddr := sdk.AccAddress(valAddr)
 		bz, height, ok := checkResponseQueryDelegationRewards(w, cliCtx, queryRoute, valAddr.String(), valAddr.String())
 		if !ok {
 			return
@@ -298,9 +297,9 @@ func outstandingRewardsHandlerFn(cliCtx context.CLIContext, queryRoute string) h
 }
 
 func checkResponseQueryDelegationRewards(
-	w http.ResponseWriter, cliCtx context.CLIContext, queryRoute, delAddr, valAddr string,
-) (res []byte, height int64, ok bool) {
-
+	w http.ResponseWriter,
+	cliCtx context.CLIContext,
+	queryRoute, delAddr, valAddr string) (res []byte, height int64, ok bool) {
 	res, height, err := common.QueryDelegationRewards(cliCtx, queryRoute, delAddr, valAddr)
 	if err != nil {
 		rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())

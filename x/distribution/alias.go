@@ -27,7 +27,6 @@ const (
 )
 
 var (
-	// functions aliases
 	RegisterInvariants                         = keeper.RegisterInvariants
 	AllInvariants                              = keeper.AllInvariants
 	NonNegativeOutstandingInvariant            = keeper.NonNegativeOutstandingInvariant
@@ -74,7 +73,7 @@ var (
 	NewGenesisState                            = types.NewGenesisState
 	DefaultGenesisState                        = types.DefaultGenesisState
 	ValidateGenesis                            = types.ValidateGenesis
-	NewMsgSetWithdrawAccountId                 = types.NewMsgSetWithdrawAccountId
+	NewMsgSetWithdrawAccountID                 = types.NewMsgSetWithdrawAccountID
 	NewMsgWithdrawDelegatorReward              = types.NewMsgWithdrawDelegatorReward
 	NewMsgWithdrawValidatorCommission          = types.NewMsgWithdrawValidatorCommission
 	NewQueryValidatorOutstandingRewardsParams  = types.NewQueryValidatorOutstandingRewardsParams
@@ -90,7 +89,6 @@ var (
 	InitialValidatorAccumulatedCommission      = types.InitialValidatorAccumulatedCommission
 	NewValidatorSlashEvent                     = types.NewValidatorSlashEvent
 
-	// variable aliases
 	FeePoolKey                           = types.FeePoolKey
 	ProposerKey                          = types.ProposerKey
 	ValidatorOutstandingRewardsPrefix    = types.ValidatorOutstandingRewardsPrefix
@@ -131,7 +129,7 @@ type (
 	ValidatorSlashEventRecord              = types.ValidatorSlashEventRecord
 	Params                                 = types.Params
 	GenesisState                           = types.GenesisState
-	MsgSetWithdrawAccountId                = types.MsgSetWithdrawAccountId
+	MsgSetWithdrawAccountID                = types.MsgSetWithdrawAccountID
 	MsgWithdrawDelegatorReward             = types.MsgWithdrawDelegatorReward
 	MsgWithdrawValidatorCommission         = types.MsgWithdrawValidatorCommission
 	CommunityPoolSpendProposal             = types.CommunityPoolSpendProposal

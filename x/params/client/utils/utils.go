@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
-	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -35,8 +34,7 @@ type (
 
 	// ParamChangeProposalReq defines a parameter change proposal request body.
 	ParamChangeProposalReq struct {
-		BaseReq rest.BaseReq `json:"base_req" yaml:"base_req"`
-
+		BaseReq         chainTypes.BaseReq   `json:"base_req" yaml:"base_req"`
 		Title           string               `json:"title" yaml:"title"`
 		Description     string               `json:"description" yaml:"description"`
 		Changes         ParamChangesJSON     `json:"changes" yaml:"changes"`

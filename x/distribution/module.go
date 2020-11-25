@@ -63,8 +63,6 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	return cli.GetQueryCmd(StoreKey, cdc)
 }
 
-//____________________________________________________________________________
-
 // AppModule implements an application module for the distribution module.
 type AppModule struct {
 	AppModuleBasic
@@ -72,7 +70,7 @@ type AppModule struct {
 	keeper        Keeper
 	accountKeeper types.AccountKeeperAccountID
 	bankKeeper    types.BankKeeperAccountID
-	stakingKeeper types.StakingKPKeeper
+	stakingKeeper types.StakingKeeperAccountID
 	supplyKeeper  types.SupplyKeeperAccountID
 }
 
@@ -82,7 +80,7 @@ func NewAppModule(
 	accountKeeper types.AccountKeeperAccountID,
 	bankKeeper types.BankKeeperAccountID,
 	supplyKeeper types.SupplyKeeperAccountID,
-	stakingKeeper types.StakingKPKeeper,
+	stakingKeeper types.StakingKeeperAccountID,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
@@ -150,8 +148,6 @@ func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
 func (AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return []abci.ValidatorUpdate{}
 }
-
-//____________________________________________________________________________
 
 // AppModuleSimulation functions
 

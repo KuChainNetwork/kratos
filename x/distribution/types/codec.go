@@ -14,7 +14,7 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(&MsgWithdrawValidatorCommissionData{}, "kuchain/MsgWithdrawValidatorCommissionData", nil)
 
 	cdc.RegisterConcrete(&MsgSetWithdrawAccountIdData{}, "kuchain/MsgSetWithdrawAccountIdData", nil)
-	cdc.RegisterConcrete(MsgSetWithdrawAccountId{}, "kuchain/MsgSetWithdrawAccountId", nil)
+	cdc.RegisterConcrete(MsgSetWithdrawAccountID{}, "kuchain/MsgSetWithdrawAccountID", nil)
 
 	cdc.RegisterConcrete(CommunityPoolSpendProposal{}, "cosmos-sdk/CommunityPoolSpendProposal", nil)
 }

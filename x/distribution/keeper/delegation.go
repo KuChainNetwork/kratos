@@ -8,21 +8,21 @@ import (
 )
 
 // initialize starting info for a new delegation
-func (k Keeper) initializeDelegation(ctx sdk.Context, valId AccountID, delId AccountID) {
+func (k Keeper) initializeDelegation(ctx sdk.Context, valID AccountID, delID AccountID) {
 	// period has already been incremented - we want to store the period ended by this delegation action
-	previousPeriod := k.GetValidatorCurrentRewards(ctx, valId).Period - 1
+	previousPeriod := k.GetValidatorCurrentRewards(ctx, valID).Period - 1
 
 	// increment reference count for the period we're going to track
-	k.incrementReferenceCount(ctx, valId, previousPeriod)
+	k.incrementReferenceCount(ctx, valID, previousPeriod)
 
-	validator := k.stakingKeeper.Validator(ctx, valId)
-	delegation := k.stakingKeeper.Delegation(ctx, delId, valId)
+	validator := k.stakingKeeper.Validator(ctx, valID)
+	delegation := k.stakingKeeper.Delegation(ctx, delID, valID)
 
 	// calculate delegation stake in tokens
 	// we don't store directly, so multiply delegation shares * (tokens per share)
 	// note: necessary to truncate so we don't allow withdrawing more rewards than owed
 	stake := validator.TokensFromSharesTruncated(delegation.GetShares())
-	k.SetDelegatorStartingInfo(ctx, valId, delId, types.NewDelegatorStartingInfo(previousPeriod, stake, uint64(ctx.BlockHeight())))
+	k.SetDelegatorStartingInfo(ctx, valID, delID, types.NewDelegatorStartingInfo(previousPeriod, stake, uint64(ctx.BlockHeight())))
 }
 
 // calculate the rewards accrued by a delegation between two periods
@@ -171,7 +171,7 @@ func (k Keeper) withdrawDelegationRewards(ctx sdk.Context, val types.ValidatorI,
 	ctx.Logger().Debug("withdrawDelegationRewards", "rewards", rewards, "coins", coins, "remainder", remainder)
 	// add coins to user account
 	if !coins.IsZero() {
-		withdrawAddr := k.GetDelegatorWithdrawAddr(ctx, del.GetDelegatorAccountID()) //bugs, stacking interface
+		withdrawAddr := k.GetDelegatorWithdrawAddr(ctx, del.GetDelegatorAccountID())
 		err := k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, coins)
 		if err != nil {
 			return nil, err

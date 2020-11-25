@@ -68,9 +68,9 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // SetWithdrawAddr sets a new address that will receive the rewards upon withdrawal
-func (k Keeper) SetWithdrawAddr(ctx sdk.Context, delegatorId chainTypes.AccountID, withdrawId chainTypes.AccountID) error {
-	if k.blacklistedAddrs[withdrawId.String()] {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is blacklisted from receiving external funds", withdrawId)
+func (k Keeper) SetWithdrawAddr(ctx sdk.Context, delegatorID chainTypes.AccountID, withdrawID chainTypes.AccountID) error {
+	if k.blacklistedAddrs[withdrawID.String()] {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is blacklisted from receiving external funds", withdrawID)
 	}
 
 	if !k.GetWithdrawAddrEnabled(ctx) {
@@ -80,17 +80,16 @@ func (k Keeper) SetWithdrawAddr(ctx sdk.Context, delegatorId chainTypes.AccountI
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeSetWithdrawAddress,
-			sdk.NewAttribute(types.AttributeKeyWithdrawAddress, withdrawId.String()),
+			sdk.NewAttribute(types.AttributeKeyWithdrawAddress, withdrawID.String()),
 		),
 	)
 
-	k.SetDelegatorWithdrawAddr(ctx, delegatorId, withdrawId)
+	k.SetDelegatorWithdrawAddr(ctx, delegatorID, withdrawID)
 	return nil
 }
 
 // withdraw rewards from a delegation
 func (k Keeper) WithdrawDelegationRewards(ctx sdk.Context, delAddr chainTypes.AccountID, valAddr chainTypes.AccountID) (Coins, error) {
-
 	val := k.stakingKeeper.Validator(ctx, valAddr)
 	ctx.Logger().Debug("WithdrawDelegationRewards", "val:", val)
 	if val == nil {
@@ -141,7 +140,6 @@ func (k Keeper) WithdrawValidatorCommission(ctx sdk.Context, valAddr chainTypes.
 	k.SetValidatorOutstandingRewards(ctx, valAddr, types.ValidatorOutstandingRewards{Rewards: outstanding.Sub(chainTypes.NewDecCoinsFromCoins(commission...))})
 
 	if !commission.IsZero() {
-		//accAddr := sdk.AccAddress(valAddr)
 		withdrawAddr := k.GetDelegatorWithdrawAddr(ctx, valAddr)
 		err := k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, commission)
 		if err != nil {
@@ -180,7 +178,6 @@ func (k Keeper) FundCommunityPool(ctx sdk.Context, amount Coins, sender chainTyp
 
 	// module name to coin power
 	if err := k.BankKeeper.CoinsToPower(ctx, sender, types.ModuleAccountID, amount); err != nil {
-
 		return sdkerrors.Wrap(err, "FundCommunityPool to power")
 	}
 
@@ -227,11 +224,11 @@ func (k Keeper) CanDistribution(ctx sdk.Context) (bool, time.Time) {
 	tEnd := k.startNotDistriTimePoint.Add(24 * 3600 * 1e9)
 	if nt.Before(tEnd) && nt.After(k.startNotDistriTimePoint) {
 		return false, k.startNotDistriTimePoint
-	} else {
-		k.SetStartNotDistributionTimePoint(ctx, time.Time{})
-		ctx.Logger().Info("time CanDistribution",
-			"time", k.startNotDistriTimePoint.Nanosecond())
 	}
+
+	k.SetStartNotDistributionTimePoint(ctx, time.Time{})
+	ctx.Logger().Info("time CanDistribution",
+		"time", k.startNotDistriTimePoint.Nanosecond())
 
 	return true, k.startNotDistriTimePoint
 }

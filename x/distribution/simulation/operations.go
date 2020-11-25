@@ -28,7 +28,7 @@ const (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simulation.AppParams, cdc *codec.Codec, ak types.AccountKeeperAccountID,
-	bk types.BankKeeperAccountID, k keeper.Keeper, sk types.StakingKPKeeper,
+	bk types.BankKeeperAccountID, k keeper.Keeper, sk types.StakingKeeperAccountID,
 ) types.SimulationWeightedOperations {
 
 	var weightMsgSetWithdrawAddress int
@@ -99,7 +99,7 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeperAccountID, bk types.Ban
 		}
 
 		simToAccountId := chainTypes.NewAccountIDFromAccAdd(simToAccount.Address)
-		msg := types.NewMsgSetWithdrawAccountId(account.GetAuth(), simAId, simToAccountId)
+		msg := types.NewMsgSetWithdrawAccountID(account.GetAuth(), simAId, simToAccountId)
 
 		tx := helpers.GenTx(
 			[]sdk.Msg{msg},
@@ -121,7 +121,7 @@ func SimulateMsgSetWithdrawAddress(ak types.AccountKeeperAccountID, bk types.Ban
 }
 
 // SimulateMsgWithdrawDelegatorReward generates a MsgWithdrawDelegatorReward with random values.
-func SimulateMsgWithdrawDelegatorReward(ak types.AccountKeeperAccountID, bk types.BankKeeperAccountID, k keeper.Keeper, sk types.StakingKPKeeper) types.SimulationOperation {
+func SimulateMsgWithdrawDelegatorReward(ak types.AccountKeeperAccountID, bk types.BankKeeperAccountID, k keeper.Keeper, sk types.StakingKeeperAccountID) types.SimulationOperation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []types.SimulationAccount, chainID string,
 	) (types.SimulationOperationMsg, []types.SimulationFutureOperation, error) {
@@ -174,7 +174,7 @@ func SimulateMsgWithdrawDelegatorReward(ak types.AccountKeeperAccountID, bk type
 }
 
 // SimulateMsgWithdrawValidatorCommission generates a MsgWithdrawValidatorCommission with random values.
-func SimulateMsgWithdrawValidatorCommission(ak types.AccountKeeperAccountID, bk types.BankKeeperAccountID, k keeper.Keeper, sk types.StakingKPKeeper) types.SimulationOperation {
+func SimulateMsgWithdrawValidatorCommission(ak types.AccountKeeperAccountID, bk types.BankKeeperAccountID, k keeper.Keeper, sk types.StakingKeeperAccountID) types.SimulationOperation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []types.SimulationAccount, chainID string,
 	) (types.SimulationOperationMsg, []types.SimulationFutureOperation, error) {

@@ -301,8 +301,6 @@ $ %s tx kustaking unbond jack validator 100stake --from jack
 	}
 }
 
-//__________________________________________________________
-
 var (
 	defaultTokens                  = stakingexport.TokensFromConsensusPower(100)
 	defaultAmount                  = defaultTokens.String() + stakingexport.DefaultBondDenom
@@ -315,7 +313,6 @@ var (
 // Return the flagset, particular flags, and a description of defaults
 // this is anticipated to be used with the gen-tx
 func CreateValidatorMsgHelpers(ipDefault string) (fs *flag.FlagSet, nodeIDFlag, pubkeyFlag, amountFlag, defaultsDesc string) {
-
 	fsCreateValidator := flag.NewFlagSet("", flag.ContinueOnError)
 	fsCreateValidator.String(FlagIP, ipDefault, "The node's public IP")
 	fsCreateValidator.String(FlagNodeID, "", "The node's NodeID")
@@ -345,7 +342,6 @@ func CreateValidatorMsgHelpers(ipDefault string) (fs *flag.FlagSet, nodeIDFlag, 
 func PrepareFlagsForTxCreateValidator(
 	config *cfg.Config, nodeID, chainID string, valPubKey crypto.PubKey,
 ) {
-
 	ip := viper.GetString(FlagIP)
 	if ip == "" {
 		fmt.Fprintf(os.Stderr, "couldn't retrieve an external IP; "+
@@ -380,7 +376,9 @@ func PrepareFlagsForTxCreateValidator(
 }
 
 // BuildCreateValidatorMsg makes a new MsgCreateValidator.
-func BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, valAddr chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error) {
+func BuildCreateValidatorMsg(
+	cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	valAddr chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error) {
 	delAddr := chainTypes.NewAccountIDFromAccAdd(authAddress)
 	pkStr := viper.GetString(FlagPubKey)
 
@@ -420,8 +418,10 @@ func BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder
 	return txBldr, msg, nil
 }
 
-func BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder, authAddress chainTypes.AccAddress, delAccountID chainTypes.AccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
-
+func BuildDelegateMsg(
+	cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	authAddress chainTypes.AccAddress,
+	delAccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
 	defaultAmount = stakingexport.TokensFromConsensusPower(1).String() + stakingexport.DefaultBondDenom
 	amount, err := chainTypes.ParseCoin(defaultAmount)
 	if err != nil {

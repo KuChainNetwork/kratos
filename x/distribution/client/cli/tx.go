@@ -56,9 +56,7 @@ func splitAndApply(
 	cliCtx txutil.KuCLIContext,
 	txBldr txutil.TxBuilder,
 	msgs []sdk.Msg,
-	chunkSize int,
-) error {
-
+	chunkSize int) error {
 	if chunkSize == 0 {
 		return generateOrBroadcast(cliCtx, txBldr, msgs)
 	}
@@ -67,7 +65,6 @@ func splitAndApply(
 	totalMessages := len(msgs)
 
 	for i := 0; i < len(msgs); i += chunkSize {
-
 		sliceEnd := i + chunkSize
 		if sliceEnd > totalMessages {
 			sliceEnd = totalMessages
@@ -86,7 +83,7 @@ func splitAndApply(
 func GetCmdWithdrawRewards(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw-rewards [validator]  --from delegator",
-		Short: "Withdraw rewards from a given delegation address, and optionally withdraw validator commission if the delegation address given is a validator operator",
+		Short: "Withdraw rewards from a given delegation address and validator commission from a validator operator.",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Withdraw rewards from a given delegation name,
 and optionally withdraw validator commission if the delegation address given is a validator operator.
@@ -146,7 +143,7 @@ $ %s tx kudistribution withdraw-all-rewards  --from jack
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
 			delAddr := cliCtx.GetFromAddress()
-			delId, _ := chainType.NewAccountIDFromStr(args[0])
+			delID, _ := chainType.NewAccountIDFromStr(args[0])
 
 			// The transaction cannot be generated offline since it requires a query
 			// to get all the validators.
@@ -154,13 +151,13 @@ $ %s tx kudistribution withdraw-all-rewards  --from jack
 				return fmt.Errorf("command disabled with the provided flag: %s", flags.FlagGenerateOnly)
 			}
 
-			msgs, err := common.WithdrawAllDelegatorRewards(cliCtx.CLIContext, delAddr, queryRoute, delId)
+			msgs, err := common.WithdrawAllDelegatorRewards(cliCtx.CLIContext, delAddr, queryRoute, delID)
 			if err != nil {
 				return err
 			}
 
 			chunkSize := viper.GetInt(flagMaxMessagesPerTx)
-			cliCtx = cliCtx.WithFromAccount(delId)
+			cliCtx = cliCtx.WithFromAccount(delID)
 			fmt.Println("args:", args[0], "GetFromName:", cliCtx.GetFromName())
 			return splitAndApply(txutil.GenerateOrBroadcastMsgs, cliCtx, txBldr, msgs, chunkSize)
 		},
@@ -191,15 +188,15 @@ $ %s tx kudistribution set-withdraw withdrawacc  account --from account
 			cliCtx := txutil.NewKuCLICtxByBuf(cdc, inBuf)
 
 			delAddr := cliCtx.GetFromAddress()
-			delId, _ := chainType.NewAccountIDFromStr(args[1])
+			delID, _ := chainType.NewAccountIDFromStr(args[1])
 
-			withdrawAccId, err := chainType.NewAccountIDFromStr(args[0])
+			withdrawAccID, err := chainType.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSetWithdrawAccountId(delAddr, delId, withdrawAccId)
-			cliCtx = cliCtx.WithFromAccount(delId)
+			msg := types.NewMsgSetWithdrawAccountID(delAddr, delID, withdrawAccID)
+			cliCtx = cliCtx.WithFromAccount(delID)
 			return txutil.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}

@@ -40,7 +40,7 @@ type StakingKeeper interface {
 	Validator(sdk.Context, AccountID) external.StakingValidatorl                 // get a particular validator by operator address
 	ValidatorByConsAddr(sdk.Context, sdk.ConsAddress) external.StakingValidatorl // get a particular validator by consensus address
 
-	// slash the validator and delegators of the validator, specifying offence height, offence power, and slash fraction
+	// Slash slash the validator and delegators of the validator, specifying offense height, offense power, and slash fraction
 	Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec)
 	Jail(sdk.Context, sdk.ConsAddress)   // jail a validator
 	Unjail(sdk.Context, sdk.ConsAddress) // unjail a validator
@@ -51,6 +51,7 @@ type StakingKeeper interface {
 
 	// MaxValidators returns the maximum amount of bonded validators
 	MaxValidators(sdk.Context) uint32
+	GetAllValidatorInterfaces(ctx sdk.Context) []external.StakingValidatorl
 }
 
 // StakingHooks event hooks for staking validator object (noalias)

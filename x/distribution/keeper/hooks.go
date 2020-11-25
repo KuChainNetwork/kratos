@@ -11,24 +11,24 @@ type Hooks struct {
 	k Keeper
 }
 
-var _ types.StakingTypesStakingHooks = Hooks{} //bugs , stacking interface
+var _ types.StakingTypesStakingHooks = Hooks{}
 
 // Create new distribution hooks
 func (k Keeper) Hooks() Hooks { return Hooks{k} }
 
 // initialize validator distribution record
-func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valId chainType.AccountID) {
-	val := h.k.stakingKeeper.Validator(ctx, valId)
+func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valID chainType.AccountID) {
+	val := h.k.stakingKeeper.Validator(ctx, valID)
 	h.k.initializeValidator(ctx, val)
 }
 
 // cleanup for after validator is removed
-func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, valId chainType.AccountID) {
+func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, valID chainType.AccountID) {
 	// fetch outstanding
-	outstanding := h.k.GetValidatorOutstandingRewardsCoins(ctx, valId)
+	outstanding := h.k.GetValidatorOutstandingRewardsCoins(ctx, valID)
 
 	// force-withdraw commission
-	commission := h.k.GetValidatorAccumulatedCommission(ctx, valId).Commission
+	commission := h.k.GetValidatorAccumulatedCommission(ctx, valID).Commission
 	if !commission.IsZero() {
 		// subtract from outstanding
 		outstanding = outstanding.Sub(commission)
@@ -43,9 +43,7 @@ func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, valId c
 
 		// add to validator account
 		if !coins.IsZero() {
-
-			//accAddr := sdk.AccAddress(valAddr)
-			withdrawAddr := h.k.GetDelegatorWithdrawAddr(ctx, valId)
+			withdrawAddr := h.k.GetDelegatorWithdrawAddr(ctx, valID)
 			err := h.k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, coins)
 			if err != nil {
 				panic(err)
@@ -59,24 +57,24 @@ func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, valId c
 	h.k.SetFeePool(ctx, feePool)
 
 	// delete outstanding
-	h.k.DeleteValidatorOutstandingRewards(ctx, valId)
+	h.k.DeleteValidatorOutstandingRewards(ctx, valID)
 
 	// remove commission record
-	h.k.DeleteValidatorAccumulatedCommission(ctx, valId)
+	h.k.DeleteValidatorAccumulatedCommission(ctx, valID)
 
 	// clear slashes
-	h.k.DeleteValidatorSlashEvents(ctx, valId)
+	h.k.DeleteValidatorSlashEvents(ctx, valID)
 
 	// clear historical rewards
-	h.k.DeleteValidatorHistoricalRewards(ctx, valId)
+	h.k.DeleteValidatorHistoricalRewards(ctx, valID)
 
 	// clear current rewards
-	h.k.DeleteValidatorCurrentRewards(ctx, valId)
+	h.k.DeleteValidatorCurrentRewards(ctx, valID)
 }
 
 // increment period
-func (h Hooks) BeforeDelegationCreated(ctx sdk.Context, _ chainType.AccountID, valId chainType.AccountID) {
-	val := h.k.stakingKeeper.Validator(ctx, valId)
+func (h Hooks) BeforeDelegationCreated(ctx sdk.Context, _ chainType.AccountID, valID chainType.AccountID) {
+	val := h.k.stakingKeeper.Validator(ctx, valID)
 	h.k.IncrementValidatorPeriod(ctx, val)
 }
 
@@ -90,13 +88,13 @@ func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, delAddr chainType
 }
 
 // create new delegation period record
-func (h Hooks) AfterDelegationModified(ctx sdk.Context, delId chainType.AccountID, valId chainType.AccountID) {
-	h.k.initializeDelegation(ctx, valId, delId)
+func (h Hooks) AfterDelegationModified(ctx sdk.Context, delID chainType.AccountID, valID chainType.AccountID) {
+	h.k.initializeDelegation(ctx, valID, delID)
 }
 
 // record the slash event
-func (h Hooks) BeforeValidatorSlashed(ctx sdk.Context, valId chainType.AccountID, fraction sdk.Dec) {
-	h.k.updateValidatorSlashFraction(ctx, valId, fraction)
+func (h Hooks) BeforeValidatorSlashed(ctx sdk.Context, valID chainType.AccountID, fraction sdk.Dec) {
+	h.k.updateValidatorSlashFraction(ctx, valID, fraction)
 }
 
 // nolint - unused hooks

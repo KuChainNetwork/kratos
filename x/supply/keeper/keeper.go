@@ -28,7 +28,6 @@ func NewKeeper(
 	bk types.BankKeeper,
 	maccPerms map[string][]string,
 ) Keeper {
-
 	permAddrs := make(map[string]types.PermissionsForAddress)
 	for name, perms := range maccPerms {
 		permAddrs[name] = types.NewPermissionsForAddress(name, perms)

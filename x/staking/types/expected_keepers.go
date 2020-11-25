@@ -76,7 +76,7 @@ type ValidatorSet interface {
 	TotalBondedTokens(sdk.Context) sdk.Int                                       // total bonded tokens within the validator set
 	StakingTokenSupply(sdk.Context) sdk.Int                                      // total staking token supply
 
-	// slash the validator and delegators of the validator, specifying offence height, offence power, and slash fraction
+	// slash the validator and delegators of the validator, specifying offense height, offense power, and slash fraction
 	Slash(sdk.Context, sdk.ConsAddress, int64, int64, sdk.Dec)
 	Jail(sdk.Context, sdk.ConsAddress)   // jail a validator
 	Unjail(sdk.Context, sdk.ConsAddress) // unjail a validator
@@ -97,26 +97,4 @@ type DelegationSet interface {
 	//   execute func for each validator
 	IterateDelegations(ctx sdk.Context, delegator AccountID,
 		fn func(index int64, delegation stakingexported.DelegationI) (stop bool))
-}
-
-// Event Hooks
-// These can be utilized to communicate between a staking keeper and another
-// keeper which must take particular actions when validators/delegators change
-// state. The second keeper must implement this interface, which then the
-// staking keeper can call.
-
-// StakingHooks event hooks for staking validator object (noalias)
-type StakingHooks interface {
-	AfterValidatorCreated(ctx sdk.Context, valAddr AccountID)                           // Must be called when a validator is created
-	BeforeValidatorModified(ctx sdk.Context, valAddr AccountID)                         // Must be called when a validator's state changes
-	AfterValidatorRemoved(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr AccountID) // Must be called when a validator is deleted
-
-	AfterValidatorBonded(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr AccountID)         // Must be called when a validator is bonded
-	AfterValidatorBeginUnbonding(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr AccountID) // Must be called when a validator begins unbonding
-
-	BeforeDelegationCreated(ctx sdk.Context, delAddr AccountID, valAddr AccountID)        // Must be called when a delegation is created
-	BeforeDelegationSharesModified(ctx sdk.Context, delAddr AccountID, valAddr AccountID) // Must be called when a delegation's shares are modified
-	BeforeDelegationRemoved(ctx sdk.Context, delAddr AccountID, valAddr AccountID)        // Must be called when a delegation is removed
-	AfterDelegationModified(ctx sdk.Context, delAddr AccountID, valAddr AccountID)
-	BeforeValidatorSlashed(ctx sdk.Context, valAddr AccountID, fraction sdk.Dec)
 }

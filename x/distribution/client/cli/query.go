@@ -87,14 +87,11 @@ $ %s query kudistribution validator-outstanding-rewards validatorName
 				return err
 			}
 
-			//acc := chainTypes.NewAccountIDFromValAdd(valAddr)
 			params := types.NewQueryValidatorOutstandingRewardsParams(valAddr)
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
 				return err
 			}
-
-			//fmt.Println("params:", params, "acc:", acc, "bz:", bz, "valAddr:",valAddr)
 
 			resp, _, err := cliCtx.QueryWithData(
 				fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryValidatorOutstandingRewards),
@@ -138,7 +135,6 @@ $ %s query kudistribution commission validatorName
 				return err
 			}
 
-			//acc := chainTypes.NewAccountIDFromValAdd(validatorAddr)
 			res, err := common.QueryValidatorCommission(cliCtx, queryRoute, validatorAddr)
 			if err != nil {
 				return err
@@ -184,7 +180,6 @@ $ %s query kudistribution slashes validatorName 0 100
 				return fmt.Errorf("end-height %s not a valid uint, please input a valid end-height", args[2])
 			}
 
-			//acc := chainTypes.NewAccountIDFromValAdd(validatorAddr)
 			params := types.NewQueryValidatorSlashesParams(validatorAddr, startHeight, endHeight)
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
@@ -239,13 +234,11 @@ $ %s query kudistribution rewards jack validatorName
 
 			delegatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 
-			//delegatorAddr, err := sdk.AccAddressFromBech32(args[0])
 			fmt.Println(delegatorAddr, err)
 			if err != nil {
 				return err
 			}
 
-			//acc := chainTypes.NewAccountIDFromAccAdd(delegatorAddr)
 			params := types.NewQueryDelegatorParams(delegatorAddr)
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {

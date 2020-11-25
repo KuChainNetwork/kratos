@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"testing"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 )
@@ -39,7 +40,7 @@ func TestMsgSetWithdrawAddress(t *testing.T) {
 		Name, _ := tc.delegatorAddr.ToName()
 		Auth, _ := ak.GetAuth(ctx, Name)
 
-		msg := types.NewMsgSetWithdrawAccountId(Auth, tc.delegatorAddr, tc.withdrawAddr)
+		msg := types.NewMsgSetWithdrawAccountID(Auth, tc.delegatorAddr, tc.withdrawAddr)
 		if tc.expectPass {
 			require.Nil(t, msg.ValidateBasic(), "test index: %v", i)
 		} else {

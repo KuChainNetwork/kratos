@@ -69,7 +69,7 @@ func GetDelegatorWithdrawInfoAddress(key []byte) AccountID {
 }
 
 // gets an address from a delegator's withdraw info key, by cancer
-func GetDelegatorWithdrawInfoAddressUseAccountId(key []byte) AccountID {
+func GetDelegatorWithdrawInfoAddressUseAccountID(key []byte) AccountID {
 	return NewAccountIDFromStoreKey(key)
 }
 
