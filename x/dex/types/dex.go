@@ -93,21 +93,21 @@ func (d *Dex) UpdateSymbol(baseCreator, baseCode, quoteCreator, quoteCode string
 }
 
 // DeleteSymbol delete symbol
-func (d *Dex) DeleteSymbol(baseCreator, baseCode, quoteCreator, quoteCode string) (ok bool) {
+func (d *Dex) DeleteSymbol(baseCreator, baseCode, quoteCreator, quoteCode string) bool {
 	if 0 >= len(baseCreator) || 0 >= len(baseCode) || 0 >= len(quoteCreator) || 0 >= len(quoteCode) {
-		return
+		return false
 	}
+
 	for i := 0; i < len(d.Symbols); i++ {
 		s := &d.Symbols[i]
 		if baseCreator == s.Base.Creator &&
 			baseCode == s.Base.Code &&
 			quoteCreator == s.Quote.Creator &&
 			quoteCode == s.Quote.Code {
-			ok = true
-			ok = true
 			d.Symbols = append(d.Symbols[:i], d.Symbols[i+1:]...)
-			return
+			return true
 		}
 	}
-	return
+
+	return false
 }

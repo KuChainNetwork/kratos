@@ -49,8 +49,6 @@ func (AppModuleBasic) GetTxCmd(_ *codec.Codec) *cobra.Command { return nil }
 // GetQueryCmd returns no root query command for the params module.
 func (AppModuleBasic) GetQueryCmd(_ *codec.Codec) *cobra.Command { return nil }
 
-//____________________________________________________________________________
-
 // AppModule implements an application module for the distribution module.
 type AppModule struct {
 	AppModuleBasic
@@ -62,8 +60,6 @@ func NewAppModule() AppModule {
 		AppModuleBasic: AppModuleBasic{},
 	}
 }
-
-//____________________________________________________________________________
 
 // AppModuleSimulation functions
 

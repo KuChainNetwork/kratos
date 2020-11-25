@@ -11,7 +11,6 @@ import (
 
 // RegisterInvariants registers all staking invariants
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
-
 	ir.RegisterRoute(types.ModuleName, "module-accounts",
 		ModuleAccountInvariants(k))
 	ir.RegisterRoute(types.ModuleName, "nonnegative-power",
@@ -24,7 +23,6 @@ func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 
 // AllInvariants runs all invariants of the staking module.
 func AllInvariants(k Keeper) sdk.Invariant {
-
 	return func(ctx sdk.Context) (string, bool) {
 		res, stop := ModuleAccountInvariants(k)(ctx)
 		if stop {
@@ -161,7 +159,6 @@ func DelegatorSharesInvariant(k Keeper) sdk.Invariant {
 
 		validators := k.GetAllValidators(ctx)
 		for _, validator := range validators {
-
 			valTotalDelShares := validator.GetDelegatorShares()
 
 			totalDelShares := sdk.ZeroDec()

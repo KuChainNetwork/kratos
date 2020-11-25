@@ -64,7 +64,6 @@ func NonNegativeOutstandingInvariant(k Keeper) sdk.Invariant {
 // CanWithdrawInvariant checks that current rewards can be completely withdrawn
 func CanWithdrawInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-
 		// cache, we don't want to write changes
 		ctx, _ = ctx.CacheContext()
 
@@ -78,14 +77,13 @@ func CanWithdrawInvariant(k Keeper) sdk.Invariant {
 
 		// iterate over all validators
 		k.stakingKeeper.IterateValidators(ctx, func(_ int64, val types.StakingExportedValidatorI) (stop bool) {
-
-			valId, _ := chainTypes.NewAccountIDFromStr(string(val.GetOperator()))
-			_, _ = k.WithdrawValidatorCommission(ctx, valId)
+			valID, _ := chainTypes.NewAccountIDFromStr(string(val.GetOperator()))
+			_, _ = k.WithdrawValidatorCommission(ctx, valID)
 
 			delegationAddrs, ok := valDelegationAddrs[val.GetOperator().String()]
 			if ok {
 				for _, delAddr := range delegationAddrs {
-					if _, err := k.WithdrawDelegationRewards(ctx, chainTypes.NewAccountIDFromAccAdd(delAddr), valId); err != nil {
+					if _, err := k.WithdrawDelegationRewards(ctx, chainTypes.NewAccountIDFromAccAdd(delAddr), valID); err != nil {
 						panic(err)
 					}
 				}
@@ -108,7 +106,6 @@ func CanWithdrawInvariant(k Keeper) sdk.Invariant {
 // ReferenceCountInvariant checks that the number of historical rewards records is correct
 func ReferenceCountInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-
 		valCount := uint64(0)
 		k.stakingKeeper.IterateValidators(ctx, func(_ int64, val types.StakingExportedValidatorI) (stop bool) {
 			valCount++
@@ -139,7 +136,6 @@ func ReferenceCountInvariant(k Keeper) sdk.Invariant {
 // is consistent with the sum of validator outstanding rewards
 func ModuleAccountInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-
 		var expectedCoins chainTypes.DecCoins
 		k.IterateValidatorOutstandingRewards(ctx, func(_ AccountID, rewards types.ValidatorOutstandingRewards) (stop bool) {
 			expectedCoins = expectedCoins.Add(rewards.Rewards...)

@@ -345,7 +345,6 @@ func (v Validator) UpdateStatus(newStatus exported.BondStatus) Validator {
 
 // AddTokensFromDel adds tokens to a validator
 func (v Validator) AddTokensFromDel(amount sdk.Int) (Validator, sdk.Dec) {
-
 	// calculate the shares to issue
 	var issuedShares sdk.Dec
 	if v.DelegatorShares.IsZero() {
@@ -436,5 +435,10 @@ func (v Validator) GetTokens() sdk.Int            { return v.Tokens }
 func (v Validator) GetBondedTokens() sdk.Int      { return v.BondedTokens() }
 func (v Validator) GetConsensusPower() int64      { return v.ConsensusPower() }
 func (v Validator) GetCommission() sdk.Dec        { return v.Commission.Rate }
+func (v Validator) GetCommissionMaxRate() sdk.Dec { return v.Commission.MaxRate }
 func (v Validator) GetMinSelfDelegation() sdk.Int { return v.MinSelfDelegation }
 func (v Validator) GetDelegatorShares() sdk.Dec   { return v.DelegatorShares }
+
+func (v Validator) CommissionValidateNewRate(newRate sdk.Dec, ti time.Time) error {
+	return v.Commission.ValidateNewRate(newRate, ti)
+}

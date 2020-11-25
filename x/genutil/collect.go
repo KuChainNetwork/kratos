@@ -24,7 +24,6 @@ import (
 func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg InitConfig, genDoc tmtypes.GenesisDoc,
 	genBalIterator types.GenesisBalancesIterator, stakingFuncManager types.StakingFuncManager,
 ) (appState json.RawMessage, err error) {
-
 	// process genesis transactions, else create default genesis.json
 	appGenTxs, persistentPeers, err := CollectStdTxs(cdc, config.Moniker, initCfg.GenTxsDir, genDoc,
 		genBalIterator, stakingFuncManager)
@@ -67,7 +66,6 @@ func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg InitCon
 func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string, genDoc tmtypes.GenesisDoc,
 	genBalIterator types.GenesisBalancesIterator, stakingFuncManager types.StakingFuncManager,
 ) (appGenTxs []txutil.StdTx, persistentPeers string, err error) {
-
 	var fos []os.FileInfo
 	fos, err = ioutil.ReadDir(genTxsDir)
 	if err != nil {
@@ -139,7 +137,6 @@ func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string, genDoc tmtypes.G
 		if msgMoniker != moniker {
 			addressesIPs = append(addressesIPs, nodeAddrIP)
 		}
-
 	}
 
 	sort.Strings(addressesIPs)

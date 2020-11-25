@@ -12,9 +12,7 @@ import (
 // AllocateTokens handles distribution of the collected fees  by cancer
 func (k Keeper) AllocateTokens(
 	ctx sdk.Context, sumPreviousPrecommitPower, totalPreviousPower int64,
-	previousProposer sdk.ConsAddress, previousVotes []abci.VoteInfo,
-) {
-
+	previousProposer sdk.ConsAddress, previousVotes []abci.VoteInfo) {
 	logger := k.Logger(ctx)
 
 	// fetch and clear the collected fees for distribution, since this is

@@ -62,7 +62,7 @@ func WithdrawAllDelegatorRewards(cliCtx context.CLIContext, auth sdk.AccAddress,
 		return nil, err
 	}
 
-	var validators []chainType.AccountID //bugs ,x
+	validators := make([]chainType.AccountID, 0, 16)
 	if err := cliCtx.Codec.UnmarshalJSON(bz, &validators); err != nil {
 		return nil, err
 	}
@@ -91,8 +91,7 @@ func WithdrawValidatorRewardsAndCommission(validatorAcc chainType.AccountID) ([]
 	}
 
 	// build and validate MsgWithdrawDelegatorReward
-
-	rewardMsg := types.NewMsgWithdrawDelegatorReward(validatorAcc.MustAccAddress(), validatorAcc, validatorAcc) //bugs ??
+	rewardMsg := types.NewMsgWithdrawDelegatorReward(validatorAcc.MustAccAddress(), validatorAcc, validatorAcc)
 	if err := rewardMsg.ValidateBasic(); err != nil {
 		return nil, err
 	}

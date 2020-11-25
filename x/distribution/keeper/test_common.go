@@ -172,7 +172,7 @@ func CreateTestInputAdvanced(t *testing.T, isCheckTx bool, initPower int64,
 		cdc, sdk.NewKVStoreKey(staking.StoreKey), assetKeeper, supplyKeeper, pk.Subspace(staking.DefaultParamspace), AccountKeeper)
 
 	keeper := NewKeeper(cdc, sdk.NewKVStoreKey(types.StoreKey), pk.Subspace(types.DefaultParamspace),
-		assetKeeper, sk, supplyKeeper, AccountKeeper, fee.CollectorName, blacklistedAddrs)
+		assetKeeper, &sk, supplyKeeper, AccountKeeper, fee.CollectorName, blacklistedAddrs)
 
 	ms.MountStoreWithDB(keeper.storeKey, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(sk.GetStoreKey(), sdk.StoreTypeIAVL, db)

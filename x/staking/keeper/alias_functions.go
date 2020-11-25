@@ -9,7 +9,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-//_______________________________________________________________________
 // Validator Set
 
 // iterate through the validator set and perform the provided function
@@ -38,7 +37,6 @@ func (k Keeper) IterateBondedValidatorsByPower(ctx sdk.Context, fn func(index in
 
 	i := int64(0)
 	for ; iterator.Valid() && i < int64(maxValidators); iterator.Next() {
-		//address := iterator.Value()
 		address := NewAccountIDFromByte(iterator.Value())
 		validator := k.mustGetValidator(ctx, address)
 
@@ -72,7 +70,7 @@ func (k Keeper) IterateLastValidators(ctx sdk.Context, fn func(index int64, vali
 	}
 }
 
-//Validator gets the Validator interface for a particular address
+// Validator gets the Validator interface for a particular address
 func (k Keeper) Validator(ctx sdk.Context, valAcc types.AccountID) exported.ValidatorI {
 	val, found := k.GetValidator(ctx, valAcc)
 	if !found {
@@ -90,12 +88,22 @@ func (k Keeper) ValidatorByConsAddr(ctx sdk.Context, acc sdk.ConsAddress) export
 	return val
 }
 
-//_______________________________________________________________________
 // Delegation Set
 
 // Returns self as it is both a validatorset and delegationset
 func (k Keeper) GetValidatorSet() types.ValidatorSet {
 	return k
+}
+
+// Returns all Validators
+func (k Keeper) GetAllValidatorInterfaces(ctx sdk.Context) []exported.ValidatorI {
+	vals := k.GetAllValidators(ctx)
+	res := make([]exported.ValidatorI, 0, len(vals))
+	for _, v := range vals {
+		res = append(res, v)
+	}
+
+	return res
 }
 
 // Delegation get the delegation interface for a particular set of delegator and validator addresses
@@ -121,7 +129,6 @@ func (k Keeper) DelegationFromAccountID(ctx sdk.Context, addrDel types.AccountID
 // iterate through all of the delegations from a delegator
 func (k Keeper) IterateDelegations(ctx sdk.Context, delAcc types.AccountID,
 	fn func(index int64, del exported.DelegationI) (stop bool)) {
-
 	store := store.NewStore(ctx, k.storeKey)
 	delegatorPrefixKey := types.GetDelegationsKey(delAcc)
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest

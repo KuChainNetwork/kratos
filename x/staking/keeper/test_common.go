@@ -1,10 +1,11 @@
-package keeper // noalias
+package keeper
 
 import (
 	"bytes"
 	"math/rand"
 
 	"github.com/KuChainNetwork/kuchain/chain/store"
+	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -57,9 +58,13 @@ func TestingUpdateValidator(keeper Keeper, ctx sdk.Context, validator types.Vali
 	return validator
 }
 
+type IStakingKeeper interface {
+	GetAllValidatorInterfaces(ctx sdk.Context) []exported.ValidatorI
+}
+
 // RandomValidator returns a random validator given access to the keeper and ctx
-func RandomValidator(r *rand.Rand, keeper Keeper, ctx sdk.Context) (val types.Validator, ok bool) {
-	vals := keeper.GetAllValidators(ctx)
+func RandomValidator(r *rand.Rand, keeper IStakingKeeper, ctx sdk.Context) (val exported.ValidatorI, ok bool) {
+	vals := keeper.GetAllValidatorInterfaces(ctx)
 	if len(vals) == 0 {
 		return types.Validator{}, false
 	}

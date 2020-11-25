@@ -175,9 +175,9 @@ func NewMsgDexDeal(auth types.AccAddress, dex AccountID, from, to AccountID, fro
 			msg.WithAuth(auth),
 			// from -> dex -> to
 			msg.WithTransfer(from, dex, types.NewCoins(fromAsset.Add(feeFromFrom))),
-			msg.WithTransfer(dex, to, types.NewCoins(fromAsset)),
+			msg.WithTransfer(dex, to, types.NewCoins(fromAsset.Sub(feeFromTo))),
 			// to -> dex -> from
-			msg.WithTransfer(to, dex, types.NewCoins(toAsset.Add(feeFromTo))),
+			msg.WithTransfer(to, dex, types.NewCoins(toAsset)),
 			msg.WithTransfer(dex, from, types.NewCoins(toAsset)),
 			msg.WithData(Cdc(), &MsgDexDealData{
 				Dex:     dex,
@@ -205,6 +205,11 @@ func (msg MsgDexDeal) GetData() (MsgDexDealData, error) {
 	return res, nil
 }
 
+const (
+	// msgDexDealTransfNum all deal msg should have 4 coin transfer
+	msgDexDealTransfNum = 4
+)
+
 func (msg MsgDexDeal) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
@@ -222,7 +227,7 @@ func (msg MsgDexDeal) ValidateBasic() error {
 	// check transfer
 	trs := msg.Transfers
 
-	if len(trs) != 4 {
+	if len(trs) != msgDexDealTransfNum {
 		return sdkerrors.Wrap(types.ErrKuMsgTransferError, "transfer in deal should be 4 trans")
 	}
 

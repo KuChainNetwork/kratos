@@ -11,7 +11,7 @@ type StakingDelegatel = exported.DelegationI
 
 type StakingKeeper = keeper.Keeper
 
-var StakingRandomValidator = keeper.RandomValidator
+var RandomValidator = keeper.RandomValidator
 
 type StakingMsgCreateValidator = staking.MsgCreateValidator
 type StakingDescription = staking.Description

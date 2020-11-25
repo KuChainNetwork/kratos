@@ -110,7 +110,6 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		"/staking/validator_consaddr/{consAddr}",
 		validatorByConsAddrHandlerFn(cliCtx),
 	).Methods("GET")
-
 }
 
 // HTTP request handler to query a delegator delegations
@@ -215,31 +214,16 @@ func redelegationsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		bechDstValidatorAddr := r.URL.Query().Get("validator_to")
 
 		if len(bechDelegatorAddr) != 0 {
-			//delegatorAddr, err := sdk.AccAddressFromBech32(bechDelegatorAddr)
 			delegatorAddr, _ := chainTypes.NewAccountIDFromStr(bechDelegatorAddr)
-			// if err != nil {
-			// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			// 	return
-			// }
 			params.DelegatorAddr = delegatorAddr
 		}
 
 		if len(bechSrcValidatorAddr) != 0 {
-			// srcValidatorAddr, err := sdk.ValAddressFromBech32(bechSrcValidatorAddr)
-			// if err != nil {
-			// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			// 	return
-			// }
 			srcValidatorAddr, _ := chainTypes.NewAccountIDFromStr(bechSrcValidatorAddr)
 			params.SrcValidatorAddr = srcValidatorAddr
 		}
 
 		if len(bechDstValidatorAddr) != 0 {
-			// dstValidatorAddr, err := sdk.ValAddressFromBech32(bechDstValidatorAddr)
-			// if err != nil {
-			// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			// 	return
-			// }
 			dstValidatorAddr, _ := chainTypes.NewAccountIDFromStr(bechDstValidatorAddr)
 			params.DstValidatorAddr = dstValidatorAddr
 		}

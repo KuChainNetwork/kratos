@@ -33,7 +33,6 @@ const (
 )
 
 var (
-	// functions aliases
 	NewKeeper                                = keeper.NewKeeper
 	NewQuerier                               = keeper.NewQuerier
 	RegisterCodec                            = types.RegisterCodec
@@ -61,7 +60,6 @@ var (
 	NewQuerySigningInfosParams               = types.NewQuerySigningInfosParams
 	NewValidatorSigningInfo                  = types.NewValidatorSigningInfo
 
-	// variable aliases
 	ModuleCdc                       = types.ModuleCdc
 	ValidatorSigningInfoKey         = types.ValidatorSigningInfoKey
 	ValidatorMissedBlockBitArrayKey = types.ValidatorMissedBlockBitArrayKey

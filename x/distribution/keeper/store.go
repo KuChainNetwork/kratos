@@ -25,20 +25,20 @@ func (k Keeper) SetDelegatorWithdrawAddr(ctx sdk.Context, delAddr, withdrawAddr 
 }
 
 // delete a delegator withdraw addr
-func (k Keeper) DeleteDelegatorWithdrawAddr(ctx sdk.Context, delId, withdrawId AccountID) {
+func (k Keeper) DeleteDelegatorWithdrawAddr(ctx sdk.Context, delID, withdrawID AccountID) {
 	store := store.NewStore(ctx, k.storeKey)
-	store.Delete(types.GetDelegatorWithdrawAddrKey(delId))
+	store.Delete(types.GetDelegatorWithdrawAddrKey(delID))
 }
 
 // iterate over delegator withdraw addrs
-func (k Keeper) IterateDelegatorWithdrawAddId(ctx sdk.Context, handler func(del AccountID, addr AccountID) (stop bool)) {
+func (k Keeper) IterateDelegatorWithdrawAddID(ctx sdk.Context, handler func(del AccountID, addr AccountID) (stop bool)) {
 	store := store.NewStore(ctx, k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.DelegatorWithdrawAddrPrefix)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		addId, _ := chainType.NewAccountIDFromStr(string(iter.Value()))
-		del := types.GetDelegatorWithdrawInfoAddressUseAccountId(iter.Key())
-		if handler(del, addId) {
+		addID, _ := chainType.NewAccountIDFromStr(string(iter.Value()))
+		del := types.GetDelegatorWithdrawInfoAddressUseAccountID(iter.Key())
+		if handler(del, addID) {
 			break
 		}
 	}
@@ -143,7 +143,8 @@ func (k Keeper) SetValidatorHistoricalRewards(ctx sdk.Context, val AccountID, pe
 }
 
 // iterate over historical rewards
-func (k Keeper) IterateValidatorHistoricalRewards(ctx sdk.Context, handler func(val AccountID, period uint64, rewards types.ValidatorHistoricalRewards) (stop bool)) {
+func (k Keeper) IterateValidatorHistoricalRewards(ctx sdk.Context,
+	handler func(val AccountID, period uint64, rewards types.ValidatorHistoricalRewards) (stop bool)) {
 	store := store.NewStore(ctx, k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.ValidatorHistoricalRewardsPrefix)
 	defer iter.Close()
@@ -264,7 +265,8 @@ func (k Keeper) DeleteValidatorAccumulatedCommission(ctx sdk.Context, val Accoun
 }
 
 // iterate over accumulated commissions
-func (k Keeper) IterateValidatorAccumulatedCommissions(ctx sdk.Context, handler func(val AccountID, commission types.ValidatorAccumulatedCommission) (stop bool)) {
+func (k Keeper) IterateValidatorAccumulatedCommissions(ctx sdk.Context,
+	handler func(val AccountID, commission types.ValidatorAccumulatedCommission) (stop bool)) {
 	store := store.NewStore(ctx, k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.ValidatorAccumulatedCommissionPrefix)
 	defer iter.Close()

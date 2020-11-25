@@ -59,7 +59,7 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 	params := keeper.GetParams(ctx)
 
 	dwi := make([]types.DelegatorWithdrawInfo, 0)
-	keeper.IterateDelegatorWithdrawAddId(ctx, func(del AccountID, addr AccountID) (stop bool) {
+	keeper.IterateDelegatorWithdrawAddID(ctx, func(del AccountID, addr AccountID) (stop bool) {
 		dwi = append(dwi, types.DelegatorWithdrawInfo{
 			DelegatorAddress: del,
 			WithdrawAddress:  addr,

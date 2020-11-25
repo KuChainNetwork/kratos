@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/KuChainNetwork/kuchain/chain/constants"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -19,7 +20,6 @@ type GenesisState struct {
 func NewGenesisState(
 	params Params, signingInfos map[string]ValidatorSigningInfo, missedBlocks map[string][]MissedBlock,
 ) GenesisState {
-
 	return GenesisState{
 		Params:       params,
 		SigningInfos: signingInfos,
@@ -84,7 +84,7 @@ func ValidateGenesis(data GenesisState) error {
 	}
 
 	signedWindow := data.Params.SignedBlocksWindow
-	if signedWindow < 10 {
+	if signedWindow < constants.SignedWindowMax {
 		return fmt.Errorf("signed blocks window must be at least 10, is %d", signedWindow)
 	}
 

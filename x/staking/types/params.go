@@ -56,7 +56,6 @@ type Params struct {
 func NewParams(
 	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string,
 ) Params {
-
 	return Params{
 		UnbondingTime:     unbondingTime,
 		MaxValidators:     maxValidators,

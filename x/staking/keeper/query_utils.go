@@ -10,7 +10,6 @@ import (
 func (k Keeper) GetDelegatorValidators(
 	ctx sdk.Context, delegatorAddr AccountID, maxRetrieve uint32,
 ) []types.Validator {
-
 	validators := make([]types.Validator, maxRetrieve)
 
 	store := store.NewStore(ctx, k.storeKey)
@@ -38,7 +37,6 @@ func (k Keeper) GetDelegatorValidators(
 func (k Keeper) GetDelegatorValidator(
 	ctx sdk.Context, delegatorAddr AccountID, validatorAddr AccountID,
 ) (validator types.Validator, err error) {
-
 	delegation, found := k.GetDelegation(ctx, delegatorAddr, validatorAddr)
 	if !found {
 		return validator, types.ErrNoDelegation
@@ -52,15 +50,13 @@ func (k Keeper) GetDelegatorValidator(
 	return validator, nil
 }
 
-//_____________________________________________________________________________________
-
-// return all delegations for a delegator
+// GetAllDelegatorDelegations return all delegations for a delegator
 func (k Keeper) GetAllDelegatorDelegations(ctx sdk.Context, delegator AccountID) []types.Delegation {
 	delegations := make([]types.Delegation, 0)
 
 	store := store.NewStore(ctx, k.storeKey)
 	delegatorPrefixKey := types.GetDelegationsKey(delegator)
-	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) //smallest to largest
+	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest
 	defer iterator.Close()
 
 	i := 0
@@ -95,7 +91,6 @@ func (k Keeper) GetAllUnbondingDelegations(ctx sdk.Context, delegator AccountID)
 func (k Keeper) GetAllRedelegations(
 	ctx sdk.Context, delegator AccountID, srcValAddress, dstValAddress AccountID,
 ) []types.Redelegation {
-
 	store := store.NewStore(ctx, k.storeKey)
 	delegatorPrefixKey := types.GetREDsKey(delegator.StoreKey())
 	iterator := sdk.KVStorePrefixIterator(store, delegatorPrefixKey) // smallest to largest

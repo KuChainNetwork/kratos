@@ -71,12 +71,16 @@ type GenesisState struct {
 }
 
 func NewGenesisState(
-	params Params, fp FeePool, dwis []DelegatorWithdrawInfo, pp sdk.ConsAddress, r []ValidatorOutstandingRewardsRecord,
-	acc []ValidatorAccumulatedCommissionRecord, historical []ValidatorHistoricalRewardsRecord,
-	cur []ValidatorCurrentRewardsRecord, dels []DelegatorStartingInfoRecord, slashes []ValidatorSlashEventRecord,
-	notDistributionTimePoint time.Time,
-) GenesisState {
-
+	params Params, fp FeePool,
+	dwis []DelegatorWithdrawInfo,
+	pp sdk.ConsAddress,
+	r []ValidatorOutstandingRewardsRecord,
+	acc []ValidatorAccumulatedCommissionRecord,
+	historical []ValidatorHistoricalRewardsRecord,
+	cur []ValidatorCurrentRewardsRecord,
+	dels []DelegatorStartingInfoRecord,
+	slashes []ValidatorSlashEventRecord,
+	notDistributionTimePoint time.Time) GenesisState {
 	return GenesisState{
 		Params:                          params,
 		FeePool:                         fp,

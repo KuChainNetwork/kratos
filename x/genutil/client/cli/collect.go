@@ -2,19 +2,19 @@ package cli
 
 import (
 	"encoding/json"
-	"github.com/KuChainNetwork/kuchain/x/genutil"
-	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"path/filepath"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/libs/cli"
-	tmtypes "github.com/tendermint/tendermint/types"
 
+	"github.com/KuChainNetwork/kuchain/x/genutil"
+	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/tendermint/tendermint/libs/cli"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const flagGenTxDir = "gentx-dir"
@@ -22,7 +22,6 @@ const flagGenTxDir = "gentx-dir"
 // CollectGenTxsCmd - return the cobra command to collect genesis transactions
 func CollectGenTxsCmd(ctx *server.Context, cdc *codec.Codec, genBalIterator types.GenesisBalancesIterator,
 	manager types.StakingFuncManager, defaultNodeHome string) *cobra.Command {
-
 	cmd := &cobra.Command{
 		Use:   "collect-gentxs",
 		Short: "Collect genesis txs and output a genesis.json file",

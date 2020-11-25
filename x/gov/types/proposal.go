@@ -214,6 +214,9 @@ func (status ProposalStatus) String() string {
 	case StatusFailed:
 		return "Failed"
 
+	case StatusNil:
+		return ""
+
 	default:
 		return ""
 	}

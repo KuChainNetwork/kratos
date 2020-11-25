@@ -65,7 +65,6 @@ func (a AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Rout
 
 // GetTxCmd returns the root tx command for the gov module.
 func (a AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
-
 	proposalCLIHandlers := make([]*cobra.Command, 0, len(a.proposalHandlers))
 	for _, proposalHandler := range a.proposalHandlers {
 		proposalCLIHandlers = append(proposalCLIHandlers, proposalHandler.CLIHandler(cdc))
@@ -78,8 +77,6 @@ func (a AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	return cli.GetQueryCmd(StoreKey, cdc)
 }
-
-//____________________________________________________________________________
 
 // AppModule implements an application module for the gov module.
 type AppModule struct {
@@ -158,8 +155,6 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 	return []abci.ValidatorUpdate{}
 }
 
-//____________________________________________________________________________
-
 // AppModuleSimulation functions
 
 // GenerateGenesisState creates a randomized GenState of the gov module.
@@ -167,8 +162,8 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
 }
 
-// // ProposalContents returns all the gov content functions used to
-// // simulate governance proposals.
+// ProposalContents returns all the gov content functions used to
+// simulate governance proposals.
 func (AppModule) ProposalContents(_ module.SimulationState) []sim.WeightedProposalContent {
 	return simulation.ProposalContents()
 }

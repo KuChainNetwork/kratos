@@ -24,9 +24,10 @@ func handleKuMsgUnjail(ctx chainTypes.Context, k Keeper, msg types.KuMsgUnjail) 
 	if err := msg.UnmarshalData(Cdc(), &msgData); err != nil {
 		return nil, sdkerrors.Wrapf(err, "msg Unjail  data unmarshal error")
 	}
-	ctx.RequireAuth(msgData.ValidatorAddr)
-	return handleMsgUnjail(ctx.Context(), msgData, k)
 
+	ctx.RequireAuth(msgData.ValidatorAddr)
+
+	return handleMsgUnjail(ctx.Context(), msgData, k)
 }
 
 // Validators must submit a transaction to unjail itself after

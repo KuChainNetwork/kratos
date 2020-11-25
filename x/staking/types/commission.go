@@ -3,6 +3,7 @@ package types
 import (
 	"time"
 
+	"github.com/KuChainNetwork/kuchain/chain/constants"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -103,7 +104,7 @@ func (cr CommissionRates) Validate() error {
 // rate. If validation fails, an SDK error is returned.
 func (c Commission) ValidateNewRate(newRate sdk.Dec, blockTime time.Time) error {
 	switch {
-	case blockTime.Sub(c.UpdateTime).Hours() < 24:
+	case blockTime.Sub(c.UpdateTime).Hours() < constants.CommissionUpdateHours:
 		// new rate cannot be changed more than once within 24 hours
 		return ErrCommissionUpdateTime
 

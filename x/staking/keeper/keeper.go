@@ -37,7 +37,6 @@ type Keeper struct {
 func NewKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, bk types.BankKeeper, sk types.SupplyKeeper, ps external.ParamsSubspace, ak types.AccountStatKeeper,
 ) Keeper {
-
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(ParamKeyTable())
 	}
