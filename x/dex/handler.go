@@ -163,7 +163,7 @@ func handleMsgCreateSymbol(ctx chainTypes.Context,
 		Height: ctx.BlockHeight(),
 		CreateTime: func() time.Time {
 			if data.CreateTime.IsZero() {
-				return time.Now()
+				return ctx.BlockTime()
 			}
 			return data.CreateTime
 		}(),
