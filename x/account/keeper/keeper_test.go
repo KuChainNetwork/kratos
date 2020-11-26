@@ -55,8 +55,8 @@ func TestAccountMapperGetSet(t *testing.T) {
 		So(acc2.GetName(), simapp.ShouldEq, name2)
 		So(acc2.GetID(), simapp.ShouldEq, account2)
 
-		err := acc2.SetAuth(addr2)
-		So(err, ShouldBeNil)
+		acc2.SetAuth(addr2)
+
 		So(acc2.GetAuth(), simapp.ShouldEq, addr2)
 
 		// NewAccount doesn't call Set, so it's still nil
@@ -65,8 +65,7 @@ func TestAccountMapperGetSet(t *testing.T) {
 
 		// set some values on the account and save it
 		newSequence := uint64(20)
-		err = acc2.SetAccountNumber(newSequence)
-		So(err, ShouldBeNil)
+		acc2.SetAccountNumber(newSequence)
 
 		app.AccountKeeper().SetAccount(ctx, acc2)
 

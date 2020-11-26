@@ -54,8 +54,7 @@ func TestEnsureAccount(t *testing.T) {
 		// a new account with auth no inited
 		newAddr1 := wallet.NewAccAddress()
 		acc3 := app.AccountKeeper().NewAccountByName(ctx, types.MustName("account3test"))
-		err = acc3.SetAuth(newAddr1)
-		So(err, ShouldBeNil)
+		acc3.SetAuth(newAddr1)
 
 		app.AccountKeeper().SetAccount(ctx, acc3)
 
@@ -87,8 +86,8 @@ func TestIterateAccount(t *testing.T) {
 	Convey("TestIterateAccount", t, func() {
 		// Create accounts for test
 		acc3 := app.AccountKeeper().NewAccountByName(ctx, types.MustName("account3test"))
-		err := acc3.SetAuth(wallet.NewAccAddress())
-		So(err, ShouldBeNil)
+		acc3.SetAuth(wallet.NewAccAddress())
+
 		app.AccountKeeper().SetAccount(ctx, acc3)
 
 		names := make(map[string]types.AccountID)
@@ -138,8 +137,8 @@ func TestAccountExist(t *testing.T) {
 	Convey("TestAccountExist", t, func() {
 		// Create accounts for test
 		acc3 := app.AccountKeeper().NewAccountByName(ctx, types.MustName("account3test"))
-		err := acc3.SetAuth(wallet.NewAccAddress())
-		So(err, ShouldBeNil)
+		acc3.SetAuth(wallet.NewAccAddress())
+
 		app.AccountKeeper().SetAccount(ctx, acc3)
 
 		// genesis and account new

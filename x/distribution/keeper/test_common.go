@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -38,9 +37,7 @@ func CreateAccount(keeper account.Keeper, ctx sdk.Context, id AccountID) {
 	privKey := secp256k1.GenPrivKey()
 	address := types.AccAddress(privKey.PubKey().Address())
 
-	if err := newAccount.SetAuth(address); err != nil {
-		panic(errors.Wrap(err, "create account set auth"))
-	}
+	newAccount.SetAuth(address)
 
 	// set Account
 	keeper.SetAccount(ctx, newAccount)

@@ -34,13 +34,13 @@ type Account interface {
 	SetName(types.Name) error
 
 	GetID() types.AccountID
-	SetID(id types.AccountID) error
+	SetID(id types.AccountID)
 
 	GetAuth() types.AccAddress
-	SetAuth(types.AccAddress) error
+	SetAuth(types.AccAddress)
 
 	GetAccountNumber() uint64
-	SetAccountNumber(uint64) error
+	SetAccountNumber(uint64)
 
 	// Ensure that account implements stringer
 	String() string
@@ -67,9 +67,7 @@ func (ga GenesisAccounts) Append(acc GenesisAccount) GenesisAccounts {
 		panic(fmt.Errorf("account %s has put into genesis account", acc.GetName()))
 	}
 
-	if err := acc.SetAccountNumber(uint64(len(ga) + 1)); err != nil {
-		panic(err)
-	}
+	acc.SetAccountNumber(uint64(len(ga) + 1))
 
 	return append(ga, acc)
 }

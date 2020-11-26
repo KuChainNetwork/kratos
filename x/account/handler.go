@@ -60,9 +60,7 @@ func handleMsgCreateAccount(ctx chainTypes.Context, k Keeper, msg *types.MsgCrea
 	}
 
 	newAccount := k.NewAccountByName(ctx.Context(), msgData.Name)
-	if err := newAccount.SetAuth(msgData.Auth); err != nil {
-		return nil, sdkerrors.Wrapf(err, "set auth to account error")
-	}
+	newAccount.SetAuth(msgData.Auth)
 
 	// set account
 	k.SetAccount(ctx.Context(), newAccount)
@@ -107,9 +105,7 @@ func handleMsgUpdateAccountAuth(
 	oldAuth := accountStat.GetAuth()
 	ctx.RequireAccountAuth(oldAuth)
 
-	if err := accountStat.SetAuth(msgData.Auth); err != nil {
-		return nil, sdkerrors.Wrapf(err, "set auth to account error")
-	}
+	accountStat.SetAuth(msgData.Auth)
 
 	// set account
 	k.SetAccount(ctx.Context(), accountStat)
