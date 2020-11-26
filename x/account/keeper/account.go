@@ -108,10 +108,8 @@ func (ak AccountKeeper) IterateAuths(ctx sdk.Context, cb func(auth types.Auth) b
 		if bz == nil {
 			an = types.NewAuth(address)
 			ak.initAuthData(ctx, &an)
-		} else {
-			if err := ak.cdc.UnmarshalBinaryBare(bz, &an); err != nil {
-				panic(sdkerrors.Wrap(err, "get auth data unmarshal"))
-			}
+		} else if err := ak.cdc.UnmarshalBinaryBare(bz, &an); err != nil {
+			panic(sdkerrors.Wrap(err, "get auth data unmarshal"))
 		}
 
 		if cb(an) {
