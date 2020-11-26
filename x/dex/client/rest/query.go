@@ -17,6 +17,9 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 		"/dex/{creator}",
 		getCreatorHandlerFn(cliCtx),
 	).Methods(http.MethodGet)
+	r.HandleFunc("/dex/sigIn/{creator}/{account}",
+		getSigInStatusHandlerFn(cliCtx),
+	).Methods(http.MethodGet)
 	r.HandleFunc(
 		"/dex/symbol/{creator}/{baseCreator}/{baseCode}/{quoteCreator}/{quoteCode}",
 		getSymbolHandlerFn(cliCtx),
@@ -29,17 +32,43 @@ func getCreatorHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		vars := mux.Vars(r)
 		name := vars["creator"]
 		creator, err := chainTypes.NewName(name)
-		if nil != err {
+		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 		getter := types.NewDexRetriever(cliCtx)
 		dex, _, err := getter.GetDexWithHeight(creator)
-		if nil != err {
+		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 		rest.PostProcessResponse(w, cliCtx, dex)
+	}
+}
+
+// getSigInStatusHandlerFn
+func getSigInStatusHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		creatorStr := vars["creator"]
+		accountStr := vars["account"]
+		creator, err := chainTypes.NewAccountIDFromStr(creatorStr)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		account, err := chainTypes.NewAccountIDFromStr(accountStr)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		getter := types.NewDexRetriever(cliCtx)
+		coins, _, err := getter.GetSigInWithHeight(account, creator)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+		rest.PostProcessResponse(w, cliCtx, coins)
 	}
 }
 
@@ -61,13 +90,13 @@ func getSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		creator, err := chainTypes.NewName(name)
-		if nil != err {
+		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 		getter := types.NewDexRetriever(cliCtx)
 		var dex *types.Dex
-		if dex, _, err = getter.GetDexWithHeight(creator); nil != err {
+		if dex, _, err = getter.GetDexWithHeight(creator); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}

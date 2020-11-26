@@ -97,9 +97,19 @@ func (a DexKeeper) SigIn(ctx sdk.Context, id, dex AccountID, amt Coins) error {
 	}
 
 	// check user balance
-	if balance, err := a.assetKeeper.GetCoins(ctx, id); err != nil {
+	balance, err := a.assetKeeper.GetCoins(ctx, id)
+	if nil != err {
 		return errors.Wrapf(err, "GetCoins error")
-	} else if !balance.IsAllGTE(amt) {
+	}
+	approve, err := a.assetKeeper.GetApproveCoins(ctx, id, dex)
+	if err != nil {
+		return errors.Wrapf(err, "GetApproveCoins error")
+	}
+	currAmt := amt
+	if approve != nil {
+		currAmt = approve.Amount.Add(amt...)
+	}
+	if !balance.IsAllGTE(currAmt) {
 		return errors.Wrapf(dexTypes.ErrDexSigInAmountNotEnough, "user sigIn amount not enough")
 	}
 
