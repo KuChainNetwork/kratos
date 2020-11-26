@@ -31,6 +31,10 @@ type GenesisAccounts struct {
 	coins    []assetTypes.GenesisCoin
 }
 
+const (
+	DefaultGenesisCoinSupply = 1000000000000000000
+)
+
 func NewGenesisAccounts(rootAuth types.AccAddress, accounts ...SimGenesisAccount) *GenesisAccounts {
 	res := &GenesisAccounts{
 		accounts: make([]accountExported.GenesisAccount, 0, len(accounts)+1),
@@ -49,7 +53,7 @@ func NewGenesisAccounts(rootAuth types.AccAddress, accounts ...SimGenesisAccount
 	res.assets = append(res.assets,
 		assetTypes.NewGenesisAsset(
 			constants.SystemAccountID,
-			types.NewCoin(constants.DefaultBondDenom, types.NewInt(1000000000000000000))))
+			types.NewCoin(constants.DefaultBondDenom, types.NewInt(DefaultGenesisCoinSupply))))
 	accountNumber++
 
 	for _, a := range accounts {
@@ -68,8 +72,8 @@ func NewGenesisAccounts(rootAuth types.AccAddress, accounts ...SimGenesisAccount
 		if err != nil {
 			panic(errors.Wrapf(err, "coin symbol err %s", c.Denom))
 		}
-		max := types.NewInt(1000000000000000000) // for default
-		max = max.Mul(types.NewInt(1000000000000000000))
+		max := types.NewInt(DefaultGenesisCoinSupply) // for default
+		max = max.Mul(types.NewInt(DefaultGenesisCoinSupply))
 
 		if c.Denom == constants.DefaultBondDenom {
 			max = types.NewInt(0)

@@ -58,6 +58,13 @@ func DefaultGenesisState() GenesisState {
 	return res
 }
 
+func ValidateGenesis(g GenesisState) error {
+	// check account numbers
+	// TODO: check genesis
+
+	return nil
+}
+
 // ValidateGenesis performs basic validation of bank genesis data returning an
 // error for any failed validation criteria.
 func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
@@ -66,9 +73,7 @@ func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
 	}
 
-	// TODO: check genesis
-
-	return nil
+	return ValidateGenesis(gs)
 }
 
 // GenesisAsset gensis asset for accountID
@@ -81,6 +86,7 @@ type GenesisAsset interface {
 type GenesisCoin interface {
 	GetCreator() Name
 	GetSymbol() Name
+	GetSupply() Coin
 	GetMaxSupply() Coin
 	GetDescription() string
 
@@ -153,3 +159,6 @@ func (g BaseGensisAssetCoin) GetMaxSupply() Coin { return g.Stat.MaxSupply }
 
 // GetDescription imp GenesisCoin
 func (g BaseGensisAssetCoin) GetDescription() string { return g.Description }
+
+// GetSupply imp GenesisCoin
+func (g BaseGensisAssetCoin) GetSupply() Coin { return g.Stat.Supply }
