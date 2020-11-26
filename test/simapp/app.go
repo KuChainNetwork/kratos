@@ -454,6 +454,6 @@ func (app *SimApp) WithWallet(w *Wallet) *SimApp {
 	return app
 }
 
-func (app SimApp) GetWallet() *Wallet {
+func (app *SimApp) GetWallet() *Wallet {
 	return app.wallet
 }
