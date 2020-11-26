@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
 
 	"github.com/KuChainNetwork/kuchain/chain/constants"
@@ -161,5 +162,64 @@ func TestAccountExist(t *testing.T) {
 
 		// a auth no account
 		So(app.AccountKeeper().IsAccountExist(ctx, types.NewAccountIDFromAccAdd(addr2)), ShouldBeFalse)
+	})
+}
+
+func TestIterateAuths(t *testing.T) {
+	asset1 := types.NewInt64Coins(constants.DefaultBondDenom, 10000000000)
+	genAcc1 := simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1)
+	genAcc2 := simapp.NewSimGenesisAccount(account2, addr1).WithAsset(asset1)
+	genAcc3 := simapp.NewSimGenesisAccount(types.NewAccountIDFromAccAdd(addr1), addr1).WithAsset(asset1)
+	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(), genAcc1, genAcc2, genAcc3)
+	app := simapp.SetupWithGenesisAccounts(genAccs).WithWallet(wallet)
+
+	ctx := app.NewTestContext()
+
+	r := rand.New(rand.NewSource(app.RandSeed()))
+	auths := make([]types.AccAddress, 0, 1024)
+	const (
+		createAuths = 64
+	)
+
+	Convey("TestIterateAuths", t, func() {
+		// create some auths
+		for i := 0; i < createAuths; i++ {
+			if r.Intn(10) > 6 {
+				simapp.AfterBlockCommitted(app, 1)
+			}
+
+			auth := app.GetWallet().NewAccAddress()
+			auths = append(auths, auth)
+
+			err := simapp.CommitTransferTx(t, app, wallet,
+				true,
+				constants.SystemAccountID, types.NewAccountIDFromAccAdd(auth),
+				types.NewInt64CoreCoins(1), constants.SystemAccountID)
+
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		ctx = app.NewTestContext()
+
+		names := make(map[string]accountTypes.Auth)
+		app.AccountKeeper().IterateAuths(ctx, func(account accountTypes.Auth) bool {
+			ctx.Logger().Debug("itera", "auth", account.Address, "num", account.Number, "seq", account.Sequence)
+			names[account.Address.String()] = account
+			return false
+		})
+
+		So(len(names), ShouldEqual, (1 + 1 + createAuths)) // kuchain root auth, addr1 auth and created auths
+	})
+
+	Convey("TestIterateAuthBreak", t, func() {
+		names := make(map[string]accountTypes.Auth)
+		app.AccountKeeper().IterateAuths(ctx, func(account accountTypes.Auth) bool {
+			names[account.Address.String()] = account
+			return true // will return break
+		})
+
+		So(len(names), ShouldEqual, 1)
 	})
 }
