@@ -20,7 +20,6 @@ func TestHandlerDataError(t *testing.T) {
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth())
 	app := simapp.SetupWithGenesisAccounts(genAccs)
 	simapp.TestHandlerDataErr(t, asset.NewHandler(*app.AssetKeeper()),
-		&assetTypes.MsgTransfer{},
 		&assetTypes.MsgCreateCoin{},
 		&assetTypes.MsgIssueCoin{},
 		&assetTypes.MsgBurnCoin{},
