@@ -223,8 +223,8 @@ func (a DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID,
 		return errors.Wrapf(dexTypes.ErrDexNotExists, "dex %s not exists to sigin", dex.String())
 	}
 
-	// update sigIn state to FromAccount, should sub amtFrom(include fee), and add gotted(amtTo-toFee)
-	approveAddForFrom := amtTo.Sub(feeTo)
+	// update sigIn state to FromAccount, should sub (amtFrom+feeFrom), and add gotted(amtTo)
+	approveAddForFrom := amtTo
 	approveNowForFrom, err := a.assetKeeper.GetApproveCoins(ctx, from, dex)
 	if err != nil {
 		return errors.Wrapf(err, "get approve data error acc: %s, dex: %s", from, dex)
@@ -238,16 +238,16 @@ func (a DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID,
 		return errors.Wrapf(err, "asset Approve error")
 	}
 
-	if _, err := a.updateSigIn(ctx, true, from, dex, amtFrom); err != nil {
+	if _, err := a.updateSigIn(ctx, true, from, dex, amtFrom.Add(feeFrom...)); err != nil {
 		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
 	}
 
-	if _, err := a.updateSigIn(ctx, false, from, dex, amtTo.Sub(feeTo)); err != nil {
+	if _, err := a.updateSigIn(ctx, false, from, dex, amtTo); err != nil {
 		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
 	}
 
-	// update sigIn state to ToAccount, should sub amtTo(include fee), and add gotted(amtFrom-fromFee)
-	approveAddForTo := amtFrom.Sub(feeFrom)
+	// update sigIn state to ToAccount, should sub amtTo, and add gotted(amtFrom-feeTo)
+	approveAddForTo := amtFrom.Sub(feeTo)
 	approveNowForTo, err := a.assetKeeper.GetApproveCoins(ctx, to, dex)
 	if err != nil {
 		return errors.Wrapf(err, "get approve data error acc: %s, dex: %s", to, dex)
@@ -265,7 +265,7 @@ func (a DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID,
 		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, to, amtTo)
 	}
 
-	if _, err := a.updateSigIn(ctx, false, to, dex, amtFrom.Sub(feeFrom)); err != nil {
+	if _, err := a.updateSigIn(ctx, false, to, dex, amtFrom.Sub(feeTo)); err != nil {
 		return errors.Wrapf(err, "updateSigIn %s %s by %s error", dex, from, amtFrom)
 	}
 
