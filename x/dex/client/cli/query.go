@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
@@ -90,6 +92,8 @@ func GetSymbol(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			baseCode = fmt.Sprintf("%s/%s", baseCreator, baseCode)
+			quoteCode = fmt.Sprintf("%s/%s", quoteCreator, quoteCode)
 			symbol, ok := dex.Symbol(baseCreator, baseCode, quoteCreator, quoteCode)
 			if ok {
 				err = cliCtx.PrintOutput(symbol)

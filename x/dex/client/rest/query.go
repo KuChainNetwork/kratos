@@ -100,6 +100,8 @@ func getSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
+		baseCode = fmt.Sprintf("%s/%s", baseCreator, baseCode)
+		quoteCode = fmt.Sprintf("%s/%s", quoteCreator, quoteCode)
 		currency, ok := dex.Symbol(baseCreator, baseCode, quoteCreator, quoteCode)
 		if !ok {
 			rest.WriteErrorResponse(w,
