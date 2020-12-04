@@ -39,12 +39,14 @@ func (a DexKeeper) CreateSymbol(ctx sdk.Context,
 	var baseCodeFound, quoteCodeFound bool
 	a.assetKeeper.IterateAllCoins(ctx, func(_ chainType.AccountID, balance Coins) bool {
 		for _, coin := range balance {
-			s := strings.Split(coin.Denom, "/")[1]
-			if s == baseCode {
+			values = strings.Split(coin.Denom, "/")
+			c := values[0]
+			s := values[1]
+			if c == symbol.Base.Creator && s == baseCode {
 				baseCodeFound = true
 			}
 
-			if s == quoteCode {
+			if c == symbol.Quote.Creator && s == quoteCode {
 				quoteCodeFound = true
 			}
 
