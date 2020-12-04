@@ -100,8 +100,28 @@ func getSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		baseCode = fmt.Sprintf("%s/%s", baseCreator, baseCode)
-		quoteCode = fmt.Sprintf("%s/%s", quoteCreator, quoteCode)
+		baseCreatorName, err := chainTypes.NewName(baseCreator)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		baseCodeName, err := chainTypes.NewName(baseCode)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		baseCode = types.CoinDenom(baseCreatorName, baseCodeName)
+		quoteCreatorName, err := chainTypes.NewName(quoteCreator)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		quoteCodeName, err := chainTypes.NewName(quoteCode)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		quoteCode = types.CoinDenom(quoteCreatorName, quoteCodeName)
 		currency, ok := dex.Symbol(baseCreator, baseCode, quoteCreator, quoteCode)
 		if !ok {
 			rest.WriteErrorResponse(w,
