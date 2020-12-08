@@ -158,6 +158,8 @@ type MsgDexDealData struct {
 	ID      []byte    `json:"id" yaml:"id"`         // L2 block id for prove
 	Hash    []byte    `json:"hash" yaml:"hash"`     // L2 hash for prove
 	Proves  []byte    `json:"proves" yaml:"proves"` // L2 prove datas
+	FeeFrom Coins     `json:"fee_from" yaml:"fee_from"`
+	FeeTo   Coins     `json:"fee_to" yaml:"fee_from"`
 }
 
 // Type imp for data KuMsgData
@@ -182,19 +184,37 @@ func NewMsgDexDeal(auth types.AccAddress, dex AccountID, from, to AccountID, fro
 			msg.WithData(Cdc(), &MsgDexDealData{
 				Dex:     dex,
 				ExtData: ext,
+				FeeFrom: types.NewCoins(feeFromFrom),
+				FeeTo:   types.NewCoins(feeFromTo),
 			}),
 		),
 	}
 }
 
-func (msg MsgDexDeal) GetDealByDex() (AccountID, Coins, AccountID, Coins) {
+func (msg MsgDexDeal) GetDealByDex() (from AccountID, assetFrom Coins, to AccountID, assetTo Coins, err error) {
 	trs := msg.Transfers
-	return trs[0].From, trs[0].Amount, trs[2].From, trs[2].Amount
+	var data MsgDexDealData
+	data, err = msg.GetData()
+	if err != nil {
+		return AccountID{}, nil, AccountID{}, nil, err
+	}
+	from = trs[0].From
+	assetFrom = trs[0].Amount.Sub(data.FeeFrom)
+	to = trs[1].To
+	assetTo = trs[2].Amount
+	return
+
 }
 
-func (msg MsgDexDeal) GetDealFeeByDex() (Coins, Coins) {
-	trs := msg.Transfers
-	return trs[0].Amount.Sub(trs[1].Amount), trs[2].Amount.Sub(trs[3].Amount)
+func (msg MsgDexDeal) GetDealFeeByDex() (feeFrom Coins, feeTo Coins, err error) {
+	var data MsgDexDealData
+	data, err = msg.GetData()
+	if err != nil {
+		return nil, nil, err
+	}
+	feeFrom = data.FeeFrom
+	feeTo = data.FeeTo
+	return
 }
 
 func (msg MsgDexDeal) GetData() (MsgDexDealData, error) {
