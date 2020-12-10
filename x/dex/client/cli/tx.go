@@ -204,6 +204,17 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
+			var symbol types.Symbol
+			getter := types.NewDexRetriever(cliCtx)
+			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err == nil && symbol.Base.Validate() && symbol.Quote.Validate() {
+				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s exists",
+					baseCreator,
+					baseCode,
+					quoteCreator,
+					quoteCode)
+				return
+			}
+
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
 				types.NewMsgCreateSymbol(
 					auth,
@@ -294,6 +305,17 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
+			var symbol types.Symbol
+			getter := types.NewDexRetriever(cliCtx)
+			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
+					baseCreator,
+					baseCode,
+					quoteCreator,
+					quoteCode)
+				return
+			}
+
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
 				types.NewMsgUpdateSymbol(
 					auth,
@@ -357,6 +379,27 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 				err = errors.Wrapf(err, "pause symbol account %s auth error", creator)
 				return
 			}
+
+			var symbol types.Symbol
+			getter := types.NewDexRetriever(cliCtx)
+			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
+					baseCreator,
+					baseCode,
+					quoteCreator,
+					quoteCode)
+				return
+			}
+
+			if symbol.IsPaused {
+				err = errors.Wrapf(types.ErrSymbolStateError, "symbol %s/%s:%s/%s was paused",
+					baseCreator,
+					baseCode,
+					quoteCreator,
+					quoteCode)
+				return
+			}
+
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
 				types.NewMsgPauseSymbol(auth, creator, baseCreator, baseCode, quoteCreator, quoteCode),
 			})
@@ -397,6 +440,27 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 				err = errors.Wrapf(err, "restore symbol account %s auth error", creator)
 				return
 			}
+
+			var symbol types.Symbol
+			getter := types.NewDexRetriever(cliCtx)
+			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
+					baseCreator,
+					baseCode,
+					quoteCreator,
+					quoteCode)
+				return
+			}
+
+			if !symbol.IsPaused {
+				err = errors.Wrapf(types.ErrSymbolStateError, "symbol %s/%s:%s/%s did not paused",
+					baseCreator,
+					baseCode,
+					quoteCreator,
+					quoteCode)
+				return
+			}
+
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
 				types.NewMsgRestoreSymbol(auth, creator, baseCreator, baseCode, quoteCreator, quoteCode),
 			})
@@ -437,6 +501,18 @@ func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 				err = errors.Wrapf(err, "shutdown symbol account %s auth error", creator)
 				return
 			}
+
+			var symbol types.Symbol
+			getter := types.NewDexRetriever(cliCtx)
+			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
+					baseCreator,
+					baseCode,
+					quoteCreator,
+					quoteCode)
+				return
+			}
+
 			err = txutil.GenerateOrBroadcastMsgs(ctx, txBldr, []sdk.Msg{
 				types.NewMsgShutdownSymbol(auth, creator, baseCreator, baseCode, quoteCreator, quoteCode),
 			})
