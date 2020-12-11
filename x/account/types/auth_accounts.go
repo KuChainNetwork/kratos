@@ -18,8 +18,8 @@ func (a *AuthAccounts) AddAccount(acc string) {
 }
 
 func (a *AuthAccounts) DeleteAccount(acc string) {
-	for i, v := range a.Accounts {
-		if v == acc {
+	for i := len(a.Accounts) - 1; i >= 0; i-- {
+		if a.Accounts[i] == acc {
 			a.Accounts = append(a.Accounts[:i], a.Accounts[i+1:]...)
 		}
 	}
