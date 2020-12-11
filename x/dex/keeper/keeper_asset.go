@@ -64,12 +64,16 @@ func (a DexKeeper) updateSigInSumForDex(ctx sdk.Context, isSub bool, dex Account
 		newCoins = n
 	}
 
+	ctx.Logger().Debug("updateSigInSumForDex", "dex", dex, "amt", amt, "newCoins", newCoins)
+
 	setCoinsToKVStore(ctx, a.cdc, a.key, key, newCoins)
 	return nil
 }
 
 func (a DexKeeper) updateSigIn(ctx sdk.Context, isSub bool, id, dex AccountID, amt Coins) (Coins, error) {
 	key := dexTypes.GenStoreKey(dexTypes.DexSigInStoreKeyPrefix, dex.Bytes(), id.Bytes())
+
+	ctx.Logger().Debug("updateSigIn", "isSub", isSub, "id", id, "amt", amt)
 
 	curr := getCoinsFromKVStore(ctx, a.cdc, a.key, key)
 	newCoins := curr.Add(amt...)
@@ -83,6 +87,8 @@ func (a DexKeeper) updateSigIn(ctx sdk.Context, isSub bool, id, dex AccountID, a
 	}
 
 	setCoinsToKVStore(ctx, a.cdc, a.key, key, newCoins)
+
+	ctx.Logger().Debug("updateSigIn", "id", id, "newCoins", newCoins)
 
 	if err := a.updateSigInSumForDex(ctx, isSub, dex, amt); err != nil {
 		return Coins{}, sdkerrors.Wrap(err, "updateSigInSumForDex error")
@@ -217,8 +223,10 @@ func (a DexKeeper) SigOut(ctx sdk.Context, isTimeout bool, id, dex AccountID, am
 	return nil
 }
 
-func (a DexKeeper) Deal(ctx sdk.Context, dex, from, to AccountID,
-	amtFrom, amtTo, feeFrom, feeTo Coins) error {
+func (a DexKeeper) Deal(ctx sdk.Context, dex,
+	from, to AccountID,
+	amtFrom, amtTo,
+	feeFrom, feeTo Coins) error {
 	if _, ok := a.getDex(ctx, dex.MustName()); !ok {
 		return errors.Wrapf(dexTypes.ErrDexNotExists, "dex %s not exists to sigin", dex.String())
 	}

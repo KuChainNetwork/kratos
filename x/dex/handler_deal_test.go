@@ -171,8 +171,21 @@ func TestDexDealErr1(t *testing.T) {
 
 		So(DexDealForTest(t, app, true, dexAccount1, account1, a11, account1, a21), ShouldBeNil)
 
+		sum, err := app.AssetKeeper().GetApproveSum(app.NewTestContext(), account1)
+		ass := app.AssetKeeper().GetAllBalances(app.NewTestContext(), account1)
+		app.Logger().Info("acc after", "a", ass, "s", sum)
+
+		approves, err := app.AssetKeeper().GetApproveCoins(app.NewTestContext(), account1, dexAccount1)
+		So(err, ShouldBeNil)
+		app.Logger().Info("approves", "a", approves)
+
 		sigAmt := types.NewCoins(types.NewInt64Coin(gDenom1, 1900))
 		So(SignInMsgForTest(t, app, true, account1, dexAccount1, sigAmt), ShouldBeNil)
+
+		sum, err = app.AssetKeeper().GetApproveSum(app.NewTestContext(), account1)
+		approves, err = app.AssetKeeper().GetApproveCoins(app.NewTestContext(), account1, dexAccount1)
+		So(err, ShouldBeNil)
+		app.Logger().Info("approves", "a", approves, "s", sum)
 
 		sigAmt2 := types.NewCoins(types.NewInt64Coin(gDenom2, 1900))
 		So(SignInMsgForTest(t, app, true, account1, dexAccount1, sigAmt2), ShouldBeNil)
