@@ -206,7 +206,8 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 
 			var symbol types.Symbol
 			getter := types.NewDexRetriever(cliCtx)
-			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err == nil && symbol.Base.Validate() && symbol.Quote.Validate() {
+			symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode)
+			if err == nil && symbol.Base.Validate() && symbol.Quote.Validate() {
 				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s exists",
 					baseCreator,
 					baseCode,
@@ -307,7 +308,8 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 
 			var symbol types.Symbol
 			getter := types.NewDexRetriever(cliCtx)
-			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+			symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode)
+			if err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
 				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
 					baseCreator,
 					baseCode,
@@ -382,7 +384,8 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 
 			var symbol types.Symbol
 			getter := types.NewDexRetriever(cliCtx)
-			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+			symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode)
+			if err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
 				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
 					baseCreator,
 					baseCode,
@@ -443,7 +446,8 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 
 			var symbol types.Symbol
 			getter := types.NewDexRetriever(cliCtx)
-			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+			symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode)
+			if err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
 				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
 					baseCreator,
 					baseCode,
@@ -504,7 +508,8 @@ func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 
 			var symbol types.Symbol
 			getter := types.NewDexRetriever(cliCtx)
-			if symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode); err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
+			symbol, _, err = getter.GetSymbolWithHeight(creator, baseCreator, baseCode, quoteCreator, quoteCode)
+			if err != nil || !symbol.Base.Validate() || !symbol.Quote.Validate() {
 				err = errors.Wrapf(types.ErrSymbolExists, "symbol %s/%s:%s/%s not exists",
 					baseCreator,
 					baseCode,
