@@ -124,11 +124,11 @@ func InitGenesis(
 	// don't need to run Tendermint updates if we exported
 	if data.Exported {
 		for _, lv := range data.LastValidatorPowers {
-			valAccountID := chainTypes.NewAccountIDFromAccAdd(sdk.AccAddress(lv.Address))
+			valAccountID := lv.ID
 			keeper.SetLastValidatorPower(ctx, valAccountID, lv.Power)
 			validator, found := keeper.GetValidator(ctx, valAccountID)
 			if !found {
-				panic(fmt.Sprintf("validator %s not found", lv.Address))
+				panic(fmt.Sprintf("validator %s not found", valAccountID))
 			}
 			update := validator.ABCIValidatorUpdate()
 			update.Power = lv.Power // keep the next-val-set offset, use the last power for the first block
@@ -161,8 +161,10 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 	})
 	var lastValidatorPowers []types.LastValidatorPower
 	keeper.IterateLastValidatorPowers(ctx, func(addr chainTypes.AccountID, power int64) (stop bool) {
-		accAddr, _ := addr.ToAccAddress()
-		lastValidatorPowers = append(lastValidatorPowers, types.LastValidatorPower{Address: sdk.ValAddress(accAddr), Power: power})
+		lastValidatorPowers = append(lastValidatorPowers, types.LastValidatorPower{
+			ID:    addr,
+			Power: power,
+		})
 		return false
 	})
 
