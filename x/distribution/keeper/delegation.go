@@ -162,7 +162,7 @@ func (k Keeper) withdrawDelegationRewards(ctx sdk.Context, val types.ValidatorI,
 		logger := k.Logger(ctx)
 		logger.Info(fmt.Sprintf("missing rewards rounding error, delegator %v"+
 			"withdrawing rewards from validator %v, should have received %v, got %v",
-			val.GetOperator(), del.GetDelegator(), rewardsRaw, rewards))
+			val.GetOperatorAccountID(), del.GetDelegator(), rewardsRaw, rewards))
 	}
 
 	// truncate coins, return remainder to community pool
