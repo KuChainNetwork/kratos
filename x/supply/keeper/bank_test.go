@@ -48,17 +48,7 @@ func CreateAccount(keeper account.Keeper, ctx sdk.Context, id chainType.AccountI
 }
 
 func getCoinsByName(ctx sdk.Context, sk keep.Keeper, moduleName string, ask asset.Keeper) chainType.Coins {
-	//moduleAddress := sk.GetModuleAddress(moduleName)
-	//macc := ak.GetAccount(ctx, moduleAddress)
-
-	//ask.GetCoinsTotalSupply()
-	//
-	//if macc == nil {
-	//	return sdk.Coins(nil)
-	//}
-
-	mAcc := sk.GetModuleAccount(ctx, moduleName)
-	return ask.GetCoinPowers(ctx, mAcc.GetID())
+	return ask.GetCoinPowers(ctx, sk.GetModuleAccount(ctx, moduleName).GetID())
 }
 
 func TestSendCoins(t *testing.T) {
