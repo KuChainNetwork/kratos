@@ -161,7 +161,7 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec, mbm module.BasicManager, sm
 				return errors.Wrap(err, "failed to write signed gen tx")
 			}
 
-			fmt.Fprintf(os.Stderr, "Genesis transaction written to %q\n", outputDocument)
+			fmt.Fprintf(os.Stderr, "%q\n", outputDocument)
 			return nil
 
 		},
@@ -185,7 +185,7 @@ func makeOutputFilepath(rootDir, nodeID string) (string, error) {
 	if err := tmos.EnsureDir(writePath, 0700); err != nil {
 		return "", err
 	}
-	return filepath.Join(writePath, fmt.Sprintf("gentx-%v.json", nodeID)), nil
+	return filepath.Join(writePath, fmt.Sprintf("gentx.json")), nil
 }
 
 func readUnsignedGenTxFile(cdc *codec.Codec, r io.Reader) (txutil.StdTx, error) {

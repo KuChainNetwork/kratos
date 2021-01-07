@@ -67,8 +67,8 @@ func (FuncManager) MsgDelegateWithBalance(m sdk.Msg,
 	}
 
 	if delBal.GetCoins().AmountOf(msgData.Amount.Denom).LT(msgData.Amount.Amount) {
-		return fmt.Errorf("insufficient fund for delegation %v: %v < %v",
-			delBal.GetID().String(), delBal.GetCoins().AmountOf(msgData.Amount.Denom), msgData.Amount.Amount,
+		return fmt.Errorf("account %s insufficient fund for delegation %v: %v < %v",
+			delAcc.String(), delBal.GetID().String(), delBal.GetCoins().AmountOf(msgData.Amount.Denom), msgData.Amount,
 		)
 	}
 
