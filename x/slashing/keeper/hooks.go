@@ -11,12 +11,13 @@ import (
 
 // FIXME: use AccountID type
 
-func (k Keeper) AfterValidatorBonded(ctx sdk.Context, acc sdk.ConsAddress, _ types.AccountID) {
+func (k Keeper) AfterValidatorBonded(ctx sdk.Context, acc sdk.ConsAddress, accID types.AccountID) {
 	// Update the signing info start height or create a new signing info
 	_, found := k.GetValidatorSigningInfo(ctx, acc)
 	if !found {
 		signingInfo := types.NewValidatorSigningInfo(
 			acc,
+			accID,
 			ctx.BlockHeight(),
 			0,
 			time.Unix(0, 0),
