@@ -9,8 +9,6 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 )
 
-// FIXME: use AccountID type
-
 func (k Keeper) AfterValidatorBonded(ctx sdk.Context, acc sdk.ConsAddress, accID types.AccountID) {
 	// Update the signing info start height or create a new signing info
 	_, found := k.GetValidatorSigningInfo(ctx, acc)
