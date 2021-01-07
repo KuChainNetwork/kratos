@@ -201,7 +201,7 @@ def initChain(nodeNum):
    return
 
 def genTx():
-   nodeByCli(mainChainSymbol, 'gentx %s --name %s ' % (getAuth(mainChainSymbol), mainChainSymbol))
+   nodeByCli(mainChainSymbol, 'gentx %s %s --name %s ' % (mainChainSymbol, getAuth(mainChainSymbol), mainChainSymbol))
    node(mainChainSymbol, 'collect-gentxs')
 
 def initNode(name, num):

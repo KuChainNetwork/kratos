@@ -8,7 +8,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	tmtypes "github.com/tendermint/tendermint/types"
+	"github.com/tendermint/tendermint/libs/bytes"
 )
 
 // InitGenesis sets the pool and parameters for the provided keeper.  For each
@@ -181,12 +181,14 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 }
 
 // WriteValidators returns a slice of bonded genesis validators.
-func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []tmtypes.GenesisValidator) {
+func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []chainTypes.GenesisValidator) {
 	keeper.IterateLastValidators(ctx, func(_ int64, validator statkingexport.ValidatorI) (stop bool) {
-		vals = append(vals, tmtypes.GenesisValidator{
-			PubKey: validator.GetConsPubKey(),
-			Power:  validator.GetConsensusPower(),
-			Name:   validator.GetMoniker(),
+		vals = append(vals, chainTypes.GenesisValidator{
+			ID:      validator.GetOperatorAccountID(),
+			Address: bytes.HexBytes(sdk.GetConsAddress(validator.GetConsPubKey())),
+			PubKey:  validator.GetConsPubKey(),
+			Power:   validator.GetConsensusPower(),
+			Name:    validator.GetMoniker(),
 		})
 
 		return false

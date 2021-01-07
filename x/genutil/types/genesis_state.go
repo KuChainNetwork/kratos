@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // GenesisState defines the raw genesis transaction in JSON
@@ -80,7 +80,7 @@ func SetGenesisStateInAppState(cdc *codec.Codec,
 // for the application.
 //
 // NOTE: The pubkey input is this machines pubkey.
-func GenesisStateFromGenDoc(cdc *codec.Codec, genDoc tmtypes.GenesisDoc,
+func GenesisStateFromGenDoc(cdc *codec.Codec, genDoc types.GenesisDoc,
 ) (genesisState map[string]json.RawMessage, err error) {
 
 	if err = cdc.UnmarshalJSON(genDoc.AppState, &genesisState); err != nil {
@@ -94,13 +94,13 @@ func GenesisStateFromGenDoc(cdc *codec.Codec, genDoc tmtypes.GenesisDoc,
 //
 // NOTE: The pubkey input is this machines pubkey.
 func GenesisStateFromGenFile(cdc *codec.Codec, genFile string,
-) (genesisState map[string]json.RawMessage, genDoc *tmtypes.GenesisDoc, err error) {
+) (genesisState map[string]json.RawMessage, genDoc *types.GenesisDoc, err error) {
 
 	if !tmos.FileExists(genFile) {
 		return genesisState, genDoc,
 			fmt.Errorf("%s does not exist, run `init` first", genFile)
 	}
-	genDoc, err = tmtypes.GenesisDocFromFile(genFile)
+	genDoc, err = types.GenesisDocFromFile(genFile)
 	if err != nil {
 		return genesisState, genDoc, err
 	}

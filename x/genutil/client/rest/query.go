@@ -2,7 +2,6 @@ package rest
 
 import (
 	"fmt"
-	types "github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -12,7 +11,7 @@ import (
 
 // QueryGenesisTxs writes the genesis transactions to the response if no error occurs.
 func QueryGenesisTxs(cliCtx context.CLIContext, w http.ResponseWriter) {
-	resultGenesis, err := cliCtx.Client.Genesis()
+	_, err := cliCtx.Client.Genesis()
 	if err != nil {
 		rest.WriteErrorResponse(
 			w, http.StatusInternalServerError,
@@ -21,27 +20,33 @@ func QueryGenesisTxs(cliCtx context.CLIContext, w http.ResponseWriter) {
 		return
 	}
 
-	appState, err := types.GenesisStateFromGenDoc(cliCtx.Codec, *resultGenesis.Genesis)
-	if err != nil {
-		rest.WriteErrorResponse(
-			w, http.StatusInternalServerError,
-			fmt.Sprintf("failed to decode genesis doc: %s", err),
-		)
-		return
-	}
+	genTxs := make([]sdk.Tx, 0, 64)
 
-	genState := types.GetGenesisStateFromAppState(cliCtx.Codec, appState)
-	genTxs := make([]sdk.Tx, len(genState.GenTxs))
-	for i, tx := range genState.GenTxs {
-		err := cliCtx.Codec.UnmarshalJSON(tx, &genTxs[i])
+	// FIXME: support zero block txs
+	/*
+		appState, err := types.GenesisStateFromGenDoc(cliCtx.Codec, *resultGenesis.Genesis)
 		if err != nil {
 			rest.WriteErrorResponse(
 				w, http.StatusInternalServerError,
-				fmt.Sprintf("failed to decode genesis transaction: %s", err),
+				fmt.Sprintf("failed to decode genesis doc: %s", err),
 			)
 			return
 		}
-	}
+
+		genState := types.GetGenesisStateFromAppState(cliCtx.Codec, appState)
+
+		for i, tx := range genState.GenTxs {
+			err := cliCtx.Codec.UnmarshalJSON(tx, &genTxs[i])
+			if err != nil {
+				rest.WriteErrorResponse(
+					w, http.StatusInternalServerError,
+					fmt.Sprintf("failed to decode genesis transaction: %s", err),
+				)
+				return
+			}
+		}
+
+	*/
 
 	rest.PostProcessResponseBare(w, cliCtx, genTxs)
 }
