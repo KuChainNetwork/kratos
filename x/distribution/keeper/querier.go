@@ -189,9 +189,9 @@ func queryDelegatorTotalRewards(ctx sdk.Context, _ []string, req abci.RequestQue
 		ctx, params.DelegatorAddress,
 		func(_ int64, del types.StakingExportedDelegationI) (stop bool) {
 
-			valID := del.GetValidatorAccountID()
+			valID := del.GetValidator()
 			val := k.stakingKeeper.Validator(ctx, valID)
-			ctx.Logger().Debug("queryDelegatorTotalRewards", "valId", del.GetValidatorAccountID(), "del", del.GetDelegatorAccountID())
+			ctx.Logger().Debug("queryDelegatorTotalRewards", "valId", del.GetValidator(), "del", del.GetDelegator())
 			endingPeriod := k.IncrementValidatorPeriod(ctx, val)
 			delReward := k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
 
@@ -230,7 +230,7 @@ func queryDelegatorValidators(ctx sdk.Context, _ []string, req abci.RequestQuery
 	k.stakingKeeper.IterateDelegations(
 		ctx, params.DelegatorAddress,
 		func(_ int64, del types.StakingExportedDelegationI) (stop bool) { // bugs , staking module interface
-			validators = append(validators, del.GetValidatorAccountID())
+			validators = append(validators, del.GetValidator())
 			return false
 		},
 	)

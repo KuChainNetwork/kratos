@@ -329,7 +329,7 @@ func SimulateMsgUndelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper
 
 		// get random delegator from validator
 		delegation := delegations[r.Intn(len(delegations))]
-		delAddr := delegation.GetDelegatorAccountID()
+		delAddr := delegation.GetDelegator()
 
 		if k.HasMaxUnbondingDelegationEntries(ctx, delAddr, valAddr) {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
@@ -412,7 +412,7 @@ func SimulateMsgBeginRedelegate(ak types.AccountKeeper, bk types.BankKeeper, k k
 
 		// get random delegator from src validator
 		delegation := delegations[r.Intn(len(delegations))]
-		delAddr := delegation.GetDelegatorAccountID()
+		delAddr := delegation.GetDelegator()
 
 		if k.HasReceivingRedelegation(ctx, delAddr, srcAddr) {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil // skip

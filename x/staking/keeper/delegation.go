@@ -60,7 +60,7 @@ func (k Keeper) GetValidatorDelegations(ctx sdk.Context, valAddr AccountID) (del
 
 	for ; iterator.Valid(); iterator.Next() {
 		delegation := types.MustUnmarshalDelegation(k.cdc, iterator.Value())
-		if delegation.GetValidatorAccountID().Eq(valAddr) {
+		if delegation.GetValidator().Eq(valAddr) {
 			delegations = append(delegations, delegation)
 		}
 	}

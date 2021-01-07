@@ -70,22 +70,21 @@ func CanWithdrawInvariant(k Keeper) sdk.Invariant {
 
 		var remaining chainTypes.DecCoins
 
-		valDelegationAddrs := make(map[string][]sdk.AccAddress)
+		valDelegations := make(map[string][]types.AccountID)
 		for _, del := range k.stakingKeeper.GetAllSDKDelegations(ctx) {
-			valAddr := del.GetValidatorAddr().String()
-			valDelegationAddrs[valAddr] = append(valDelegationAddrs[valAddr], del.GetDelegatorAddr())
+			val := del.GetValidator().String()
+			valDelegations[val] = append(valDelegations[val], del.GetDelegator())
 		}
 
 		// iterate over all validators
 		k.stakingKeeper.IterateValidators(ctx, func(_ int64, val types.StakingExportedValidatorI) (stop bool) {
-
-			valId, _ := chainTypes.NewAccountIDFromStr(string(val.GetOperator()))
+			valId := val.GetOperatorAccountID()
 			_, _ = k.WithdrawValidatorCommission(ctx, valId)
 
-			delegationAddrs, ok := valDelegationAddrs[val.GetOperator().String()]
+			delegations, ok := valDelegations[val.GetOperatorAccountID().String()]
 			if ok {
-				for _, delAddr := range delegationAddrs {
-					if _, err := k.WithdrawDelegationRewards(ctx, chainTypes.NewAccountIDFromAccAdd(delAddr), valId); err != nil {
+				for _, del := range delegations {
+					if _, err := k.WithdrawDelegationRewards(ctx, del, valId); err != nil {
 						panic(err)
 					}
 				}

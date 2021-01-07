@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"bytes"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -104,17 +105,9 @@ func (d Delegation) Equal(d2 Delegation) bool {
 }
 
 // nolint - for Delegation
-func (d Delegation) GetDelegatorAccountID() chainTypes.AccountID { return d.DelegatorAccount }
-func (d Delegation) GetValidatorAccountID() chainTypes.AccountID { return d.ValidatorAccount }
-func (d Delegation) GetDelegatorAddr() sdk.AccAddress {
-	delegatorAccAddr, _ := d.DelegatorAccount.ToAccAddress()
-	return delegatorAccAddr
-}
-func (d Delegation) GetValidatorAddr() sdk.ValAddress {
-	validatorAccaddr, _ := d.ValidatorAccount.ToAccAddress()
-	return sdk.ValAddress(validatorAccaddr)
-}
-func (d Delegation) GetShares() sdk.Dec { return d.Shares }
+func (d Delegation) GetDelegator() chainTypes.AccountID { return d.DelegatorAccount }
+func (d Delegation) GetValidator() chainTypes.AccountID { return d.ValidatorAccount }
+func (d Delegation) GetShares() sdk.Dec                 { return d.Shares }
 
 // String returns a human readable string representation of a Delegation.
 func (d Delegation) String() string {
