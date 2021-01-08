@@ -24,10 +24,7 @@ var (
 
 // Tendermint full-node start flags
 const (
-	flagWithTendermint     = "with-tendermint"
-	flagAddress            = "address"
 	flagTraceStore         = "trace-store"
-	flagCPUProfile         = "cpu-profile"
 	FlagMinGasPrices       = "minimum-gas-prices"
 	FlagHaltHeight         = "halt-height"
 	FlagHaltTime           = "halt-time"

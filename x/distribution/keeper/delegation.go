@@ -171,7 +171,7 @@ func (k Keeper) withdrawDelegationRewards(ctx sdk.Context, val types.ValidatorI,
 	ctx.Logger().Debug("withdrawDelegationRewards", "rewards", rewards, "coins", coins, "remainder", remainder)
 	// add coins to user account
 	if !coins.IsZero() {
-		withdrawAddr := k.GetDelegatorWithdrawAddr(ctx, del.GetDelegator()) //bugs, stacking interface
+		withdrawAddr := k.GetDelegatorWithdrawAddr(ctx, del.GetDelegator()) // bugs, stacking interface
 		err := k.supplyKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawAddr, coins)
 		if err != nil {
 			return nil, err

@@ -208,7 +208,7 @@ func makeOutputFilepath(rootDir, nodeID string) (string, error) {
 	if err := tmos.EnsureDir(writePath, 0700); err != nil {
 		return "", err
 	}
-	return filepath.Join(writePath, fmt.Sprintf("gentx.json")), nil
+	return filepath.Join(writePath, fmt.Sprintf("gentx-%s.json", nodeID)), nil
 }
 
 func readUnsignedGenTxFile(cdc *codec.Codec, r io.Reader) (txutil.StdTx, error) {
