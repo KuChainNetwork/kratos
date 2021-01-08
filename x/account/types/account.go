@@ -55,9 +55,8 @@ func (m KuAccount) GetID() types.AccountID {
 }
 
 // SetID - implements exported.Account
-func (m *KuAccount) SetID(id types.AccountID) error {
+func (m *KuAccount) SetID(id types.AccountID) {
 	m.ID = id
-	return nil
 }
 
 // GetAuth - implements exported.Account
@@ -75,7 +74,7 @@ func (m KuAccount) GetAuth() types.AccAddress {
 }
 
 // SetAuth - implements exported.Account
-func (m *KuAccount) SetAuth(auth types.AccAddress) error {
+func (m *KuAccount) SetAuth(auth types.AccAddress) {
 	if len(m.Auths) == 0 {
 		m.Auths = []AccountAuth{
 			{
@@ -86,7 +85,6 @@ func (m *KuAccount) SetAuth(auth types.AccAddress) error {
 	}
 
 	m.Auths[0].Address = auth
-	return nil
 }
 
 // GetAccountNumber - implements exported.Account
@@ -95,9 +93,8 @@ func (m KuAccount) GetAccountNumber() uint64 {
 }
 
 // SetAccountNumber - implements exported.Account
-func (m *KuAccount) SetAccountNumber(n uint64) error {
+func (m *KuAccount) SetAccountNumber(n uint64) {
 	m.AccountNumber = n
-	return nil
 }
 
 // Validate - implements exported.GenesisAccount

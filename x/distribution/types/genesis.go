@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -66,6 +67,7 @@ type GenesisState struct {
 	ValidatorCurrentRewards         []ValidatorCurrentRewardsRecord        `json:"validator_current_rewards" yaml:"validator_current_rewards"`
 	DelegatorStartingInfos          []DelegatorStartingInfoRecord          `json:"delegator_starting_infos" yaml:"delegator_starting_infos"`
 	ValidatorSlashEvents            []ValidatorSlashEventRecord            `json:"validator_slash_events" yaml:"validator_slash_events"`
+	NotDistributionTimePoint        time.Time                              `json:"not_distribution_time_point" yaml:"not_distribution_time_point"`
 }
 
 func NewGenesisState(
@@ -77,7 +79,8 @@ func NewGenesisState(
 	historical []ValidatorHistoricalRewardsRecord,
 	cur []ValidatorCurrentRewardsRecord,
 	dels []DelegatorStartingInfoRecord,
-	slashes []ValidatorSlashEventRecord) GenesisState {
+	slashes []ValidatorSlashEventRecord,
+	notDistributionTimePoint time.Time) GenesisState {
 	return GenesisState{
 		Params:                          params,
 		FeePool:                         fp,
@@ -89,6 +92,7 @@ func NewGenesisState(
 		ValidatorCurrentRewards:         cur,
 		DelegatorStartingInfos:          dels,
 		ValidatorSlashEvents:            slashes,
+		NotDistributionTimePoint:        notDistributionTimePoint,
 	}
 }
 

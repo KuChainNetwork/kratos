@@ -3,6 +3,7 @@ package simapp
 import (
 	"io"
 	"os"
+	"sync"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -104,6 +105,9 @@ var _ App = (*SimApp)(nil)
 type SimApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
+
+	seed      int64
+	seedMutex sync.Mutex
 
 	wallet *Wallet
 
@@ -310,6 +314,13 @@ func NewSimApp(
 	return app
 }
 
+func (app *SimApp) RandSeed() int64 {
+	app.seedMutex.Lock()
+	defer app.seedMutex.Unlock()
+	app.seed++
+	return app.seed
+}
+
 // Name returns the name of the App
 func (app *SimApp) Name() string { return app.BaseApp.Name() }
 
@@ -443,6 +454,6 @@ func (app *SimApp) WithWallet(w *Wallet) *SimApp {
 	return app
 }
 
-func (app SimApp) GetWallet() *Wallet {
+func (app *SimApp) GetWallet() *Wallet {
 	return app.wallet
 }

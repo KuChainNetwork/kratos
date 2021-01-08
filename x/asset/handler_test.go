@@ -12,8 +12,23 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
+	"github.com/KuChainNetwork/kuchain/x/asset"
 	assetTypes "github.com/KuChainNetwork/kuchain/x/asset/types"
 )
+
+func TestHandlerDataError(t *testing.T) {
+	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth())
+	app := simapp.SetupWithGenesisAccounts(genAccs)
+	simapp.TestHandlerDataErr(t, asset.NewHandler(*app.AssetKeeper()),
+		&assetTypes.MsgCreateCoin{},
+		&assetTypes.MsgIssueCoin{},
+		&assetTypes.MsgBurnCoin{},
+		&assetTypes.MsgLockCoin{},
+		&assetTypes.MsgUnlockCoin{},
+		&assetTypes.MsgExerciseCoin{},
+		&assetTypes.MsgApprove{},
+	)
+}
 
 func TestSendAddressNotEnoughBalance(t *testing.T) {
 	Convey("TestSendAddressNotEnoughBalance", t, func() {

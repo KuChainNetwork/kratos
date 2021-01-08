@@ -5,6 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 )
 
 // AccountAuthKeeper is interface for trx auth and account state.
@@ -33,13 +34,13 @@ type Account interface {
 	SetName(types.Name) error
 
 	GetID() types.AccountID
-	SetID(id types.AccountID) error
+	SetID(id types.AccountID)
 
 	GetAuth() types.AccAddress
-	SetAuth(types.AccAddress) error
+	SetAuth(types.AccAddress)
 
 	GetAccountNumber() uint64
-	SetAccountNumber(uint64) error
+	SetAccountNumber(uint64)
 
 	// Ensure that account implements stringer
 	String() string
@@ -66,9 +67,7 @@ func (ga GenesisAccounts) Append(acc GenesisAccount) GenesisAccounts {
 		panic(fmt.Errorf("account %s has put into genesis account", acc.GetName()))
 	}
 
-	if err := acc.SetAccountNumber(uint64(len(ga) + 1)); err != nil {
-		panic(err)
-	}
+	acc.SetAccountNumber(uint64(len(ga) + 1))
 
 	return append(ga, acc)
 }
@@ -77,4 +76,25 @@ func (ga GenesisAccounts) Append(acc GenesisAccount) GenesisAccounts {
 type GenesisAccount interface {
 	Account
 	Validate() error
+}
+
+type GenesisAuth interface {
+	GetAddress() sdk.AccAddress
+	GetPubKey() crypto.PubKey
+	GetSequence() uint64
+	GetNumber() uint64
+}
+
+type GenesisAuths []GenesisAuth
+
+func (a GenesisAuths) Len() int {
+	return len(a)
+}
+
+func (a GenesisAuths) Less(i, j int) bool {
+	return a[i].GetNumber() < a[j].GetNumber()
+}
+
+func (a GenesisAuths) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
 }

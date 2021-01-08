@@ -11,17 +11,15 @@ import (
 	"strings"
 
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset"
 	"github.com/KuChainNetwork/kuchain/x/genutil/types"
-
-	cfg "github.com/tendermint/tendermint/config"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	cfg "github.com/tendermint/tendermint/config"
 )
 
 // GenAppStateFromConfig gets the genesis app state from the config
-func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg InitConfig, genDoc tmtypes.GenesisDoc,
+func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg InitConfig, genDoc chainTypes.GenesisDoc,
 	genBalIterator types.GenesisBalancesIterator, stakingFuncManager types.StakingFuncManager,
 ) (appState json.RawMessage, err error) {
 	// process genesis transactions, else create default genesis.json
@@ -63,7 +61,7 @@ func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg InitCon
 
 // CollectStdTxs processes and validates application's genesis StdTxs and returns
 // the list of appGenTxs, and persistent peers required to generate genesis.json.
-func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string, genDoc tmtypes.GenesisDoc,
+func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string, genDoc chainTypes.GenesisDoc,
 	genBalIterator types.GenesisBalancesIterator, stakingFuncManager types.StakingFuncManager,
 ) (appGenTxs []txutil.StdTx, persistentPeers string, err error) {
 	var fos []os.FileInfo

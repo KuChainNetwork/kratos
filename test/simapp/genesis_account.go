@@ -34,9 +34,8 @@ type SimGenesisAccount struct {
 
 func NewSimGenesisAccount(id types.AccountID, auth types.AccAddress) SimGenesisAccount {
 	acc := account.NewKuAccount(id)
-	if err := acc.SetAuth(auth); err != nil {
-		panic(err)
-	}
+	acc.SetAuth(auth)
+
 	return SimGenesisAccount{
 		KuAccount: acc,
 	}
@@ -46,9 +45,7 @@ func NewSimGenesisAccountByWallet(wallet *Wallet, id types.AccountID) SimGenesis
 	addr := wallet.NewAccAddress()
 
 	acc := account.NewKuAccount(id)
-	if err := acc.SetAuth(addr); err != nil {
-		panic(err)
-	}
+	acc.SetAuth(addr)
 
 	return SimGenesisAccount{
 		KuAccount: acc,
@@ -94,13 +91,8 @@ func (sga SimGenesisAccount) WithAsset(a types.Coins) SimGenesisAccount {
 func NewGenesisAccount(id types.AccountID, rootAuth types.AccAddress, num uint64) accountExported.GenesisAccount {
 	acc := accountTypes.NewKuAccount(id)
 
-	if err := acc.SetAuth(rootAuth); err != nil {
-		panic(err)
-	}
-
-	if err := acc.SetAccountNumber(num); err != nil {
-		panic(err)
-	}
+	acc.SetAuth(rootAuth)
+	acc.SetAccountNumber(num)
 
 	return acc
 }

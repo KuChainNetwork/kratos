@@ -3,12 +3,11 @@ package simapp
 import (
 	"encoding/json"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // App implements the common methods for a Cosmos SDK-based application
@@ -36,7 +35,7 @@ type App interface {
 	// Exports the state of the application for a genesis file.
 	ExportAppStateAndValidators(
 		forZeroHeight bool, jailWhiteList []string,
-	) (json.RawMessage, []tmtypes.GenesisValidator, error)
+	) (json.RawMessage, []types.GenesisValidator, error)
 
 	// All the registered module account addreses.
 	ModuleAccountAddrs() map[string]bool

@@ -161,13 +161,9 @@ func (ma *ModuleAccount) UnmarshalJSON(bz []byte) error {
 	}
 
 	newAccount := NewKuAccount(NewAccountIDFromName(name))
-	if err := newAccount.SetAuth(alias.Address); err != nil {
-		panic(err)
-	}
 
-	if err := newAccount.SetAccountNumber(alias.AccountNumber); err != nil {
-		panic(err)
-	}
+	newAccount.SetAuth(alias.Address)
+	newAccount.SetAccountNumber(alias.AccountNumber)
 
 	ma.KuAccount = *newAccount
 	ma.Permissions = alias.Permissions

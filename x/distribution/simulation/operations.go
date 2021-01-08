@@ -134,10 +134,10 @@ func SimulateMsgWithdrawDelegatorReward(ak types.AccountKeeperAccountID, bk type
 
 		delegation := delegations[r.Intn(len(delegations))]
 
-		validator := sk.Validator(ctx, delegation.GetValidatorAccountID())
+		validator := sk.Validator(ctx, delegation.GetValidator())
 
 		if validator == nil {
-			return types.SimulationNoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", delegation.GetValidatorAddr())
+			return types.SimulationNoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", delegation.GetValidator())
 		}
 
 		simAccountId := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
