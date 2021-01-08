@@ -379,8 +379,8 @@ func TestHandleCreateSymbol(t *testing.T) {
 		symbol := &dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test1",
-					Code:     "test1/coin1",
+					Creator:  "test",
+					Code:     "test/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
 					IconURL:  "???",
@@ -389,8 +389,8 @@ func TestHandleCreateSymbol(t *testing.T) {
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test2",
-					Code:     "test2/coin2",
+					Creator:  "test",
+					Code:     "test/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
 					IconURL:  "???",
@@ -429,7 +429,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 
 		simapp.AfterBlockCommitted(app, 1)
 
-		symbol.Quote.Code = "test1/coin3"
+		symbol.Quote.Code = "test/coin3"
 		msgCreateSymbol = dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
@@ -521,8 +521,8 @@ func TestHandleUpdateSymbol(t *testing.T) {
 		symbol := &dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test1",
-					Code:     "test1/coin1",
+					Creator:  "test",
+					Code:     "test/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
 					IconURL:  "???",
@@ -531,8 +531,8 @@ func TestHandleUpdateSymbol(t *testing.T) {
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test2",
-					Code:     "test2/coin2",
+					Creator:  "test",
+					Code:     "test/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
 					IconURL:  "???",
@@ -656,8 +656,8 @@ func TestHandlePauseSymbol(t *testing.T) {
 		symbol := dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test1",
-					Code:     "test1/coin1",
+					Creator:  "test",
+					Code:     "test/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
 					IconURL:  "???",
@@ -666,8 +666,8 @@ func TestHandlePauseSymbol(t *testing.T) {
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test2",
-					Code:     "test2/coin2",
+					Creator:  "test",
+					Code:     "test/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
 					IconURL:  "???",
@@ -790,8 +790,8 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		symbol := dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test1",
-					Code:     "test1/coin1",
+					Creator:  "test",
+					Code:     "test/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
 					IconURL:  "???",
@@ -800,8 +800,8 @@ func TestHandleRestoreSymbol(t *testing.T) {
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test2",
-					Code:     "test2/coin2",
+					Creator:  "test",
+					Code:     "test/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
 					IconURL:  "???",
@@ -954,8 +954,8 @@ func TestShutdownSymbol(t *testing.T) {
 		symbol := dexTypes.Symbol{
 			Base: dexTypes.BaseCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test1",
-					Code:     "test1/coin1",
+					Creator:  "test",
+					Code:     "test/coin1",
 					Name:     "BTC",
 					FullName: "BTC",
 					IconURL:  "???",
@@ -964,8 +964,8 @@ func TestShutdownSymbol(t *testing.T) {
 			},
 			Quote: dexTypes.QuoteCurrency{
 				CurrencyBase: dexTypes.CurrencyBase{
-					Creator:  "test2",
-					Code:     "test2/coin2",
+					Creator:  "test",
+					Code:     "test/coin2",
 					Name:     "USDT",
 					FullName: "USDT",
 					IconURL:  "???",

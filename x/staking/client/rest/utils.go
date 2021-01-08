@@ -90,7 +90,11 @@ func queryDelegator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		// 	return
 		// }
-		delegatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32delegator)
+		delegatorAddr, err := chainTypes.NewAccountIDFromStr(bech32delegator)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {

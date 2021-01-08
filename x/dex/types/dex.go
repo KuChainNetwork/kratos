@@ -47,6 +47,13 @@ func (d *Dex) WithSymbol(symbol *Symbol) (dex *Dex, ok bool) {
 			s.Quote.Code == symbol.Quote.Code {
 			return
 		}
+
+		if s.Base.Creator == symbol.Quote.Creator &&
+			s.Base.Code == symbol.Quote.Code &&
+			s.Quote.Creator == symbol.Base.Creator &&
+			s.Quote.Code == symbol.Base.Code {
+			return
+		}
 	}
 	d.Symbols = append(d.Symbols, *symbol)
 	ok = true

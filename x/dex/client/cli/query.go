@@ -90,6 +90,28 @@ func GetSymbol(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			baseCreatorName, err := chainTypes.NewName(baseCreator)
+			if err != nil {
+				err = errors.Wrap(err, "base creator")
+				return
+			}
+			baseCodeName, err := chainTypes.NewName(baseCode)
+			if err != nil {
+				err = errors.Wrap(err, "base code")
+				return
+			}
+			baseCode = types.CoinDenom(baseCreatorName, baseCodeName)
+			quoteCreatorName, err := chainTypes.NewName(quoteCreator)
+			if err != nil {
+				err = errors.Wrap(err, "quote creator")
+				return
+			}
+			quoteCodeName, err := chainTypes.NewName(quoteCode)
+			if err != nil {
+				err = errors.Wrap(err, "quote code")
+				return
+			}
+			quoteCode = types.CoinDenom(quoteCreatorName, quoteCodeName)
 			symbol, ok := dex.Symbol(baseCreator, baseCode, quoteCreator, quoteCode)
 			if ok {
 				err = cliCtx.PrintOutput(symbol)

@@ -151,6 +151,9 @@ func NewKuchainApp(
 		subspaces:      make(map[string]params.Subspace),
 	}
 
+	app.subspaces, app.paramsKeeper =
+		appcreator.GenAppSubspace(cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
+
 	// add keepers
 	app.accountKeeper = account.NewAccountKeeper(cdc, keys[account.StoreKey])
 	app.assetKeeper = asset.NewAssetKeeper(cdc, keys[asset.StoreKey], app.accountKeeper)
