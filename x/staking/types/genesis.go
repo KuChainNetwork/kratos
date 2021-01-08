@@ -21,8 +21,8 @@ type GenesisState struct {
 
 // LastValidatorPower required for validator set update logic
 type LastValidatorPower struct {
-	Address sdk.ValAddress
-	Power   int64
+	ID    AccountID `json:"accountID"`
+	Power int64
 }
 
 // NewGenesisState creates a new GenesisState instanc e

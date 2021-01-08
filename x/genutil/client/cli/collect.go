@@ -4,17 +4,16 @@ import (
 	"encoding/json"
 	"path/filepath"
 
-	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
+	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
 	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const flagGenTxDir = "gentx-dir"
@@ -34,7 +33,7 @@ func CollectGenTxsCmd(ctx *server.Context, cdc *codec.Codec, genBalIterator type
 				return errors.Wrap(err, "failed to initialize node validator files")
 			}
 
-			genDoc, err := tmtypes.GenesisDocFromFile(config.GenesisFile())
+			genDoc, err := chainTypes.GenesisDocFromFile(config.GenesisFile())
 			if err != nil {
 				return errors.Wrap(err, "failed to read genesis doc from file")
 			}

@@ -5,17 +5,17 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/KuChainNetwork/kuchain/chain/types"
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // ExportGenesisFile creates and writes the genesis configuration to disk. An
 // error is returned if building or writing the configuration to file fails.
-func ExportGenesisFile(genDoc *tmtypes.GenesisDoc, genFile string) error {
+func ExportGenesisFile(genDoc *types.GenesisDoc, genFile string) error {
 	if err := genDoc.ValidateAndComplete(); err != nil {
 		return err
 	}
@@ -26,10 +26,10 @@ func ExportGenesisFile(genDoc *tmtypes.GenesisDoc, genFile string) error {
 // ExportGenesisFileWithTime creates and writes the genesis configuration to disk.
 // An error is returned if building or writing the configuration to file fails.
 func ExportGenesisFileWithTime(
-	genFile, chainID string, validators []tmtypes.GenesisValidator,
+	genFile, chainID string, validators []types.GenesisValidator,
 	appState json.RawMessage, genTime time.Time,
 ) error {
-	genDoc := tmtypes.GenesisDoc{
+	genDoc := types.GenesisDoc{
 		GenesisTime: genTime,
 		ChainID:     chainID,
 		Validators:  validators,

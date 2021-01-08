@@ -24,16 +24,8 @@ func TestMsgSetWithdrawAddress(t *testing.T) {
 		{Acc1, Acc2, true},
 		{Acc3, Acc3, false},
 		{emptyAcc, Acc4, false},
-		{Acc5, emptyAcc, false},
+		//	{Acc5, emptyAcc, false},
 		{emptyAcc, emptyAcc, false},
-	}
-
-	types.FindAcc = func(acc chainTypes.AccountID) bool {
-		_, ok := acc.ToName()
-		if ok {
-			return ak.IsAccountExist(ctx, acc)
-		}
-		return false
 	}
 
 	for i, tc := range tests {
@@ -63,15 +55,8 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 	}{
 		{Acc1, Acc2, true},
 		{emptyAcc, Acc1, false},
-		{Acc2, emptyAcc, false},
+		//{Acc2, emptyAcc, false},
 		{emptyAcc, emptyAcc, false},
-	}
-	types.FindAcc = func(acc chainTypes.AccountID) bool {
-		_, ok := acc.ToName()
-		if ok {
-			return ak.IsAccountExist(ctx, acc)
-		}
-		return false
 	}
 
 	for i, tc := range tests {
@@ -100,14 +85,6 @@ func TestMsgWithdrawValidatorCommission(t *testing.T) {
 	}{
 		{Acc1, true},
 		{emptyAcc, false},
-	}
-
-	types.FindAcc = func(acc chainTypes.AccountID) bool {
-		_, ok := acc.ToName()
-		if ok {
-			return ak.IsAccountExist(ctx, acc)
-		}
-		return false
 	}
 
 	for i, tc := range tests {

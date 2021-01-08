@@ -186,7 +186,6 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec,
 		It creates a genesis transaction to create a validator. 
 		The following default parameters are included: 
 		    %s`, defaultsDesc),
-
 		RunE: genTxRunE(ctx, cdc, mbm, smbh, flagNodeID, flagPubKey),
 	}
 
@@ -209,7 +208,7 @@ func makeOutputFilepath(rootDir, nodeID string) (string, error) {
 	if err := tmos.EnsureDir(writePath, 0700); err != nil {
 		return "", err
 	}
-	return filepath.Join(writePath, fmt.Sprintf("gentx-%v.json", nodeID)), nil
+	return filepath.Join(writePath, fmt.Sprintf("gentx.json")), nil
 }
 
 func readUnsignedGenTxFile(cdc *codec.Codec, r io.Reader) (txutil.StdTx, error) {
