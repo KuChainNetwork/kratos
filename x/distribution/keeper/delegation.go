@@ -39,8 +39,8 @@ func (k Keeper) calculateDelegationRewardsBetween(ctx sdk.Context, val types.Val
 	}
 
 	// return staking * (ending - starting)
-	starting := k.GetValidatorHistoricalRewards(ctx, val.GetOperatorAccountID(), startingPeriod)
-	ending := k.GetValidatorHistoricalRewards(ctx, val.GetOperatorAccountID(), endingPeriod)
+	starting := k.GetValidatorHistoricalRewards(ctx, val.GetOperator(), startingPeriod)
+	ending := k.GetValidatorHistoricalRewards(ctx, val.GetOperator(), endingPeriod)
 	difference := ending.CumulativeRewardRatio.Sub(starting.CumulativeRewardRatio)
 	if difference.IsAnyNegative() {
 		panic("negative rewards should not be possible")
@@ -162,7 +162,7 @@ func (k Keeper) withdrawDelegationRewards(ctx sdk.Context, val types.ValidatorI,
 		logger := k.Logger(ctx)
 		logger.Info(fmt.Sprintf("missing rewards rounding error, delegator %v"+
 			"withdrawing rewards from validator %v, should have received %v, got %v",
-			val.GetOperatorAccountID(), del.GetDelegator(), rewardsRaw, rewards))
+			val.GetOperator(), del.GetDelegator(), rewardsRaw, rewards))
 	}
 
 	// truncate coins, return remainder to community pool

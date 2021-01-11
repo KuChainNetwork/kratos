@@ -188,7 +188,7 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []chainTypes.GenesisValidator) {
 	keeper.IterateLastValidators(ctx, func(_ int64, validator statkingexport.ValidatorI) (stop bool) {
 		vals = append(vals, chainTypes.GenesisValidator{
-			ID:      validator.GetOperatorAccountID(),
+			ID:      validator.GetOperator(),
 			Address: bytes.HexBytes(sdk.GetConsAddress(validator.GetConsPubKey())),
 			PubKey:  validator.GetConsPubKey(),
 			Power:   validator.GetConsensusPower(),

@@ -465,10 +465,10 @@ func TestQuerier(t *testing.T) {
 		_ = keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 
 		rdAmount := exported.TokensFromConsensusPower(20)
-		keeper.BeginRedelegation(ctx, addrAcc2, val1.GetOperatorAccountID(), val2.GetOperatorAccountID(), rdAmount.ToDec())
+		keeper.BeginRedelegation(ctx, addrAcc2, val1.GetOperator(), val2.GetOperator(), rdAmount.ToDec())
 		keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 
-		redel, found := keeper.GetRedelegation(ctx, addrAcc2, val1.GetOperatorAccountID(), val2.GetOperatorAccountID())
+		redel, found := keeper.GetRedelegation(ctx, addrAcc2, val1.GetOperator(), val2.GetOperator())
 		require.True(t, found)
 
 		// delegator redelegations
@@ -495,7 +495,7 @@ func TestQuerier(t *testing.T) {
 		require.Len(t, redel.Entries, len(redelRes[0].Entries))
 
 		// validator redelegations
-		queryValidatorParams := types.NewQueryValidatorParams(val1.GetOperatorAccountID())
+		queryValidatorParams := types.NewQueryValidatorParams(val1.GetOperator())
 		bz, errRes = cdc.MarshalJSON(queryValidatorParams)
 		require.NoError(t, errRes)
 
@@ -543,7 +543,7 @@ func TestQuerier(t *testing.T) {
 
 		// undelegate
 		undelAmount := sdk.TokensFromConsensusPower(20)
-		_, err = keeper.Undelegate(ctx, addrAcc1, val1.GetOperatorAccountID(), undelAmount.ToDec())
+		_, err = keeper.Undelegate(ctx, addrAcc1, val1.GetOperator(), undelAmount.ToDec())
 		require.NoError(t, err)
 		keeper.ApplyAndReturnValidatorSetUpdates(ctx)
 
@@ -553,7 +553,7 @@ func TestQuerier(t *testing.T) {
 		//
 		// found: query unbonding delegation by delegator and validator
 		//
-		queryValidatorParams := types.NewQueryBondsParams(addrAcc1, val1.GetOperatorAccountID())
+		queryValidatorParams := types.NewQueryBondsParams(addrAcc1, val1.GetOperator())
 		bz, errRes := cdc.MarshalJSON(queryValidatorParams)
 		require.NoError(t, errRes)
 		query := abci.RequestQuery{
@@ -572,7 +572,7 @@ func TestQuerier(t *testing.T) {
 		//
 		// not found: query unbonding delegation by delegator and validator
 		//
-		queryValidatorParams = types.NewQueryBondsParams(addrAcc2, val1.GetOperatorAccountID())
+		queryValidatorParams = types.NewQueryBondsParams(addrAcc2, val1.GetOperator())
 		bz, errRes = cdc.MarshalJSON(queryValidatorParams)
 		require.NoError(t, errRes)
 		query = abci.RequestQuery{

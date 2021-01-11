@@ -151,7 +151,7 @@ func SimulateMsgWithdrawDelegatorReward(ak types.AccountKeeperAccountID, bk type
 			return types.SimulationNoOpMsg(types.ModuleName), nil, err
 		}
 
-		valId := validator.GetOperatorAccountID()
+		valId := validator.GetOperator()
 		msg := types.NewMsgWithdrawDelegatorReward(account.GetAuth(), simAccountId, valId)
 
 		tx := helpers.GenTx(
@@ -184,14 +184,14 @@ func SimulateMsgWithdrawValidatorCommission(ak types.AccountKeeperAccountID, bk 
 			return types.SimulationNoOpMsg(types.ModuleName), nil, nil
 		}
 
-		commission := k.GetValidatorAccumulatedCommission(ctx, validator.GetOperatorAccountID())
+		commission := k.GetValidatorAccumulatedCommission(ctx, validator.GetOperator())
 		if commission.Commission.IsZero() {
 			return types.SimulationNoOpMsg(types.ModuleName), nil, nil
 		}
 
-		simAccount, found := types.SimulationFindAccount(accs, sdk.AccAddress(validator.GetOperator()))
+		simAccount, found := types.SimulationFindAccount(accs, sdk.AccAddress(validator.GetOperatorAddress()))
 		if !found {
-			return types.SimulationNoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", validator.GetOperator())
+			return types.SimulationNoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", validator.GetOperatorAddress())
 		}
 
 		simAccountId := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
@@ -205,7 +205,7 @@ func SimulateMsgWithdrawValidatorCommission(ak types.AccountKeeperAccountID, bk 
 			return types.SimulationNoOpMsg(types.ModuleName), nil, err
 		}
 
-		valId, _ := chainTypes.NewAccountIDFromStr(string(validator.GetOperator())) //bugs, staking interface
+		valId, _ := chainTypes.NewAccountIDFromStr(string(validator.GetOperatorAddress())) //bugs, staking interface
 		msg := types.NewMsgWithdrawValidatorCommission(account.GetAuth(), valId)
 
 		tx := helpers.GenTx(

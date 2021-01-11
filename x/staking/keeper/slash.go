@@ -50,10 +50,10 @@ func (k Keeper) Slash(ctx sdk.Context, consAddr sdk.ConsAddress, infractionHeigh
 
 	// should not be slashing an unbonded validator
 	if validator.IsUnbonded() {
-		panic(fmt.Sprintf("should not be slashing unbonded validator: %s", validator.GetOperatorAccountID()))
+		panic(fmt.Sprintf("should not be slashing unbonded validator: %s", validator.GetOperator()))
 	}
 
-	operatorAccount := validator.GetOperatorAccountID()
+	operatorAccount := validator.GetOperator()
 
 	// call the before-modification hook
 	k.BeforeValidatorModified(ctx, operatorAccount)
@@ -136,7 +136,7 @@ func (k Keeper) Slash(ctx sdk.Context, consAddr sdk.ConsAddress, infractionHeigh
 	// Log that a slash occurred!
 	logger.Info(fmt.Sprintf(
 		"validator %s slashed by slash factor of %s; burned %v tokens",
-		validator.GetOperatorAccountID().String(), slashFactor.String(), tokensToBurn))
+		validator.GetOperator().String(), slashFactor.String(), tokensToBurn))
 }
 
 // jail a validator
@@ -316,10 +316,10 @@ func (k Keeper) SlashByValidatorAccount(ctx sdk.Context, valAccount AccountID, i
 	slashAmount := slashAmountDec.TruncateInt()
 	// should not be slashing an unbonded validator
 	if validator.IsUnbonded() {
-		panic(fmt.Sprintf("should not be slashing unbonded validator: %s", validator.GetOperatorAccountID().String()))
+		panic(fmt.Sprintf("should not be slashing unbonded validator: %s", validator.GetOperator().String()))
 	}
 
-	operatorAccount := validator.GetOperatorAccountID()
+	operatorAccount := validator.GetOperator()
 
 	k.BeforeValidatorModified(ctx, operatorAccount)
 
@@ -395,5 +395,5 @@ func (k Keeper) SlashByValidatorAccount(ctx sdk.Context, valAccount AccountID, i
 
 	logger.Info(fmt.Sprintf(
 		"validator %s slashed by slash factor of %s; burned %v tokens",
-		validator.GetOperatorAccountID().String(), slashFactor.String(), tokensToBurn))
+		validator.GetOperator().String(), slashFactor.String(), tokensToBurn))
 }
