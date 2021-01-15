@@ -7,7 +7,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/account"
 	accountExported "github.com/KuChainNetwork/kuchain/x/account/exported"
 	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
-	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/KuChainNetwork/kuchain/x/supply"
 )
 
 var _ accountExported.GenesisAccount = (*SimGenesisAccount)(nil)

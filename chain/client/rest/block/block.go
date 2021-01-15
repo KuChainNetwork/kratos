@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/pkg/errors"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmliteProxy "github.com/tendermint/tendermint/lite/proxy"
 	sdk "github.com/tendermint/tendermint/types"
 )
 
@@ -42,21 +41,6 @@ func getBlock(cliCtx context.CLIContext, height *int64) ([]byte, error) {
 	res, err := node.Block(height)
 	if err != nil {
 		return nil, err
-	}
-
-	if !cliCtx.TrustNode {
-		check, err := cliCtx.Verify(res.Block.Height)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := tmliteProxy.ValidateHeader(&res.Block.Header, check); err != nil {
-			return nil, err
-		}
-
-		if err = tmliteProxy.ValidateBlock(res.Block, check); err != nil {
-			return nil, err
-		}
 	}
 
 	txs := res.Block.Txs

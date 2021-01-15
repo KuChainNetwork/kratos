@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
-	crypKeys "github.com/cosmos/cosmos-sdk/crypto/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/cobra"
@@ -71,7 +71,7 @@ func setKey(name string, inBuf *bufio.Reader) types.AccAddress {
 
 	keys.ShowKeysCmd()
 
-	kb, err := crypKeys.NewKeyring(sdk.KeyringServiceName(),
+	kb, err := keyring.New(sdk.KeyringServiceName(),
 		viper.GetString(flags.FlagKeyringBackend), viper.GetString(flags.FlagHome), cmd.InOrStdin())
 	So(err, ShouldBeNil)
 

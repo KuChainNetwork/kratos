@@ -1,8 +1,12 @@
 package utils
 
+// TODO: rewrite by "github.com/cosmos/cosmos-sdk/crypto/keyring"
+
+/*
+
 import (
 	"crypto/sha256"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 )
@@ -47,3 +51,4 @@ func TestCrypto(t *testing.T) {
 
 	t.Logf("sig, %x", sig)
 }
+*/
