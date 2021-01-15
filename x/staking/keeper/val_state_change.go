@@ -155,7 +155,7 @@ func (k Keeper) ApplyAndReturnValidatorSetUpdates(ctx sdk.Context) (updates []ab
 		validatorNoLonger := k.mustGetValidator(ctx, NewAccountIDFromByte(valAddrBytes))
 		validatorNoLonger = k.bondedToUnbonding(ctx, validatorNoLonger)
 		amtFromBondedToNotBonded = amtFromBondedToNotBonded.Add(validatorNoLonger.GetTokens())
-		k.DeleteLastValidatorPower(ctx, validatorNoLonger.GetOperatorAccountID())
+		k.DeleteLastValidatorPower(ctx, validatorNoLonger.GetOperator())
 		updates = append(updates, validatorNoLonger.ABCIValidatorUpdateZero())
 	}
 

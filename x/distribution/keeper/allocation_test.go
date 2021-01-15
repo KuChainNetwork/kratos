@@ -4,8 +4,9 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 
-	abci "github.com/tendermint/tendermint/abci/types"
 	"testing"
+
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/stretchr/testify/require"
 
@@ -60,11 +61,11 @@ func TestAllocateTokensToValidatorWithCommission(t *testing.T) {
 		{Denom: constants.DefaultBondDenom, Amount: sdk.NewDec(5)},
 	}
 
-	ru := k.GetValidatorAccumulatedCommission(ctx, val.GetOperatorAccountID())
+	ru := k.GetValidatorAccumulatedCommission(ctx, val.GetOperator())
 	require.Equal(t, expected, ru.Commission)
 
 	// check current rewards
-	require.Equal(t, expected, k.GetValidatorCurrentRewards(ctx, val.GetOperatorAccountID()).Rewards)
+	require.Equal(t, expected, k.GetValidatorCurrentRewards(ctx, val.GetOperator()).Rewards)
 }
 
 func TestAllocateTokensToManyValidators(t *testing.T) {

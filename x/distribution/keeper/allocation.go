@@ -57,7 +57,7 @@ func (k Keeper) AllocateTokens(
 			sdk.NewEvent(
 				types.EventTypeProposerReward,
 				sdk.NewAttribute(sdk.AttributeKeyAmount, proposerReward.String()),
-				sdk.NewAttribute(types.AttributeKeyValidator, proposerValidator.GetOperatorAccountID().String()),
+				sdk.NewAttribute(types.AttributeKeyValidator, proposerValidator.GetOperator().String()),
 			),
 		)
 
@@ -111,33 +111,33 @@ func (k Keeper) AllocateTokensToValidator(ctx sdk.Context, val types.StakingExpo
 		sdk.NewEvent(
 			types.EventTypeCommission,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, commission.String()),
-			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperatorAccountID().String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator().String()),
 		),
 	)
-	currentCommission := k.GetValidatorAccumulatedCommission(ctx, val.GetOperatorAccountID())
+	currentCommission := k.GetValidatorAccumulatedCommission(ctx, val.GetOperator())
 	currentCommission.Commission = currentCommission.Commission.Add(commission...)
-	k.SetValidatorAccumulatedCommission(ctx, val.GetOperatorAccountID(), currentCommission)
+	k.SetValidatorAccumulatedCommission(ctx, val.GetOperator(), currentCommission)
 	ctx.Logger().Debug("AllocateTokensToValidator",
-		"operator", val.GetOperatorAccountID(),
+		"operator", val.GetOperator(),
 		"currentCommission", currentCommission)
 
 	// update current rewards
-	currentRewards := k.GetValidatorCurrentRewards(ctx, val.GetOperatorAccountID())
+	currentRewards := k.GetValidatorCurrentRewards(ctx, val.GetOperator())
 	currentRewards.Rewards = currentRewards.Rewards.Add(shared...)
-	k.SetValidatorCurrentRewards(ctx, val.GetOperatorAccountID(), currentRewards)
+	k.SetValidatorCurrentRewards(ctx, val.GetOperator(), currentRewards)
 
 	// update outstanding rewards
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeRewards,
 			sdk.NewAttribute(sdk.AttributeKeyAmount, tokens.String()),
-			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperatorAccountID().String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, val.GetOperator().String()),
 		),
 	)
-	outstanding := k.GetValidatorOutstandingRewards(ctx, val.GetOperatorAccountID())
+	outstanding := k.GetValidatorOutstandingRewards(ctx, val.GetOperator())
 	outstanding.Rewards = outstanding.Rewards.Add(tokens...)
 	ctx.Logger().Debug("AllocateTokensToValidator",
-		"operator", val.GetOperatorAccountID(),
+		"operator", val.GetOperator(),
 		"outstanding", outstanding)
-	k.SetValidatorOutstandingRewards(ctx, val.GetOperatorAccountID(), outstanding)
+	k.SetValidatorOutstandingRewards(ctx, val.GetOperator(), outstanding)
 }

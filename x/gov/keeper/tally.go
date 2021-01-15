@@ -26,8 +26,8 @@ func (keeper Keeper) Tally(
 	currValidators := make(map[string]types.ValidatorGovInfo)
 	// fetch all the bonded validators, insert them into currValidators
 	keeper.sk.IterateBondedValidatorsByPower(ctx, func(index int64, validator external.StakingValidatorI) (stop bool) {
-		currValidators[validator.GetOperatorAccountID().String()] = types.NewValidatorGovInfo(
-			validator.GetOperatorAccountID(),
+		currValidators[validator.GetOperator().String()] = types.NewValidatorGovInfo(
+			validator.GetOperator(),
 			validator.GetBondedTokens(),
 			validator.GetDelegatorShares(),
 			sdk.ZeroDec(),
@@ -114,8 +114,8 @@ func (keeper Keeper) EmergencyPass(ctx sdk.Context, proposalID uint64) (passes b
 
 	// fetch all the bonded validators, insert them into currValidators      TotalBondedTokens
 	keeper.sk.IterateBondedValidatorsByPower(ctx, func(index int64, validator external.StakingValidatorI) (stop bool) {
-		currValidators[validator.GetOperatorAccountID().String()] = types.NewValidatorGovInfo(
-			validator.GetOperatorAccountID(),
+		currValidators[validator.GetOperator().String()] = types.NewValidatorGovInfo(
+			validator.GetOperator(),
 			validator.GetBondedTokens(),
 			validator.GetDelegatorShares(),
 			sdk.ZeroDec(),
