@@ -153,3 +153,41 @@ func (g BaseGensisAssetCoin) GetMaxSupply() Coin { return g.Stat.MaxSupply }
 
 // GetDescription imp GenesisCoin
 func (g BaseGensisAssetCoin) GetDescription() string { return g.Description }
+
+type SimpleGensisAssetCoin struct {
+	Symbol      Name   `json:"symbol" yaml:"symbol"`       // Symbol coin symbol name
+	Creator     Name   `json:"creator" yaml:"creator"`     // Creator coin creator account name
+	MaxSupply   Coin   `json:"maxSupply" yaml:"maxSupply"` // MaxSupply coin max supply limit
+	Description string `json:"description" yaml:"description"`
+}
+
+// Validate imp GenesisCoin
+func (s SimpleGensisAssetCoin) Validate() error {
+	if len(s.Description) >= MaxDescriptionLength {
+		return fmt.Errorf("genesis coin description too length")
+	}
+
+	denom := CoinDenom(s.Creator, s.Symbol)
+
+	if denom != s.MaxSupply.Denom {
+		return fmt.Errorf("genesis max supply coin denom error")
+	}
+
+	if err := coin.ValidateDenom(denom); err != nil {
+		return sdkerrors.Wrapf(ErrAssetDenom, "denom %s", denom)
+	}
+
+	return nil
+}
+
+// GetCreator imp GenesisCoin
+func (s SimpleGensisAssetCoin) GetCreator() Name { return s.Creator }
+
+// GetSymbol imp GenesisCoin
+func (s SimpleGensisAssetCoin) GetSymbol() Name { return s.Symbol }
+
+// GetMaxSupply imp GenesisCoin
+func (s SimpleGensisAssetCoin) GetMaxSupply() Coin { return s.MaxSupply }
+
+// GetDescription imp GenesisCoin
+func (s SimpleGensisAssetCoin) GetDescription() string { return s.Description }

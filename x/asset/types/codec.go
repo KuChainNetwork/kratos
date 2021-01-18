@@ -15,6 +15,7 @@ func RegisterCodec(cdc *codec.Codec) {
 
 	cdc.RegisterConcrete(&GenesisState{}, "asset/genesisState", nil)
 	cdc.RegisterConcrete(&BaseGensisAssetCoin{}, "asset/genesisCoin", nil)
+	cdc.RegisterConcrete(&SimpleGensisAssetCoin{}, "asset/simpleGenesisCoin", nil)
 	cdc.RegisterConcrete(&BaseGenesisAsset{}, "asset/genesisAsset", nil)
 	cdc.RegisterConcrete(&BaseGenesisLocks{}, "asset/genesisLock", nil)
 

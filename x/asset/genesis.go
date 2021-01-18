@@ -21,6 +21,42 @@ func InitGenesis(ctx sdk.Context, ak Keeper, bz json.RawMessage) {
 	for _, a := range data.GenesisCoins {
 		logger.Info("init genesis asset coin", "accountID", a.GetCreator(), "coins", a.GetSymbol(), "maxsupply:", a.GetMaxSupply())
 
+		if a.GetCreator().Empty() {
+			continue
+		}
+
+		initSupply := types.NewCoin(a.GetMaxSupply().Denom, sdk.ZeroInt())
+
+		err := ak.Create(ctx, a.GetCreator(), a.GetSymbol(), a.GetMaxSupply(), true, true, true, 0, initSupply, []byte{}) // TODO: genesis coins support opt
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// for genesis old version
+	logger.Info("init genesis", "bz", string(bz))
+
+	var oldVersion struct {
+		Value struct {
+			GenesisCoins []struct {
+				Value assetTypes.SimpleGensisAssetCoin `json:"value"`
+			} `json:"genesisCoins"`
+		} `json:"value"`
+	}
+	err := json.Unmarshal(bz, &oldVersion)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, av := range oldVersion.Value.GenesisCoins {
+		a := av.Value
+		logger.Info("init genesis asset coin", "accountID", a.GetCreator(), "coins", a.GetSymbol(), "maxsupply:", a.GetMaxSupply())
+
+		if a.GetCreator().Empty() {
+			continue
+		}
+
 		initSupply := types.NewCoin(a.GetMaxSupply().Denom, sdk.ZeroInt())
 
 		err := ak.Create(ctx, a.GetCreator(), a.GetSymbol(), a.GetMaxSupply(), true, true, true, 0, initSupply, []byte{}) // TODO: genesis coins support opt
