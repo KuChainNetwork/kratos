@@ -55,7 +55,7 @@ func SimulateMsgUnjail(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Kee
 			return simulation.NoOpMsg(types.ModuleName), nil, nil // skip
 		}
 
-		simAccount, found := simulation.FindAccount(accs, sdk.AccAddress(validator.GetOperator()))
+		simAccount, found := simulation.FindAccount(accs, sdk.AccAddress(validator.GetOperatorAddress()))
 		if !found {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil // skip
 		}
@@ -73,12 +73,12 @@ func SimulateMsgUnjail(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Kee
 
 		// FIXME: sim account use kuchain
 		simAccountID := chainTypes.NewAccountIDFromAccAdd(simAccount.Address)
-		selfDel := sk.Delegation(ctx, simAccountID, validator.GetOperatorAccountID())
+		selfDel := sk.Delegation(ctx, simAccountID, validator.GetOperator())
 		if selfDel == nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil // skip
 		}
 
-		account := ak.GetAccount(ctx, validator.GetOperatorAccountID())
+		account := ak.GetAccount(ctx, validator.GetOperator())
 		spendable := bk.SpendableCoins(ctx, account.GetID())
 
 		fees, err := kuSim.RandomFees(r, ctx, spendable)
@@ -86,7 +86,7 @@ func SimulateMsgUnjail(ak types.AccountKeeper, bk types.BankKeeper, k keeper.Kee
 			return simulation.NoOpMsg(types.ModuleName), nil, err
 		}
 
-		msg := types.NewKuMsgUnjail(simAccount.Address, validator.GetOperatorAccountID())
+		msg := types.NewKuMsgUnjail(simAccount.Address, validator.GetOperator())
 
 		tx := helpers.GenTx(
 			[]sdk.Msg{msg},

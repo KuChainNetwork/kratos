@@ -2,8 +2,10 @@ package account
 
 import (
 	"encoding/json"
+	"sort"
 
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
+	"github.com/KuChainNetwork/kuchain/x/account/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -34,7 +36,18 @@ func ExportGenesis(ctx sdk.Context, ak Keeper) GenesisState {
 		return false
 	})
 
+	genAuths := exported.GenesisAuths(make([]exported.GenesisAuth, 0, 5120))
+	ak.IterateAuths(ctx, func(auth types.Auth) bool {
+		genAuths = append(genAuths, types.GenesisAuth{Auth: auth})
+		return false
+	})
+	sort.Stable(genAuths)
+
+	currNextAccountNumber := ak.QueryCurrNextAccountNumber(ctx)
+
 	return GenesisState{
-		Accounts: genAccounts,
+		Accounts:      genAccounts,
+		Auths:         genAuths,
+		AccountNumber: currNextAccountNumber,
 	}
 }

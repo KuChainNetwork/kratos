@@ -224,6 +224,11 @@ def genTx():
    nodeByCli(mainChainSymbol, genTxCmd)
    node(mainChainSymbol, 'collect-gentxs')
 
+def signGenTx(file):
+   newPath = getNodeHomePath(mainChainSymbol) + 'config/gentx/gentx-signned.json'
+   #./build/kucli --chain-id testing --keyring-backend test --home ./testchain/testing/cli tx sign ./transfer2kuchain.json --from k1 > ./transfer2kuchain-signed.json
+   cli('tx sign %s --from %s  --offline --account-number 0 --sequence 0 --chain-id %s > %s' % (file, mainChainSymbol, chainID, newPath))
+
 def initNode(name, num):
    run('rm -rf %s' % (getNodeHomePath(name)))
    node(name, 'init --chain-id %s %s' % (chainID, name))

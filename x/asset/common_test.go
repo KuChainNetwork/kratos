@@ -46,15 +46,19 @@ var (
 	NewInt64CoreCoins = types.NewInt64CoreCoins
 )
 
+const (
+	defaultCoinSupply = 1000000000000
+)
+
 func createAppForTest() (*simapp.SimApp, sdk.Context) {
 	asset1 := types.NewCoins(
-		types.NewInt64Coin("foo/coin", 10000000),
-		types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000))
+		types.NewInt64Coin("foo/coin", defaultCoinSupply),
+		types.NewInt64Coin(constants.DefaultBondDenom, defaultCoinSupply))
 	asset2 := types.NewCoins(
-		types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000))
+		types.NewInt64Coin(constants.DefaultBondDenom, defaultCoinSupply))
 	asset3 := types.NewCoins(
-		types.NewInt64Coin("foo/coin", 100),
-		types.NewInt64Coin(constants.DefaultBondDenom, 1000000000000))
+		types.NewInt64Coin("foo/coin", defaultCoinSupply),
+		types.NewInt64Coin(constants.DefaultBondDenom, defaultCoinSupply))
 
 	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
 		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),

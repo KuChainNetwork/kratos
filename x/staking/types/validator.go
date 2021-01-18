@@ -416,11 +416,11 @@ func (v Validator) MinEqual(other Validator) bool {
 }
 
 // nolint - for ValidatorI
-func (v Validator) IsJailed() bool                        { return v.Jailed }
-func (v Validator) GetMoniker() string                    { return v.Description.Moniker }
-func (v Validator) GetStatus() exported.BondStatus        { return v.Status }
-func (v Validator) GetOperatorAccountID() types.AccountID { return v.OperatorAccount }
-func (v Validator) GetOperator() sdk.ValAddress {
+func (v Validator) IsJailed() bool                 { return v.Jailed }
+func (v Validator) GetMoniker() string             { return v.Description.Moniker }
+func (v Validator) GetStatus() exported.BondStatus { return v.Status }
+func (v Validator) GetOperator() types.AccountID   { return v.OperatorAccount }
+func (v Validator) GetOperatorAddress() sdk.ValAddress {
 	operatorAccAddress, _ := v.OperatorAccount.ToAccAddress()
 	return sdk.ValAddress(operatorAccAddress)
 }

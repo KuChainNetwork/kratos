@@ -13,6 +13,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
+	"github.com/KuChainNetwork/kuchain/x/account"
 	"github.com/KuChainNetwork/kuchain/x/account/keeper"
 	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
 )
@@ -28,6 +29,15 @@ var (
 	account1 = types.NewAccountIDFromName(name1)
 	account2 = types.NewAccountIDFromName(name2)
 )
+
+func TestHandlerDataError(t *testing.T) {
+	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth())
+	app := simapp.SetupWithGenesisAccounts(genAccs)
+	simapp.TestHandlerDataErr(t, account.NewHandler(*app.AccountKeeper()),
+		&accountTypes.MsgCreateAccount{},
+		&accountTypes.MsgUpdateAccountAuth{},
+	)
+}
 
 func TestCreateNormalAccount(t *testing.T) {
 	Convey("TestCreateNormalAccount", t, func() {

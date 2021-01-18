@@ -10,23 +10,23 @@ import (
 // initialize rewards for a new validator
 func (k Keeper) initializeValidator(ctx sdk.Context, val types.StakingExportedValidatorI) {
 	// set initial historical rewards (period 0) with reference count of 1
-	k.SetValidatorHistoricalRewards(ctx, val.GetOperatorAccountID(), 0, types.NewValidatorHistoricalRewards(types.DecCoins{}, 1))
+	k.SetValidatorHistoricalRewards(ctx, val.GetOperator(), 0, types.NewValidatorHistoricalRewards(types.DecCoins{}, 1))
 
 	// set current rewards (starting at period 1)
-	k.SetValidatorCurrentRewards(ctx, val.GetOperatorAccountID(), types.NewValidatorCurrentRewards(types.DecCoins{}, 1))
+	k.SetValidatorCurrentRewards(ctx, val.GetOperator(), types.NewValidatorCurrentRewards(types.DecCoins{}, 1))
 
 	// set accumulated commission
-	k.SetValidatorAccumulatedCommission(ctx, val.GetOperatorAccountID(), types.InitialValidatorAccumulatedCommission())
+	k.SetValidatorAccumulatedCommission(ctx, val.GetOperator(), types.InitialValidatorAccumulatedCommission())
 
 	// set outstanding rewards
-	k.SetValidatorOutstandingRewards(ctx, val.GetOperatorAccountID(), types.ValidatorOutstandingRewards{Rewards: types.DecCoins{}})
+	k.SetValidatorOutstandingRewards(ctx, val.GetOperator(), types.ValidatorOutstandingRewards{Rewards: types.DecCoins{}})
 }
 
 // IncrementValidatorPeriod increment validator period, returning the period just ended
 func (k Keeper) IncrementValidatorPeriod(ctx sdk.Context, val types.StakingExportedValidatorI) uint64 {
-	ctx.Logger().Debug("IncrementValidatorPeriod", "val", val.GetOperatorAccountID())
+	ctx.Logger().Debug("IncrementValidatorPeriod", "val", val.GetOperator())
 	// fetch current rewards
-	rewards := k.GetValidatorCurrentRewards(ctx, val.GetOperatorAccountID())
+	rewards := k.GetValidatorCurrentRewards(ctx, val.GetOperator())
 
 	// calculate current ratio
 	var current types.DecCoins
@@ -34,11 +34,11 @@ func (k Keeper) IncrementValidatorPeriod(ctx sdk.Context, val types.StakingExpor
 		// can't calculate ratio for zero-token validators
 		// ergo we instead add to the community pool
 		feePool := k.GetFeePool(ctx)
-		outstanding := k.GetValidatorOutstandingRewards(ctx, val.GetOperatorAccountID())
+		outstanding := k.GetValidatorOutstandingRewards(ctx, val.GetOperator())
 		feePool.CommunityPool = feePool.CommunityPool.Add(rewards.Rewards...)
 		outstanding.Rewards = outstanding.Rewards.Sub(rewards.Rewards)
 		k.SetFeePool(ctx, feePool)
-		k.SetValidatorOutstandingRewards(ctx, val.GetOperatorAccountID(), outstanding)
+		k.SetValidatorOutstandingRewards(ctx, val.GetOperator(), outstanding)
 
 		current = types.DecCoins{}
 	} else {
@@ -47,16 +47,16 @@ func (k Keeper) IncrementValidatorPeriod(ctx sdk.Context, val types.StakingExpor
 	}
 
 	// fetch historical rewards for last period
-	historical := k.GetValidatorHistoricalRewards(ctx, val.GetOperatorAccountID(), rewards.Period-1).CumulativeRewardRatio
+	historical := k.GetValidatorHistoricalRewards(ctx, val.GetOperator(), rewards.Period-1).CumulativeRewardRatio
 
 	// decrement reference count
-	k.decrementReferenceCount(ctx, val.GetOperatorAccountID(), rewards.Period-1)
+	k.decrementReferenceCount(ctx, val.GetOperator(), rewards.Period-1)
 
 	// set new historical rewards with reference count of 1
-	k.SetValidatorHistoricalRewards(ctx, val.GetOperatorAccountID(), rewards.Period, types.NewValidatorHistoricalRewards(historical.Add(current...), 1))
+	k.SetValidatorHistoricalRewards(ctx, val.GetOperator(), rewards.Period, types.NewValidatorHistoricalRewards(historical.Add(current...), 1))
 
 	// set current rewards, incrementing period by 1
-	k.SetValidatorCurrentRewards(ctx, val.GetOperatorAccountID(), types.NewValidatorCurrentRewards(types.DecCoins{}, rewards.Period+1))
+	k.SetValidatorCurrentRewards(ctx, val.GetOperator(), types.NewValidatorCurrentRewards(types.DecCoins{}, rewards.Period+1))
 
 	return rewards.Period
 }

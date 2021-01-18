@@ -162,7 +162,7 @@ func DelegatorSharesInvariant(k Keeper) sdk.Invariant {
 			valTotalDelShares := validator.GetDelegatorShares()
 
 			totalDelShares := sdk.ZeroDec()
-			delegations := k.GetValidatorDelegations(ctx, validator.GetOperatorAccountID())
+			delegations := k.GetValidatorDelegations(ctx, validator.GetOperator())
 			for _, delegation := range delegations {
 				totalDelShares = totalDelShares.Add(delegation.Shares)
 			}

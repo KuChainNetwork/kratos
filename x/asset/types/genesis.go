@@ -8,17 +8,46 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+type GenesisLocks interface {
+	GetID() AccountID
+	LockedByHeight() []LockedCoins
+}
+
+type BaseGenesisLocks struct {
+	ID      AccountID     `json:"id" yaml:"id"`
+	Lockeds []LockedCoins `json:"lockeds" yaml:"lockeds"`
+}
+
+func NewBaseGenesisLocks(id AccountID, lockeds []LockedCoins) BaseGenesisLocks {
+	return BaseGenesisLocks{
+		ID:      id,
+		Lockeds: lockeds,
+	}
+}
+
+func (g BaseGenesisLocks) GetID() AccountID { return g.ID }
+
+func (g BaseGenesisLocks) LockedByHeight() []LockedCoins {
+	return g.Lockeds
+}
+
 // GenesisState is the bank state that must be provided at genesis.
 type GenesisState struct {
-	GenesisAssets []GenesisAsset `json:"genesisAssets"`
-	GenesisCoins  []GenesisCoin  `json:"genesisCoins"`
+	GenesisAssets     []GenesisAsset `json:"genesisAssets"`
+	GenesisCoins      []GenesisCoin  `json:"genesisCoins"`
+	GenesisCoinPowers []GenesisAsset `json:"genesisCoinPowers"`
+	GenesisLocks      []GenesisLocks `json:"genesisLocks"`
+	GenesisLockAssets []GenesisAsset `json:"genesisLockAssets"`
 }
 
 // NewGenesisState creates a new genesis state.
 func NewGenesisState() GenesisState {
 	return GenesisState{
-		GenesisAssets: make([]GenesisAsset, 0),
-		GenesisCoins:  make([]GenesisCoin, 0),
+		GenesisAssets:     make([]GenesisAsset, 0),
+		GenesisCoins:      make([]GenesisCoin, 0),
+		GenesisCoinPowers: make([]GenesisAsset, 0),
+		GenesisLocks:      make([]GenesisLocks, 0),
+		GenesisLockAssets: make([]GenesisAsset, 0),
 	}
 }
 
@@ -29,6 +58,13 @@ func DefaultGenesisState() GenesisState {
 	return res
 }
 
+func ValidateGenesis(g GenesisState) error {
+	// check account numbers
+	// TODO: check genesis
+
+	return nil
+}
+
 // ValidateGenesis performs basic validation of bank genesis data returning an
 // error for any failed validation criteria.
 func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
@@ -37,7 +73,7 @@ func (g GenesisState) ValidateGenesis(bz json.RawMessage) error {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
 	}
 
-	return nil
+	return ValidateGenesis(gs)
 }
 
 // GenesisAsset gensis asset for accountID
@@ -50,6 +86,7 @@ type GenesisAsset interface {
 type GenesisCoin interface {
 	GetCreator() Name
 	GetSymbol() Name
+	GetSupply() Coin
 	GetMaxSupply() Coin
 	GetDescription() string
 
@@ -81,18 +118,14 @@ func (g BaseGenesisAsset) GetCoins() Coins { return g.Coins }
 
 // GensisAssetCoin
 type BaseGensisAssetCoin struct {
-	Creator     Name   `json:"creator"`
-	Symbol      Name   `json:"symbol"`
-	MaxSupply   Coin   `json:"maxSupply"`
-	Description string `json:"description"`
+	Stat        CoinStat `json:"stat"`
+	Description string   `json:"description"`
 }
 
-func NewGenesisCoin(creator, symbol Name, maxSupplyAmount Int, description string) BaseGensisAssetCoin {
+func NewGenesisCoin(stat *CoinStat, description []byte) BaseGensisAssetCoin {
 	return BaseGensisAssetCoin{
-		Creator:     creator,
-		Symbol:      symbol,
-		MaxSupply:   NewCoin(CoinDenom(creator, symbol), maxSupplyAmount),
-		Description: description,
+		Stat:        *stat,
+		Description: string(description),
 	}
 }
 
@@ -102,9 +135,9 @@ func (g BaseGensisAssetCoin) Validate() error {
 		return fmt.Errorf("genesis coin description too length")
 	}
 
-	denom := CoinDenom(g.Creator, g.Symbol)
+	denom := CoinDenom(g.Stat.Creator, g.Stat.Symbol)
 
-	if denom != g.MaxSupply.Denom {
+	if denom != g.Stat.MaxSupply.Denom {
 		return fmt.Errorf("genesis max supply coin denom error")
 	}
 
@@ -116,13 +149,16 @@ func (g BaseGensisAssetCoin) Validate() error {
 }
 
 // GetCreator imp GenesisCoin
-func (g BaseGensisAssetCoin) GetCreator() Name { return g.Creator }
+func (g BaseGensisAssetCoin) GetCreator() Name { return g.Stat.Creator }
 
 // GetSymbol imp GenesisCoin
-func (g BaseGensisAssetCoin) GetSymbol() Name { return g.Symbol }
+func (g BaseGensisAssetCoin) GetSymbol() Name { return g.Stat.Symbol }
 
 // GetMaxSupply imp GenesisCoin
-func (g BaseGensisAssetCoin) GetMaxSupply() Coin { return g.MaxSupply }
+func (g BaseGensisAssetCoin) GetMaxSupply() Coin { return g.Stat.MaxSupply }
 
 // GetDescription imp GenesisCoin
 func (g BaseGensisAssetCoin) GetDescription() string { return g.Description }
+
+// GetSupply imp GenesisCoin
+func (g BaseGensisAssetCoin) GetSupply() Coin { return g.Stat.Supply }

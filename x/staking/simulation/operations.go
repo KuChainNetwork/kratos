@@ -187,7 +187,7 @@ func SimulateMsgEditValidator(ak types.AccountKeeper, bk types.BankKeeper, k kee
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
 
-		address := val.GetOperator()
+		address := val.GetOperatorAddress()
 
 		newCommissionRate := simulation.RandomDecAmount(r, val.GetCommissionMaxRate())
 
@@ -196,9 +196,9 @@ func SimulateMsgEditValidator(ak types.AccountKeeper, bk types.BankKeeper, k kee
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
 
-		simAccount, found := simulation.FindAccount(accs, sdk.AccAddress(val.GetOperator()))
+		simAccount, found := simulation.FindAccount(accs, sdk.AccAddress(val.GetOperatorAddress()))
 		if !found {
-			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", val.GetOperator())
+			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("validator %s not found", val.GetOperatorAddress())
 		}
 
 		id := chainTypes.NewAccountIDFromAdd(simAccount.Address)
@@ -219,7 +219,7 @@ func SimulateMsgEditValidator(ak types.AccountKeeper, bk types.BankKeeper, k kee
 			simulation.RandStringOfLength(r, 10),
 		)
 
-		accountID := val.GetOperatorAccountID()
+		accountID := val.GetOperator()
 		//lose accaddress
 		msg := types.NewKuMsgEditValidator(sdk.AccAddress(address), accountID, description, &newCommissionRate)
 
@@ -290,7 +290,7 @@ func SimulateMsgDelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper.K
 			}
 		}
 
-		msg := types.NewKuMsgDelegate(simAccount.Address, chainTypes.NewAccountIDFromAccAdd(simAccount.Address), val.GetOperatorAccountID(), bondAmt)
+		msg := types.NewKuMsgDelegate(simAccount.Address, chainTypes.NewAccountIDFromAccAdd(simAccount.Address), val.GetOperator(), bondAmt)
 
 		tx := helpers.GenTx(
 			[]sdk.Msg{msg},
@@ -323,13 +323,13 @@ func SimulateMsgUndelegate(ak types.AccountKeeper, bk types.BankKeeper, k keeper
 		if !ok {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
-		valAddr := validator.GetOperatorAccountID()
+		valAddr := validator.GetOperator()
 
-		delegations := k.GetValidatorDelegations(ctx, validator.GetOperatorAccountID())
+		delegations := k.GetValidatorDelegations(ctx, validator.GetOperator())
 
 		// get random delegator from validator
 		delegation := delegations[r.Intn(len(delegations))]
-		delAddr := delegation.GetDelegatorAccountID()
+		delAddr := delegation.GetDelegator()
 
 		if k.HasMaxUnbondingDelegationEntries(ctx, delAddr, valAddr) {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
@@ -407,12 +407,12 @@ func SimulateMsgBeginRedelegate(ak types.AccountKeeper, bk types.BankKeeper, k k
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
 
-		srcAddr := srcVal.GetOperatorAccountID()
+		srcAddr := srcVal.GetOperator()
 		delegations := k.GetValidatorDelegations(ctx, srcAddr)
 
 		// get random delegator from src validator
 		delegation := delegations[r.Intn(len(delegations))]
-		delAddr := delegation.GetDelegatorAccountID()
+		delAddr := delegation.GetDelegator()
 
 		if k.HasReceivingRedelegation(ctx, delAddr, srcAddr) {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil // skip
@@ -423,7 +423,7 @@ func SimulateMsgBeginRedelegate(ak types.AccountKeeper, bk types.BankKeeper, k k
 		if !ok {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
-		destAddr := destVal.GetOperatorAccountID()
+		destAddr := destVal.GetOperator()
 
 		if srcAddr.Eq(destAddr) ||
 			destVal.InvalidExRate() ||

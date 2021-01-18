@@ -69,27 +69,27 @@ func CanWithdrawInvariant(k Keeper) sdk.Invariant {
 
 		var remaining chainTypes.DecCoins
 
-		valDelegationAddrs := make(map[string][]sdk.AccAddress)
+		valDelegations := make(map[string][]types.AccountID)
 		for _, del := range k.stakingKeeper.GetAllSDKDelegations(ctx) {
-			valAddr := del.GetValidatorAddr().String()
-			valDelegationAddrs[valAddr] = append(valDelegationAddrs[valAddr], del.GetDelegatorAddr())
+			val := del.GetValidator().String()
+			valDelegations[val] = append(valDelegations[val], del.GetDelegator())
 		}
 
 		// iterate over all validators
 		k.stakingKeeper.IterateValidators(ctx, func(_ int64, val types.StakingExportedValidatorI) (stop bool) {
-			valID, _ := chainTypes.NewAccountIDFromStr(string(val.GetOperator()))
+			valID := val.GetOperator()
 			_, _ = k.WithdrawValidatorCommission(ctx, valID)
 
-			delegationAddrs, ok := valDelegationAddrs[val.GetOperator().String()]
+			delegations, ok := valDelegations[val.GetOperator().String()]
 			if ok {
-				for _, delAddr := range delegationAddrs {
-					if _, err := k.WithdrawDelegationRewards(ctx, chainTypes.NewAccountIDFromAccAdd(delAddr), valID); err != nil {
+				for _, del := range delegations {
+					if _, err := k.WithdrawDelegationRewards(ctx, del, valID); err != nil {
 						panic(err)
 					}
 				}
 			}
 
-			remaining = k.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperatorAccountID())
+			remaining = k.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
 			if len(remaining) > 0 && remaining[0].Amount.IsNegative() {
 				return true
 			}

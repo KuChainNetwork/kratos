@@ -110,13 +110,9 @@ func addGenesisAccount(cdc *codec.Codec, state *account.GenesisState, name types
 	}
 
 	newAccount := account.NewKuAccount(types.NewAccountIDFromName(name))
-	if err := newAccount.SetAuth(auth); err != nil {
-		panic(err)
-	}
 
-	if err := newAccount.SetAccountNumber(uint64(len(state.Accounts) + 1)); err != nil {
-		panic(err)
-	}
+	newAccount.SetAuth(auth)
+	newAccount.SetAccountNumber(uint64(len(state.Accounts) + 1))
 
 	state.Accounts = append(state.Accounts, newAccount)
 
@@ -132,10 +128,7 @@ func addGenesisAddAccount(cdc *codec.Codec, state *account.GenesisState, auth ty
 	}
 
 	newAccount := account.NewKuAccount(id)
-
-	if err := newAccount.SetAccountNumber(uint64(len(state.Accounts) + 1)); err != nil {
-		panic(err)
-	}
+	newAccount.SetAccountNumber(uint64(len(state.Accounts) + 1))
 
 	state.Accounts = append(state.Accounts, newAccount)
 	return nil

@@ -11,10 +11,9 @@ import (
 
 // DelegationI delegation bond for a delegated proof of stake system
 type DelegationI interface {
-	// FIXME: delete Addr
-	GetDelegatorAccountID() types.AccountID // delegator sdk.AccAddress for the bond
-	GetValidatorAccountID() types.AccountID // validator operator address
-	GetShares() sdk.Dec                     // amount of validator's shares held in this delegation
+	GetDelegator() types.AccountID // delegator sdk.AccAddress for the bond
+	GetValidator() types.AccountID // validator operator address
+	GetShares() sdk.Dec            // amount of validator's shares held in this delegation
 }
 
 // ValidatorI expected validator functions
@@ -26,8 +25,8 @@ type ValidatorI interface {
 	IsUnbonded() bool                                       // check if has status unbonded
 	IsUnbonding() bool                                      // check if has status unbonding
 	InvalidExRate() bool                                    // check if invalid ex rate
-	GetOperator() sdk.ValAddress                            // operator address to receive/return validators coins
-	GetOperatorAccountID() types.AccountID                  // operator account to receive/return validators coins
+	GetOperatorAddress() sdk.ValAddress                     // operator address to receive/return validators coins
+	GetOperator() types.AccountID                           // operator account to receive/return validators coins
 	GetConsPubKey() crypto.PubKey                           // validation consensus pubkey
 	GetConsAddr() sdk.ConsAddress                           // validation consensus address
 	GetTokens() sdk.Int                                     // validation tokens

@@ -8,10 +8,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"time"
+
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	. "github.com/smartystreets/goconvey/convey"
-	"time"
 )
 
 func TestDelegation(t *testing.T) {
@@ -100,11 +101,11 @@ func TestDelegation(t *testing.T) {
 		for i := 0; i < 3; i++ {
 			resVal, err := keeper.GetDelegatorValidator(ctx, Accdel[0], Accd[i])
 			So(err, ShouldBeNil)
-			So(Accd[i].Eq(resVal.GetOperatorAccountID()), ShouldBeTrue)
+			So(Accd[i].Eq(resVal.GetOperator()), ShouldBeTrue)
 
 			resVal, err = keeper.GetDelegatorValidator(ctx, Accdel[1], Accd[i])
 			So(err, ShouldBeNil)
-			So(Accd[i].Eq(resVal.GetOperatorAccountID()), ShouldBeTrue)
+			So(Accd[i].Eq(resVal.GetOperator()), ShouldBeTrue)
 
 			resDels := keeper.GetValidatorDelegations(ctx, Accd[i])
 			So(len(resDels) == 2, ShouldBeTrue)

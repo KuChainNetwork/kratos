@@ -27,25 +27,21 @@ func NewHandler(k keeper.Keeper) msg.Handler {
 	}
 }
 
-// These functions assume everything has been authenticated (ValidateBasic passed, and signatures checked)
-func handleMsgModifyWithdrawAccountID(
-	ctx chainTypes.Context,
-	msg types.MsgSetWithdrawAccountID,
-	k keeper.Keeper) (*sdk.Result, error) {
-	checkAcc := func(acc AccountID) bool {
-		_, ok := acc.ToName()
-		if ok {
-			return k.AccKeeper.IsAccountExist(ctx.Context(), acc)
-		}
-		return false
+func CheckIsFindAccount(ctx chainTypes.Context, k keeper.Keeper, acc AccountID) bool {
+	_, ok := acc.ToName()
+	if ok {
+		return k.AccKeeper.IsAccountExist(ctx.Context(), acc)
 	}
+	return false
+}
 
-	types.FindAcc = checkAcc
-
+// These functions assume everything has been authenticated (ValidateBasic passed, and signatures checked)
+func handleMsgModifyWithdrawAccountID(ctx chainTypes.Context, msg types.MsgSetWithdrawAccountID, k keeper.Keeper) (*sdk.Result, error) {
 	dataMsg, _ := msg.GetData()
 	ctx.RequireAuth(dataMsg.DelegatorAccountid)
-	ExistOk := checkAcc(dataMsg.WithdrawAccountid)
-	if ExistOk {
+
+	existOk := CheckIsFindAccount(ctx, k, dataMsg.WithdrawAccountid)
+	if existOk {
 		err := k.SetWithdrawAddr(ctx.Context(), dataMsg.DelegatorAccountid, dataMsg.WithdrawAccountid)
 		if err != nil {
 			return nil, err
@@ -61,8 +57,8 @@ func handleMsgModifyWithdrawAccountID(
 		return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 	}
 
-	ctx.Logger().Error("handleMsgModifyWithdrawAccountID, not found",
-		"WithdrawAccountid", dataMsg.WithdrawAccountid, "ExistOk", ExistOk)
+	ctx.Logger().Error("handleMsgModifyWithdrawAccountId, not found",
+		"WithdrawAccountid", dataMsg.WithdrawAccountid, "ExistOk", existOk)
 
 	return nil, types.ErrSetWithdrawAddrDisabled
 }

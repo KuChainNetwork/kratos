@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -75,10 +76,14 @@ func GetDelegatorWithdrawInfoAddressUseAccountID(key []byte) AccountID {
 
 // gets the addresses from a delegator starting info key
 func GetDelegatorStartingInfoAddresses(key []byte) (valAddr AccountID, delAddr AccountID) {
-	addr := key[:1+AccIDStoreKeyLen]
-	valAddr = NewAccountIDFromStoreKey(addr)
-	addr = key[1+AccIDStoreKeyLen:]
-	delAddr = NewAccountIDFromStoreKey(addr)
+	if key[0] != DelegatorStartingInfoPrefix[0] {
+		panic(errors.Errorf("key prefix unknown %d", key[0]))
+	}
+
+	valAddr = NewAccountIDFromStoreKey(key[:1+AccIDStoreKeyLen])
+	add := make([]byte, AccIDStoreKeyLen)
+	copy(add, key[1+AccIDStoreKeyLen:])
+	delAddr = NewAccountIDFromStoreByte(add)
 	return
 }
 

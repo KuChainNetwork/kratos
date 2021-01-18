@@ -22,7 +22,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
-	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/KuChainNetwork/kuchain/app"
@@ -120,9 +119,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 }
 
 func exportAppStateAndTMValidators(
-	logger log.Logger, db dbm.DB,
-	traceStore io.Writer, height int64,
-	forZeroHeight bool, jailWhiteList []string) (json.RawMessage, []tmtypes.GenesisValidator, error) {
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	height int64,
+	forZeroHeight bool,
+	jailWhiteList []string) (json.RawMessage, []types.GenesisValidator, error) {
 	if height != -1 {
 		kuApp := app.NewKuchainApp(logger, db, traceStore, false, uint(1))
 		err := kuApp.LoadHeight(height)
