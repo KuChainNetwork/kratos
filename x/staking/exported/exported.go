@@ -9,10 +9,9 @@ import (
 
 // DelegationI delegation bond for a delegated proof of stake system
 type DelegationI interface {
-	// FIXME: delete Addr
-	GetDelegatorAccountID() types.AccountID // delegator sdk.AccAddress for the bond
-	GetValidatorAccountID() types.AccountID // validator operator address
-	GetShares() sdk.Dec                     // amount of validator's shares held in this delegation
+	GetDelegator() types.AccountID // delegator sdk.AccAddress for the bond
+	GetValidator() types.AccountID // validator operator address
+	GetShares() sdk.Dec            // amount of validator's shares held in this delegation
 }
 
 // ValidatorI expected validator functions

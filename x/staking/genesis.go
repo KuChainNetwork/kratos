@@ -8,7 +8,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	tmtypes "github.com/tendermint/tendermint/types"
+	"github.com/tendermint/tendermint/libs/bytes"
 )
 
 // InitGenesis sets the pool and parameters for the provided keeper.  For each
@@ -124,11 +124,11 @@ func InitGenesis(
 	// don't need to run Tendermint updates if we exported
 	if data.Exported {
 		for _, lv := range data.LastValidatorPowers {
-			valAccountID := chainTypes.NewAccountIDFromAccAdd(sdk.AccAddress(lv.Address))
+			valAccountID := lv.ID
 			keeper.SetLastValidatorPower(ctx, valAccountID, lv.Power)
 			validator, found := keeper.GetValidator(ctx, valAccountID)
 			if !found {
-				panic(fmt.Sprintf("validator %s not found", lv.Address))
+				panic(fmt.Sprintf("validator %s not found", valAccountID))
 			}
 			update := validator.ABCIValidatorUpdate()
 			update.Power = lv.Power // keep the next-val-set offset, use the last power for the first block
@@ -161,8 +161,10 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 	})
 	var lastValidatorPowers []types.LastValidatorPower
 	keeper.IterateLastValidatorPowers(ctx, func(addr chainTypes.AccountID, power int64) (stop bool) {
-		accAddr, _ := addr.ToAccAddress()
-		lastValidatorPowers = append(lastValidatorPowers, types.LastValidatorPower{Address: sdk.ValAddress(accAddr), Power: power})
+		lastValidatorPowers = append(lastValidatorPowers, types.LastValidatorPower{
+			ID:    addr,
+			Power: power,
+		})
 		return false
 	})
 
@@ -179,12 +181,14 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 }
 
 // WriteValidators returns a slice of bonded genesis validators.
-func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []tmtypes.GenesisValidator) {
+func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []chainTypes.GenesisValidator) {
 	keeper.IterateLastValidators(ctx, func(_ int64, validator statkingexport.ValidatorI) (stop bool) {
-		vals = append(vals, tmtypes.GenesisValidator{
-			PubKey: validator.GetConsPubKey(),
-			Power:  validator.GetConsensusPower(),
-			Name:   validator.GetMoniker(),
+		vals = append(vals, chainTypes.GenesisValidator{
+			ID:      validator.GetOperatorAccountID(),
+			Address: bytes.HexBytes(sdk.GetConsAddress(validator.GetConsPubKey())),
+			PubKey:  validator.GetConsPubKey(),
+			Power:   validator.GetConsensusPower(),
+			Name:    validator.GetMoniker(),
 		})
 
 		return false

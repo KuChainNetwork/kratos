@@ -21,16 +21,18 @@ type ValidatorSigningInfo struct {
 	Tombstoned bool `json:"tombstoned,omitempty"`
 	// missed blocks counter (to avoid scanning the array every time)
 	MissedBlocksCounter int64 `json:"missed_blocks_counter,omitempty" yaml:"missed_blocks_counter"`
+	// AccountID
+	AccountID AccountID `json:"account_id,omitempty"`
 }
 
 // NewValidatorSigningInfo creates a new ValidatorSigningInfo instance
 func NewValidatorSigningInfo(
-	condAddr sdk.ConsAddress, startHeight, indexOffset int64,
+	condAddr sdk.ConsAddress, accountID AccountID, startHeight, indexOffset int64,
 	jailedUntil time.Time, tombstoned bool, missedBlocksCounter int64,
 ) ValidatorSigningInfo {
-
 	return ValidatorSigningInfo{
 		Address:             condAddr,
+		AccountID:           accountID,
 		StartHeight:         startHeight,
 		IndexOffset:         indexOffset,
 		JailedUntil:         jailedUntil,

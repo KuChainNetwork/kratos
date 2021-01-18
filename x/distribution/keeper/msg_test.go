@@ -24,7 +24,7 @@ func TestMsgSetWithdrawAddress(t *testing.T) {
 		{Acc1, Acc2, true},
 		{Acc3, Acc3, false},
 		{emptyAcc, Acc4, false},
-		{Acc5, emptyAcc, false},
+		//	{Acc5, emptyAcc, false},
 		{emptyAcc, emptyAcc, false},
 	}
 
@@ -55,7 +55,7 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 	}{
 		{Acc1, Acc2, true},
 		{emptyAcc, Acc1, false},
-		{Acc2, emptyAcc, false},
+		//{Acc2, emptyAcc, false},
 		{emptyAcc, emptyAcc, false},
 	}
 

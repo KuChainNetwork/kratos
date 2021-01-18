@@ -14,4 +14,5 @@ var (
 	MustName                = types.MustName
 	NewAccountIDFromAccAdd  = types.NewAccountIDFromAccAdd
 	NewAccountIDFromConsAdd = types.NewAccountIDFromConsAdd
+	EmptyAccountID          = types.EmptyAccountID
 )

@@ -24,6 +24,7 @@ func TestSigningInfo(t *testing.T) {
 		require.False(t, found)
 		newInfo := types.NewValidatorSigningInfo(
 			sdk.ConsAddress(pk.Address()),
+			types.EmptyAccountID(),
 			int64(4),
 			int64(3),
 			time.Unix(2, 0),
@@ -59,6 +60,7 @@ func TestSigningInfo(t *testing.T) {
 
 		newInfo := types.NewValidatorSigningInfo(
 			sdk.ConsAddress(pk.Address()),
+			types.EmptyAccountID(),
 			int64(4),
 			int64(3),
 			time.Unix(2, 0),
@@ -81,6 +83,7 @@ func TestSigningInfo(t *testing.T) {
 
 		newInfo := types.NewValidatorSigningInfo(
 			sdk.ConsAddress(pk.Address()),
+			types.EmptyAccountID(),
 			int64(4),
 			int64(3),
 			time.Unix(2, 0),
