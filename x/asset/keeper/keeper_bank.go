@@ -99,5 +99,20 @@ func (a AssetKeeper) ApplyApporve(ctx sdk.Context, from, to types.AccountID, amo
 		return sdkerrors.Wrap(err, "apply apporveCoins set new error")
 	}
 
+	approveSumCoins, err := a.GetApproveSum(ctx, from)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "approve %s get sum error", from)
+	}
+
+	approveSumCoins, hasNeg = approveSumCoins.SafeSub(amount)
+	if hasNeg {
+		return types.ErrAssetApporveNotEnough
+	}
+
+	err = a.updateApproveSum(ctx, from, approveSumCoins)
+	if err != nil {
+		return sdkerrors.Wrapf(err, "approve sum set %s to %s by %s error", from, to, approveSumCoins)
+	}
+
 	return nil
 }

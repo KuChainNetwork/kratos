@@ -74,6 +74,30 @@ func createAppForTest() (*simapp.SimApp, sdk.Context) {
 	return app, ctxCheck
 }
 
+func createAppForTest1() (*simapp.SimApp, sdk.Context) {
+	asset1 := types.NewCoins(
+		types.NewInt64Coin(gDenom1, 2000),
+		types.NewInt64Coin(gDenom2, 2000),
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+	asset2 := types.NewCoins(
+		types.NewInt64Coin(constants.DefaultBondDenom, 10000000000))
+
+	genAccs := simapp.NewGenesisAccounts(wallet.GetRootAuth(),
+		simapp.NewSimGenesisAccount(account1, addr1).WithAsset(asset1),
+		simapp.NewSimGenesisAccount(account2, addr2).WithAsset(asset1),
+		simapp.NewSimGenesisAccount(account3, addr3).WithAsset(asset1),
+		simapp.NewSimGenesisAccount(account4, addr4).WithAsset(asset1),
+		simapp.NewSimGenesisAccount(account5, addr5).WithAsset(asset1),
+		simapp.NewSimGenesisAccount(dexAccount1, dexAddr1).WithAsset(asset2),
+		simapp.NewSimGenesisAccount(dexAccount2, dexAddr2).WithAsset(asset2),
+	)
+	app := simapp.SetupWithGenesisAccounts(genAccs)
+	app = app.WithWallet(wallet)
+
+	ctxCheck := app.BaseApp.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
+	return app, ctxCheck
+}
+
 func transfer(t *testing.T, app *simapp.SimApp, isSuccess bool, from, to types.AccountID, amt types.Coins, payer types.AccountID) error {
 	return simapp.CommitTransferTx(t, app, wallet, isSuccess, from, to, amt, payer)
 }
