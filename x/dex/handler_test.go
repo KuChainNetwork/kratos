@@ -403,8 +403,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
-			&symbol.Quote,
-			symbol.CreateTime)
+			&symbol.Quote)
 
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -417,14 +416,20 @@ func TestHandleCreateSymbol(t *testing.T) {
 		err := simapp.CheckTxs(t, app, ctx, tx)
 		So(err, ShouldBeNil)
 
+		symbolCreateHeight := ctx.BlockHeight()
+		symbolCreateTime := ctx.BlockTime()
+
 		simapp.AfterBlockCommitted(app, 1)
 
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
+
 		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
-		symbol.Height = savedSymbol.Height // ignore height check
+
+		symbol.Height = symbolCreateHeight
+		symbol.CreateTime = symbolCreateTime
 		So(savedSymbol.Equal(symbol), ShouldBeTrue)
 
 		simapp.AfterBlockCommitted(app, 1)
@@ -433,8 +438,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 		msgCreateSymbol = dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
-			&symbol.Quote,
-			symbol.CreateTime)
+			&symbol.Quote)
 
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
@@ -447,14 +451,20 @@ func TestHandleCreateSymbol(t *testing.T) {
 		err = simapp.CheckTxs(t, app, ctx, tx)
 		So(err, ShouldBeNil)
 
+		symbolCreateHeight = ctx.BlockHeight()
+		symbolCreateTime = ctx.BlockTime()
+
 		simapp.AfterBlockCommitted(app, 1)
 
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
+
 		savedSymbol, ok = dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
-		symbol.Height = savedSymbol.Height // ignore height check
+
+		symbol.Height = symbolCreateHeight
+		symbol.CreateTime = symbolCreateTime
 		So(savedSymbol.Equal(symbol), ShouldBeTrue)
 
 		invalidSymbol := symbol
@@ -462,16 +472,14 @@ func TestHandleCreateSymbol(t *testing.T) {
 		So(dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&invalidSymbol.Base,
-			&invalidSymbol.Quote,
-			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+			&invalidSymbol.Quote).ValidateBasic(), ShouldNotBeNil)
 
 		invalidSymbol = symbol
 		invalidSymbol.Quote.Code = ""
 		So(dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&invalidSymbol.Base,
-			&invalidSymbol.Quote,
-			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+			&invalidSymbol.Quote).ValidateBasic(), ShouldNotBeNil)
 
 		invalidSymbol = symbol
 		invalidSymbol.Base.Code = ""
@@ -479,8 +487,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 		So(dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&invalidSymbol.Base,
-			&invalidSymbol.Quote,
-			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+			&invalidSymbol.Quote).ValidateBasic(), ShouldNotBeNil)
 
 		invalidSymbol = symbol
 		invalidSymbol.Base.Code = "coin1"
@@ -489,8 +496,7 @@ func TestHandleCreateSymbol(t *testing.T) {
 		So(dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&invalidSymbol.Base,
-			&invalidSymbol.Quote,
-			invalidSymbol.CreateTime).ValidateBasic(), ShouldNotBeNil)
+			&invalidSymbol.Quote).ValidateBasic(), ShouldNotBeNil)
 	})
 }
 
@@ -545,8 +551,7 @@ func TestHandleUpdateSymbol(t *testing.T) {
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
-			&symbol.Quote,
-			symbol.CreateTime)
+			&symbol.Quote)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
 		tx := simapp.NewTxForTest(
@@ -558,14 +563,20 @@ func TestHandleUpdateSymbol(t *testing.T) {
 		err := simapp.CheckTxs(t, app, ctx, tx)
 		So(err, ShouldBeNil)
 
+		symbolCreateHeight := ctx.BlockHeight()
+		symbolCreateTime := ctx.BlockTime()
+
 		simapp.AfterBlockCommitted(app, 1)
 
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
+
 		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
-		symbol.Height = savedSymbol.Height // ignore height check
+
+		symbol.Height = symbolCreateHeight
+		symbol.CreateTime = symbolCreateTime
 		So(savedSymbol.Equal(symbol), ShouldBeTrue)
 
 		copiedSymbol := *symbol
@@ -680,8 +691,7 @@ func TestHandlePauseSymbol(t *testing.T) {
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
-			&symbol.Quote,
-			symbol.CreateTime)
+			&symbol.Quote)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
 		tx := simapp.NewTxForTest(
@@ -693,14 +703,20 @@ func TestHandlePauseSymbol(t *testing.T) {
 		err := simapp.CheckTxs(t, app, ctx, tx)
 		So(err, ShouldBeNil)
 
+		symbolCreateHeight := ctx.BlockHeight()
+		symbolCreateTime := ctx.BlockTime()
+
 		simapp.AfterBlockCommitted(app, 1)
 
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
+
 		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
-		symbol.Height = savedSymbol.Height // ignore height check
+
+		symbol.Height = symbolCreateHeight
+		symbol.CreateTime = symbolCreateTime
 		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
 
 		msgPauseSymbol := dexTypes.NewMsgPauseSymbol(auth,
@@ -814,8 +830,7 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
-			&symbol.Quote,
-			symbol.CreateTime)
+			&symbol.Quote)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
 		tx := simapp.NewTxForTest(
@@ -827,14 +842,20 @@ func TestHandleRestoreSymbol(t *testing.T) {
 		err := simapp.CheckTxs(t, app, ctx, tx)
 		So(err, ShouldBeNil)
 
+		symbolCreateHeight := ctx.BlockHeight()
+		symbolCreateTime := ctx.BlockTime()
+
 		simapp.AfterBlockCommitted(app, 1)
 
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
+
 		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
-		symbol.Height = savedSymbol.Height // ignore height check
+
+		symbol.Height = symbolCreateHeight
+		symbol.CreateTime = symbolCreateTime
 		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
 
 		msgPauseSymbol := dexTypes.NewMsgPauseSymbol(auth,
@@ -978,8 +999,7 @@ func TestShutdownSymbol(t *testing.T) {
 		msgCreateSymbol := dexTypes.NewMsgCreateSymbol(auth,
 			accName,
 			&symbol.Base,
-			&symbol.Quote,
-			symbol.CreateTime)
+			&symbol.Quote)
 		So(msgCreateSymbol.ValidateBasic(), ShouldBeNil)
 
 		tx := simapp.NewTxForTest(
@@ -991,14 +1011,20 @@ func TestShutdownSymbol(t *testing.T) {
 		err := simapp.CheckTxs(t, app, ctx, tx)
 		So(err, ShouldBeNil)
 
+		symbolCreateHeight := ctx.BlockHeight()
+		symbolCreateTime := ctx.BlockTime()
+
 		simapp.AfterBlockCommitted(app, 1)
 
 		ctx = app.NewTestContext()
 		dex, ok = app.DexKeeper().GetDex(ctx, accName)
 		So(ok, ShouldBeTrue)
+
 		savedSymbol, ok := dex.Symbol(symbol.Base.Creator, symbol.Base.Code, symbol.Quote.Creator, symbol.Quote.Code)
 		So(ok, ShouldBeTrue)
-		symbol.Height = savedSymbol.Height // ignore height check
+
+		symbol.Height = symbolCreateHeight
+		symbol.CreateTime = symbolCreateTime
 		So(savedSymbol.Equal(&symbol), ShouldBeTrue)
 
 		msgShutdownSymbol := dexTypes.NewMsgShutdownSymbol(auth,

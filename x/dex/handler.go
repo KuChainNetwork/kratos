@@ -3,7 +3,6 @@ package dex
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
@@ -158,15 +157,10 @@ func handleMsgCreateSymbol(ctx chainTypes.Context,
 	logger.Debug("handle create symbol", "creator", data.Creator)
 
 	if err := keeper.CreateSymbol(ctx.Context(), data.Creator, &types.Symbol{
-		Base:   data.Base,
-		Quote:  data.Quote,
-		Height: ctx.BlockHeight(),
-		CreateTime: func() time.Time {
-			if data.CreateTime.IsZero() {
-				return ctx.BlockTime()
-			}
-			return data.CreateTime
-		}(),
+		Base:       data.Base,
+		Quote:      data.Quote,
+		Height:     ctx.BlockHeight(),
+		CreateTime: ctx.BlockTime(),
 	}); err != nil {
 		return nil, errors.Wrapf(err,
 			"msg create symbol error, creator %s",

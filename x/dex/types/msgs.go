@@ -1,8 +1,6 @@
 package types
 
 import (
-	"time"
-
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -205,19 +203,24 @@ func (msg MsgCreateSymbol) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
 		return err
 	}
+
 	data, err := msg.GetData()
 	if err != nil {
 		return err
 	}
+
 	if data.Creator.Empty() {
 		return sdkerrors.Wrap(types.ErrKuMSgNameEmpty, "creator name not empty")
 	}
+
 	if !data.Base.Validate() {
 		return sdkerrors.Wrap(ErrSymbolBaseInvalid, "base part invalid")
 	}
+
 	if !data.Quote.Validate() {
 		return sdkerrors.Wrap(ErrSymbolQuoteInvalid, "quote part invalid")
 	}
+
 	return nil
 }
 
@@ -231,10 +234,9 @@ func (msg MsgCreateSymbol) GetData() (MsgCreateSymbolData, error) {
 
 // MsgCreateSymbolData msg data for delete dex
 type MsgCreateSymbolData struct {
-	Creator    Name          `json:"creator" yaml:"creator"`
-	Base       BaseCurrency  `json:"base" yaml:"base"`
-	Quote      QuoteCurrency `json:"quote" yaml:"quote"`
-	CreateTime time.Time     `json:"create_time" yaml:"create_time"`
+	Creator Name          `json:"creator" yaml:"creator"`
+	Base    BaseCurrency  `json:"base" yaml:"base"`
+	Quote   QuoteCurrency `json:"quote" yaml:"quote"`
 }
 
 func (MsgCreateSymbolData) Type() types.Name { return types.MustName("create@symbol") }
@@ -248,16 +250,14 @@ func NewMsgCreateSymbol(auth types.AccAddress,
 	creator types.Name,
 	base *BaseCurrency,
 	quote *QuoteCurrency,
-	createTime time.Time,
 ) MsgCreateSymbol {
 	return MsgCreateSymbol{
 		KuMsg: *msg.MustNewKuMsg(RouterKeyName,
 			msg.WithAuth(auth),
 			msg.WithData(ModuleCdc, &MsgCreateSymbolData{
-				Creator:    creator,
-				Base:       *base,
-				Quote:      *quote,
-				CreateTime: createTime,
+				Creator: creator,
+				Base:    *base,
+				Quote:   *quote,
 			})),
 	}
 }

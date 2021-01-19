@@ -2,7 +2,6 @@ package cli
 
 import (
 	"bufio"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -181,19 +180,19 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 				quoteIconURL,
 				quoteTxURL := args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12]
 
-			if 0 >= len(baseCreator) ||
-				0 >= len(baseCode) ||
-				0 >= len(baseName) ||
-				0 >= len(baseFullName) ||
-				0 >= len(quoteCreator) ||
-				0 >= len(baseIconURL) ||
-				0 >= len(baseTxURL) ||
-				0 >= len(quoteCode) ||
-				0 >= len(quoteName) ||
-				0 >= len(quoteFullName) ||
-				0 >= len(quoteIconURL) ||
-				0 >= len(quoteTxURL) {
-				err = errors.Errorf("all update failed are empty")
+			if baseCreator == "" ||
+				baseCode == "" ||
+				baseName == "" ||
+				baseFullName == "" ||
+				quoteCreator == "" ||
+				baseIconURL == "" ||
+				baseTxURL == "" ||
+				quoteCode == "" ||
+				quoteName == "" ||
+				quoteFullName == "" ||
+				quoteIconURL == "" ||
+				quoteTxURL == "" {
+				err = errors.Errorf("params failed by all params for dex symbol should not empty")
 				return
 			}
 
@@ -240,7 +239,6 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 							TxURL:    quoteTxURL,
 						},
 					},
-					time.Time{}, // use server time
 				),
 			})
 

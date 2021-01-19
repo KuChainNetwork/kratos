@@ -3,7 +3,6 @@ package rest
 import (
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -255,7 +254,6 @@ func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				name,
 				&req.Base,
 				&req.Quote,
-				time.Time{}, // use server time
 			),
 		})
 	}
