@@ -14,8 +14,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmrpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	kuLog "github.com/KuChainNetwork/kuchain/utils/log"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -24,7 +24,7 @@ import (
 // RestServer represents the Light Client Rest server
 type RestServer struct {
 	Mux    *mux.Router
-	CliCtx context.CLIContext
+	CliCtx client.Context
 
 	log      log.Logger
 	listener net.Listener
@@ -33,7 +33,7 @@ type RestServer struct {
 // NewRestServer creates a new rest server instance
 func NewRestServer(cdc *codec.Codec) *RestServer {
 	r := mux.NewRouter()
-	cliCtx := context.NewCLIContext().WithCodec(cdc)
+	cliCtx := client.NewCtxByCodec(cdc)
 	logger := kuLog.NewLoggerByZap(viper.GetBool(cli.TraceFlag), viper.GetString("log_level")).With("module", "rest-server")
 
 	return &RestServer{

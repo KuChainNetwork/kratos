@@ -60,7 +60,7 @@ func (a AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Rout
 		proposalRESTHandlers = append(proposalRESTHandlers, proposalHandler.RESTHandler(ctx))
 	}
 
-	rest.RegisterRoutes(ctx, rtr, proposalRESTHandlers)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, proposalRESTHandlers)
 }
 
 // GetTxCmd returns the root tx command for the gov module.

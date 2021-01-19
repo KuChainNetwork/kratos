@@ -6,18 +6,17 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	ctx := txutil.NewKuCLICtx(cliCtx)
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(
 		"/slashing/unjail",
-		unjailRequestHandlerFn(ctx),
+		unjailRequestHandlerFn(cliCtx),
 	).Methods("POST")
 }
 

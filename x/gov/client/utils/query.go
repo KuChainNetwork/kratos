@@ -3,10 +3,9 @@ package utils
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -37,7 +36,7 @@ func (p Proposer) String() string {
 //
 // NOTE: SearchTxs is used to facilitate the txs query which does not currently
 // support configurable pagination.
-func QueryDepositsByTxQuery(cliCtx context.CLIContext, params types.QueryProposalParams) ([]byte, error) {
+func QueryDepositsByTxQuery(cliCtx client.Context, params types.QueryProposalParams) ([]byte, error) {
 	events := []string{
 		fmt.Sprintf("%s.%s='%s'", sdk.EventTypeMessage, sdk.AttributeKeyAction, types.TypeMsgDeposit),
 		fmt.Sprintf("%s.%s='%s'", types.EventTypeProposalDeposit, types.AttributeKeyProposalID, []byte(fmt.Sprintf("%d", params.ProposalID))),
@@ -58,7 +57,7 @@ func QueryDepositsByTxQuery(cliCtx context.CLIContext, params types.QueryProposa
 				depMsg := msg.(types.KuMsgDeposit)
 				msgData := types.MsgDeposit{}
 				if err := depMsg.UnmarshalData(types.Cdc(), &msgData); err != nil {
-					return cliCtx.Codec.MarshalJSON(deposits)
+					return cliCtx.Codec().MarshalJSON(deposits)
 				}
 
 				deposits = append(deposits, types.Deposit{
@@ -70,17 +69,17 @@ func QueryDepositsByTxQuery(cliCtx context.CLIContext, params types.QueryProposa
 		}
 	}
 
-	if cliCtx.Indent {
-		return cliCtx.Codec.MarshalJSONIndent(deposits, "", "  ")
+	if cliCtx.Indent() {
+		return cliCtx.Codec().MarshalJSONIndent(deposits, "", "  ")
 	}
 
-	return cliCtx.Codec.MarshalJSON(deposits)
+	return cliCtx.Codec().MarshalJSON(deposits)
 }
 
 // QueryVotesByTxQuery will query for votes via a direct txs tags query. It
 // will fetch and build votes directly from the returned txs and return a JSON
 // marshaled result or any error that occurred.
-func QueryVotesByTxQuery(cliCtx context.CLIContext, params types.QueryProposalVotesParams) ([]byte, error) {
+func QueryVotesByTxQuery(cliCtx client.Context, params types.QueryProposalVotesParams) ([]byte, error) {
 	var (
 		events = []string{
 			fmt.Sprintf("%s.%s='%s'", sdk.EventTypeMessage, sdk.AttributeKeyAction, types.TypeMsgVote),
@@ -103,7 +102,7 @@ func QueryVotesByTxQuery(cliCtx context.CLIContext, params types.QueryProposalVo
 					voteMsg := msg.(types.KuMsgVote)
 					msgData := types.MsgVote{}
 					if err := voteMsg.UnmarshalData(types.Cdc(), &msgData); err != nil {
-						return cliCtx.Codec.MarshalJSON(votes)
+						return cliCtx.Codec().MarshalJSON(votes)
 					}
 
 					votes = append(votes, types.Vote{
@@ -124,14 +123,14 @@ func QueryVotesByTxQuery(cliCtx context.CLIContext, params types.QueryProposalVo
 	} else {
 		votes = votes[start:end]
 	}
-	if cliCtx.Indent {
-		return cliCtx.Codec.MarshalJSONIndent(votes, "", "  ")
+	if cliCtx.Indent() {
+		return cliCtx.Codec().MarshalJSONIndent(votes, "", "  ")
 	}
-	return cliCtx.Codec.MarshalJSON(votes)
+	return cliCtx.Codec().MarshalJSON(votes)
 }
 
 // QueryVoteByTxQuery will query for a single vote via a direct txs tags query.
-func QueryVoteByTxQuery(cliCtx context.CLIContext, params types.QueryVoteParams) ([]byte, error) {
+func QueryVoteByTxQuery(cliCtx client.Context, params types.QueryVoteParams) ([]byte, error) {
 	events := []string{
 		fmt.Sprintf("%s.%s='%s'", sdk.EventTypeMessage, sdk.AttributeKeyAction, types.TypeMsgVote),
 		fmt.Sprintf("%s.%s='%s'", types.EventTypeProposalVote, types.AttributeKeyProposalID, []byte(fmt.Sprintf("%d", params.ProposalID))),
@@ -160,11 +159,11 @@ func QueryVoteByTxQuery(cliCtx context.CLIContext, params types.QueryVoteParams)
 					Option:     msgData.Option,
 				}
 
-				if cliCtx.Indent {
-					return cliCtx.Codec.MarshalJSONIndent(vote, "", "  ")
+				if cliCtx.Indent() {
+					return cliCtx.Codec().MarshalJSONIndent(vote, "", "  ")
 				}
 
-				return cliCtx.Codec.MarshalJSON(vote)
+				return cliCtx.Codec().MarshalJSON(vote)
 			}
 		}
 	}
@@ -174,7 +173,7 @@ func QueryVoteByTxQuery(cliCtx context.CLIContext, params types.QueryVoteParams)
 
 // QueryDepositByTxQuery will query for a single deposit via a direct txs tags
 // query.
-func QueryDepositByTxQuery(cliCtx context.CLIContext, params types.QueryDepositParams) ([]byte, error) {
+func QueryDepositByTxQuery(cliCtx client.Context, params types.QueryDepositParams) ([]byte, error) {
 	events := []string{
 		fmt.Sprintf("%s.%s='%s'", sdk.EventTypeMessage, sdk.AttributeKeyAction, types.TypeMsgDeposit),
 		fmt.Sprintf("%s.%s='%s'", types.EventTypeProposalDeposit, types.AttributeKeyProposalID, []byte(fmt.Sprintf("%d", params.ProposalID))),
@@ -204,11 +203,11 @@ func QueryDepositByTxQuery(cliCtx context.CLIContext, params types.QueryDepositP
 					Amount:     msgData.Amount,
 				}
 
-				if cliCtx.Indent {
-					return cliCtx.Codec.MarshalJSONIndent(deposit, "", "  ")
+				if cliCtx.Indent() {
+					return cliCtx.Codec().MarshalJSONIndent(deposit, "", "  ")
 				}
 
-				return cliCtx.Codec.MarshalJSON(deposit)
+				return cliCtx.Codec().MarshalJSON(deposit)
 			}
 		}
 	}
@@ -218,7 +217,7 @@ func QueryDepositByTxQuery(cliCtx context.CLIContext, params types.QueryDepositP
 
 // QueryProposerByTxQuery will query for a proposer of a governance proposal by
 // ID.
-func QueryProposerByTxQuery(cliCtx context.CLIContext, proposalID uint64) (Proposer, error) {
+func QueryProposerByTxQuery(cliCtx client.Context, proposalID uint64) (Proposer, error) {
 	events := []string{
 		fmt.Sprintf("%s.%s='%s'", sdk.EventTypeMessage, sdk.AttributeKeyAction, types.TypeMsgSubmitProposal),
 		fmt.Sprintf("%s.%s='%s'", types.EventTypeSubmitProposal, types.AttributeKeyProposalID, []byte(fmt.Sprintf("%d", proposalID))),
@@ -249,9 +248,9 @@ func QueryProposerByTxQuery(cliCtx context.CLIContext, proposalID uint64) (Propo
 }
 
 // QueryProposalByID takes a proposalID and returns a proposal
-func QueryProposalByID(proposalID uint64, cliCtx context.CLIContext, queryRoute string) ([]byte, error) {
+func QueryProposalByID(proposalID uint64, cliCtx client.Context, queryRoute string) ([]byte, error) {
 	params := types.NewQueryProposalParams(proposalID)
-	bz, err := cliCtx.Codec.MarshalJSON(params)
+	bz, err := cliCtx.Codec().MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}

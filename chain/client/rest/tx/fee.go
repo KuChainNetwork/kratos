@@ -4,9 +4,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/pkg/errors"
@@ -18,7 +19,7 @@ type TxGasFeeResp struct {
 	EstimatedFee         string `json:"estimated_fee"`
 }
 
-func QueryTxFeeAndGasConsumed(cliCtx context.CLIContext) http.HandlerFunc {
+func QueryTxFeeAndGasConsumed(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.StdSignMsg
 		var estimatedMsgsGasConsumed uint64
@@ -29,7 +30,7 @@ func QueryTxFeeAndGasConsumed(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		err = cliCtx.Codec.UnmarshalJSON(body, &req)
+		err = cliCtx.Codec().UnmarshalJSON(body, &req)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -58,7 +59,8 @@ func QueryTxFeeAndGasConsumed(cliCtx context.CLIContext) http.HandlerFunc {
 			GasPrice:             constants.MinGasPriceString,
 			EstimatedFee:         estimatedFee.String(),
 		}
-		rest.PostProcessResponseBare(w, cliCtx, response)
+
+		utils.PostProcessResponseBare(w, cliCtx, response)
 	}
 }
 

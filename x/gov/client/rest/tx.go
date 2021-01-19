@@ -4,29 +4,27 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	govutils "github.com/KuChainNetwork/kuchain/x/gov/client/utils"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 )
 
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, phs []ProposalRESTHandler) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router, phs []ProposalRESTHandler) {
 	propSubRtr := r.PathPrefix("/gov/proposals").Subrouter()
 	for _, ph := range phs {
 		propSubRtr.HandleFunc(fmt.Sprintf("/%s", ph.SubRoute), ph.Handler).Methods("POST")
 	}
 
-	kuCliCtx := txutil.NewKuCLICtx(cliCtx)
-
-	r.HandleFunc("/gov/proposals", postProposalHandlerFn(kuCliCtx)).Methods("POST")
-	r.HandleFunc("/gov/deposits", depositHandlerFn(kuCliCtx)).Methods("POST")
-	r.HandleFunc("/gov/votes", voteHandlerFn(kuCliCtx)).Methods("POST")
+	r.HandleFunc("/gov/proposals", postProposalHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc("/gov/deposits", depositHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc("/gov/votes", voteHandlerFn(cliCtx)).Methods("POST")
 }
 
-func postProposalHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func postProposalHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req PostProposalReq
 		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
@@ -65,7 +63,7 @@ func postProposalHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	}
 }
 
-func depositHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func depositHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req DepositReq
 		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
@@ -113,7 +111,7 @@ func depositHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	}
 }
 
-func voteHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func voteHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req VoteReq
 		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {

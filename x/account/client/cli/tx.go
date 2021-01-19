@@ -3,12 +3,11 @@ package cli
 import (
 	"bufio"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -42,14 +41,14 @@ func CreateAccount(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			creator, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
 				return err
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creator)
+			ctx := cliCtx.WithFromAccount(creator)
 			auth, err := txutil.QueryAccountAuth(ctx, creator)
 			if err != nil {
 				return sdkerrors.Wrapf(err, "query account %s auth error", creator)
@@ -84,7 +83,7 @@ func UpdateAccountAuth(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			accountName, err := chainTypes.NewName(args[0])
 			if err != nil {
@@ -93,7 +92,7 @@ func UpdateAccountAuth(cdc *codec.Codec) *cobra.Command {
 
 			id := chainTypes.NewAccountIDFromName(accountName)
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(id)
+			ctx := cliCtx.WithFromAccount(id)
 			auth, err := txutil.QueryAccountAuth(ctx, id)
 			if err != nil {
 				return sdkerrors.Wrapf(err, "query account %s auth error", id)

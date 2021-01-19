@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/rest"
@@ -46,15 +46,15 @@ Read a transaction from <file>, serialize it to the Amino wire protocol, and out
 If you supply a dash (-) argument in place of an input filename, the command reads from standard input.`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
-			stdTx, err := txutil.ReadStdTxFromFile(cliCtx.Codec, args[0])
+			stdTx, err := txutil.ReadStdTxFromFile(cliCtx.Codec(), args[0])
 			if err != nil {
 				return
 			}
 
 			// re-encode it via the Amino wire protocol
-			txBytes, err := cliCtx.Codec.MarshalBinaryLengthPrefixed(stdTx)
+			txBytes, err := cliCtx.Codec().MarshalBinaryLengthPrefixed(stdTx)
 			if err != nil {
 				return err
 			}
@@ -76,7 +76,7 @@ func QueryTxCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query for a transaction by hash in a committed block",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			output, err := QueryTx(cliCtx, args[0])
 			if err != nil {
@@ -112,13 +112,13 @@ $ <appcli> tx broadcast ./mytxn.json
 `),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			stdTx, err := txutil.ReadStdTxFromFile(cliCtx.Codec, args[0])
+			cliCtx := client.NewCtxByCodec(cdc)
+			stdTx, err := txutil.ReadStdTxFromFile(cliCtx.Codec(), args[0])
 			if err != nil {
 				return
 			}
 
-			txBytes, err := cliCtx.Codec.MarshalBinaryLengthPrefixed(stdTx)
+			txBytes, err := cliCtx.Codec().MarshalBinaryLengthPrefixed(stdTx)
 			if err != nil {
 				return
 			}
@@ -149,7 +149,7 @@ func GetDecodeCommand(codec *amino.Codec) *cobra.Command {
 
 func runDecodeTxString(codec *amino.Codec) func(cmd *cobra.Command, args []string) (err error) {
 	return func(cmd *cobra.Command, args []string) (err error) {
-		cliCtx := context.NewCLIContext().WithCodec(codec).WithOutput(cmd.OutOrStdout())
+		cliCtx := client.NewCtxByCodec(codec).WithOutput(cmd.OutOrStdout())
 		var txBytes []byte
 
 		if viper.GetBool(flagHex) {
@@ -162,7 +162,7 @@ func runDecodeTxString(codec *amino.Codec) func(cmd *cobra.Command, args []strin
 		}
 
 		var stdTx types.StdTx
-		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(txBytes, &stdTx)
+		err = cliCtx.Codec().UnmarshalBinaryLengthPrefixed(txBytes, &stdTx)
 		if err != nil {
 			return err
 		}
@@ -219,14 +219,14 @@ $ %s query txs --%s 'message.sender=cosmos1...&message.action=withdraw_delegator
 			page := viper.GetInt(flags.FlagPage)
 			limit := viper.GetInt(flags.FlagLimit)
 
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			txs, err := QueryTxsByEvents(cliCtx, tmEvents, page, limit, "")
 			if err != nil {
 				return err
 			}
 
 			var output []byte
-			if cliCtx.Indent {
+			if cliCtx.Indent() {
 				output, err = cdc.MarshalJSONIndent(txs, "", "  ")
 			} else {
 				output, err = cdc.MarshalJSON(txs)

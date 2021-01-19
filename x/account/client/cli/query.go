@@ -3,11 +3,10 @@ package cli
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +38,7 @@ func GetAccountCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query account data",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			accGetter := types.NewAccountRetriever(cliCtx)
 
 			key, err := chainTypes.NewAccountIDFromStr(args[0])
@@ -67,7 +66,7 @@ func GetAuthCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query auth data",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			accGetter := types.NewAccountRetriever(cliCtx)
 
 			key, err := chainTypes.AccAddressFromBech32(args[0])
@@ -94,7 +93,7 @@ func GetAccountsCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query accounts by",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			params := types.NewQueryAccountsByAuthParams(args[0])
 			bz, err := cdc.MarshalJSON(params)

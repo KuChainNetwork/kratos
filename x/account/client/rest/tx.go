@@ -4,10 +4,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 )
@@ -25,7 +25,7 @@ type UpdateAuthReq struct {
 	NewAccountAuth string             `json:"new_account_auth" yaml:"new_account_auth"`
 }
 
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(
 		"/account/create",
 		createAccountHandlerFn(cliCtx),
@@ -36,7 +36,7 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	).Methods("POST")
 }
 
-func createAccountHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func createAccountHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req CreateAccountReq
 
@@ -46,7 +46,7 @@ func createAccountHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		err = cliCtx.Codec.UnmarshalJSON(body, &req)
+		err = cliCtx.Codec().UnmarshalJSON(body, &req)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -60,7 +60,7 @@ func createAccountHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creator)
+		ctx := cliCtx.WithFromAccount(creator)
 		auth, err := txutil.QueryAccountAuth(ctx, creator)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -84,7 +84,7 @@ func createAccountHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func updateAuthHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func updateAuthHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UpdateAuthReq
 
@@ -94,7 +94,7 @@ func updateAuthHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		err = cliCtx.Codec.UnmarshalJSON(body, &req)
+		err = cliCtx.Codec().UnmarshalJSON(body, &req)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -110,7 +110,7 @@ func updateAuthHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		account := chainTypes.NewAccountIDFromName(accountName)
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(account)
+		ctx := cliCtx.WithFromAccount(account)
 		auth, err := txutil.QueryAccountAuth(ctx, account)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

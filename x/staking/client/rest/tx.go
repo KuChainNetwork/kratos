@@ -4,28 +4,26 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 )
 
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	ctx := txutil.NewKuCLICtx(cliCtx)
-
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(
 		"/staking/delegations",
-		postDelegationsHandlerFn(ctx),
+		postDelegationsHandlerFn(cliCtx),
 	).Methods("POST")
 	r.HandleFunc(
 		"/staking/unbonding_delegations",
-		postUnbondingDelegationsHandlerFn(ctx),
+		postUnbondingDelegationsHandlerFn(cliCtx),
 	).Methods("POST")
 	r.HandleFunc(
 		"/staking/redelegations",
-		postRedelegationsHandlerFn(ctx),
+		postRedelegationsHandlerFn(cliCtx),
 	).Methods("POST")
 }
 
@@ -56,7 +54,7 @@ type (
 	}
 )
 
-func postDelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func postDelegationsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req DelegateRequest
 
@@ -99,7 +97,7 @@ func postDelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	}
 }
 
-func postRedelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func postRedelegationsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req RedelegateRequest
 
@@ -148,7 +146,7 @@ func postRedelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	}
 }
 
-func postUnbondingDelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func postUnbondingDelegationsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UndelegateRequest
 
