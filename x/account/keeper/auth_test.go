@@ -32,11 +32,16 @@ func TestAuthGetAccount(t *testing.T) {
 
 		res := app.AccountKeeper().GetAccountsByAuth(ctx, addr2)
 		So(len(res), ShouldEqual, 2)
+		So(res[0], ShouldEqual, "testacc1")
+		So(res[1], ShouldEqual, "testacc2")
 
 		// del
 		app.AccountKeeper().DeleteAccountByAuth(ctx, addr2, "testacc1")
-		app.AccountKeeper().DeleteAccountByAuth(ctx, addr2, "testacc2")
+		res = app.AccountKeeper().GetAccountsByAuth(ctx, addr2)
+		So(len(res), ShouldEqual, 1)
+		So(res[0], ShouldEqual, "testacc2")
 
+		app.AccountKeeper().DeleteAccountByAuth(ctx, addr2, "testacc2")
 		res = app.AccountKeeper().GetAccountsByAuth(ctx, addr2)
 		So(len(res), ShouldEqual, 0)
 
@@ -45,6 +50,31 @@ func TestAuthGetAccount(t *testing.T) {
 
 		// no exist auth to auth
 		app.AccountKeeper().DeleteAccountByAuth(ctx, wallet.NewAccAddress(), "testacc2")
+	})
+
+	Convey("TestAuth2AccountAddAndDel2", t, func() {
+		// add
+		app.AccountKeeper().AddAccountByAuth(ctx, addr2, "testacc1")
+		app.AccountKeeper().AddAccountByAuth(ctx, addr2, "testacc2")
+
+		res := app.AccountKeeper().GetAccountsByAuth(ctx, addr2)
+		So(len(res), ShouldEqual, 2)
+		So(res[0], ShouldEqual, "testacc1")
+		So(res[1], ShouldEqual, "testacc2")
+
+		// del
+		app.AccountKeeper().DeleteAccountByAuth(ctx, addr2, "testacc2")
+		res = app.AccountKeeper().GetAccountsByAuth(ctx, addr2)
+		So(len(res), ShouldEqual, 1)
+		So(res[0], ShouldEqual, "testacc1")
+
+		app.AccountKeeper().DeleteAccountByAuth(ctx, addr2, "testacc2")
+		So(len(res), ShouldEqual, 1)
+		So(res[0], ShouldEqual, "testacc1")
+
+		app.AccountKeeper().DeleteAccountByAuth(ctx, addr2, "testacc1")
+		res = app.AccountKeeper().GetAccountsByAuth(ctx, addr2)
+		So(len(res), ShouldEqual, 0)
 	})
 }
 

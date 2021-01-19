@@ -7,6 +7,11 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+const (
+	// msgDexDealTransfNum all deal msg should have 4 coin transfer
+	msgDexDealTransfNum = 4
+)
+
 type MsgDexSigIn struct {
 	types.KuMsg
 }
@@ -219,16 +224,14 @@ func (msg MsgDexDeal) GetDealFeeByDex() (feeFrom Coins, feeTo Coins, err error) 
 
 func (msg MsgDexDeal) GetData() (MsgDexDealData, error) {
 	res := MsgDexDealData{}
+
 	if err := msg.UnmarshalData(Cdc(), &res); err != nil {
-		return MsgDexDealData{}, sdkerrors.Wrapf(types.ErrKuMsgDataUnmarshal, "%s", err.Error())
+		return MsgDexDealData{}, sdkerrors.Wrapf(
+			types.ErrKuMsgDataUnmarshal, "%s", err.Error())
 	}
+
 	return res, nil
 }
-
-const (
-	// msgDexDealTransfNum all deal msg should have 4 coin transfer
-	msgDexDealTransfNum = 4
-)
 
 func (msg MsgDexDeal) ValidateBasic() error {
 	if err := msg.KuMsg.ValidateTransfer(); err != nil {
