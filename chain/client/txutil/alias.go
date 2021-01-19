@@ -1,6 +1,7 @@
 package txutil
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/transaction"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
@@ -8,10 +9,11 @@ import (
 )
 
 type (
-	StdTx     = types.StdTx
-	TxBuilder = transaction.TxBuilder
-	AccountID = types.AccountID
-	Name      = types.Name
+	StdTx        = types.StdTx
+	TxBuilder    = transaction.TxBuilder
+	AccountID    = types.AccountID
+	Name         = types.Name
+	KuCLIContext = client.Context
 )
 
 var (
@@ -20,6 +22,13 @@ var (
 	DefaultTxDecoder    = types.DefaultTxDecoder
 	DefaultTxEncoder    = types.DefaultTxEncoder
 	NewTxBuilderFromCLI = transaction.NewTxBuilderFromCLI
+)
+
+var (
+	NewKuCLICtx            = client.NewKuCLICtx
+	NewKuCLICtxNoFrom      = client.NewKuCLICtxNoFrom
+	NewKuCLICtxByBuf       = client.NewKuCLICtxByBuf
+	NewKuCLICtxByBufNoFrom = client.NewKuCLICtxByBufNoFrom
 )
 
 // NewAccountRetriever initializes a new AccountRetriever instance.
