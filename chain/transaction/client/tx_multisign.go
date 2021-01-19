@@ -123,11 +123,11 @@ func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) 
 		sigOnly := viper.GetBool(flagSigOnly)
 		var json []byte
 		switch {
-		case sigOnly && cliCtx.Indent:
+		case sigOnly && cliCtx.Indent():
 			json, err = cdc.MarshalJSONIndent(newTx.Signatures[0], "", "  ")
-		case sigOnly && !cliCtx.Indent:
+		case sigOnly && !cliCtx.Indent():
 			json, err = cdc.MarshalJSON(newTx.Signatures[0])
-		case !sigOnly && cliCtx.Indent:
+		case !sigOnly && cliCtx.Indent():
 			json, err = cdc.MarshalJSONIndent(newTx, "", "  ")
 		default:
 			json, err = cdc.MarshalJSON(newTx)

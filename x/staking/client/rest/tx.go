@@ -60,7 +60,7 @@ func postDelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req DelegateRequest
 
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -103,7 +103,7 @@ func postRedelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req RedelegateRequest
 
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -152,7 +152,7 @@ func postUnbondingDelegationsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerF
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UndelegateRequest
 
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 

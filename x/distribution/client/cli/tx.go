@@ -147,11 +147,11 @@ $ %s tx kudistribution withdraw-all-rewards  --from jack
 
 			// The transaction cannot be generated offline since it requires a query
 			// to get all the validators.
-			if cliCtx.GenerateOnly {
+			if cliCtx.GenerateOnly() {
 				return fmt.Errorf("command disabled with the provided flag: %s", flags.FlagGenerateOnly)
 			}
 
-			msgs, err := common.WithdrawAllDelegatorRewards(cliCtx.CLIContext, delAddr, queryRoute, delID)
+			msgs, err := common.WithdrawAllDelegatorRewards(cliCtx.Ctx(), delAddr, queryRoute, delID)
 			if err != nil {
 				return err
 			}

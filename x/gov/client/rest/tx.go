@@ -29,7 +29,7 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, phs []ProposalRE
 func postProposalHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req PostProposalReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -68,7 +68,7 @@ func postProposalHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 func depositHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req DepositReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -116,7 +116,7 @@ func depositHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 func voteHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req VoteReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 

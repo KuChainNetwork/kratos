@@ -34,7 +34,7 @@ func ProposalRESTHandler(cliCtx context.CLIContext) external.GovProposalRESTHand
 func postProposalParamsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req PostProposalParamsReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 

@@ -31,7 +31,7 @@ type UnjailReq struct {
 func unjailRequestHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UnjailReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 

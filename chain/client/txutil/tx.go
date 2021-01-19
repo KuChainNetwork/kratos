@@ -31,7 +31,7 @@ func (gr GasEstimateResponse) String() string {
 // to STDOUT in a fully offline manner. Otherwise, the tx will be signed and
 // broadcasted.
 func GenerateOrBroadcastMsgs(cliCtx KuCLIContext, txBldr TxBuilder, msgs []sdk.Msg) error {
-	if cliCtx.GenerateOnly {
+	if cliCtx.GenerateOnly() {
 		return PrintUnsignedStdTx(txBldr, cliCtx, msgs)
 	}
 
@@ -49,7 +49,7 @@ func CompleteAndBroadcastTxCLI(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk
 		return err
 	}
 
-	if txBldr.SimulateAndExecute() || cliCtx.Simulate {
+	if txBldr.SimulateAndExecute() || cliCtx.Simulate() {
 		txBldr, err = EnrichWithGas(txBldr, cliCtx, msgs)
 		if err != nil {
 			return err
@@ -59,11 +59,11 @@ func CompleteAndBroadcastTxCLI(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", gasEst.String())
 	}
 
-	if cliCtx.Simulate {
+	if cliCtx.Simulate() {
 		return nil
 	}
 
-	if !cliCtx.SkipConfirm {
+	if !cliCtx.SkipConfirm() {
 		stdSignMsg, err := txBldr.BuildSignMsg(msgs)
 		if err != nil {
 			return err
@@ -71,12 +71,12 @@ func CompleteAndBroadcastTxCLI(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk
 
 		var json []byte
 		if viper.GetBool(flags.FlagIndentResponse) {
-			json, err = cliCtx.Codec.MarshalJSONIndent(stdSignMsg, "", "  ")
+			json, err = cliCtx.Codec().MarshalJSONIndent(stdSignMsg, "", "  ")
 			if err != nil {
 				panic(err)
 			}
 		} else {
-			json = cliCtx.Codec.MustMarshalJSON(stdSignMsg)
+			json = cliCtx.Codec().MustMarshalJSON(stdSignMsg)
 		}
 
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n\n", json)
@@ -145,15 +145,15 @@ func PrintUnsignedStdTx(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) e
 
 	var json []byte
 	if viper.GetBool(flags.FlagIndentResponse) {
-		json, err = cliCtx.Codec.MarshalJSONIndent(stdTx, "", "  ")
+		json, err = cliCtx.Codec().MarshalJSONIndent(stdTx, "", "  ")
 	} else {
-		json, err = cliCtx.Codec.MarshalJSON(stdTx)
+		json, err = cliCtx.Codec().MarshalJSON(stdTx)
 	}
 	if err != nil {
 		return err
 	}
 
-	_, _ = fmt.Fprintf(cliCtx.Output, "%s\n", json)
+	_, _ = fmt.Fprintf(cliCtx.Output(), "%s\n", json)
 	return nil
 }
 
@@ -266,7 +266,7 @@ func simulateMsgs(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) (estima
 		return
 	}
 
-	estimated, adjusted, err = CalculateGas(cliCtx.QueryWithData, cliCtx.Codec, txBytes, txBldr.GasAdjustment())
+	estimated, adjusted, err = CalculateGas(cliCtx.GetQueryWithDataFunc(), cliCtx.Codec(), txBytes, txBldr.GasAdjustment())
 	return
 }
 
@@ -321,9 +321,9 @@ func PrepareTxBuilder(txBldr TxBuilder, cliCtx KuCLIContext) (TxBuilder, error) 
 
 // QueryAccountAuth query account auth by id
 func QueryAccountAuth(cliCtx KuCLIContext, id types.AccountID) (types.AccAddress, error) {
-	if cliCtx.GenerateOnly {
+	if cliCtx.GenerateOnly() {
 		// if just gen tx, cmd will not connect to node to get info, all auth is from --from params
-		return cliCtx.FromAddress, nil
+		return cliCtx.GetFromAddress(), nil
 	}
 
 	if _, ok := id.ToName(); ok {
@@ -349,7 +349,7 @@ func QueryAccountAuth(cliCtx KuCLIContext, id types.AccountID) (types.AccAddress
 
 func buildUnsignedStdTxOffline(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) (stdTx StdTx, err error) {
 	if txBldr.SimulateAndExecute() {
-		if cliCtx.GenerateOnly {
+		if cliCtx.GenerateOnly() {
 			return stdTx, errors.New("cannot estimate gas with generate-only")
 		}
 

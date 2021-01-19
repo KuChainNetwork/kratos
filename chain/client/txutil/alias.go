@@ -24,7 +24,7 @@ var (
 
 // NewAccountRetriever initializes a new AccountRetriever instance.
 func NewAccountRetriever(cliCtx KuCLIContext) accountTypes.AccountRetriever {
-	return accountTypes.NewAccountRetriever(cliCtx.CLIContext)
+	return accountTypes.NewAccountRetriever(cliCtx.Ctx())
 }
 
 // GetSignBytes returns the signBytes of the tx for a given signer

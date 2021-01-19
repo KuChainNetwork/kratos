@@ -142,7 +142,7 @@ func makeSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) error
 			return err
 		}
 
-		json, err := getSignatureJSON(cdc, newTx, cliCtx.Indent, generateSignatureOnly)
+		json, err := getSignatureJSON(cdc, newTx, cliCtx.Indent(), generateSignatureOnly)
 		if err != nil {
 			return err
 		}
@@ -246,7 +246,7 @@ func printAndValidateSigs(cliCtx txutil.KuCLIContext, chainID string, stdTx type
 		multiPK, ok := sig.PubKey.(multisig.PubKeyMultisigThreshold)
 		if ok {
 			var multiSig multisig.Multisignature
-			cliCtx.Codec.MustUnmarshalBinaryBare(sig.Signature, &multiSig)
+			cliCtx.Codec().MustUnmarshalBinaryBare(sig.Signature, &multiSig)
 
 			var b strings.Builder
 			b.WriteString("\n  MultiSig Signatures:\n")

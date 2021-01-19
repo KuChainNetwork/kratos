@@ -23,7 +23,7 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br t
 	}
 
 	txBldr := NewTxBuilder(
-		GetTxEncoder(cliCtx.Codec), br.AccountNumber, br.Sequence, gas, gasAdj,
+		GetTxEncoder(cliCtx.Codec()), br.AccountNumber, br.Sequence, gas, gasAdj,
 		br.Simulate, br.ChainID, br.Memo, br.Fees, br.GasPrices,
 	)
 
@@ -42,7 +42,7 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br t
 		}
 
 		if br.Simulate {
-			types.WriteSimulationResponse(w, cliCtx.Codec, txBldr.Gas())
+			types.WriteSimulationResponse(w, cliCtx.Codec(), txBldr.Gas())
 			return
 		}
 	}
@@ -53,7 +53,7 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br t
 		return
 	}
 
-	output, err := cliCtx.Codec.MarshalJSON(NewStdTx(stdMsg.Msg, stdMsg.Fee, nil, stdMsg.Memo))
+	output, err := cliCtx.Codec().MarshalJSON(NewStdTx(stdMsg.Msg, stdMsg.Fee, nil, stdMsg.Memo))
 	if err != nil {
 		types.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
