@@ -29,6 +29,7 @@ var (
 	ErrSymbolDexDescriptionSame   = sdkerrors.Register(ModuleName, 20, "dex symbol to change is same as existing")
 	ErrSymbolBaseCreatorEmpty     = sdkerrors.Register(ModuleName, 24, "dex symbol base creator empty")
 	ErrSymbolQuoteCreatorEmpty    = sdkerrors.Register(ModuleName, 25, "dex symbol quote creator empty")
+	ErrSymbolStateError           = sdkerrors.Register(ModuleName, 26, "dex symbol state error")
 )
 
 var (

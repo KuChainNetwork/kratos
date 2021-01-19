@@ -6,8 +6,9 @@ import (
 
 // query endpoints supported by the auth Querier
 const (
-	QueryDex   = "queryDex"
-	QuerySigIn = "querySigIn"
+	QueryDex    = "queryDex"
+	QuerySigIn  = "querySigIn"
+	QuerySymbol = "querySymbol"
 )
 
 // QueryDexParams defines the params for querying dex.
@@ -31,6 +32,24 @@ func NewQueryDexSigInParams(acc, dex AccountID) QueryDexSigInParams {
 	return QueryDexSigInParams{
 		Account: acc,
 		Dex:     dex,
+	}
+}
+
+// QuerySymbolParams
+type QuerySymbolParams struct {
+	Creator                                        Name
+	BaseCreator, QuoteCreator, BaseCode, QuoteCode string
+}
+
+// NewQuerySymbolParams create a new instance of QuerySymbolParams
+func NewQuerySymbolParams(creator Name,
+	baseCreator, quoteCreator, baseCode, quoteCode string) QuerySymbolParams {
+	return QuerySymbolParams{
+		Creator:      creator,
+		BaseCreator:  baseCreator,
+		QuoteCreator: quoteCreator,
+		BaseCode:     baseCode,
+		QuoteCode:    quoteCode,
 	}
 }
 
@@ -88,6 +107,27 @@ func (ar DexRetriever) GetSigInWithHeight(account, dex AccountID) (Coins, int64,
 	data := Coins{}
 	if err := ModuleCdc.UnmarshalJSON(res, &data); err != nil {
 		return nil, height, err
+	}
+
+	return data, height, nil
+}
+
+// GetSymbolWithHeight queries symbol for dex
+func (ar DexRetriever) GetSymbolWithHeight(account Name,
+	baseCreator, quoteCreator, baseCode, quoteCode string) (Symbol, int64, error) {
+	bs, err := ModuleCdc.MarshalJSON(NewQuerySymbolParams(account, baseCreator, quoteCreator, baseCode, quoteCode))
+	if err != nil {
+		return Symbol{}, 0, err
+	}
+
+	res, height, err := ar.querier.QueryWithData(fmt.Sprintf("custom/%s/%s", QuerierRoute, QuerySymbol), bs)
+	if err != nil {
+		return Symbol{}, height, err
+	}
+
+	data := Symbol{}
+	if err = ModuleCdc.UnmarshalJSON(res, &data); err != nil {
+		return Symbol{}, height, err
 	}
 
 	return data, height, nil
