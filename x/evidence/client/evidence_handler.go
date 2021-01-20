@@ -3,14 +3,18 @@ package client
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/x/evidence/client/rest"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+)
+
+var (
+	NewKuCLICtx = client.NewKuCLICtx
 )
 
 type (
 	// RESTHandlerFn defines a REST service handler for evidence submission
-	RESTHandlerFn func(context.CLIContext) rest.EvidenceRESTHandler
+	RESTHandlerFn func(client.Context) rest.EvidenceRESTHandler
 
 	// CLIHandlerFn defines a CLI command handler for evidence submission
 	CLIHandlerFn func(*codec.Codec) *cobra.Command

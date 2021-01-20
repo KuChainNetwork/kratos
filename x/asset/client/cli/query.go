@@ -1,11 +1,10 @@
 package cli
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
@@ -40,7 +39,7 @@ func GetCoinCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query coin for a account",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			accGetter := types.NewAssetRetriever(cliCtx)
 
 			key, err := chainTypes.NewAccountIDFromStr(args[0])
@@ -77,7 +76,7 @@ func GetCoinsCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query all coins for a account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			accGetter := types.NewAssetRetriever(cliCtx)
 
 			key, err := chainTypes.NewAccountIDFromStr(args[0])
@@ -104,7 +103,7 @@ func GetCoinPowerCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query coin power for a account",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			accGetter := types.NewAssetRetriever(cliCtx)
 
 			key, err := chainTypes.NewAccountIDFromStr(args[0])
@@ -141,7 +140,7 @@ func GetCoinPowersCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query all coin powers for a account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			accGetter := types.NewAssetRetriever(cliCtx)
 
 			key, err := chainTypes.NewAccountIDFromStr(args[0])
@@ -168,7 +167,7 @@ func GetCoinStatCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query coin status for creator/symbol token",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			accGetter := types.NewAssetRetriever(cliCtx)
 
 			name, err := chainTypes.NewName(args[0])

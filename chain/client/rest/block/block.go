@@ -3,9 +3,9 @@ package block
 import (
 	"encoding/json"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/pkg/errors"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	tmliteProxy "github.com/tendermint/tendermint/lite/proxy"
@@ -29,7 +29,7 @@ type DecodeResultBlock struct {
 	DecodeBlock *DecodeBlock `json:"block"`
 }
 
-func getBlock(cliCtx context.CLIContext, height *int64) ([]byte, error) {
+func getBlock(cliCtx client.Context, height *int64) ([]byte, error) {
 	// get the node
 	node, err := cliCtx.GetNode()
 	if err != nil {
@@ -44,7 +44,7 @@ func getBlock(cliCtx context.CLIContext, height *int64) ([]byte, error) {
 		return nil, err
 	}
 
-	if !cliCtx.TrustNode {
+	if !cliCtx.TrustNode() {
 		check, err := cliCtx.Verify(res.Block.Height)
 		if err != nil {
 			return nil, err
@@ -64,7 +64,7 @@ func getBlock(cliCtx context.CLIContext, height *int64) ([]byte, error) {
 	txsHash := make([]tmbytes.HexBytes, 0, len(txs))
 	for _, tx := range txs {
 		var stdTx types.StdTx
-		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(tx, &stdTx)
+		err = cliCtx.Codec().UnmarshalBinaryLengthPrefixed(tx, &stdTx)
 		if err != nil {
 			return nil, errors.Wrapf(err, "unmarshal stdtx error")
 		}

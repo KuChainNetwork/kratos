@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -17,6 +16,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/KuChainNetwork/kuchain/app"
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	kuKeys "github.com/KuChainNetwork/kuchain/chain/client/keys"
 	"github.com/KuChainNetwork/kuchain/chain/client/rest"
 	txcmd "github.com/KuChainNetwork/kuchain/chain/client/txutil/client/cli"
@@ -128,10 +128,10 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 // NOTE: details on the routes added for each module are in the module documentation
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
-	client.RegisterRoutes(rs.CliCtx, rs.Mux)
+	client.RegisterRoutes(rs.CliCtx.Ctx(), rs.Mux)
 	rest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
 	rest.RegisterBlockRoutes(rs.CliCtx, rs.Mux)
-	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
+	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx.Ctx(), rs.Mux)
 }
 
 func initConfig(cmd *cobra.Command) error {

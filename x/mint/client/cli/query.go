@@ -3,10 +3,9 @@ package cli
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/x/mint/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -41,7 +40,7 @@ func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 		Short: "Query the current minting parameters",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParameters)
 			res, _, err := cliCtx.QueryWithData(route, nil)
@@ -67,7 +66,7 @@ func GetCmdQueryInflation(cdc *codec.Codec) *cobra.Command {
 		Short: "Query the current minting inflation value",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryInflation)
 			res, _, err := cliCtx.QueryWithData(route, nil)
@@ -93,7 +92,7 @@ func GetCmdQueryAnnualProvisions(cdc *codec.Codec) *cobra.Command {
 		Short: "Query the current minting annual provisions value",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAnnualProvisions)
 			res, _, err := cliCtx.QueryWithData(route, nil)

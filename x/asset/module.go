@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
@@ -52,7 +53,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 
 // RegisterRESTRoutes registers the REST routes for the asset module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr, types.StoreKey)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, types.StoreKey)
 }
 
 // GetTxCmd returns the root tx command for the asset module.

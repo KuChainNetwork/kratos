@@ -4,13 +4,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // WriteGenerateStdTxResponse writes response for the generate only mode.
-func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br types.BaseReq, msgs []sdk.Msg) {
+func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx client.Context, br types.BaseReq, msgs []sdk.Msg) {
 	gasAdj, ok := types.ParseFloat64OrReturnBadRequest(w, br.GasAdjustment, flags.DefaultGasAdjustment)
 	if !ok {
 		return
@@ -23,7 +24,7 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br t
 	}
 
 	txBldr := NewTxBuilder(
-		GetTxEncoder(cliCtx.Codec), br.AccountNumber, br.Sequence, gas, gasAdj,
+		GetTxEncoder(cliCtx.Codec()), br.AccountNumber, br.Sequence, gas, gasAdj,
 		br.Simulate, br.ChainID, br.Memo, br.Fees, br.GasPrices,
 	)
 
@@ -42,7 +43,7 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br t
 		}
 
 		if br.Simulate {
-			types.WriteSimulationResponse(w, cliCtx.Codec, txBldr.Gas())
+			types.WriteSimulationResponse(w, cliCtx.Codec(), txBldr.Gas())
 			return
 		}
 	}
@@ -53,7 +54,7 @@ func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br t
 		return
 	}
 
-	output, err := cliCtx.Codec.MarshalJSON(NewStdTx(stdMsg.Msg, stdMsg.Fee, nil, stdMsg.Memo))
+	output, err := cliCtx.Codec().MarshalJSON(NewStdTx(stdMsg.Msg, stdMsg.Fee, nil, stdMsg.Memo))
 	if err != nil {
 		types.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return

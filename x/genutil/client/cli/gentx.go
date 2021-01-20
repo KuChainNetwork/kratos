@@ -10,11 +10,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
 	"github.com/KuChainNetwork/kuchain/x/genutil/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -40,9 +40,9 @@ type StakingMsgBuildingHelpers interface {
 	CreateValidatorMsgHelpers(ipDefault string) (fs *flag.FlagSet, nodeIDFlag, pubkeyFlag, amountFlag, defaultsDesc string)
 	PrepareFlagsForTxCreateValidator(config *cfg.Config, nodeID, chainID string, valPubKey crypto.PubKey)
 
-	BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	BuildCreateValidatorMsg(cliCtx client.Context, txBldr txutil.TxBuilder,
 		operAccountID chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error)
-	BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	BuildDelegateMsg(cliCtx client.Context, txBldr txutil.TxBuilder,
 		authAddress chainTypes.AccAddress, delAccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error)
 }
 
@@ -101,7 +101,7 @@ func genTxRunE(ctx *server.Context, cdc *codec.Codec,
 		viper.Set(flags.FlagGenerateOnly, true)
 		viper.Set(flags.FlagFrom, args[1])
 
-		cliCtx := txutil.NewKuCLICtxNoFrom(context.NewCLIContextWithInput(inBuf).WithCodec(cdc))
+		cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 		valAccountID, err := chainTypes.NewAccountIDFromStr(args[0])
 		if err != nil {
 			return errors.Wrap(err, "Invalid validator account ID")

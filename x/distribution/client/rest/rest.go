@@ -3,33 +3,33 @@ package rest
 import (
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
 	govRest "github.com/KuChainNetwork/kuchain/x/gov/client/rest"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 )
 
 // RegisterRoutes register distribution REST routes.
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, queryRoute string) {
+func RegisterRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
 	registerQueryRoutes(cliCtx, r, queryRoute)
 	registerTxRoutes(cliCtx, r, queryRoute)
 }
 
 // ProposalRESTHandler returns a ProposalRESTHandler that exposes the community pool spend REST handler with a given sub-route.
-func ProposalRESTHandler(cliCtx context.CLIContext) govRest.ProposalRESTHandler {
+func ProposalRESTHandler(cliCtx client.Context) govRest.ProposalRESTHandler {
 	return govRest.ProposalRESTHandler{
 		SubRoute: "community_pool_spend",
 		Handler:  postProposalHandlerFn(cliCtx),
 	}
 }
 
-func postProposalHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func postProposalHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req CommunityPoolSpendProposalReq
-		if !rest.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !rest.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -45,6 +45,6 @@ func postProposalHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		txutil.WriteGenerateStdTxResponse(w, txutil.NewKuCLICtx(cliCtx), req.BaseReq, []sdk.Msg{msg})
+		txutil.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

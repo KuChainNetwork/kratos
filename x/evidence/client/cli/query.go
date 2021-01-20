@@ -8,11 +8,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/x/evidence/exported"
 	"github.com/KuChainNetwork/kuchain/x/evidence/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/version"
 )
@@ -58,7 +57,7 @@ func QueryParamsCmd(cdc *codec.Codec) *cobra.Command {
 $ <appcli> query kuevidence params
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParameters)
 			res, _, err := cliCtx.QueryWithData(route, nil)
@@ -84,7 +83,7 @@ func QueryEvidenceCmd(cdc *codec.Codec) func(*cobra.Command, []string) error {
 			return err
 		}
 
-		cliCtx := context.NewCLIContext().WithCodec(cdc)
+		cliCtx := client.NewCtxByCodec(cdc)
 
 		if len(args) > 0 {
 			if hash := args[0]; hash != "" {
@@ -96,7 +95,7 @@ func QueryEvidenceCmd(cdc *codec.Codec) func(*cobra.Command, []string) error {
 	}
 }
 
-func queryEvidence(cdc *codec.Codec, cliCtx context.CLIContext, hash string) error {
+func queryEvidence(cdc *codec.Codec, cliCtx client.Context, hash string) error {
 	if _, err := hex.DecodeString(hash); err != nil {
 		return fmt.Errorf("invalid evidence hash: %w", err)
 	}
@@ -122,7 +121,7 @@ func queryEvidence(cdc *codec.Codec, cliCtx context.CLIContext, hash string) err
 	return cliCtx.PrintOutput(evidence)
 }
 
-func queryAllEvidence(cdc *codec.Codec, cliCtx context.CLIContext) error {
+func queryAllEvidence(cdc *codec.Codec, cliCtx client.Context) error {
 	params := types.NewQueryAllEvidenceParams(viper.GetInt(flags.FlagPage), viper.GetInt(flags.FlagLimit))
 	bz, err := cdc.MarshalJSON(params)
 	if err != nil {

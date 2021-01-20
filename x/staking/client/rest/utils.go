@@ -6,10 +6,11 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
@@ -25,7 +26,7 @@ func contains(stringSlice []string, txType string) bool {
 }
 
 // queries staking txs
-func queryTxs(cliCtx context.CLIContext, action string, delegatorAddr string) (*sdk.SearchTxsResult, error) {
+func queryTxs(cliCtx client.Context, action string, delegatorAddr string) (*sdk.SearchTxsResult, error) {
 	page := 1
 	limit := 100
 	events := []string{
@@ -36,7 +37,7 @@ func queryTxs(cliCtx context.CLIContext, action string, delegatorAddr string) (*
 	return txutil.QueryTxsByEvents(cliCtx, events, page, limit)
 }
 
-func queryBonds(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
+func queryBonds(cliCtx client.Context, endpoint string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		bech32delegator := vars["delegatorAddr"]
@@ -56,14 +57,14 @@ func queryBonds(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
 		delegatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32delegator)
 		validatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32validator)
 
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		cliCtx, ok := utils.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
 		params := types.NewQueryBondsParams(delegatorAddr, validatorAddr)
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.Codec().MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -76,11 +77,11 @@ func queryBonds(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		utils.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
-func queryDelegator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
+func queryDelegator(cliCtx client.Context, endpoint string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		bech32delegator := vars["delegatorAddr"]
@@ -96,14 +97,14 @@ func queryDelegator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 			return
 		}
 
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		cliCtx, ok := utils.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
 		params := types.NewQueryDelegatorParams(delegatorAddr)
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.Codec().MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -116,11 +117,11 @@ func queryDelegator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		utils.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
-func queryValidator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
+func queryValidator(cliCtx client.Context, endpoint string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		bech32validatorAddr := vars["validatorAddr"]
@@ -132,14 +133,14 @@ func queryValidator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 		// }
 		validatorAddr, _ := chainTypes.NewAccountIDFromStr(bech32validatorAddr)
 
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		cliCtx, ok := utils.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
 		params := types.NewQueryValidatorParams(validatorAddr)
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.Codec().MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -152,11 +153,11 @@ func queryValidator(cliCtx context.CLIContext, endpoint string) http.HandlerFunc
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		utils.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
-func queryValidatorByConsAddr(cliCtx context.CLIContext, endpoint string) http.HandlerFunc {
+func queryValidatorByConsAddr(cliCtx client.Context, endpoint string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		strConsAddr := vars["consAddr"]
@@ -168,14 +169,14 @@ func queryValidatorByConsAddr(cliCtx context.CLIContext, endpoint string) http.H
 		// }
 		consAddr, _ := sdk.ConsAddressFromHex(strConsAddr)
 
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		cliCtx, ok := utils.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
 		params := types.NewQueryValidatorFromConsAddr(consAddr)
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.Codec().MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -188,6 +189,6 @@ func queryValidatorByConsAddr(cliCtx context.CLIContext, endpoint string) http.H
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		utils.PostProcessResponse(w, cliCtx, res)
 	}
 }

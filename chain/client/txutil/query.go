@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -18,7 +18,7 @@ import (
 // "{eventAttribute}.{attributeKey} = '{attributeValue}'". Each event is
 // concatenated with an 'AND' operand. It returns a slice of Info object
 // containing txs and metadata. An error is returned if the query fails.
-func QueryTxsByEvents(cliCtx context.CLIContext, events []string, page, limit int) (*sdk.SearchTxsResult, error) {
+func QueryTxsByEvents(cliCtx client.Context, events []string, page, limit int) (*sdk.SearchTxsResult, error) {
 	if len(events) == 0 {
 		return nil, errors.New("must declare at least one event to search")
 	}
@@ -39,7 +39,7 @@ func QueryTxsByEvents(cliCtx context.CLIContext, events []string, page, limit in
 		return nil, err
 	}
 
-	prove := !cliCtx.TrustNode
+	prove := !cliCtx.TrustNode()
 
 	resTxs, err := node.TxSearch(query, prove, page, limit, "")
 	if err != nil {
@@ -60,7 +60,7 @@ func QueryTxsByEvents(cliCtx context.CLIContext, events []string, page, limit in
 		return nil, err
 	}
 
-	txs, err := formatTxResults(cliCtx.Codec, resTxs.Txs, resBlocks)
+	txs, err := formatTxResults(cliCtx.Codec(), resTxs.Txs, resBlocks)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func QueryTxsByEvents(cliCtx context.CLIContext, events []string, page, limit in
 
 // QueryTx queries for a single transaction by a hash string in hex format. An
 // error is returned if the transaction does not exist or cannot be queried.
-func QueryTx(cliCtx context.CLIContext, hashHexStr string) (sdk.TxResponse, error) {
+func QueryTx(cliCtx client.Context, hashHexStr string) (sdk.TxResponse, error) {
 	hash, err := hex.DecodeString(hashHexStr)
 	if err != nil {
 		return sdk.TxResponse{}, err
@@ -83,12 +83,12 @@ func QueryTx(cliCtx context.CLIContext, hashHexStr string) (sdk.TxResponse, erro
 		return sdk.TxResponse{}, err
 	}
 
-	resTx, err := node.Tx(hash, !cliCtx.TrustNode)
+	resTx, err := node.Tx(hash, !cliCtx.TrustNode())
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
 
-	if !cliCtx.TrustNode {
+	if !cliCtx.TrustNode() {
 		if err = ValidateTxResult(cliCtx, resTx); err != nil {
 			return sdk.TxResponse{}, err
 		}
@@ -99,7 +99,7 @@ func QueryTx(cliCtx context.CLIContext, hashHexStr string) (sdk.TxResponse, erro
 		return sdk.TxResponse{}, err
 	}
 
-	out, err := formatTxResult(cliCtx.Codec, resTx, resBlocks[resTx.Height])
+	out, err := formatTxResult(cliCtx.Codec(), resTx, resBlocks[resTx.Height])
 	if err != nil {
 		return out, err
 	}
@@ -122,8 +122,8 @@ func formatTxResults(cdc *codec.Codec, resTxs []*ctypes.ResultTx, resBlocks map[
 }
 
 // ValidateTxResult performs transaction verification.
-func ValidateTxResult(cliCtx context.CLIContext, resTx *ctypes.ResultTx) error {
-	if !cliCtx.TrustNode {
+func ValidateTxResult(cliCtx client.Context, resTx *ctypes.ResultTx) error {
+	if !cliCtx.TrustNode() {
 		check, err := cliCtx.Verify(resTx.Height)
 		if err != nil {
 			return err
@@ -136,7 +136,7 @@ func ValidateTxResult(cliCtx context.CLIContext, resTx *ctypes.ResultTx) error {
 	return nil
 }
 
-func getBlocksForTxResults(cliCtx context.CLIContext, resTxs []*ctypes.ResultTx) (map[int64]*ctypes.ResultBlock, error) {
+func getBlocksForTxResults(cliCtx client.Context, resTxs []*ctypes.ResultTx) (map[int64]*ctypes.ResultBlock, error) {
 	node, err := cliCtx.GetNode()
 	if err != nil {
 		return nil, err

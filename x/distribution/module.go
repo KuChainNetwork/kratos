@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/cli"
@@ -50,7 +51,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 
 // RegisterRESTRoutes registers the REST routes for the distribution module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr, StoreKey)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, StoreKey)
 }
 
 // GetTxCmd returns the root tx command for the distribution module.

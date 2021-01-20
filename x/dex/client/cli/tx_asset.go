@@ -3,11 +3,11 @@ package cli
 import (
 	"bufio"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/pkg/errors"
@@ -23,7 +23,7 @@ func SigInCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			account, err := types.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -40,7 +40,7 @@ func SigInCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(account)
+			ctx := cliCtx.WithFromAccount(account)
 			auth, err := txutil.QueryAccountAuth(ctx, account)
 			if err != nil {
 				return errors.Wrapf(err, "query account %s auth error", account)
@@ -65,7 +65,7 @@ func SigOutCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			account, err := types.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -82,7 +82,7 @@ func SigOutCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(dex)
+			ctx := cliCtx.WithFromAccount(dex)
 			auth, err := txutil.QueryAccountAuth(ctx, dex)
 			if err != nil {
 				return errors.Wrapf(err, "query account %s auth error", dex)

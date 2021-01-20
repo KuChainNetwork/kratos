@@ -5,8 +5,8 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	rest "github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 )
 
 // REST Variable names
@@ -28,7 +28,7 @@ type ProposalRESTHandler struct {
 }
 
 // RegisterRoutes - Central function to define routes that get registered by the main application
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, phs []ProposalRESTHandler) {
+func RegisterRoutes(cliCtx client.Context, r *mux.Router, phs []ProposalRESTHandler) {
 	registerQueryRoutes(cliCtx, r)
 	registerTxRoutes(cliCtx, r, phs)
 }

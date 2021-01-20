@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/params/external"
 	"github.com/KuChainNetwork/kuchain/x/params/types/proposal"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -23,18 +23,17 @@ type PostProposalParamsReq struct {
 
 // ProposalRESTHandler returns a ProposalRESTHandler that exposes the param
 // change REST handler with a given sub-route.
-func ProposalRESTHandler(cliCtx context.CLIContext) external.GovProposalRESTHandler {
-	ctx := txutil.NewKuCLICtx(cliCtx)
+func ProposalRESTHandler(cliCtx client.Context) external.GovProposalRESTHandler {
 	return external.GovProposalRESTHandler{
 		SubRoute: "param_change",
-		Handler:  postProposalParamsHandlerFn(ctx),
+		Handler:  postProposalParamsHandlerFn(cliCtx),
 	}
 }
 
-func postProposalParamsHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func postProposalParamsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req PostProposalParamsReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 

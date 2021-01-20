@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/x/supply/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -52,7 +51,7 @@ $ %s query %s total stake
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			if len(args) == 0 {
 				return queryTotalSupply(cliCtx, cdc)
@@ -62,7 +61,7 @@ $ %s query %s total stake
 	}
 }
 
-func queryTotalSupply(cliCtx context.CLIContext, cdc *codec.Codec) error {
+func queryTotalSupply(cliCtx client.Context, cdc *codec.Codec) error {
 	params := types.NewQueryTotalSupplyParams(1, 0) // no pagination
 	bz, err := cdc.MarshalJSON(params)
 	if err != nil {
@@ -83,7 +82,7 @@ func queryTotalSupply(cliCtx context.CLIContext, cdc *codec.Codec) error {
 	return cliCtx.PrintOutput(totalSupply)
 }
 
-func querySupplyOf(cliCtx context.CLIContext, cdc *codec.Codec, denom string) error {
+func querySupplyOf(cliCtx client.Context, cdc *codec.Codec, denom string) error {
 	params := types.NewQuerySupplyOfParams(denom)
 	bz, err := cdc.MarshalJSON(params)
 	if err != nil {

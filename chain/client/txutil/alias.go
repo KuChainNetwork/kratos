@@ -1,6 +1,7 @@
 package txutil
 
 import (
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/transaction"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	accountTypes "github.com/KuChainNetwork/kuchain/x/account/types"
@@ -22,9 +23,16 @@ var (
 	NewTxBuilderFromCLI = transaction.NewTxBuilderFromCLI
 )
 
+var (
+	NewKuCLICtx            = client.NewKuCLICtx
+	NewKuCLICtxNoFrom      = client.NewKuCLICtxNoFrom
+	NewKuCLICtxByBuf       = client.NewKuCLICtxByBuf
+	NewKuCLICtxByBufNoFrom = client.NewKuCLICtxByBufNoFrom
+)
+
 // NewAccountRetriever initializes a new AccountRetriever instance.
-func NewAccountRetriever(cliCtx KuCLIContext) accountTypes.AccountRetriever {
-	return accountTypes.NewAccountRetriever(cliCtx.CLIContext)
+func NewAccountRetriever(cliCtx client.Context) accountTypes.AccountRetriever {
+	return accountTypes.NewAccountRetriever(cliCtx.Ctx())
 }
 
 // GetSignBytes returns the signBytes of the tx for a given signer

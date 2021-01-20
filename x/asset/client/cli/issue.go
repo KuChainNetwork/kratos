@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -24,7 +24,7 @@ func Issue(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			creator, err := chainTypes.NewName(args[0])
 			if err != nil {
@@ -33,7 +33,7 @@ func Issue(cdc *codec.Codec) *cobra.Command {
 
 			creatorID := types.NewAccountIDFromName(creator)
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorID)
+			ctx := cliCtx.WithFromAccount(creatorID)
 			auth, err := txutil.QueryAccountAuth(ctx, creatorID)
 			if err != nil {
 				return sdkerrors.Wrapf(err, "query account %s auth error", creator)
@@ -73,11 +73,11 @@ func Burn(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			accountID := chainTypes.MustAccountID(args[0])
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(accountID)
+			ctx := cliCtx.WithFromAccount(accountID)
 			auth, err := txutil.QueryAccountAuth(ctx, accountID)
 			if err != nil {
 				return sdkerrors.Wrapf(err, "query account %s auth error", accountID)

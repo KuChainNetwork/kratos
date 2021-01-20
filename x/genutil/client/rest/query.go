@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/KuChainNetwork/kuchain/chain/client"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 
 // QueryGenesisTxs writes the genesis transactions to the response if no error occurs.
-func QueryGenesisTxs(cliCtx context.CLIContext, w http.ResponseWriter) {
-	_, err := cliCtx.Client.Genesis()
+func QueryGenesisTxs(cliCtx client.Context, w http.ResponseWriter) {
+	_, err := cliCtx.GetClient().Genesis()
 	if err != nil {
 		rest.WriteErrorResponse(
 			w, http.StatusInternalServerError,
@@ -48,5 +49,5 @@ func QueryGenesisTxs(cliCtx context.CLIContext, w http.ResponseWriter) {
 
 	*/
 
-	rest.PostProcessResponseBare(w, cliCtx, genTxs)
+	utils.PostProcessResponseBare(w, cliCtx, genTxs)
 }

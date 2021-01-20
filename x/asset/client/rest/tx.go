@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/asset/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -64,10 +64,10 @@ type ExerciseReq struct {
 	Amount  string             `json:"amount" yaml:"amount"`
 }
 
-func TransferRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func TransferRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req TransferReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -79,7 +79,7 @@ func TransferRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(from)
+		ctx := cliCtx.WithFromAccount(from)
 		authAddress, err := txutil.QueryAccountAuth(ctx, from)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -103,10 +103,10 @@ func TransferRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func CreateRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func CreateRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req CreateReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -120,7 +120,7 @@ func CreateRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		creatorID := types.NewAccountIDFromName(creator)
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorID)
+		ctx := cliCtx.WithFromAccount(creatorID)
 		auth, err := txutil.QueryAccountAuth(ctx, creatorID)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -176,10 +176,10 @@ func CreateRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func IssueRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func IssueRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req IssueReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -193,7 +193,7 @@ func IssueRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		creatorID := types.NewAccountIDFromName(creator)
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorID)
+		ctx := cliCtx.WithFromAccount(creatorID)
 		auth, err := txutil.QueryAccountAuth(ctx, creatorID)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -223,10 +223,10 @@ func IssueRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func BurnRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func BurnRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req BurnReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -238,7 +238,7 @@ func BurnRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(acc)
+		ctx := cliCtx.WithFromAccount(acc)
 		auth, err := txutil.QueryAccountAuth(ctx, acc)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -261,10 +261,10 @@ func BurnRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func LockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func LockRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req LockReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -288,7 +288,7 @@ func LockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(account)
+		ctx := cliCtx.WithFromAccount(account)
 		auth, err := txutil.QueryAccountAuth(ctx, account)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("query account auth error, %s", err.Error()))
@@ -300,10 +300,10 @@ func LockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func UnlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func UnlockRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req LockReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -321,7 +321,7 @@ func UnlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(account)
+		ctx := cliCtx.WithFromAccount(account)
 		auth, err := txutil.QueryAccountAuth(ctx, account)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("query account auth error, %s", err.Error()))
@@ -333,10 +333,10 @@ func UnlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func ExerciseRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func ExerciseRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req ExerciseReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -354,7 +354,7 @@ func ExerciseRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(account)
+		ctx := cliCtx.WithFromAccount(account)
 		auth, err := txutil.QueryAccountAuth(ctx, account)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("query account auth error, %s", err.Error()))

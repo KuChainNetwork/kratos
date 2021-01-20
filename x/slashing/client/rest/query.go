@@ -6,13 +6,14 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 
-func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(
 		"/slashing/validators/{validatorPubKey}/signing_info",
 		signingInfoHandlerFn(cliCtx),
@@ -30,7 +31,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 }
 
 // http request handler to query signing info
-func signingInfoHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func signingInfoHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		pk, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, vars["validatorPubKey"])
@@ -39,14 +40,14 @@ func signingInfoHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		cliCtx, ok := utils.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
 		params := types.NewQuerySigningInfoParams(sdk.ConsAddress(pk.Address()))
 
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.Codec().MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -60,12 +61,12 @@ func signingInfoHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		utils.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
 // http request handler to query signing info
-func signingInfoHandlerListFn(cliCtx context.CLIContext) http.HandlerFunc {
+func signingInfoHandlerListFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 0)
 		if err != nil {
@@ -73,13 +74,13 @@ func signingInfoHandlerListFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		cliCtx, ok := utils.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
 
 		params := types.NewQuerySigningInfosParams(page, limit)
-		bz, err := cliCtx.Codec.MarshalJSON(params)
+		bz, err := cliCtx.Codec().MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -93,13 +94,13 @@ func signingInfoHandlerListFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		utils.PostProcessResponse(w, cliCtx, res)
 	}
 }
 
-func queryParamsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func queryParamsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		cliCtx, ok := utils.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
@@ -113,6 +114,6 @@ func queryParamsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		utils.PostProcessResponse(w, cliCtx, res)
 	}
 }

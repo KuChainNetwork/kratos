@@ -11,6 +11,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/account/client/cli"
 	"github.com/KuChainNetwork/kuchain/x/account/client/rest"
 	"github.com/KuChainNetwork/kuchain/x/account/types"
+	"github.com/KuChainNetwork/kuchain/x/gov/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -53,7 +54,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 
 // RegisterRESTRoutes registers the REST routes for the account module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr, types.StoreKey)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, types.StoreKey)
 }
 
 // GetTxCmd returns the root tx command for the account module.

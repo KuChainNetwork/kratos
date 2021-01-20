@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/chain/msg"
@@ -57,7 +58,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 
 // RegisterRESTRoutes registers the REST routes for the staking module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr)
 }
 
 // GetTxCmd returns the root tx command for the staking module.
@@ -85,14 +86,14 @@ func (AppModuleBasic) PrepareFlagsForTxCreateValidator(config *cfg.Config, nodeI
 }
 
 // BuildCreateValidatorMsg - used for gen-tx
-func (AppModuleBasic) BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext,
+func (AppModuleBasic) BuildCreateValidatorMsg(cliCtx client.Context,
 	txBldr txutil.TxBuilder, operAccountID chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error) {
 	return cli.BuildCreateValidatorMsg(cliCtx, txBldr, operAccountID, authAddress)
 }
 
 // BuildDelegateMsg - used for gen-tx
 func (AppModuleBasic) BuildDelegateMsg(
-	cliCtx txutil.KuCLIContext,
+	cliCtx client.Context,
 	txBldr txutil.TxBuilder, address chainTypes.AccAddress,
 	delAccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
 	return cli.BuildDelegateMsg(cliCtx, txBldr, address, delAccountID, valAccountID)

@@ -6,12 +6,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	stakingexport "github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -377,7 +377,7 @@ func PrepareFlagsForTxCreateValidator(
 
 // BuildCreateValidatorMsg makes a new MsgCreateValidator.
 func BuildCreateValidatorMsg(
-	cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	cliCtx client.Context, txBldr txutil.TxBuilder,
 	valAddr chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error) {
 	delAddr := chainTypes.NewAccountIDFromAccAdd(authAddress)
 	pkStr := viper.GetString(FlagPubKey)
@@ -419,7 +419,7 @@ func BuildCreateValidatorMsg(
 }
 
 func BuildDelegateMsg(
-	cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	cliCtx client.Context, txBldr txutil.TxBuilder,
 	authAddress chainTypes.AccAddress,
 	delAccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error) {
 	defaultAmount = stakingexport.TokensFromConsensusPower(1).String() + stakingexport.DefaultBondDenom

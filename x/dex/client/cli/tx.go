@@ -6,11 +6,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
@@ -52,14 +51,14 @@ func CreateDex(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			creator, err := chainTypes.NewName(args[0])
 			if err != nil {
 				return err
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			auth, err := txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator))
 			if err != nil {
 				return errors.Wrapf(err, "query account %s auth error", creator)
@@ -93,14 +92,14 @@ func UpdateDexDescriptionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			var creator types.Name
 			if creator, err = chainTypes.NewName(args[0]); nil != err {
 				return
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
 				return errors.Wrapf(err, "update dex description account %s auth error", creator)
@@ -127,14 +126,14 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			var creator types.Name
 			if creator, err = chainTypes.NewName(args[0]); nil != err {
 				return
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
 				err = errors.Wrapf(err, "destroy dex account %s auth error", creator)
@@ -160,7 +159,7 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			var creator types.Name
 			if creator, err = chainTypes.NewName(args[0]); nil != err {
@@ -196,7 +195,7 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
 				err = errors.Wrapf(err, "create dex symbol account %s auth error", creator)
@@ -258,7 +257,7 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			var creator types.Name
 			if creator, err = chainTypes.NewName(args[0]); nil != err {
@@ -297,7 +296,7 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
 				err = errors.Wrapf(err, "update dex symbol account %s auth error", creator)
@@ -357,7 +356,7 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			var creator types.Name
 			if creator, err = chainTypes.NewName(args[0]); nil != err {
@@ -373,7 +372,7 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
 				err = errors.Wrapf(err, "pause symbol account %s auth error", creator)
@@ -419,7 +418,7 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			var creator types.Name
 			if creator, err = chainTypes.NewName(args[0]); nil != err {
@@ -435,7 +434,7 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
 				err = errors.Wrapf(err, "restore symbol account %s auth error", creator)
@@ -481,7 +480,7 @@ func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			txBldr := txutil.NewTxBuilderFromCLI(inBuf).WithTxEncoder(txutil.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+			cliCtx := client.NewKuCLICtxByBuf(cdc, inBuf)
 
 			var creator types.Name
 			if creator, err = chainTypes.NewName(args[0]); nil != err {
@@ -497,7 +496,7 @@ func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
 				return
 			}
 
-			ctx := txutil.NewKuCLICtx(cliCtx).WithAccount(creator)
+			ctx := cliCtx.WithAccount(creator)
 			var auth chainTypes.AccAddress
 			if auth, err = txutil.QueryAccountAuth(ctx, chainTypes.NewAccountIDFromName(creator)); nil != err {
 				err = errors.Wrapf(err, "shutdown symbol account %s auth error", creator)

@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -82,7 +82,7 @@ func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) 
 
 		multisigPub := multisigInfo.GetPubKey().(multisig.PubKeyMultisigThreshold)
 		multisigSig := multisig.NewMultisig(len(multisigPub.PubKeys))
-		cliCtx := txutil.NewKuCLICtx(context.NewCLIContext().WithCodec(cdc))
+		cliCtx := client.NewCtxByCodec(cdc)
 		txBldr := txutil.NewTxBuilderFromCLI(inBuf)
 
 		if !viper.GetBool(flagOffline) {
@@ -123,11 +123,11 @@ func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) 
 		sigOnly := viper.GetBool(flagSigOnly)
 		var json []byte
 		switch {
-		case sigOnly && cliCtx.Indent:
+		case sigOnly && cliCtx.Indent():
 			json, err = cdc.MarshalJSONIndent(newTx.Signatures[0], "", "  ")
-		case sigOnly && !cliCtx.Indent:
+		case sigOnly && !cliCtx.Indent():
 			json, err = cdc.MarshalJSON(newTx.Signatures[0])
-		case !sigOnly && cliCtx.Indent:
+		case !sigOnly && cliCtx.Indent():
 			json, err = cdc.MarshalJSONIndent(newTx, "", "  ")
 		default:
 			json, err = cdc.MarshalJSON(newTx)

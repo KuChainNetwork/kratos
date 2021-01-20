@@ -10,10 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tendermint/tendermint/types"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/tendermint/tendermint/types"
 )
 
 const (
@@ -196,112 +194,6 @@ func ParseFloat64OrReturnBadRequest(w http.ResponseWriter, s string, defaultIfEm
 	}
 
 	return n, true
-}
-
-// ParseQueryHeightOrReturnBadRequest sets the height to execute a query if set by the http request.
-// It returns false if there was an error parsing the height.
-func ParseQueryHeightOrReturnBadRequest(w http.ResponseWriter, cliCtx context.CLIContext, r *http.Request) (context.CLIContext, bool) {
-	heightStr := r.FormValue("height")
-	if heightStr != "" {
-		height, err := strconv.ParseInt(heightStr, 10, 64)
-		if err != nil {
-			WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return cliCtx, false
-		}
-
-		if height < 0 {
-			WriteErrorResponse(w, http.StatusBadRequest, "height must be equal or greater than zero")
-			return cliCtx, false
-		}
-
-		if height > 0 {
-			cliCtx = cliCtx.WithHeight(height)
-		}
-	} else {
-		cliCtx = cliCtx.WithHeight(0)
-	}
-
-	return cliCtx, true
-}
-
-// PostProcessResponseBare post processes a body similar to PostProcessResponse
-// except it does not wrap the body and inject the height.
-func PostProcessResponseBare(w http.ResponseWriter, cliCtx context.CLIContext, body interface{}) {
-	var (
-		resp []byte
-		err  error
-	)
-
-	switch b := body.(type) {
-	case []byte:
-		resp = b
-
-	default:
-		if cliCtx.Indent {
-			resp, err = cliCtx.Codec.MarshalJSONIndent(body, "", "  ")
-		} else {
-			resp, err = cliCtx.Codec.MarshalJSON(body)
-		}
-
-		if err != nil {
-			WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	_, _ = w.Write(resp)
-}
-
-// PostProcessResponse performs post processing for a REST response. The result
-// returned to clients will contain two fields, the height at which the resource
-// was queried at and the original result.
-func PostProcessResponse(w http.ResponseWriter, cliCtx context.CLIContext, resp interface{}) {
-	var result []byte
-
-	if cliCtx.Height < 0 {
-		WriteErrorResponse(w, http.StatusInternalServerError, fmt.Errorf("negative height in response").Error())
-		return
-	}
-
-	switch res := resp.(type) {
-	case []byte:
-		result = res
-
-	default:
-		var err error
-		if cliCtx.Indent {
-			result, err = cliCtx.Codec.MarshalJSONIndent(resp, "", "  ")
-		} else {
-			result, err = cliCtx.Codec.MarshalJSON(resp)
-		}
-
-		if err != nil {
-			WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-	}
-
-	wrappedResp := NewResponseWithHeight(cliCtx.Height, result)
-
-	var (
-		output []byte
-		err    error
-	)
-
-	if cliCtx.Indent {
-		output, err = cliCtx.Codec.MarshalJSONIndent(wrappedResp, "", "  ")
-	} else {
-		output, err = cliCtx.Codec.MarshalJSON(wrappedResp)
-	}
-
-	if err != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	_, _ = w.Write(output)
 }
 
 // ParseHTTPArgsWithLimit parses the request's URL and returns a slice containing

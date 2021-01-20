@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
@@ -63,7 +64,7 @@ func Test_splitAndCall_Splitting(t *testing.T) {
 
 	callCount := 0
 	err := splitAndApply(
-		func(ctx txutil.KuCLIContext, txBldr txutil.TxBuilder, msgs []sdk.Msg) error {
+		func(ctx client.Context, txBldr txutil.TxBuilder, msgs []sdk.Msg) error {
 			callCount++
 
 			assert.NotNil(t, ctx)

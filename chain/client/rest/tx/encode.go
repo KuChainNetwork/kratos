@@ -5,8 +5,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 
@@ -22,7 +23,7 @@ type MsgEncodeResp struct {
 // EncodeTxRequestHandlerFn returns the encode tx REST handler. In particular,
 // it takes a json-formatted transaction, encodes it to the Amino wire protocol,
 // and responds with base64-encoded bytes.
-func EncodeTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func EncodeTxRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.StdTx
 
@@ -32,14 +33,14 @@ func EncodeTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		err = cliCtx.Codec.UnmarshalJSON(body, &req)
+		err = cliCtx.Codec().UnmarshalJSON(body, &req)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		// re-encode it via the Amino wire protocol
-		txBytes, err := cliCtx.Codec.MarshalBinaryBare(req)
+		txBytes, err := cliCtx.Codec().MarshalBinaryBare(req)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -49,11 +50,11 @@ func EncodeTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		txBytesBase64 := base64.StdEncoding.EncodeToString(txBytes)
 
 		response := TxEncodeResp{Tx: txBytesBase64}
-		rest.PostProcessResponseBare(w, cliCtx, response)
+		utils.PostProcessResponseBare(w, cliCtx, response)
 	}
 }
 
-func EncodeMsgRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func EncodeMsgRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.StdSignMsg
 
@@ -63,7 +64,7 @@ func EncodeMsgRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		err = cliCtx.Codec.UnmarshalJSON(body, &req)
+		err = cliCtx.Codec().UnmarshalJSON(body, &req)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -72,6 +73,6 @@ func EncodeMsgRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		msgBytesBase64 := base64.StdEncoding.EncodeToString(req.Bytes())
 
 		response := MsgEncodeResp{Msg: msgBytesBase64}
-		rest.PostProcessResponseBare(w, cliCtx, response)
+		utils.PostProcessResponseBare(w, cliCtx, response)
 	}
 }

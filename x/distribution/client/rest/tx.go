@@ -3,16 +3,16 @@ package rest
 import (
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 )
 
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, queryRoute string) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
 	// Withdraw all delegator rewards
 	r.HandleFunc(
 		"/distribution/delegators/rewards",
@@ -59,10 +59,10 @@ type (
 )
 
 // Withdraw delegator rewards
-func withdrawDelegatorRewardsHandlerFn(cliCtx context.CLIContext, queryRoute string) http.HandlerFunc {
+func withdrawDelegatorRewardsHandlerFn(cliCtx client.Context, queryRoute string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req withdrawRewardsReq
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -74,7 +74,7 @@ func withdrawDelegatorRewardsHandlerFn(cliCtx context.CLIContext, queryRoute str
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(delegatorAcc)
+		ctx := cliCtx.WithFromAccount(delegatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, delegatorAcc)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -87,16 +87,16 @@ func withdrawDelegatorRewardsHandlerFn(cliCtx context.CLIContext, queryRoute str
 			return
 		}
 
-		txutil.WriteGenerateStdTxResponse(w, txutil.NewKuCLICtx(cliCtx), req.BaseReq, msg)
+		txutil.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, msg)
 	}
 }
 
 // Withdraw delegation rewards
-func withdrawDelegationRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func withdrawDelegationRewardsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req withdrawRewardsReq
 
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -114,7 +114,7 @@ func withdrawDelegationRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerF
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(delegatorAcc)
+		ctx := cliCtx.WithFromAccount(delegatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, delegatorAcc)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -127,16 +127,16 @@ func withdrawDelegationRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerF
 			return
 		}
 
-		txutil.WriteGenerateStdTxResponse(w, txutil.NewKuCLICtx(cliCtx), req.BaseReq, []sdk.Msg{msg})
+		txutil.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 
 // Replace the rewards withdrawal address
-func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func setDelegatorWithdrawalAddrHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req setWithdrawalAddrReq
 
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -154,7 +154,7 @@ func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.Handler
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(delegatorAcc)
+		ctx := cliCtx.WithFromAccount(delegatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, delegatorAcc)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -167,16 +167,16 @@ func setDelegatorWithdrawalAddrHandlerFn(cliCtx context.CLIContext) http.Handler
 			return
 		}
 
-		txutil.WriteGenerateStdTxResponse(w, txutil.NewKuCLICtx(cliCtx), req.BaseReq, []sdk.Msg{msg})
+		txutil.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 
 // Withdraw validator rewards and commission
-func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func withdrawValidatorRewardsHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req withdrawRewardsReq
 
-		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec, &req) {
+		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
 			return
 		}
 
@@ -188,7 +188,7 @@ func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(validatorAcc)
+		ctx := cliCtx.WithFromAccount(validatorAcc)
 		auth, err := txutil.QueryAccountAuth(ctx, validatorAcc)
 		if err != nil {
 			chainTypes.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -201,7 +201,7 @@ func withdrawValidatorRewardsHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 			return
 		}
 
-		txutil.WriteGenerateStdTxResponse(w, txutil.NewKuCLICtx(cliCtx), req.BaseReq, []sdk.Msg{msg})
+		txutil.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
 

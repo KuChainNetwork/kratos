@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	"github.com/KuChainNetwork/kuchain/chain/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 
@@ -24,7 +24,7 @@ type (
 // DecodeTxRequestHandlerFn returns the decode tx REST handler. In particular,
 // it takes base64-decoded bytes, decodes it from the Amino wire protocol,
 // and responds with a json-formatted transaction.
-func DecodeTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func DecodeTxRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req DecodeReq
 
@@ -34,7 +34,7 @@ func DecodeTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		err = cliCtx.Codec.UnmarshalJSON(body, &req)
+		err = cliCtx.Codec().UnmarshalJSON(body, &req)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -47,7 +47,7 @@ func DecodeTxRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var stdTx types.StdTx
-		err = cliCtx.Codec.UnmarshalBinaryBare(txBytes, &stdTx)
+		err = cliCtx.Codec().UnmarshalBinaryBare(txBytes, &stdTx)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

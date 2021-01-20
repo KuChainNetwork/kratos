@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/x/mint/client/cli"
 	"github.com/KuChainNetwork/kuchain/x/mint/client/rest"
@@ -48,7 +49,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {}
 
 // RegisterRESTRoutes registers the REST routes for the mint module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr)
 }
 
 // GetTxCmd returns no root tx command for the mint module.

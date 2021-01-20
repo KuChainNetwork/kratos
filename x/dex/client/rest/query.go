@@ -6,13 +6,14 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 
-func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/{creator}",
 		getCreatorHandlerFn(cliCtx),
@@ -27,7 +28,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router) {
 }
 
 // getCreatorHandlerFn function returns the get dex REST handler.
-func getCreatorHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func getCreatorHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["creator"]
@@ -42,12 +43,13 @@ func getCreatorHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		rest.PostProcessResponse(w, cliCtx, dex)
+
+		utils.PostProcessResponse(w, cliCtx, dex)
 	}
 }
 
 // getSigInStatusHandlerFn
-func getSigInStatusHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func getSigInStatusHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		creatorStr := vars["creator"]
@@ -68,12 +70,12 @@ func getSigInStatusHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		}
-		rest.PostProcessResponse(w, cliCtx, coins)
+		utils.PostProcessResponse(w, cliCtx, coins)
 	}
 }
 
 // getSymbolHandlerFn returns get symbaol REST handler
-func getSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func getSymbolHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		name := vars["creator"]
@@ -129,6 +131,7 @@ func getSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				fmt.Sprintf("%s/%s not exists", baseCode, quoteCode))
 			return
 		}
-		rest.PostProcessResponse(w, cliCtx, currency)
+
+		utils.PostProcessResponse(w, cliCtx, currency)
 	}
 }

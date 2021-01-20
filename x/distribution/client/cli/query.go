@@ -5,12 +5,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
@@ -45,7 +44,7 @@ func GetCmdQueryParams(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Short: "Query distribution params",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			route := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryParams)
 			res, _, err := cliCtx.QueryWithData(route, nil)
@@ -80,7 +79,7 @@ $ %s query kudistribution validator-outstanding-rewards validatorName
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			valAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -128,7 +127,7 @@ $ %s query kudistribution commission validatorName
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			validatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -163,7 +162,7 @@ $ %s query kudistribution slashes validatorName 0 100
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			validatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -215,7 +214,7 @@ $ %s query kudistribution rewards jack validatorName
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			// query for rewards from a particular delegation
 			if len(args) == 2 {
@@ -278,7 +277,7 @@ $ %s query kudistribution community-pool
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/community_pool", queryRoute), nil)
 			if err != nil {
@@ -308,7 +307,7 @@ $ %s query whithdraw-addr jack --from jack
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			valAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {

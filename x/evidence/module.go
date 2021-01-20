@@ -60,10 +60,10 @@ func (a AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Rout
 	evidenceRESTHandlers := make([]rest.EvidenceRESTHandler, len(a.evidenceHandlers))
 
 	for i, evidenceHandler := range a.evidenceHandlers {
-		evidenceRESTHandlers[i] = evidenceHandler.RESTHandler(ctx)
+		evidenceRESTHandlers[i] = evidenceHandler.RESTHandler(client.NewKuCLICtx(ctx))
 	}
 
-	rest.RegisterRoutes(ctx, rtr, evidenceRESTHandlers)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, evidenceRESTHandlers)
 }
 
 // GetTxCmd returns the evidence module's root tx command.

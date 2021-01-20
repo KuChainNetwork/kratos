@@ -7,11 +7,10 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/version"
 )
@@ -60,7 +59,7 @@ $ %s query kustaking validator jack
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -102,7 +101,7 @@ $ %s query staking validators
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			resKVs, _, err := cliCtx.QuerySubspace(types.ValidatorsKey, storeName)
 			if err != nil {
@@ -140,7 +139,7 @@ $ %s query kustaking unbonding-delegations-from jack
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -182,7 +181,7 @@ $ %s query kustaking redelegations-from jack
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			valSrcAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -226,7 +225,7 @@ $ %s query kustaking delegation alice jack
 		),
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			delAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -276,7 +275,7 @@ $ %s query kustaking delegations alice
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			delAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -321,7 +320,7 @@ $ %s query kustaking delegations-to jack
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			valAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -366,7 +365,7 @@ $ %s query kustaking unbonding-delegation alice jack
 		),
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			valAccount, err := chainTypes.NewAccountIDFromStr(args[1])
 			if err != nil {
@@ -416,7 +415,7 @@ $ %s query kustaking unbonding-delegations alice
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			delegatorAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -461,7 +460,7 @@ $ %s query kustaking redelegation alice  jack validator
 		),
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			delAccount, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -516,7 +515,7 @@ $ %s query kustaking redelegations alice
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			delAddr, err := chainTypes.NewAccountIDFromStr(args[0])
 			if err != nil {
@@ -560,7 +559,7 @@ $ %s query kustaking historical-info 5
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			height, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil || height < 0 {
@@ -604,7 +603,7 @@ $ %s query kustaking pool
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/pool", storeName), nil)
 			if err != nil {
@@ -637,7 +636,7 @@ $ %s query kustaking params
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			route := fmt.Sprintf("custom/%s/%s", storeName, types.QueryParameters)
 			bz, _, err := cliCtx.QueryWithData(route, nil)

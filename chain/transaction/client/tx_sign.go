@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -142,7 +143,7 @@ func makeSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) error
 			return err
 		}
 
-		json, err := getSignatureJSON(cdc, newTx, cliCtx.Indent, generateSignatureOnly)
+		json, err := getSignatureJSON(cdc, newTx, cliCtx.Indent(), generateSignatureOnly)
 		if err != nil {
 			return err
 		}
@@ -190,7 +191,7 @@ func getSignatureJSON(cdc *codec.Codec, newTx types.StdTx, indent, generateSigna
 // printAndValidateSigs will validate the signatures of a given transaction over
 // its expected signers. In addition, if offline has not been supplied, the
 // signature is verified over the transaction sign bytes.
-func printAndValidateSigs(cliCtx txutil.KuCLIContext, chainID string, stdTx types.StdTx, offline bool) bool {
+func printAndValidateSigs(cliCtx client.Context, chainID string, stdTx types.StdTx, offline bool) bool {
 	fmt.Println("Signers:")
 
 	signers := stdTx.GetSigners()
@@ -246,7 +247,7 @@ func printAndValidateSigs(cliCtx txutil.KuCLIContext, chainID string, stdTx type
 		multiPK, ok := sig.PubKey.(multisig.PubKeyMultisigThreshold)
 		if ok {
 			var multiSig multisig.Multisignature
-			cliCtx.Codec.MustUnmarshalBinaryBare(sig.Signature, &multiSig)
+			cliCtx.Codec().MustUnmarshalBinaryBare(sig.Signature, &multiSig)
 
 			var b strings.Builder
 			b.WriteString("\n  MultiSig Signatures:\n")

@@ -3,13 +3,17 @@ package client
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/x/gov/client/rest"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
+var (
+	NewKuCLICtx = client.NewKuCLICtx
+)
+
 // function to create the rest handler
-type RESTHandlerFn func(context.CLIContext) rest.ProposalRESTHandler
+type RESTHandlerFn func(client.Context) rest.ProposalRESTHandler
 
 // function to create the cli handler
 type CLIHandlerFn func(*codec.Codec) *cobra.Command

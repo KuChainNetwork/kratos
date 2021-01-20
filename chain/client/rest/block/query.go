@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/KuChainNetwork/kuchain/chain/client"
+	"github.com/KuChainNetwork/kuchain/chain/client/utils"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 )
 
-func QueryDecodeBlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func QueryDecodeBlockRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -21,7 +22,7 @@ func QueryDecodeBlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFun
 			return
 		}
 
-		chainHeight, err := rpc.GetChainHeight(cliCtx)
+		chainHeight, err := rpc.GetChainHeight(cliCtx.Ctx())
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, "failed to parse chain height")
 			return
@@ -38,11 +39,11 @@ func QueryDecodeBlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFun
 			return
 		}
 
-		rest.PostProcessResponseBare(w, cliCtx, output)
+		utils.PostProcessResponseBare(w, cliCtx, output)
 	}
 }
 
-func LatestDecodeBlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func LatestDecodeBlockRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		output, err := getBlock(cliCtx, nil)
 		if err != nil {
@@ -50,6 +51,6 @@ func LatestDecodeBlockRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFu
 			return
 		}
 
-		rest.PostProcessResponseBare(w, cliCtx, output)
+		utils.PostProcessResponseBare(w, cliCtx, output)
 	}
 }
