@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/common"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -49,11 +49,11 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	return distTxCmd
 }
 
-type generateOrBroadcastFunc func(txutil.KuCLIContext, txutil.TxBuilder, []sdk.Msg) error
+type generateOrBroadcastFunc func(client.Context, txutil.TxBuilder, []sdk.Msg) error
 
 func splitAndApply(
 	generateOrBroadcast generateOrBroadcastFunc,
-	cliCtx txutil.KuCLIContext,
+	cliCtx client.Context,
 	txBldr txutil.TxBuilder,
 	msgs []sdk.Msg,
 	chunkSize int) error {

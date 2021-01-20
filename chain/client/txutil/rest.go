@@ -4,13 +4,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // WriteGenerateStdTxResponse writes response for the generate only mode.
-func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx KuCLIContext, br types.BaseReq, msgs []sdk.Msg) {
+func WriteGenerateStdTxResponse(w http.ResponseWriter, cliCtx client.Context, br types.BaseReq, msgs []sdk.Msg) {
 	gasAdj, ok := types.ParseFloat64OrReturnBadRequest(w, br.GasAdjustment, flags.DefaultGasAdjustment)
 	if !ok {
 		return

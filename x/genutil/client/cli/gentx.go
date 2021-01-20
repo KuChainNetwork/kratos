@@ -40,9 +40,9 @@ type StakingMsgBuildingHelpers interface {
 	CreateValidatorMsgHelpers(ipDefault string) (fs *flag.FlagSet, nodeIDFlag, pubkeyFlag, amountFlag, defaultsDesc string)
 	PrepareFlagsForTxCreateValidator(config *cfg.Config, nodeID, chainID string, valPubKey crypto.PubKey)
 
-	BuildCreateValidatorMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	BuildCreateValidatorMsg(cliCtx client.Context, txBldr txutil.TxBuilder,
 		operAccountID chainTypes.AccountID, authAddress sdk.AccAddress) (txutil.TxBuilder, sdk.Msg, error)
-	BuildDelegateMsg(cliCtx txutil.KuCLIContext, txBldr txutil.TxBuilder,
+	BuildDelegateMsg(cliCtx client.Context, txBldr txutil.TxBuilder,
 		authAddress chainTypes.AccAddress, delAccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error)
 }
 

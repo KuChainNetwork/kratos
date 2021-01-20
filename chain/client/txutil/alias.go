@@ -9,11 +9,10 @@ import (
 )
 
 type (
-	StdTx        = types.StdTx
-	TxBuilder    = transaction.TxBuilder
-	AccountID    = types.AccountID
-	Name         = types.Name
-	KuCLIContext = client.Context
+	StdTx     = types.StdTx
+	TxBuilder = transaction.TxBuilder
+	AccountID = types.AccountID
+	Name      = types.Name
 )
 
 var (
@@ -32,7 +31,7 @@ var (
 )
 
 // NewAccountRetriever initializes a new AccountRetriever instance.
-func NewAccountRetriever(cliCtx KuCLIContext) accountTypes.AccountRetriever {
+func NewAccountRetriever(cliCtx client.Context) accountTypes.AccountRetriever {
 	return accountTypes.NewAccountRetriever(cliCtx.Ctx())
 }
 

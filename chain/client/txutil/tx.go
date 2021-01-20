@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/input"
@@ -30,7 +31,7 @@ func (gr GasEstimateResponse) String() string {
 // the provided context has generate-only enabled, the tx will only be printed
 // to STDOUT in a fully offline manner. Otherwise, the tx will be signed and
 // broadcasted.
-func GenerateOrBroadcastMsgs(cliCtx KuCLIContext, txBldr TxBuilder, msgs []sdk.Msg) error {
+func GenerateOrBroadcastMsgs(cliCtx client.Context, txBldr TxBuilder, msgs []sdk.Msg) error {
 	if cliCtx.GenerateOnly() {
 		return PrintUnsignedStdTx(txBldr, cliCtx, msgs)
 	}
@@ -43,7 +44,7 @@ func GenerateOrBroadcastMsgs(cliCtx KuCLIContext, txBldr TxBuilder, msgs []sdk.M
 // QueryContext. It ensures that the account exists, has a proper number and
 // sequence set. In addition, it builds and signs a transaction with the
 // supplied messages. Finally, it broadcasts the signed transaction to a node.
-func CompleteAndBroadcastTxCLI(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) error {
+func CompleteAndBroadcastTxCLI(txBldr TxBuilder, cliCtx client.Context, msgs []sdk.Msg) error {
 	txBldr, err := PrepareTxBuilder(txBldr, cliCtx)
 	if err != nil {
 		return err
@@ -106,7 +107,7 @@ func CompleteAndBroadcastTxCLI(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk
 
 // EnrichWithGas calculates the gas estimate that would be consumed by the
 // transaction and set the transaction's respective value accordingly.
-func EnrichWithGas(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) (TxBuilder, error) {
+func EnrichWithGas(txBldr TxBuilder, cliCtx client.Context, msgs []sdk.Msg) (TxBuilder, error) {
 	_, adjusted, err := simulateMsgs(txBldr, cliCtx, msgs)
 	if err != nil {
 		return txBldr, err
@@ -137,7 +138,7 @@ func CalculateGas(
 }
 
 // PrintUnsignedStdTx builds an unsigned StdTx and prints it to os.Stdout.
-func PrintUnsignedStdTx(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) error {
+func PrintUnsignedStdTx(txBldr TxBuilder, cliCtx client.Context, msgs []sdk.Msg) error {
 	stdTx, err := buildUnsignedStdTxOffline(txBldr, cliCtx, msgs)
 	if err != nil {
 		return err
@@ -161,7 +162,7 @@ func PrintUnsignedStdTx(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) e
 // is false, it replaces the signatures already attached with the new signature.
 // Don't perform online validation or lookups if offline is true.
 func SignStdTx(
-	txBldr TxBuilder, cliCtx KuCLIContext, name string,
+	txBldr TxBuilder, cliCtx client.Context, name string,
 	stdTx StdTx, appendSig bool, offline bool,
 ) (StdTx, error) {
 	// TODO: now the params has `name` and `id`, there should be both to make a id to get data to auth
@@ -198,7 +199,7 @@ func SignStdTx(
 // Don't perform online validation or lookups if offline is true, else
 // populate account and sequence numbers from a foreign account.
 func SignStdTxWithSignerAddress(
-	txBldr TxBuilder, cliCtx KuCLIContext,
+	txBldr TxBuilder, cliCtx client.Context,
 	addr sdk.AccAddress, name string, stdTx StdTx, offline bool) (signedStdTx StdTx, err error) {
 	// check whether the address is a signer
 	if !isTxSigner(addr, stdTx.GetSigners()) {
@@ -238,7 +239,7 @@ func ReadStdTxFromFile(cdc *codec.Codec, filename string) (stdTx StdTx, err erro
 }
 
 func populateAccountFromState(
-	txBldr TxBuilder, cliCtx KuCLIContext, id types.AccountID) (TxBuilder, error) {
+	txBldr TxBuilder, cliCtx client.Context, id types.AccountID) (TxBuilder, error) {
 	num, seq, err := NewAccountRetriever(cliCtx).GetAuthNumberSequence(id)
 	if err != nil {
 		return txBldr, err
@@ -260,7 +261,7 @@ func GetTxEncoder(cdc *codec.Codec) (encoder sdk.TxEncoder) {
 
 // nolint
 // SimulateMsgs simulates the transaction and returns the gas estimate and the adjusted value.
-func simulateMsgs(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) (estimated, adjusted uint64, err error) {
+func simulateMsgs(txBldr TxBuilder, cliCtx client.Context, msgs []sdk.Msg) (estimated, adjusted uint64, err error) {
 	txBytes, err := txBldr.BuildTxForSim(msgs)
 	if err != nil {
 		return
@@ -284,7 +285,7 @@ func parseQueryResponse(cdc *codec.Codec, rawRes []byte) (uint64, error) {
 }
 
 // PrepareTxBuilder populates a TxBuilder in preparation for the build of a Tx.
-func PrepareTxBuilder(txBldr TxBuilder, cliCtx KuCLIContext) (TxBuilder, error) {
+func PrepareTxBuilder(txBldr TxBuilder, cliCtx client.Context) (TxBuilder, error) {
 	from := cliCtx.GetAccountID()
 
 	accGetter := NewAccountRetriever(cliCtx)
@@ -320,7 +321,7 @@ func PrepareTxBuilder(txBldr TxBuilder, cliCtx KuCLIContext) (TxBuilder, error) 
 }
 
 // QueryAccountAuth query account auth by id
-func QueryAccountAuth(cliCtx KuCLIContext, id types.AccountID) (types.AccAddress, error) {
+func QueryAccountAuth(cliCtx client.Context, id types.AccountID) (types.AccAddress, error) {
 	if cliCtx.GenerateOnly() {
 		// if just gen tx, cmd will not connect to node to get info, all auth is from --from params
 		return cliCtx.GetFromAddress(), nil
@@ -347,7 +348,7 @@ func QueryAccountAuth(cliCtx KuCLIContext, id types.AccountID) (types.AccAddress
 	return types.AccAddress{}, errors.New("accountID type no support")
 }
 
-func buildUnsignedStdTxOffline(txBldr TxBuilder, cliCtx KuCLIContext, msgs []sdk.Msg) (stdTx StdTx, err error) {
+func buildUnsignedStdTxOffline(txBldr TxBuilder, cliCtx client.Context, msgs []sdk.Msg) (stdTx StdTx, err error) {
 	if txBldr.SimulateAndExecute() {
 		if cliCtx.GenerateOnly() {
 			return stdTx, errors.New("cannot estimate gas with generate-only")

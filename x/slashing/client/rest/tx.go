@@ -27,7 +27,7 @@ type UnjailReq struct {
 }
 
 // FIX HERE
-func unjailRequestHandlerFn(cliCtx txutil.KuCLIContext) http.HandlerFunc {
+func unjailRequestHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UnjailReq
 		if !chainTypes.ReadRESTReq(w, r, cliCtx.Codec(), &req) {
