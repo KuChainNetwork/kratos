@@ -15,6 +15,7 @@ import (
 	sim "github.com/cosmos/cosmos-sdk/x/simulation"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/chain/msg"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
@@ -54,7 +55,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 
 // RegisterRESTRoutes registers the REST routes for the asset module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
-	rest.RegisterRoutes(ctx, rtr, types.StoreKey)
+	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, types.StoreKey)
 }
 
 // GetTxCmd returns the root tx command for the asset module.

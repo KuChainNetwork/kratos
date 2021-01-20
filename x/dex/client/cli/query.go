@@ -4,11 +4,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
@@ -38,7 +37,7 @@ func GetDexCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query dex for creator",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			getter := types.NewDexRetriever(cliCtx)
 
 			creator, err := chainTypes.NewName(args[0])
@@ -65,7 +64,7 @@ func GetSymbol(cdc *codec.Codec) *cobra.Command {
 		Short: "Query dex symbol",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			getter := types.NewDexRetriever(cliCtx)
 
 			var creator types.Name
@@ -129,7 +128,7 @@ func GetSigInCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query sigIn status for account to dex",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 			getter := types.NewDexRetriever(cliCtx)
 
 			acc, err := chainTypes.NewAccountIDFromStr(args[0])

@@ -55,12 +55,13 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 
 // RegisterRESTRoutes registers the REST routes for the gov module.
 func (a AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
+	kctx := client.NewKuCLICtx(ctx)
 	proposalRESTHandlers := make([]rest.ProposalRESTHandler, 0, len(a.proposalHandlers))
 	for _, proposalHandler := range a.proposalHandlers {
-		proposalRESTHandlers = append(proposalRESTHandlers, proposalHandler.RESTHandler(ctx))
+		proposalRESTHandlers = append(proposalRESTHandlers, proposalHandler.RESTHandler(kctx))
 	}
 
-	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, proposalRESTHandlers)
+	rest.RegisterRoutes(kctx, rtr, proposalRESTHandlers)
 }
 
 // GetTxCmd returns the root tx command for the gov module.

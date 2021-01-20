@@ -151,7 +151,7 @@ $ %s tx kudistribution withdraw-all-rewards  --from jack
 				return fmt.Errorf("command disabled with the provided flag: %s", flags.FlagGenerateOnly)
 			}
 
-			msgs, err := common.WithdrawAllDelegatorRewards(cliCtx.Ctx(), delAddr, queryRoute, delID)
+			msgs, err := common.WithdrawAllDelegatorRewards(cliCtx, delAddr, queryRoute, delID)
 			if err != nil {
 				return err
 			}

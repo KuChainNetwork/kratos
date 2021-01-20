@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -45,7 +44,7 @@ $ <appcli> query kuslashing signing-info cosmosvalconspub1zcjduepqfhvwcmt7p06fvd
 `),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			pk, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, args[0])
 			if err != nil {
@@ -86,7 +85,7 @@ func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 $ <appcli> query kuslashing params
 `),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			cliCtx := client.NewCtxByCodec(cdc)
 
 			route := fmt.Sprintf("custom/%s/parameters", types.QuerierRoute)
 			res, _, err := cliCtx.QueryWithData(route, nil)

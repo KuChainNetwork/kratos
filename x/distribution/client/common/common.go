@@ -3,15 +3,15 @@ package common
 import (
 	"fmt"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	chainType "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // QueryDelegationRewards queries a delegation rewards between a delegator and a
 // validator.
-func QueryDelegationRewards(cliCtx context.CLIContext, queryRoute, delAddr, valAddr string) ([]byte, int64, error) {
+func QueryDelegationRewards(cliCtx client.Context, queryRoute, delAddr, valAddr string) ([]byte, int64, error) {
 	delegatorAddr, err := chainType.NewAccountIDFromStr(delAddr)
 	if err != nil {
 		return nil, 0, err
@@ -24,7 +24,7 @@ func QueryDelegationRewards(cliCtx context.CLIContext, queryRoute, delAddr, valA
 
 	fmt.Println("delegatorAddr:", delegatorAddr, "validatorAddr", validatorAddr)
 	params := types.NewQueryDelegationRewardsParams(delegatorAddr, validatorAddr)
-	bz, err := cliCtx.Codec.MarshalJSON(params)
+	bz, err := cliCtx.Codec().MarshalJSON(params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to marshal params: %w", err)
 	}
@@ -35,26 +35,26 @@ func QueryDelegationRewards(cliCtx context.CLIContext, queryRoute, delAddr, valA
 
 // QueryDelegatorValidators returns delegator's list of validators
 // it submitted delegations to.
-func QueryDelegatorValidators(cliCtx context.CLIContext, queryRoute string, delegatorID chainType.AccountID) ([]byte, error) {
+func QueryDelegatorValidators(cliCtx client.Context, queryRoute string, delegatorID chainType.AccountID) ([]byte, error) {
 	res, _, err := cliCtx.QueryWithData(
 		fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryDelegatorValidators),
-		cliCtx.Codec.MustMarshalJSON(types.NewQueryDelegatorParams(delegatorID)),
+		cliCtx.Codec().MustMarshalJSON(types.NewQueryDelegatorParams(delegatorID)),
 	)
 	return res, err
 }
 
 // QueryValidatorCommission returns a validator's commission.
-func QueryValidatorCommission(cliCtx context.CLIContext, queryRoute string, validatorID chainType.AccountID) ([]byte, error) {
+func QueryValidatorCommission(cliCtx client.Context, queryRoute string, validatorID chainType.AccountID) ([]byte, error) {
 	res, _, err := cliCtx.QueryWithData(
 		fmt.Sprintf("custom/%s/%s", queryRoute, types.QueryValidatorCommission),
-		cliCtx.Codec.MustMarshalJSON(types.NewQueryValidatorCommissionParams(validatorID)),
+		cliCtx.Codec().MustMarshalJSON(types.NewQueryValidatorCommissionParams(validatorID)),
 	)
 	return res, err
 }
 
 // WithdrawAllDelegatorRewards builds a multi-message slice to be used
 // to withdraw all delegations rewards for the given delegator.
-func WithdrawAllDelegatorRewards(cliCtx context.CLIContext, auth sdk.AccAddress, queryRoute string, delegatorID chainType.AccountID) ([]sdk.Msg, error) {
+func WithdrawAllDelegatorRewards(cliCtx client.Context, auth sdk.AccAddress, queryRoute string, delegatorID chainType.AccountID) ([]sdk.Msg, error) {
 	// retrieve the comprehensive list of all validators which the
 	// delegator had submitted delegations to
 	bz, err := QueryDelegatorValidators(cliCtx, queryRoute, delegatorID)
@@ -63,7 +63,7 @@ func WithdrawAllDelegatorRewards(cliCtx context.CLIContext, auth sdk.AccAddress,
 	}
 
 	validators := make([]chainType.AccountID, 0, 16)
-	if err := cliCtx.Codec.UnmarshalJSON(bz, &validators); err != nil {
+	if err := cliCtx.Codec().UnmarshalJSON(bz, &validators); err != nil {
 		return nil, err
 	}
 

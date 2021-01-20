@@ -7,10 +7,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 
+	"github.com/KuChainNetwork/kuchain/chain/client"
 	"github.com/KuChainNetwork/kuchain/chain/client/txutil"
 	chainTypes "github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/dex/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -70,7 +70,7 @@ type SigOutReq struct {
 	IsTimeout bool               `json:"is_timeout" yaml:"is_timeout"`
 }
 
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(
 		"/dex/create",
 		createDexHandlerFn(cliCtx),
@@ -112,7 +112,7 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router) {
 }
 
 // createDexHandlerFn returns the create dex handler
-func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func createDexHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -128,7 +128,7 @@ func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var req CreateDexReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 
@@ -154,7 +154,7 @@ func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 
 		var auth types.AccAddress
 		if auth, err = txutil.QueryAccountAuth(ctx, creatorAccountID); err != nil {
@@ -168,7 +168,7 @@ func createDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // destroyDexHandlerFn returns the destroy dex handler
-func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func destroyDexHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -184,7 +184,7 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var req DestroyDexReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 
@@ -200,7 +200,7 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 
 		var auth types.AccAddress
 		if auth, err = txutil.QueryAccountAuth(ctx, creatorAccountID); err != nil {
@@ -214,7 +214,7 @@ func destroyDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // createSymbolHandlerFn returns the create currency handler
-func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func createSymbolHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -228,7 +228,7 @@ func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		var req CreateSymbolReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 		if !req.Base.Validate() || !req.Quote.Validate() {
@@ -248,7 +248,7 @@ func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgCreateSymbol(addr,
 				name,
@@ -260,7 +260,7 @@ func createSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // updateSymbolHandlerFn returns the update currency handler
-func updateSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func updateSymbolHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -274,7 +274,7 @@ func updateSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		var req UpdateSymbolReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 		if 0 >= len(req.Base.Code) || 0 >= len(req.Quote.Code) ||
@@ -295,7 +295,7 @@ func updateSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgUpdateSymbol(addr,
 				name,
@@ -307,7 +307,7 @@ func updateSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // pauseSymbolHandlerFn returns the pause currency handler
-func pauseSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func pauseSymbolHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -321,7 +321,7 @@ func pauseSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		var req ShutdownSymbolReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 		if 0 >= len(req.BaseCode) ||
@@ -342,7 +342,7 @@ func pauseSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgPauseSymbol(addr,
 				name,
@@ -356,7 +356,7 @@ func pauseSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // restoreSymbolHandlerFn returns the restore currency handler
-func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func restoreSymbolHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -370,7 +370,7 @@ func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		var req ShutdownSymbolReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 		if 0 >= len(req.BaseCode) ||
@@ -391,7 +391,7 @@ func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgRestoreSymbol(addr,
 				name,
@@ -405,7 +405,7 @@ func restoreSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // shutdownSymbolHandlerFn returns the shutdown currency handler
-func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func shutdownSymbolHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		statusCode := http.StatusBadRequest
 		var err error
@@ -419,7 +419,7 @@ func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		var req ShutdownSymbolReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 		if 0 >= len(req.BaseCode) ||
@@ -440,7 +440,7 @@ func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		if creatorAccountID, err = chainTypes.NewAccountIDFromStr(req.Creator); nil != err {
 			return
 		}
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgShutdownSymbol(addr,
 				name,
@@ -454,7 +454,7 @@ func shutdownSymbolHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // updateDexHandlerFn returns the shutdown currency handler
-func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func updateDexHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		defer func() {
@@ -469,7 +469,7 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var req UpdateDexReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 
@@ -495,7 +495,7 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx).WithFromAccount(creatorAccountID)
+		ctx := cliCtx.WithFromAccount(creatorAccountID)
 		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
 			types.NewMsgUpdateDexDescription(addr, name, []byte(req.Description)),
 		})
@@ -503,7 +503,7 @@ func updateDexHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 }
 
 // sigInHandlerFn returns the SigIn dex handler
-func sigInHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func sigInHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		defer func() {
@@ -518,7 +518,7 @@ func sigInHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var req SigInReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 
@@ -543,20 +543,18 @@ func sigInHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx)
-
-		if auth, err = txutil.QueryAccountAuth(ctx, accountID); err != nil {
+		if auth, err = txutil.QueryAccountAuth(cliCtx, accountID); err != nil {
 			return
 		}
 
-		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+		txutil.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{
 			types.NewMsgDexSigIn(auth, accountID, dexAccountID, amt),
 		})
 	}
 }
 
 // sigOutHandlerFn returns the SigOut dex handler
-func sigOutHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func sigOutHandlerFn(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
 		defer func() {
@@ -571,7 +569,7 @@ func sigOutHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var req SigOutReq
-		if err = cliCtx.Codec.UnmarshalJSON(body, &req); nil != err {
+		if err = cliCtx.Codec().UnmarshalJSON(body, &req); nil != err {
 			return
 		}
 
@@ -596,19 +594,17 @@ func sigOutHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		ctx := txutil.NewKuCLICtx(cliCtx)
-
 		if req.IsTimeout {
-			if auth, err = txutil.QueryAccountAuth(ctx, accountID); err != nil {
+			if auth, err = txutil.QueryAccountAuth(cliCtx, accountID); err != nil {
 				return
 			}
 		} else {
-			if auth, err = txutil.QueryAccountAuth(ctx, dexAccountID); err != nil {
+			if auth, err = txutil.QueryAccountAuth(cliCtx, dexAccountID); err != nil {
 				return
 			}
 		}
 
-		txutil.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{
+		txutil.WriteGenerateStdTxResponse(w, cliCtx, req.BaseReq, []sdk.Msg{
 			types.NewMsgDexSigOut(auth, req.IsTimeout, accountID, dexAccountID, amt),
 		})
 	}
