@@ -15,10 +15,10 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/types/multisig"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/tendermint/tendermint/crypto/multisig"
 )
 
 // GetSignCommand returns the sign command
@@ -64,18 +64,18 @@ func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) 
 			return
 		}
 
-		keybase, err := crkeys.NewKeyring(sdk.KeyringServiceName(), viper.GetString(flags.FlagKeyringBackend), viper.GetString(flags.FlagHome), os.Stdin)
+		keybase, err := Keyring.New(sdk.KeyringServiceName(), viper.GetString(flags.FlagKeyringBackend), viper.GetString(flags.FlagHome), os.Stdin)
 		if err != nil {
 			return
 		}
 
-		multisigInfo, err := keybase.Get(args[1])
+		multisigInfo, err := keybase.Key(args[1])
 		if err != nil {
 			return
 		}
 
-		if multisigInfo.GetType() != crkeys.TypeMulti {
-			return fmt.Errorf("%q must be of type %s: %s", args[1], crkeys.TypeMulti, multisigInfo.GetType())
+		if multisigInfo.GetType() != Keyring.TypeMulti {
+			return fmt.Errorf("%q must be of type %s: %s", args[1], Keyring.TypeMulti, multisigInfo.GetType())
 		}
 
 		inBuf := bufio.NewReader(cmd.InOrStdin())

@@ -17,7 +17,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -85,7 +85,7 @@ func genTxRunE(ctx *server.Context, cdc *codec.Codec,
 		}
 
 		inBuf := bufio.NewReader(cmd.InOrStdin())
-		_, err = keys.NewKeyring(sdk.KeyringServiceName(),
+		_, err = keyring.New(sdk.KeyringServiceName(),
 			viper.GetString(flags.FlagKeyringBackend), viper.GetString(flagClientHome), inBuf)
 		if err != nil {
 			return errors.Wrap(err, "failed to initialize keybase")

@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"fmt"
 
-	tmkv "github.com/tendermint/tendermint/libs/kv"
-
 	"github.com/KuChainNetwork/kuchain/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/kv"
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding staking type
-func DecodeStore(cdc *codec.Codec, kvA, kvB tmkv.Pair) string {
+func DecodeStore(cdc *codec.Codec, kvA, kvB kv.Pair) string {
 	switch {
 	case bytes.Equal(kvA.Key[:1], types.LastTotalPowerKey):
 		var powerA, powerB sdk.Int

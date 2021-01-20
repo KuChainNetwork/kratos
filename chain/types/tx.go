@@ -6,10 +6,10 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/types/multisig"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/multisig"
 	yaml "gopkg.in/yaml.v2"
 )
 
