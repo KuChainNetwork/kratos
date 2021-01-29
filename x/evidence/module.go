@@ -11,7 +11,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/evidence/client"
 	"github.com/KuChainNetwork/kuchain/x/evidence/client/cli"
 	"github.com/KuChainNetwork/kuchain/x/evidence/client/rest"
-	"github.com/cosmos/cosmos-sdk/client/context"
+	clientSDK "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -56,7 +56,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 }
 
 // RegisterRESTRoutes registers the evidence module's REST service handlers.
-func (a AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
+func (a AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router) {
 	evidenceRESTHandlers := make([]rest.EvidenceRESTHandler, len(a.evidenceHandlers))
 
 	for i, evidenceHandler := range a.evidenceHandlers {

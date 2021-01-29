@@ -13,7 +13,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/gov/client/rest"
 	"github.com/KuChainNetwork/kuchain/x/gov/simulation"
 	"github.com/KuChainNetwork/kuchain/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
+	clientSDK "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -54,7 +54,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 }
 
 // RegisterRESTRoutes registers the REST routes for the gov module.
-func (a AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
+func (a AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router) {
 	kctx := client.NewKuCLICtx(ctx)
 	proposalRESTHandlers := make([]rest.ProposalRESTHandler, 0, len(a.proposalHandlers))
 	for _, proposalHandler := range a.proposalHandlers {

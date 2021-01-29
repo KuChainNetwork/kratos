@@ -11,7 +11,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/slashing/client/rest"
 	"github.com/KuChainNetwork/kuchain/x/slashing/simulation"
 	"github.com/KuChainNetwork/kuchain/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
+	clientSDK "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -51,7 +51,7 @@ func NewAppModuleBasic() AppModuleBasic {
 }
 
 // RegisterRESTRoutes registers the REST routes for the slashing module.
-func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
+func (AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router) {
 	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr)
 }
 

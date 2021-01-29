@@ -3,7 +3,6 @@ package cli
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -35,18 +34,16 @@ func createFakeTxBuilder() txutil.TxBuilder {
 }
 
 func Test_splitAndCall_NoMessages(t *testing.T) {
-	ctx := context.CLIContext{}
 	txBldr := createFakeTxBuilder()
-	ctxl := txutil.NewKuCLICtx(ctx)
+	ctxl := client.NewCtxByCodec(codec.New())
 
 	err := splitAndApply(nil, ctxl, txBldr, nil, 10)
 	assert.NoError(t, err, "")
 }
 
 func Test_splitAndCall_Splitting(t *testing.T) {
-	ctx := context.CLIContext{}
 	txBldr := createFakeTxBuilder()
-	ctxl := txutil.NewKuCLICtx(ctx)
+	ctxl := client.NewCtxByCodec(codec.New())
 
 	addr := sdk.AccAddress(secp256k1.GenPrivKey().PubKey().Address())
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/genesis"
 	"github.com/KuChainNetwork/kuchain/x/genutil/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
+	clientSDK "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -42,7 +42,7 @@ func (AppModuleBasic) Name() string {
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {}
 
 // RegisterRESTRoutes registers the REST routes for the genutil module.
-func (AppModuleBasic) RegisterRESTRoutes(_ context.CLIContext, _ *mux.Router) {}
+func (AppModuleBasic) RegisterRESTRoutes(_ clientSDK.Context, _ *mux.Router) {}
 
 // GetTxCmd returns no root tx command for the genutil module.
 func (AppModuleBasic) GetTxCmd(_ *codec.Codec) *cobra.Command { return nil }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/KuChainNetwork/kuchain/x/account/exported"
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -15,13 +15,13 @@ import (
 
 // Context cli context for kuchain, add account info
 type Context struct {
-	ctx context.CLIContext
+	ctx client.Context
 
 	FromAccount AccountID
 }
 
 // NewKuCLICtx creates a new Context
-func NewKuCLICtx(ctx context.CLIContext) Context {
+func NewKuCLICtx(ctx client.Context) Context {
 	res := Context{
 		ctx: ctx,
 	}
@@ -34,7 +34,7 @@ func NewKuCLICtx(ctx context.CLIContext) Context {
 	return res
 }
 
-func NewKuCLICtxNoFrom(ctx context.CLIContext) Context {
+func NewKuCLICtxNoFrom(ctx client.Context) Context {
 	return Context{
 		ctx: ctx,
 	}
@@ -42,19 +42,19 @@ func NewKuCLICtxNoFrom(ctx context.CLIContext) Context {
 
 // NewKuCLICtxByBuf creates a new Context with cmd
 func NewKuCLICtxByBuf(cdc *codec.Codec, inBuf io.Reader) Context {
-	return NewKuCLICtx(context.NewCLIContextWithInput(inBuf).WithCodec(cdc))
+	return NewKuCLICtx(client.NewCLIContextWithInput(inBuf).WithCodec(cdc))
 }
 
 func NewKuCLICtxByBufNoFrom(cdc *codec.Codec, inBuf io.Reader) Context {
-	ctx := context.NewCLIContextWithInput(inBuf).WithCodec(cdc)
+	ctx := client.NewCLIContextWithInput(inBuf).WithCodec(cdc)
 	return NewKuCLICtxNoFrom(ctx)
 }
 
 func NewCtxByCodec(cdc *codec.Codec) Context {
-	return NewKuCLICtx(context.NewCLIContext().WithCodec(cdc))
+	return NewKuCLICtx(client.NewCLIContext().WithCodec(cdc))
 }
 
-func (k Context) Ctx() context.CLIContext {
+func (k Context) Ctx() client.Context {
 	return k.ctx
 }
 

@@ -11,7 +11,7 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/distribution/client/rest"
 	"github.com/KuChainNetwork/kuchain/x/distribution/simulation"
 	"github.com/KuChainNetwork/kuchain/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/client/context"
+	clientSDK "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -50,7 +50,7 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 }
 
 // RegisterRESTRoutes registers the REST routes for the distribution module.
-func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
+func (AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router) {
 	rest.RegisterRoutes(client.NewKuCLICtx(ctx), rtr, StoreKey)
 }
 
