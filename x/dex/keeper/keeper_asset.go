@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func getCoinsFromKVStore(ctx sdk.Context, cdc *codec.Codec, storeKey types.StoreKey, key []byte) Coins {
+func getCoinsFromKVStore(ctx sdk.Context, cdc *codec.LegacyAmino, storeKey types.StoreKey, key []byte) Coins {
 	store := ctx.KVStore(storeKey)
 	bz := store.Get(key)
 	if bz == nil {
@@ -24,7 +24,7 @@ func getCoinsFromKVStore(ctx sdk.Context, cdc *codec.Codec, storeKey types.Store
 	return res
 }
 
-func setCoinsToKVStore(ctx sdk.Context, cdc *codec.Codec, storeKey types.StoreKey, key []byte, amt Coins) {
+func setCoinsToKVStore(ctx sdk.Context, cdc *codec.LegacyAmino, storeKey types.StoreKey, key []byte, amt Coins) {
 	store := ctx.KVStore(storeKey)
 	if amt.IsZero() {
 		if store.Has(key) {

@@ -40,5 +40,5 @@ type KuMsgData interface {
 
 // Prettifier a type can prettify a byte
 type Prettifier interface {
-	PrettifyJSON(cdc *codec.Codec) ([]byte, error)
+	PrettifyJSON(cdc *codec.LegacyAmino) ([]byte, error)
 }

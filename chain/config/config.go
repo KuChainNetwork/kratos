@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/viper"
@@ -75,7 +76,7 @@ func SealChainConfig() {
 
 // DefaultConfig change config to kuchain default configuration
 func DefaultConfig() *cfg.Config {
-	cfg, err := interceptLoadConfig()
+	cfg, err := interceptLoadConfig(viper.New()) // FIXME: new
 	if err != nil {
 		panic(err)
 	}
@@ -84,29 +85,24 @@ func DefaultConfig() *cfg.Config {
 }
 
 // If a new config is created, change some of the default tendermint settings
-func interceptLoadConfig() (conf *cfg.Config, err error) {
-	tmpConf := cfg.DefaultConfig()
-	err = viper.Unmarshal(tmpConf)
-	if err != nil {
-		// TODO: Handle with #870
-		panic(err)
-	}
-	rootDir := tmpConf.RootDir
-	configFilePath := filepath.Join(rootDir, "config/config.toml")
+func interceptLoadConfig(rootViper *viper.Viper) (conf *cfg.Config, err error) {
+	rootDir := rootViper.GetString(flags.FlagHome)
+	configPath := filepath.Join(rootDir, "config")
+	configFile := filepath.Join(configPath, "config.toml")
+
 	// Intercept only if the file doesn't already exist
 
-	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		// the following parse config is needed to create directories
 		conf, _ = tcmd.ParseConfig() // NOTE: ParseConfig() creates dir/files as necessary.
-		conf.ProfListenAddress = "localhost:6060"
 		conf.P2P.RecvRate = 5120000
 		conf.P2P.SendRate = 5120000
-		conf.TxIndex.IndexAllKeys = true
+		// FIXME: conf.TxIndex.IndexAllKeys = true
 		conf.Consensus.TimeoutPropose = ConsensusTimeoutPropose
 		conf.Consensus.TimeoutPrecommit = ConsensusTimeoutPrecommit
 		conf.Consensus.TimeoutPrevote = ConsensusTimeoutPrevote
 		conf.Consensus.TimeoutCommit = ConsensusTimeoutCommit
-		cfg.WriteConfigFile(configFilePath, conf)
+		cfg.WriteConfigFile(configFile, conf)
 		// Fall through, just so that its parsed into memory.
 	}
 
@@ -119,7 +115,7 @@ func interceptLoadConfig() (conf *cfg.Config, err error) {
 
 	appConfigFilePath := filepath.Join(rootDir, "config/app.toml")
 	if _, err := os.Stat(appConfigFilePath); os.IsNotExist(err) {
-		appConf, _ := config.ParseConfig()
+		appConf, _ := config.ParseConfig(rootViper)
 		config.WriteConfigFile(appConfigFilePath, appConf)
 	}
 

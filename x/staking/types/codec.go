@@ -6,7 +6,7 @@ import (
 
 // RegisterCodec registers the necessary x/staking interfaces and concrete types
 // on the provided Amino codec. These types are used for Amino JSON serialization.
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateValidator{}, "kuchain/MsgCreateValidator", nil)
 	cdc.RegisterConcrete(&MsgEditValidator{}, "kuchain/MsgEditValidator", nil)
 	cdc.RegisterConcrete(&MsgDelegate{}, "kuchain/MsgDelegate", nil)
@@ -27,11 +27,11 @@ var (
 	//
 	// The actual codec used for serialization should be provided to x/staking and
 	// defined at the application level.
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 )
 
 // Cdc get codec for types
-func Cdc() *codec.Codec {
+func Cdc() *codec.LegacyAmino {
 	return ModuleCdc
 }
 

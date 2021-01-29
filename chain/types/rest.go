@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/tendermint/tendermint/types"
 )
 
@@ -116,7 +117,7 @@ func (br BaseReq) ValidateBasic(w http.ResponseWriter) bool {
 
 // ReadRESTReq reads and unmarshals a Request's body to the the BaseReq stuct.
 // Writes an error response to ResponseWriter and returns true if errors occurred.
-func ReadRESTReq(w http.ResponseWriter, r *http.Request, cdc *codec.Codec, req interface{}) bool {
+func ReadRESTReq(w http.ResponseWriter, r *http.Request, cdc *codec.LegacyAmino, req interface{}) bool {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -148,12 +149,12 @@ func NewErrorResponse(code int, err string) ErrorResponse {
 func WriteErrorResponse(w http.ResponseWriter, status int, err string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_, _ = w.Write(codec.Cdc.MustMarshalJSON(NewErrorResponse(0, err)))
+	_, _ = w.Write(legacy.Cdc.MustMarshalJSON(NewErrorResponse(0, err)))
 }
 
 // WriteSimulationResponse prepares and writes an HTTP
 // response for transactions simulations.
-func WriteSimulationResponse(w http.ResponseWriter, cdc *codec.Codec, gas uint64) {
+func WriteSimulationResponse(w http.ResponseWriter, cdc *codec.LegacyAmino, gas uint64) {
 	gasEst := GasEstimateResponse{GasEstimate: gas}
 	resp, err := cdc.MarshalJSON(gasEst)
 	if err != nil {

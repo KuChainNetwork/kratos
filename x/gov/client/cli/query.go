@@ -18,7 +18,7 @@ import (
 )
 
 // GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	// Group gov queries under a subcommand
 	govQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -46,7 +46,7 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQueryProposal implements the query proposal command.
-func GetCmdQueryProposal(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryProposal(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "proposal [proposal-id]",
 		Args:  cobra.ExactArgs(1),
@@ -84,7 +84,7 @@ $ %s query kugov proposal 1
 }
 
 // GetCmdQueryProposals implements a query proposals command.
-func GetCmdQueryProposals(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryProposals(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "proposals",
 		Short: "Query proposals with optional filters",
@@ -175,7 +175,7 @@ $ %s query kugov proposals --page=2 --limit=100
 
 // Command to Get a Proposal Information
 // GetCmdQueryVote implements the query proposal vote command.
-func GetCmdQueryVote(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryVote(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "vote [proposal-id] [voter-account]",
 		Args:  cobra.ExactArgs(2),
@@ -244,7 +244,7 @@ $ %s query kugov vote 1 validator
 }
 
 // GetCmdQueryVotes implements the command to query for proposal votes.
-func GetCmdQueryVotes(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryVotes(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "votes [proposal-id]",
 		Args:  cobra.ExactArgs(1),
@@ -309,7 +309,7 @@ $ %[1]s query kugov votes 1 --page=2 --limit=100
 
 // Command to Get a specific Deposit Information
 // GetCmdQueryDeposit implements the query proposal deposit command.
-func GetCmdQueryDeposit(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryDeposit(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "deposit [proposal-id] [depositer-account]",
 		Args:  cobra.ExactArgs(2),
@@ -371,7 +371,7 @@ $ %s query kugov deposit 1 validator
 }
 
 // GetCmdQueryDeposits implements the command to query for proposal deposits.
-func GetCmdQueryDeposits(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryDeposits(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "deposits [proposal-id]",
 		Args:  cobra.ExactArgs(1),
@@ -429,7 +429,7 @@ $ %s query kugov deposits 1
 }
 
 // GetCmdQueryTally implements the command to query for proposal tally result.
-func GetCmdQueryTally(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryTally(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "tally [proposal-id]",
 		Args:  cobra.ExactArgs(1),
@@ -480,7 +480,7 @@ $ %s query kugov tally 1
 }
 
 // GetCmdQueryProposal implements the query proposal command.
-func GetCmdQueryParams(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryParams(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "params",
 		Short: "Query the parameters of the governance process",
@@ -522,7 +522,7 @@ $ %s query kugov params
 }
 
 // GetCmdQueryProposal implements the query proposal command.
-func GetCmdQueryParam(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryParam(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "param [param-type]",
 		Args:  cobra.ExactArgs(1),
@@ -570,7 +570,7 @@ $ %s query kugov param deposit
 }
 
 // GetCmdQueryProposer implements the query proposer command.
-func GetCmdQueryProposer(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryProposer(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "proposer [proposal-id]",
 		Args:  cobra.ExactArgs(1),
@@ -604,7 +604,7 @@ $ %s query kugov proposer 1
 }
 
 // GetCmdQueryPunishValidators implements the query punished-validators command.
-func GetCmdQueryPunishValidators(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryPunishValidators(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "punish-validators",
 		Short: "Query validators to be punished in this module",
@@ -641,7 +641,7 @@ $ %s query kugov punish-validators
 }
 
 // GetCmdQueryPunishValidators implements the query punished-validators command.
-func GetCmdQueryPunishValidator(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryPunishValidator(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "punish-validator [validator-account]",
 		Short: "Query a punished validator in this module",

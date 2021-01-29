@@ -15,7 +15,7 @@ import (
 )
 
 // GetTxCmd returns the transaction commands for this module
-func GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func GetTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	slashingTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Slashing transactions subcommands",
@@ -32,7 +32,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdUnjail implements the create unjail validator command.
-func GetCmdUnjail(cdc *codec.Codec) *cobra.Command {
+func GetCmdUnjail(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unjail [validator-operator-account]",
 		Args:  cobra.ExactArgs(1),

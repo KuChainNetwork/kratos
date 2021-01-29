@@ -6,7 +6,7 @@ import (
 
 // RegisterCodec registers the necessary x/distribution interfaces and concrete types
 // on the provided Amino codec. These types are used for Amino JSON serialization.
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(MsgWithdrawDelegatorReward{}, "kuchain/MsgWithdrawDelegationReward", nil)
 	cdc.RegisterConcrete(&MsgWithdrawDelegatorRewardData{}, "kuchain/MsgWithdrawDelegationRewardData", nil)
 
@@ -26,11 +26,11 @@ var (
 	//
 	// The actual codec used for serialization should be provided to x/distribution and
 	// defined at the application level.
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 )
 
 // Cdc get codec for types
-func Cdc() *codec.Codec {
+func Cdc() *codec.LegacyAmino {
 	return ModuleCdc
 }
 

@@ -35,7 +35,7 @@ func GenStoreKeys() (map[string]*sdk.KVStoreKey, map[string]*sdk.TransientStoreK
 	return keys, tKeys
 }
 
-func GenAppSubspace(cdc *codec.Codec, key sdk.StoreKey, tKey sdk.StoreKey) (map[string]params.Subspace, params.Keeper) {
+func GenAppSubspace(cdc *codec.LegacyAmino, key sdk.StoreKey, tKey sdk.StoreKey) (map[string]params.Subspace, params.Keeper) {
 	paramsKeeper := params.NewKeeper(cdc, key, tKey)
 
 	subspaces := make(map[string]params.Subspace)

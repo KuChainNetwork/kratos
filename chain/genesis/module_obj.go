@@ -12,7 +12,7 @@ type Data interface {
 
 type ModuleBasicBase struct {
 	defaultGenesis Data
-	cdc            *codec.Codec
+	cdc            *codec.LegacyAmino
 }
 
 // DefaultGenesis returns default genesis state as raw bytes for the account module.
@@ -33,7 +33,7 @@ func (g ModuleBasicBase) ValidateGenesis(bz json.RawMessage) error {
 	return g.defaultGenesis.ValidateGenesis(bz)
 }
 
-func NewModuleBasicBase(cdc *codec.Codec, defaultGenesis Data) ModuleBasicBase {
+func NewModuleBasicBase(cdc *codec.LegacyAmino, defaultGenesis Data) ModuleBasicBase {
 	return ModuleBasicBase{
 		defaultGenesis: defaultGenesis,
 		cdc:            cdc,

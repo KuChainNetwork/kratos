@@ -84,8 +84,8 @@ func setKey(name string, inBuf *bufio.Reader) types.AccAddress {
 	return auth
 }
 
-func makeCodec() *codec.Codec {
-	var cdc = codec.New()
+func makeCodec() *codec.LegacyAmino {
+	var cdc = codec.NewLegacyAmino()
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	stakingtypes.RegisterCodec(cdc)

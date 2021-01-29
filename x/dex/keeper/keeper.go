@@ -20,12 +20,12 @@ type DexKeeper struct {
 	// The (unexposed) key used to access the store from the Context.
 	key sdk.StoreKey
 	// The codec codec for binary encoding/decoding of accounts.
-	cdc         *codec.Codec
+	cdc         *codec.LegacyAmino
 	assetKeeper IAssetKeeper
 }
 
 // NewDexKeeper new keeper for a dex
-func NewDexKeeper(cdc *codec.Codec,
+func NewDexKeeper(cdc *codec.LegacyAmino,
 	key sdk.StoreKey,
 	keeper IAssetKeeper) DexKeeper {
 	return DexKeeper{

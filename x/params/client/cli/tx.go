@@ -19,7 +19,7 @@ import (
 
 // GetCmdSubmitProposal implements a command handler for submitting a parameter
 // change proposal transaction.
-func GetCmdSubmitProposal(cdc *codec.Codec) *cobra.Command {
+func GetCmdSubmitProposal(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "param-change [proposaler] [proposal-file]",
 		Args:  cobra.ExactArgs(2),

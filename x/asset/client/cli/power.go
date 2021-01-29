@@ -15,7 +15,7 @@ import (
 )
 
 // Exercise will commit a Exercise msg to chain
-func Exercise(cdc *codec.Codec) *cobra.Command {
+func Exercise(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "exercise [accountID] [amount]",
 		Short: "Exercise coins from coinpowers",

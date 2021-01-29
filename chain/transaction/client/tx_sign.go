@@ -27,7 +27,7 @@ const (
 )
 
 // GetSignCommand returns the transaction sign command.
-func GetSignCommand(codec *codec.Codec) *cobra.Command {
+func GetSignCommand(codec *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sign [file]",
 		Short: "Sign transactions generated offline",
@@ -93,7 +93,7 @@ func preSignCmd(cmd *cobra.Command, _ []string) {
 	}
 }
 
-func makeSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) error {
+func makeSignCmd(cdc *codec.LegacyAmino) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		stdTx, err := txutil.ReadStdTxFromFile(cdc, args[0])
 		if err != nil {
@@ -167,7 +167,7 @@ func makeSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) error
 	}
 }
 
-func getSignatureJSON(cdc *codec.Codec, newTx types.StdTx, indent, generateSignatureOnly bool) ([]byte, error) {
+func getSignatureJSON(cdc *codec.LegacyAmino, newTx types.StdTx, indent, generateSignatureOnly bool) ([]byte, error) {
 	switch generateSignatureOnly {
 	case true:
 		switch indent {

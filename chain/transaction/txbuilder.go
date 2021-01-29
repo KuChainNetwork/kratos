@@ -52,18 +52,23 @@ func NewTxBuilder(
 
 // NewTxBuilderFromCLI returns a new initialized TxBuilder with parameters from
 // the command line using Viper.
+// FIXME: to NewFactoryCLI
 func NewTxBuilderFromCLI(input io.Reader) TxBuilder {
 	kb, err := keyring.New(sdk.KeyringServiceName(), viper.GetString(flags.FlagKeyringBackend), viper.GetString(flags.FlagHome), input)
 	if err != nil {
 		panic(err)
 	}
+
+	gasStr := viper.GetString(flags.FlagGas)
+	gasSetting, _ := flags.ParseGasSetting(gasStr)
+
 	txbldr := TxBuilder{
 		keybase:            kb,
 		accountNumber:      uint64(viper.GetInt64(flags.FlagAccountNumber)),
 		sequence:           uint64(viper.GetInt64(flags.FlagSequence)),
-		gas:                flags.GasFlagVar.Gas,
+		gas:                gasSetting.Gas,
 		gasAdjustment:      viper.GetFloat64(flags.FlagGasAdjustment),
-		simulateAndExecute: flags.GasFlagVar.Simulate,
+		simulateAndExecute: gasSetting.Simulate,
 		chainID:            viper.GetString(flags.FlagChainID),
 		memo:               viper.GetString(flags.FlagMemo),
 	}
@@ -91,7 +96,7 @@ func (bldr TxBuilder) Gas() uint64 { return bldr.gas }
 func (bldr TxBuilder) GasAdjustment() float64 { return bldr.gasAdjustment }
 
 // Keybase returns the keybase
-func (bldr TxBuilder) Keybase() crkeys.Keybase { return bldr.keybase }
+func (bldr TxBuilder) Keybase() keyring.Keyring { return bldr.keybase }
 
 // SimulateAndExecute returns the option to simulate and then execute the transaction
 // using the gas from the simulation results
@@ -172,7 +177,7 @@ func (bldr TxBuilder) WithGasPrices(gasPrices string) TxBuilder {
 }
 
 // WithKeybase returns a copy of the context with updated keybase.
-func (bldr TxBuilder) WithKeybase(keybase crkeys.Keybase) TxBuilder {
+func (bldr TxBuilder) WithKeybase(keybase keyring.Keyring) TxBuilder {
 	bldr.keybase = keybase
 	return bldr
 }
@@ -232,6 +237,7 @@ func (bldr TxBuilder) BuildSignMsg(msgs []sdk.Msg) (StdSignMsg, error) {
 
 // Sign signs a transaction given a name, passphrase, and a single message to
 // signed. An error is returned if signing fails.
+// FIXME: passphrase has delete
 func (bldr TxBuilder) Sign(name, passphrase string, msg StdSignMsg) ([]byte, error) {
 	sig, err := MakeSignature(bldr.keybase, name, passphrase, msg)
 	if err != nil {
@@ -295,16 +301,16 @@ func (bldr TxBuilder) SignStdTx(name, passphrase string, stdTx StdTx, appendSig 
 }
 
 // MakeSignature builds a StdSignature given keybase, key name, passphrase, and a StdSignMsg.
-func MakeSignature(keybase crkeys.Keybase, name, passphrase string,
+func MakeSignature(keybase keyring.Keyring, name, passphrase string,
 	msg StdSignMsg) (sig StdSignature, err error) {
 	if keybase == nil {
-		keybase, err = crkeys.NewKeyring(sdk.KeyringServiceName(), viper.GetString(flags.FlagKeyringBackend), viper.GetString(flags.FlagHome), os.Stdin)
+		keybase, err = keyring.New(sdk.KeyringServiceName(), viper.GetString(flags.FlagKeyringBackend), viper.GetString(flags.FlagHome), os.Stdin)
 		if err != nil {
 			return
 		}
 	}
 
-	sigBytes, pubkey, err := keybase.Sign(name, passphrase, msg.Bytes())
+	sigBytes, pubkey, err := keybase.Sign(name, msg.Bytes())
 	if err != nil {
 		return
 	}

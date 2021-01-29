@@ -15,14 +15,13 @@ import (
 	"github.com/KuChainNetwork/kuchain/chain/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/crypto/types/multisig"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 )
 
 // GetSignCommand returns the sign command
-func GetMultiSignCommand(cdc *codec.Codec) *cobra.Command {
+func GetMultiSignCommand(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "multisign [file] [name] [[signature]...]",
 		Short: "Generate multisig signatures for transactions generated offline",
@@ -57,7 +56,7 @@ recommended to set such parameters manually.
 	return flags.PostCommands(cmd)[0]
 }
 
-func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) error {
+func makeMultiSignCmd(cdc *codec.LegacyAmino) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) (err error) {
 		stdTx, err := txutil.ReadStdTxFromFile(cdc, args[0])
 		if err != nil {
@@ -155,7 +154,7 @@ func makeMultiSignCmd(cdc *codec.Codec) func(cmd *cobra.Command, args []string) 
 	}
 }
 
-func readAndUnmarshalStdSignature(cdc *codec.Codec, filename string) (stdSig types.StdSignature, err error) {
+func readAndUnmarshalStdSignature(cdc *codec.LegacyAmino, filename string) (stdSig types.StdSignature, err error) {
 	var bytes []byte
 	if bytes, err = ioutil.ReadFile(filename); err != nil {
 		return

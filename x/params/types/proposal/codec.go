@@ -5,16 +5,16 @@ import (
 )
 
 // ModuleCdc module codec
-var ModuleCdc *codec.Codec
+var ModuleCdc *codec.LegacyAmino
 
 func init() {
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 
 	RegisterCodec(ModuleCdc)
 	ModuleCdc.Seal()
 }
 
 // RegisterCodec registers all necessary param module types with a given codec.
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(ParameterChangeProposal{}, "kuchain/ParameterChangeProposal", nil)
 }

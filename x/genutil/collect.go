@@ -19,7 +19,7 @@ import (
 )
 
 // GenAppStateFromConfig gets the genesis app state from the config
-func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg InitConfig, genDoc chainTypes.GenesisDoc,
+func GenAppStateFromConfig(cdc *codec.LegacyAmino, config *cfg.Config, initCfg InitConfig, genDoc chainTypes.GenesisDoc,
 	genBalIterator types.GenesisBalancesIterator, stakingFuncManager types.StakingFuncManager,
 ) (appState json.RawMessage, err error) {
 	// process genesis transactions, else create default genesis.json
@@ -61,7 +61,7 @@ func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg InitCon
 
 // CollectStdTxs processes and validates application's genesis StdTxs and returns
 // the list of appGenTxs, and persistent peers required to generate genesis.json.
-func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string, genDoc chainTypes.GenesisDoc,
+func CollectStdTxs(cdc *codec.LegacyAmino, moniker, genTxsDir string, genDoc chainTypes.GenesisDoc,
 	genBalIterator types.GenesisBalancesIterator, stakingFuncManager types.StakingFuncManager,
 ) (appGenTxs []txutil.StdTx, persistentPeers string, err error) {
 	var fos []os.FileInfo

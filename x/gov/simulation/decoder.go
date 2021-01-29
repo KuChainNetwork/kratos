@@ -11,7 +11,7 @@ import (
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding gov type
-func DecodeStore(cdc *codec.Codec, kvA, kvB kv.Pair) string {
+func DecodeStore(cdc *codec.LegacyAmino, kvA, kvB kv.Pair) string {
 	switch {
 	case bytes.Equal(kvA.Key[:1], types.ProposalsKeyPrefix):
 		var proposalA, proposalB types.Proposal

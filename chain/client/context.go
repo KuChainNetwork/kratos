@@ -41,16 +41,16 @@ func NewKuCLICtxNoFrom(ctx client.Context) Context {
 }
 
 // NewKuCLICtxByBuf creates a new Context with cmd
-func NewKuCLICtxByBuf(cdc *codec.Codec, inBuf io.Reader) Context {
+func NewKuCLICtxByBuf(cdc *codec.LegacyAmino, inBuf io.Reader) Context {
 	return NewKuCLICtx(client.NewCLIContextWithInput(inBuf).WithCodec(cdc))
 }
 
-func NewKuCLICtxByBufNoFrom(cdc *codec.Codec, inBuf io.Reader) Context {
+func NewKuCLICtxByBufNoFrom(cdc *codec.LegacyAmino, inBuf io.Reader) Context {
 	ctx := client.NewCLIContextWithInput(inBuf).WithCodec(cdc)
 	return NewKuCLICtxNoFrom(ctx)
 }
 
-func NewCtxByCodec(cdc *codec.Codec) Context {
+func NewCtxByCodec(cdc *codec.LegacyAmino) Context {
 	return NewKuCLICtx(client.NewCLIContext().WithCodec(cdc))
 }
 
@@ -60,7 +60,7 @@ func (k Context) Ctx() client.Context {
 
 type CtxQueryFunc func(string, []byte) ([]byte, int64, error)
 
-func (k Context) Codec() *codec.Codec                { return k.ctx.Codec }
+func (k Context) Codec() *codec.LegacyAmino          { return k.ctx.Codec }
 func (k Context) GetFromAddress() types.AccAddress   { return k.ctx.FromAddress }
 func (k Context) GetFromName() string                { return k.ctx.GetFromName() }
 func (k Context) Output() io.Writer                  { return k.ctx.Output }

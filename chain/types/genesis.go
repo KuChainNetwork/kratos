@@ -12,7 +12,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/tendermint/tendermint/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
+	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
 )
@@ -21,7 +23,7 @@ import (
 type AppGenesisState map[string]json.RawMessage
 
 // UnmarshalGenesis unmarshal a genesis state for a module in app genesis
-func (s AppGenesisState) UnmarshalGenesis(cdc *codec.Codec, key string, val interface{}) error {
+func (s AppGenesisState) UnmarshalGenesis(cdc *codec.LegacyAmino, key string, val interface{}) error {
 	raw, ok := s[key]
 	if !ok {
 		return fmt.Errorf("key no found for %s", key)
@@ -31,7 +33,7 @@ func (s AppGenesisState) UnmarshalGenesis(cdc *codec.Codec, key string, val inte
 }
 
 // MarshalGenesis marshals the genesis state for a module in app genesis
-func (s AppGenesisState) MarshalGenesis(cdc *codec.Codec, key string, val interface{}) error {
+func (s AppGenesisState) MarshalGenesis(cdc *codec.LegacyAmino, key string, val interface{}) error {
 	raw, err := cdc.MarshalJSON(val)
 	if err != nil {
 		return err
@@ -47,7 +49,7 @@ func (s AppGenesisState) MarshalGenesis(cdc *codec.Codec, key string, val interf
 }
 
 // LoadGenesisFile reads and unmarshals GenesisDoc from the given file.
-func LoadGenesisFile(cdc *codec.Codec, genFile string) (genDoc tmtypes.GenesisDoc, err error) {
+func LoadGenesisFile(cdc *codec.LegacyAmino, genFile string) (genDoc tmtypes.GenesisDoc, err error) {
 	if !tmos.FileExists(genFile) {
 		err = fmt.Errorf("%s does not exist", genFile)
 		return
@@ -66,12 +68,12 @@ func LoadGenesisFile(cdc *codec.Codec, genFile string) (genDoc tmtypes.GenesisDo
 }
 
 // LoadGenesisStateFromBytes
-func LoadGenesisStateFromBytes(cdc *codec.Codec, appState AppGenesisState, key string, val interface{}) error {
+func LoadGenesisStateFromBytes(cdc *codec.LegacyAmino, appState AppGenesisState, key string, val interface{}) error {
 	return sdkerrors.Wrap(appState.UnmarshalGenesis(cdc, key, val), "unmarshal genesis error")
 }
 
 // LoadGenesisStateFromFile
-func LoadGenesisStateFromFile(cdc *codec.Codec, genFile, key string, val interface{}) error {
+func LoadGenesisStateFromFile(cdc *codec.LegacyAmino, genFile, key string, val interface{}) error {
 	doc, err := LoadGenesisFile(cdc, genFile)
 	if err != nil {
 		return err
@@ -86,7 +88,7 @@ func LoadGenesisStateFromFile(cdc *codec.Codec, genFile, key string, val interfa
 }
 
 // SaveGenesisStateToFile
-func SaveGenesisStateToFile(cdc *codec.Codec, genFile, key string, val interface{}) error {
+func SaveGenesisStateToFile(cdc *codec.LegacyAmino, genFile, key string, val interface{}) error {
 	doc, err := LoadGenesisFile(cdc, genFile)
 	if err != nil {
 		return err
@@ -128,7 +130,7 @@ type GenesisValidator struct {
 type GenesisDoc struct {
 	GenesisTime     time.Time                `json:"genesis_time"`
 	ChainID         string                   `json:"chain_id"`
-	ConsensusParams *tmtypes.ConsensusParams `json:"consensus_params,omitempty"`
+	ConsensusParams *tmproto.ConsensusParams `json:"consensus_params,omitempty"`
 	Validators      []GenesisValidator       `json:"validators,omitempty"`
 	AppHash         tmbytes.HexBytes         `json:"app_hash"`
 	AppState        json.RawMessage          `json:"app_state,omitempty"`
@@ -136,7 +138,7 @@ type GenesisDoc struct {
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.
 func (genDoc *GenesisDoc) SaveAs(file string) error {
-	genDocBytes, err := tmtypes.GetCodec().MarshalJSONIndent(genDoc, "", "  ")
+	genDocBytes, err := tmjson.MarshalIndent(genDoc, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -165,7 +167,7 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 
 	if genDoc.ConsensusParams == nil {
 		genDoc.ConsensusParams = tmtypes.DefaultConsensusParams()
-	} else if err := genDoc.ConsensusParams.Validate(); err != nil {
+	} else if err := tmtypes.ValidateConsensusParams(*genDoc.ConsensusParams); err != nil {
 		return err
 	}
 
@@ -194,7 +196,7 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 // GenesisDocFromJSON unmarshalls JSON data into a GenesisDoc.
 func GenesisDocFromJSON(jsonBlob []byte) (*GenesisDoc, error) {
 	genDoc := GenesisDoc{}
-	err := tmtypes.GetCodec().UnmarshalJSON(jsonBlob, &genDoc)
+	err := tmjson.Unmarshal(jsonBlob, &genDoc)
 	if err != nil {
 		return nil, err
 	}

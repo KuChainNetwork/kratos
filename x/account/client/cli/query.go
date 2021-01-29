@@ -12,7 +12,7 @@ import (
 )
 
 // GetQueryCmd returns the transaction commands for this module
-func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the account module",
@@ -32,7 +32,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 
 // GetAccountCmd returns a query account that will display the state of the
 // account at a given name.
-func GetAccountCmd(cdc *codec.Codec) *cobra.Command {
+func GetAccountCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get [name]",
 		Short: "Query account data",
@@ -60,7 +60,7 @@ func GetAccountCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetAuthCmd returns a query auth that will display the state of the auth
-func GetAuthCmd(cdc *codec.Codec) *cobra.Command {
+func GetAuthCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auth [acc-address]",
 		Short: "Query auth data",
@@ -87,7 +87,7 @@ func GetAuthCmd(cdc *codec.Codec) *cobra.Command {
 	return flags.GetCommands(cmd)[0]
 }
 
-func GetAccountsCmd(cdc *codec.Codec) *cobra.Command {
+func GetAccountsCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "accounts [auth]",
 		Short: "Query accounts by",

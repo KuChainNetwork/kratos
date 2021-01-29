@@ -18,7 +18,7 @@ import (
 
 // GetQueryCmd returns the CLI command with all evidence module query commands
 // mounted.
-func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   types.ModuleName,
 		Short: "Query for evidence by hash or for all (paginated) submitted evidence",
@@ -47,7 +47,7 @@ $ %s query %s --page=2 --limit=50
 }
 
 // QueryParamsCmd returns the command handler for evidence parameter querying.
-func QueryParamsCmd(cdc *codec.Codec) *cobra.Command {
+func QueryParamsCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "params",
 		Short: "Query the current evidence parameters",
@@ -77,7 +77,7 @@ $ <appcli> query kuevidence params
 
 // QueryEvidenceCmd returns the command handler for evidence querying. Evidence
 // can be queried for by hash or paginated evidence can be returned.
-func QueryEvidenceCmd(cdc *codec.Codec) func(*cobra.Command, []string) error {
+func QueryEvidenceCmd(cdc *codec.LegacyAmino) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		if err := client.ValidateCmd(cmd, args); err != nil {
 			return err
@@ -95,7 +95,7 @@ func QueryEvidenceCmd(cdc *codec.Codec) func(*cobra.Command, []string) error {
 	}
 }
 
-func queryEvidence(cdc *codec.Codec, cliCtx client.Context, hash string) error {
+func queryEvidence(cdc *codec.LegacyAmino, cliCtx client.Context, hash string) error {
 	if _, err := hex.DecodeString(hash); err != nil {
 		return fmt.Errorf("invalid evidence hash: %w", err)
 	}
@@ -121,7 +121,7 @@ func queryEvidence(cdc *codec.Codec, cliCtx client.Context, hash string) error {
 	return cliCtx.PrintOutput(evidence)
 }
 
-func queryAllEvidence(cdc *codec.Codec, cliCtx client.Context) error {
+func queryAllEvidence(cdc *codec.LegacyAmino, cliCtx client.Context) error {
 	params := types.NewQueryAllEvidenceParams(viper.GetInt(flags.FlagPage), viper.GetInt(flags.FlagLimit))
 	bz, err := cdc.MarshalJSON(params)
 	if err != nil {

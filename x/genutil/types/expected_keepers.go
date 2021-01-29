@@ -27,7 +27,7 @@ type AccountKeeper interface {
 // GenesisAccountsIterator defines the expected iterating genesis accounts object (noalias)
 type GenesisAccountsIterator interface {
 	IterateGenesisAccounts(
-		cdc *codec.Codec,
+		cdc *codec.LegacyAmino,
 		appGenesis types.AppGenesisState,
 		cb func(accountexported.Account) (stop bool),
 	)
@@ -36,7 +36,7 @@ type GenesisAccountsIterator interface {
 // GenesisAccountsIterator defines the expected iterating genesis accounts object (noalias)
 type GenesisBalancesIterator interface {
 	IterateGenesisBalances(
-		cdc *codec.Codec,
+		cdc *codec.LegacyAmino,
 		appStat types.AppGenesisState,
 		cb func(asset.GenesisAsset) (stop bool),
 	)

@@ -6,10 +6,10 @@ import (
 )
 
 // ModuleCdc auth module wide codec
-var ModuleCdc = codec.New()
+var ModuleCdc = codec.NewLegacyAmino()
 
 // RegisterCodec registers concrete types on the codec
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*exported.AccountAuthKeeper)(nil), nil)
 	cdc.RegisterInterface((*exported.AccountStatKeeper)(nil), nil)
 	cdc.RegisterInterface((*exported.Account)(nil), nil)
@@ -37,7 +37,7 @@ func RegisterAccountTypeCodec(o interface{}, name string) {
 }
 
 // Cdc get codec for types
-func Cdc() *codec.Codec {
+func Cdc() *codec.LegacyAmino {
 	return ModuleCdc
 }
 

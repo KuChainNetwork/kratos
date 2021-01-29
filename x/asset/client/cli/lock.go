@@ -17,7 +17,7 @@ import (
 )
 
 // LockCoin will create a account create tx and sign it with the given key.
-func LockCoin(cdc *codec.Codec) *cobra.Command {
+func LockCoin(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "lock [accountID] [unlockBlockHeight] [amount]",
 		Short: "Lock coin until the unlockBlockHeight is arrived",
@@ -60,7 +60,7 @@ func LockCoin(cdc *codec.Codec) *cobra.Command {
 }
 
 // UnlockCoin will create a account create tx and sign it with the given key.
-func UnlockCoin(cdc *codec.Codec) *cobra.Command {
+func UnlockCoin(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "unlock [accountID] [amount]",
 		Short: "Unlock all coin can unlock",
@@ -96,7 +96,7 @@ func UnlockCoin(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCoinsLockedCmd returns a query coin locked
-func GetCoinsLockedCmd(cdc *codec.Codec) *cobra.Command {
+func GetCoinsLockedCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "locked [account]",
 		Short: "Query all coin powers for a account",

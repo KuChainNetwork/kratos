@@ -47,7 +47,7 @@ func (AppModuleBasic) Name() string {
 }
 
 // RegisterCodec registers the account module's types for the given codec.
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
+func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
 	txutil.RegisterCodec(cdc)
 	types.RegisterCodec(cdc)
 }
@@ -58,12 +58,12 @@ func (AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router)
 }
 
 // GetTxCmd returns the root tx command for the account module.
-func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func (AppModuleBasic) GetTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	return cli.GetTxCmd(cdc)
 }
 
 // GetQueryCmd returns the root query command for the account module.
-func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func (AppModuleBasic) GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	return cli.GetQueryCmd(cdc)
 }
 

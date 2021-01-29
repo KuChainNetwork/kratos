@@ -16,7 +16,7 @@ import (
 )
 
 // Issue will create a account create tx and sign it with the given key.
-func Issue(cdc *codec.Codec) *cobra.Command {
+func Issue(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "issue [creator] [symbol] [amount]",
 		Short: "Issue coin",
@@ -65,7 +65,7 @@ func Issue(cdc *codec.Codec) *cobra.Command {
 }
 
 // Burn will create a account create tx and sign it with the given key.
-func Burn(cdc *codec.Codec) *cobra.Command {
+func Burn(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "burn [accountID] [amount]",
 		Short: "Burn coin owned by account",

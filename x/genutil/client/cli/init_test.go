@@ -2,6 +2,11 @@ package cli
 
 import (
 	"bytes"
+	"io"
+	"os"
+	"testing"
+	"time"
+
 	"github.com/KuChainNetwork/kuchain/chain/client/flags"
 	"github.com/KuChainNetwork/kuchain/test/simapp"
 	"github.com/KuChainNetwork/kuchain/x/genutil"
@@ -17,10 +22,6 @@ import (
 	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
-	"io"
-	"os"
-	"testing"
-	"time"
 )
 
 var testMbm = module.NewBasicManager(genutil.AppModuleBasic{})
@@ -145,8 +146,8 @@ func TestInitNodeValidatorFiles(t *testing.T) {
 }
 
 // custom tx codec
-func makeCodec() *codec.Codec {
-	var cdc = codec.New()
+func makeCodec() *codec.LegacyAmino {
+	var cdc = codec.NewLegacyAmino()
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	stakingtypes.RegisterCodec(cdc)

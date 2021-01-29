@@ -59,7 +59,7 @@ func NewGenesisStateFromStdTx(genTxs []txutil.StdTx) GenesisState {
 }
 
 // GetGenesisStateFromAppState gets the genutil genesis state from the expected app state
-func GetGenesisStateFromAppState(cdc *codec.Codec, appState map[string]json.RawMessage) GenesisState {
+func GetGenesisStateFromAppState(cdc *codec.LegacyAmino, appState map[string]json.RawMessage) GenesisState {
 	var genesisState GenesisState
 	if appState[ModuleName] != nil {
 		cdc.MustUnmarshalJSON(appState[ModuleName], &genesisState)
@@ -68,7 +68,7 @@ func GetGenesisStateFromAppState(cdc *codec.Codec, appState map[string]json.RawM
 }
 
 // SetGenesisStateInAppState sets the genutil genesis state within the expected app state
-func SetGenesisStateInAppState(cdc *codec.Codec,
+func SetGenesisStateInAppState(cdc *codec.LegacyAmino,
 	appState map[string]json.RawMessage, genesisState GenesisState) map[string]json.RawMessage {
 	genesisStateBz := cdc.MustMarshalJSON(genesisState)
 	appState[ModuleName] = genesisStateBz
@@ -80,7 +80,7 @@ func SetGenesisStateInAppState(cdc *codec.Codec,
 //
 // NOTE: The pubkey input is this machines pubkey.
 func GenesisStateFromGenDoc(
-	cdc *codec.Codec, genDoc types.GenesisDoc) (genesisState map[string]json.RawMessage, err error) {
+	cdc *codec.LegacyAmino, genDoc types.GenesisDoc) (genesisState map[string]json.RawMessage, err error) {
 	if err = cdc.UnmarshalJSON(genDoc.AppState, &genesisState); err != nil {
 		return genesisState, err
 	}
@@ -92,7 +92,7 @@ func GenesisStateFromGenDoc(
 //
 // NOTE: The pubkey input is this machines pubkey.
 func GenesisStateFromGenFile(
-	cdc *codec.Codec, genFile string) (genesisState map[string]json.RawMessage, genDoc *types.GenesisDoc, err error) {
+	cdc *codec.LegacyAmino, genFile string) (genesisState map[string]json.RawMessage, genDoc *types.GenesisDoc, err error) {
 	if !tmos.FileExists(genFile) {
 		return genesisState, genDoc,
 			fmt.Errorf("%s does not exist, run `init` first", genFile)

@@ -20,7 +20,7 @@ const key = "NotDistributionTimePoint"
 // Keeper of the distribution store
 type Keeper struct {
 	storeKey         sdk.StoreKey
-	cdc              *codec.Codec
+	cdc              *codec.LegacyAmino
 	paramSpace       params.Subspace
 	BankKeeper       types.BankKeeperAccountID
 	stakingKeeper    types.StakingKeeperAccountID
@@ -35,7 +35,7 @@ type Keeper struct {
 
 // NewKeeper creates a new distribution Keeper instance
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey,
+	cdc *codec.LegacyAmino, key sdk.StoreKey,
 	paramSpace params.Subspace,
 	bk types.BankKeeperAccountID,
 	sk types.StakingKeeperAccountID,

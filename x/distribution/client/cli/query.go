@@ -16,7 +16,7 @@ import (
 )
 
 // GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	distQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the distribution module",
@@ -38,7 +38,7 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQueryParams implements the query params command.
-func GetCmdQueryParams(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryParams(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "params",
 		Args:  cobra.NoArgs,
@@ -63,7 +63,7 @@ func GetCmdQueryParams(queryRoute string, cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQueryValidatorOutstandingRewards implements the query validator outstanding rewards command.
-func GetCmdQueryValidatorOutstandingRewards(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidatorOutstandingRewards(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "validator-outstanding-rewards [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -112,7 +112,7 @@ $ %s query kudistribution validator-outstanding-rewards validatorName
 }
 
 // GetCmdQueryValidatorCommission implements the query validator commission command.
-func GetCmdQueryValidatorCommission(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidatorCommission(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "commission [validator]",
 		Args:  cobra.ExactArgs(1),
@@ -147,7 +147,7 @@ $ %s query kudistribution commission validatorName
 }
 
 // GetCmdQueryValidatorSlashes implements the query validator slashes command.
-func GetCmdQueryValidatorSlashes(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidatorSlashes(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "slashes [validator] [start-height] [end-height]",
 		Args:  cobra.ExactArgs(3),
@@ -198,7 +198,7 @@ $ %s query kudistribution slashes validatorName 0 100
 }
 
 // GetCmdQueryDelegatorRewards implements the query delegator rewards command.
-func GetCmdQueryDelegatorRewards(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryDelegatorRewards(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "rewards [delegator] [<validator>]",
 		Args:  cobra.RangeArgs(1, 2),
@@ -262,7 +262,7 @@ $ %s query kudistribution rewards jack validatorName
 }
 
 // GetCmdQueryCommunityPool returns the command for fetching community pool info
-func GetCmdQueryCommunityPool(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryCommunityPool(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "community-pool",
 		Args:  cobra.NoArgs,
@@ -292,7 +292,7 @@ $ %s query kudistribution community-pool
 }
 
 // GetCmdQueryCommunityPool returns the command for fetching community pool info
-func GetCmdQueryWithDrawAddr(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryWithDrawAddr(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "whithdraw-addr",
 		Args:  cobra.ExactArgs(1),

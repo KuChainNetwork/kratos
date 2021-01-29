@@ -80,7 +80,7 @@ var (
 // KuchainApp extended ABCI application
 type KuchainApp struct {
 	*bam.BaseApp
-	cdc *codec.Codec
+	cdc *codec.LegacyAmino
 
 	invCheckPeriod uint
 
@@ -115,8 +115,8 @@ type KuchainApp struct {
 }
 
 // custom tx codec
-func MakeCodec() *codec.Codec {
-	var cdc = codec.New()
+func MakeCodec() *codec.LegacyAmino {
+	var cdc = codec.NewLegacyAmino()
 
 	chainTypes.RegisterCodec(cdc)
 	ModuleBasics.RegisterCodec(cdc)
@@ -270,7 +270,7 @@ func (app *KuchainApp) ModuleAccountAddrs() map[string]bool {
 }
 
 // Codec returns the application's sealed codec.
-func (app *KuchainApp) Codec() *codec.Codec {
+func (app *KuchainApp) Codec() *codec.LegacyAmino {
 	return app.cdc
 }
 

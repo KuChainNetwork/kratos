@@ -13,7 +13,7 @@ import (
 
 // Keeper of the mint store
 type Keeper struct {
-	cdc              *codec.Codec
+	cdc              *codec.LegacyAmino
 	storeKey         sdk.StoreKey
 	paramSpace       params.Subspace
 	sk               types.StakingKeeper
@@ -23,7 +23,7 @@ type Keeper struct {
 
 // NewKeeper creates a new mint Keeper instance
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, paramSpace params.Subspace,
+	cdc *codec.LegacyAmino, key sdk.StoreKey, paramSpace params.Subspace,
 	sk types.StakingKeeper, supplyKeeper types.SupplyKeeper, feeCollectorName string) Keeper {
 	// ensure mint module account is set
 	if addr := supplyKeeper.GetModuleAddress(types.ModuleName); addr == nil {

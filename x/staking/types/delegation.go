@@ -77,13 +77,13 @@ func NewDelegation(delegatorAddr chainTypes.AccountID, validatorAddr chainTypes.
 }
 
 // MustMarshalDelegation returns the delegation bytes. Panics if fails
-func MustMarshalDelegation(cdc *codec.Codec, delegation Delegation) []byte {
+func MustMarshalDelegation(cdc *codec.LegacyAmino, delegation Delegation) []byte {
 	return cdc.MustMarshalBinaryBare(&delegation)
 }
 
 // MustUnmarshalDelegation return the unmarshaled delegation from bytes.
 // Panics if fails.
-func MustUnmarshalDelegation(cdc *codec.Codec, value []byte) Delegation {
+func MustUnmarshalDelegation(cdc *codec.LegacyAmino, value []byte) Delegation {
 	delegation, err := UnmarshalDelegation(cdc, value)
 	if err != nil {
 		panic(err)
@@ -92,7 +92,7 @@ func MustUnmarshalDelegation(cdc *codec.Codec, value []byte) Delegation {
 }
 
 // return the delegation
-func UnmarshalDelegation(cdc *codec.Codec, value []byte) (delegation Delegation, err error) {
+func UnmarshalDelegation(cdc *codec.LegacyAmino, value []byte) (delegation Delegation, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &delegation)
 	return delegation, err
 }
@@ -174,12 +174,12 @@ func (ubd *UnbondingDelegation) RemoveEntry(i int64) {
 }
 
 // return the unbonding delegation
-func MustMarshalUBD(cdc *codec.Codec, ubd UnbondingDelegation) []byte {
+func MustMarshalUBD(cdc *codec.LegacyAmino, ubd UnbondingDelegation) []byte {
 	return cdc.MustMarshalBinaryBare(&ubd)
 }
 
 // unmarshal a unbonding delegation from a store value
-func MustUnmarshalUBD(cdc *codec.Codec, value []byte) UnbondingDelegation {
+func MustUnmarshalUBD(cdc *codec.LegacyAmino, value []byte) UnbondingDelegation {
 	ubd, err := UnmarshalUBD(cdc, value)
 	if err != nil {
 		panic(err)
@@ -188,7 +188,7 @@ func MustUnmarshalUBD(cdc *codec.Codec, value []byte) UnbondingDelegation {
 }
 
 // unmarshal a unbonding delegation from a store value
-func UnmarshalUBD(cdc *codec.Codec, value []byte) (ubd UnbondingDelegation, err error) {
+func UnmarshalUBD(cdc *codec.LegacyAmino, value []byte) (ubd UnbondingDelegation, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &ubd)
 	return ubd, err
 }
@@ -308,12 +308,12 @@ func (red *Redelegation) RemoveEntry(i int64) {
 }
 
 // MustMarshalRED returns the Redelegation bytes. Panics if fails.
-func MustMarshalRED(cdc *codec.Codec, red Redelegation) []byte {
+func MustMarshalRED(cdc *codec.LegacyAmino, red Redelegation) []byte {
 	return cdc.MustMarshalBinaryBare(&red)
 }
 
 // MustUnmarshalRED unmarshals a redelegation from a store value. Panics if fails.
-func MustUnmarshalRED(cdc *codec.Codec, value []byte) Redelegation {
+func MustUnmarshalRED(cdc *codec.LegacyAmino, value []byte) Redelegation {
 	red, err := UnmarshalRED(cdc, value)
 	if err != nil {
 		panic(err)
@@ -322,7 +322,7 @@ func MustUnmarshalRED(cdc *codec.Codec, value []byte) Redelegation {
 }
 
 // UnmarshalRED unmarshals a redelegation from a store value
-func UnmarshalRED(cdc *codec.Codec, value []byte) (red Redelegation, err error) {
+func UnmarshalRED(cdc *codec.LegacyAmino, value []byte) (red Redelegation, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &red)
 	return red, err
 }

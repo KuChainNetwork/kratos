@@ -39,16 +39,16 @@ func (AppModuleBasic) Name() string {
 }
 
 // RegisterCodec registers the genutil module's types for the given codec.
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {}
+func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {}
 
 // RegisterRESTRoutes registers the REST routes for the genutil module.
 func (AppModuleBasic) RegisterRESTRoutes(_ clientSDK.Context, _ *mux.Router) {}
 
 // GetTxCmd returns no root tx command for the genutil module.
-func (AppModuleBasic) GetTxCmd(_ *codec.Codec) *cobra.Command { return nil }
+func (AppModuleBasic) GetTxCmd(_ *codec.LegacyAmino) *cobra.Command { return nil }
 
 // GetQueryCmd returns no root query command for the genutil module.
-func (AppModuleBasic) GetQueryCmd(_ *codec.Codec) *cobra.Command { return nil }
+func (AppModuleBasic) GetQueryCmd(_ *codec.LegacyAmino) *cobra.Command { return nil }
 
 // AppModule implements an application module for the genutil module.
 type AppModule struct {

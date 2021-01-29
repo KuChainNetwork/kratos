@@ -31,7 +31,7 @@ const (
 )
 
 // GetTxCmd returns the transaction commands for this module
-func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
+func GetTxCmd(storeKey string, cdc *codec.LegacyAmino) *cobra.Command {
 	distTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Distribution transactions subcommands",
@@ -80,7 +80,7 @@ func splitAndApply(
 }
 
 // command to withdraw rewards
-func GetCmdWithdrawRewards(cdc *codec.Codec) *cobra.Command {
+func GetCmdWithdrawRewards(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw-rewards [validator]  --from delegator",
 		Short: "Withdraw rewards from a given delegation address and validator commission from a validator operator.",
@@ -123,7 +123,7 @@ $ %s tx kudistribution withdraw-rewards validator  Delegator --from jack --commi
 }
 
 // command to withdraw all rewards
-func GetCmdWithdrawAllRewards(cdc *codec.Codec, queryRoute string) *cobra.Command {
+func GetCmdWithdrawAllRewards(cdc *codec.LegacyAmino, queryRoute string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw-all-rewards [delegator] --from [delegator]",
 		Short: "withdraw all delegations rewards for a delegator",
@@ -168,7 +168,7 @@ $ %s tx kudistribution withdraw-all-rewards  --from jack
 }
 
 // command to replace a delegator's withdrawal address
-func GetCmdSetWithdrawAddr(cdc *codec.Codec) *cobra.Command {
+func GetCmdSetWithdrawAddr(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set-withdraw [withdrawAccount] --from account",
 		Short: "change the default withdraw name for rewards associated with an name ",
@@ -203,7 +203,7 @@ $ %s tx kudistribution set-withdraw withdrawacc  account --from account
 }
 
 // GetCmdSubmitProposal implements the command to submit a community-pool-spend proposal
-func GetCmdSubmitProposal(cdc *codec.Codec) *cobra.Command {
+func GetCmdSubmitProposal(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "community-pool-spend [proposer] [proposal-file]",
 		Args:  cobra.ExactArgs(2),

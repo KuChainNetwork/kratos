@@ -57,7 +57,7 @@ func (msg KuMsg) GetTransfers() []KuMsgTransfer {
 }
 
 // UnmarshalData unmarshal data to a obj
-func (msg KuMsg) UnmarshalData(cdc *codec.Codec, obj interface{}) error {
+func (msg KuMsg) UnmarshalData(cdc *codec.LegacyAmino, obj interface{}) error {
 	return cdc.UnmarshalBinaryLengthPrefixed(msg.Data, obj)
 }
 
@@ -134,7 +134,7 @@ func (msg KuMsg) ValidateTransfer() error {
 	return nil
 }
 
-func (msg KuMsg) PrettifyJSON(cdc *codec.Codec) ([]byte, error) {
+func (msg KuMsg) PrettifyJSON(cdc *codec.LegacyAmino) ([]byte, error) {
 	alias := struct {
 		Auth      []AccAddress    `json:"auth,omitempty" yaml:"auth"`
 		Transfers []KuMsgTransfer `json:"transfers" yaml:"transfers"`

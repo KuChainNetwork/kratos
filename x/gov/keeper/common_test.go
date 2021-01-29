@@ -6,6 +6,8 @@ package keeper_test // noalias
 import (
 	"bytes"
 	"encoding/hex"
+	"strconv"
+
 	govKeeper "github.com/KuChainNetwork/kuchain/x/gov/keeper"
 	govTypes "github.com/KuChainNetwork/kuchain/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -14,10 +16,11 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	"strconv"
 
 	"github.com/KuChainNetwork/kuchain/x/staking"
 	stakeTypes "github.com/KuChainNetwork/kuchain/x/staking/types"
+
+	"testing"
 
 	"github.com/KuChainNetwork/kuchain/chain/config"
 	"github.com/KuChainNetwork/kuchain/chain/constants"
@@ -26,7 +29,6 @@ import (
 	"github.com/KuChainNetwork/kuchain/x/staking/exported"
 	"github.com/KuChainNetwork/kuchain/x/supply"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 var (
@@ -106,7 +108,7 @@ func NewTestApp(wallet *simapp.Wallet) (addAlice, addJack, addValidator sdk.AccA
 	if !succ {
 		resInt = sdk.NewInt(10000000000000000)
 	}
-	otherCoinDenom := types.CoinDenom(types.MustName("foo"),types.MustName("coin"))
+	otherCoinDenom := types.CoinDenom(types.MustName("foo"), types.MustName("coin"))
 	initAsset := types.NewCoin(constants.DefaultBondDenom, resInt)
 	asset1 := types.Coins{
 		types.NewInt64Coin(otherCoinDenom, 67),
@@ -240,8 +242,8 @@ func createTestPubKeys(numPubKeys int) []crypto.PubKey {
 	return publicKeys
 }
 
-func makeTestCodec() *codec.Codec {
-	var cdc = codec.New()
+func makeTestCodec() *codec.LegacyAmino {
+	var cdc = codec.NewLegacyAmino()
 	auth.RegisterCodec(cdc)
 	types.RegisterCodec(cdc)
 	supply.RegisterCodec(cdc)

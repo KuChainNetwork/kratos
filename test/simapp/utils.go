@@ -52,7 +52,7 @@ func SetupSimulation(dirPrefix, dbName string) (simulation.Config, dbm.DB, strin
 
 // SimulationOperations retrieves the simulation params from the provided file path
 // and returns all the modules weighted operations
-func SimulationOperations(app App, cdc *codec.Codec, config simulation.Config) []simulation.WeightedOperation {
+func SimulationOperations(app App, cdc *codec.LegacyAmino, config simulation.Config) []simulation.WeightedOperation {
 	simState := module.SimulationState{
 		AppParams: make(simulation.AppParams),
 		Cdc:       cdc,
@@ -112,7 +112,7 @@ func PrintStats(db dbm.DB) {
 
 // GetSimulationLog unmarshal the KVPair's Value to the corresponding type based on the
 // each's module store key and the prefix bytes of the KVPair's key.
-func GetSimulationLog(storeName string, sdr sdk.StoreDecoderRegistry, cdc *codec.Codec, kvAs, kvBs []kv.Pair) (log string) {
+func GetSimulationLog(storeName string, sdr sdk.StoreDecoderRegistry, cdc *codec.LegacyAmino, kvAs, kvBs []kv.Pair) (log string) {
 	for i := 0; i < len(kvAs); i++ {
 
 		if len(kvAs[i].Value) == 0 && len(kvBs[i].Value) == 0 {

@@ -13,7 +13,7 @@ import (
 )
 
 // GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	// Group slashing queries under a subcommand
 	slashingQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -34,7 +34,7 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQuerySigningInfo implements the command to query signing info.
-func GetCmdQuerySigningInfo(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQuerySigningInfo(storeName string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "signing-info [validator-conspub]",
 		Short: "Query a validator's signing information",
@@ -75,7 +75,7 @@ $ <appcli> query kuslashing signing-info cosmosvalconspub1zcjduepqfhvwcmt7p06fvd
 }
 
 // GetCmdQueryParams implements a command to fetch slashing parameters.
-func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryParams(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "params",
 		Short: "Query the current slashing parameters",

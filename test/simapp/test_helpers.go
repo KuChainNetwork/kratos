@@ -134,7 +134,7 @@ func CheckBalance(t *testing.T, app *SimApp, id types.AccountID, exp types.Coins
 // the parameter 'expPass' against the result. A corresponding result is
 // returned.
 func SignCheckDeliver(
-	t *testing.T, cdc *codec.Codec, app *bam.BaseApp, header abci.Header,
+	t *testing.T, cdc *codec.LegacyAmino, app *bam.BaseApp, header abci.Header,
 	payer types.AccountID, fee types.Coins,
 	msgs []sdk.Msg,
 	accNums, seq []uint64, expSimPass, expPass bool, priv ...crypto.PrivKey,

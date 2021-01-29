@@ -6,7 +6,7 @@ import (
 
 // RegisterCodec registers all the necessary types and interfaces for the
 // governance module.
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*Content)(nil), nil)
 	cdc.RegisterConcrete(&MsgSubmitProposalBase{}, "kuchain/MsgSubmitProposalBase", nil)
 	cdc.RegisterConcrete(MsgSubmitProposal{}, "kuchain/MsgSubmitProposal", nil)
@@ -36,11 +36,11 @@ var (
 	//
 	// The actual codec used for serialization should be provided to x/gov and
 	// defined at the application level.
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 )
 
 // Cdc get codec for types
-func Cdc() *codec.Codec {
+func Cdc() *codec.LegacyAmino {
 	return ModuleCdc
 }
 

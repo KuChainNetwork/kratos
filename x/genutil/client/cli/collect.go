@@ -19,7 +19,7 @@ import (
 const flagGenTxDir = "gentx-dir"
 
 // CollectGenTxsCmd - return the cobra command to collect genesis transactions
-func CollectGenTxsCmd(ctx *server.Context, cdc *codec.Codec, genBalIterator types.GenesisBalancesIterator,
+func CollectGenTxsCmd(ctx *server.Context, cdc *codec.LegacyAmino, genBalIterator types.GenesisBalancesIterator,
 	manager types.StakingFuncManager, defaultNodeHome string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collect-gentxs",

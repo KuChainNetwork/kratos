@@ -13,7 +13,7 @@ import (
 )
 
 // GensisAccountAssetCmd builds gen genesis account asset to genesis config
-func GensisAccountAssetCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+func GensisAccountAssetCmd(ctx *server.Context, cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-account-coin",
 		Short: "Add a genesis coin for a account to chain",
@@ -55,7 +55,7 @@ func GensisAccountAssetCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command
 	return cmd
 }
 
-func addAccountAsset(cdc *codec.Codec, state *asset.GenesisState, accountID types.AccountID, coins types.Coins) error {
+func addAccountAsset(cdc *codec.LegacyAmino, state *asset.GenesisState, accountID types.AccountID, coins types.Coins) error {
 	for _, g := range state.GenesisAssets {
 		if g.GetID().Eq(accountID) {
 			return fmt.Errorf("the application state already contains account coins")

@@ -5,22 +5,22 @@ import (
 )
 
 // RegisterCodec registers concrete types on the codec
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&noExistMsgData{}, "testNoExist/Data", nil)
 	cdc.RegisterConcrete(&noMsg{}, "testNoExist/Msg", nil)
 }
 
 // ModuleCdc module wide codec
-var ModuleCdc *codec.Codec
+var ModuleCdc *codec.LegacyAmino
 
 func init() {
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 	RegisterCodec(ModuleCdc)
 	codec.RegisterCrypto(ModuleCdc)
 	ModuleCdc.Seal()
 }
 
 // Cdc get codec for types
-func Cdc() *codec.Codec {
+func Cdc() *codec.LegacyAmino {
 	return ModuleCdc
 }

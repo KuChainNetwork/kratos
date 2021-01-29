@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makeTestCodec() (cdc *codec.Codec) {
-	cdc = codec.New()
+func makeTestCodec() (cdc *codec.LegacyAmino) {
+	cdc = codec.NewLegacyAmino()
 	sdk.RegisterCodec(cdc)
 	return
 }

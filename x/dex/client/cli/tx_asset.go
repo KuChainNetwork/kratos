@@ -15,7 +15,7 @@ import (
 )
 
 // SigInCmd will create a dex
-func SigInCmd(cdc *codec.Codec) *cobra.Command {
+func SigInCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sigIn [account] [dex] [amt]",
 		Short: "Create and sign a sigIn msg",
@@ -57,7 +57,7 @@ func SigInCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // SigOutCmd will create a dex
-func SigOutCmd(cdc *codec.Codec) *cobra.Command {
+func SigOutCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sigOut [account] [dex] [amt]",
 		Short: "Create and sign a sigOut msg",

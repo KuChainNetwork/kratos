@@ -14,7 +14,7 @@ import (
 )
 
 // GenCoinCmd builds gen genesis coin type to genesis config
-func GensisCoinCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+func GensisCoinCmd(ctx *server.Context, cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-coin",
 		Short: "Add a genesis coin type to chain",
@@ -56,7 +56,7 @@ func GensisCoinCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func addCoin(cdc *codec.Codec, state *asset.GenesisState, creator, symbol types.Name, maxSupply types.Coin, desc string) error {
+func addCoin(cdc *codec.LegacyAmino, state *asset.GenesisState, creator, symbol types.Name, maxSupply types.Coin, desc string) error {
 	for _, g := range state.GenesisCoins {
 		if g.GetCreator().Eq(creator) && g.GetSymbol().Eq(symbol) {
 			return fmt.Errorf("the application state already contains coins")

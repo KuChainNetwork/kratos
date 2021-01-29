@@ -5,7 +5,7 @@ import (
 )
 
 // RegisterCodec registers concrete types on codec
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUnjail{}, "kuchain/MsgUnjail", nil)
 	cdc.RegisterConcrete(KuMsgUnjail{}, "kuchain/KuMsgUnjail", nil)
 }
@@ -17,11 +17,11 @@ var (
 	//
 	// The actual codec used for serialization should be provided to x/slashing and
 	// defined at the application level.
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 )
 
 // Cdc get codec for types
-func Cdc() *codec.Codec {
+func Cdc() *codec.LegacyAmino {
 	return ModuleCdc
 }
 

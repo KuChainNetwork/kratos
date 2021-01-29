@@ -126,12 +126,12 @@ func (v Validators) Swap(i, j int) {
 }
 
 // return the redelegation
-func MustMarshalValidator(cdc *codec.Codec, validator Validator) []byte {
+func MustMarshalValidator(cdc *codec.LegacyAmino, validator Validator) []byte {
 	return cdc.MustMarshalBinaryBare(&validator)
 }
 
 // unmarshal a redelegation from a store value
-func MustUnmarshalValidator(cdc *codec.Codec, value []byte) Validator {
+func MustUnmarshalValidator(cdc *codec.LegacyAmino, value []byte) Validator {
 	validator, err := UnmarshalValidator(cdc, value)
 	if err != nil {
 		panic(err)
@@ -140,7 +140,7 @@ func MustUnmarshalValidator(cdc *codec.Codec, value []byte) Validator {
 }
 
 // unmarshal a redelegation from a store value
-func UnmarshalValidator(cdc *codec.Codec, value []byte) (v Validator, err error) {
+func UnmarshalValidator(cdc *codec.LegacyAmino, value []byte) (v Validator, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &v)
 	return v, err
 }

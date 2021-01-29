@@ -93,7 +93,7 @@ type GenesisBalancesIterator struct{}
 // appGenesis and invokes a callback on each genesis account. If any call
 // returns true, iteration stops.
 func (GenesisBalancesIterator) IterateGenesisBalances(
-	cdc *codec.Codec, appState types.AppGenesisState, cb func(GenesisAsset) (stop bool),
+	cdc *codec.LegacyAmino, appState types.AppGenesisState, cb func(GenesisAsset) (stop bool),
 ) {
 	var gs GenesisState
 	err := types.LoadGenesisStateFromBytes(cdc, appState, ModuleName, &gs)

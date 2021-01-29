@@ -12,7 +12,7 @@ import (
 )
 
 // GetQueryCmd returns the cli query commands for the minting module.
-func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	mintingQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the minting module",
@@ -34,7 +34,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 
 // GetCmdQueryParams implements a command to return the current minting
 // parameters.
-func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryParams(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "params",
 		Short: "Query the current minting parameters",
@@ -60,7 +60,7 @@ func GetCmdQueryParams(cdc *codec.Codec) *cobra.Command {
 
 // GetCmdQueryInflation implements a command to return the current minting
 // inflation value.
-func GetCmdQueryInflation(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryInflation(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "inflation",
 		Short: "Query the current minting inflation value",
@@ -86,7 +86,7 @@ func GetCmdQueryInflation(cdc *codec.Codec) *cobra.Command {
 
 // GetCmdQueryAnnualProvisions implements a command to return the current minting
 // annual provisions value.
-func GetCmdQueryAnnualProvisions(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryAnnualProvisions(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "annual-provisions",
 		Short: "Query the current minting annual provisions value",

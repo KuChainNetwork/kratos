@@ -12,11 +12,11 @@ import (
 )
 
 // ModuleCdc defines a generic sealed codec to be used throughout this module
-var ModuleCdc *codec.Codec
+var ModuleCdc *codec.LegacyAmino
 
 // required for genesis transactions
 func init() {
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 	stakingtypes.RegisterCodec(ModuleCdc)
 	evidencetypes.RegisterCodec(ModuleCdc)
 	accounttypes.RegisterCodec(ModuleCdc)

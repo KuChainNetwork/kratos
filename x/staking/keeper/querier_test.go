@@ -26,7 +26,7 @@ var (
 func TestQuerier(t *testing.T) {
 	wallet := simapp.NewWallet()
 	Convey("TestNewQuerier", t, func() {
-		cdc := codec.New()
+		cdc := codec.NewLegacyAmino()
 		_, _, _, _, _, _, app := NewTestApp(wallet)
 		keeper := app.StakeKeeper()
 		keeper = keeper.EmptyHooks()
@@ -114,7 +114,7 @@ func TestQuerier(t *testing.T) {
 		require.NoError(t, err)
 	})
 	Convey("TestQueryParametersPool", t, func() {
-		cdc := codec.New()
+		cdc := codec.NewLegacyAmino()
 		_, _, _, _, _, _, app := NewTestApp(wallet)
 		keeper := app.StakeKeeper()
 		keeper = keeper.EmptyHooks()
@@ -148,7 +148,7 @@ func TestQuerier(t *testing.T) {
 		require.Equal(t, oldNotBondedAmount, pool.NotBondedTokens)
 	})
 	Convey("TestQueryValidators", t, func() {
-		cdc := codec.New()
+		cdc := codec.NewLegacyAmino()
 		_, _, _, _, _, _, app := NewTestApp(wallet)
 		keeper := app.StakeKeeper()
 		keeper = keeper.EmptyHooks()
@@ -212,7 +212,7 @@ func TestQuerier(t *testing.T) {
 		require.Equal(t, queriedValidators[0], validator)
 	})
 	Convey("TestQueryDelegation", t, func() {
-		cdc := codec.New()
+		cdc := codec.NewLegacyAmino()
 		_, _, _, _, _, _, app := NewTestApp(wallet)
 		keeper := app.StakeKeeper()
 		keeper = keeper.EmptyHooks()
@@ -441,7 +441,7 @@ func TestQuerier(t *testing.T) {
 		require.Len(t, redel.Entries, len(redelRes[0].Entries))
 	})
 	Convey("TestQueryRedelegations", t, func() {
-		cdc := codec.New()
+		cdc := codec.NewLegacyAmino()
 		_, _, _, _, _, _, app := NewTestApp(wallet)
 		keeper := app.StakeKeeper()
 		keeper = keeper.EmptyHooks()
@@ -516,7 +516,7 @@ func TestQuerier(t *testing.T) {
 		require.Len(t, redel.Entries, len(redelRes[0].Entries))
 	})
 	Convey("TestQueryUnbondingDelegation", t, func() {
-		cdc := codec.New()
+		cdc := codec.NewLegacyAmino()
 		_, _, _, _, _, _, app := NewTestApp(wallet)
 		keeper := app.StakeKeeper()
 		keeper = keeper.EmptyHooks()
@@ -618,7 +618,7 @@ func TestQuerier(t *testing.T) {
 		require.Equal(t, 0, len(ubDels))
 	})
 	Convey("TestQueryHistoricalInfo", t, func() {
-		cdc := codec.New()
+		cdc := codec.NewLegacyAmino()
 		_, _, _, _, _, _, app := NewTestApp(wallet)
 		keeper := app.StakeKeeper()
 		keeper = keeper.EmptyHooks()

@@ -13,7 +13,7 @@ import (
 // modules, under a sub-command. This allows external modules to implement custom
 // Evidence types and Handlers while having the ability to create and sign txs
 // containing them all from a single root command.
-func GetTxCmd(storeKey string, cdc *codec.Codec, childCmds []*cobra.Command) *cobra.Command {
+func GetTxCmd(storeKey string, cdc *codec.LegacyAmino, childCmds []*cobra.Command) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Evidence transaction subcommands",
@@ -35,7 +35,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec, childCmds []*cobra.Command) *co
 // SubmitEvidenceCmd returns the top-level evidence submission command handler.
 // All concrete evidence submission child command handlers should be registered
 // under this command.
-func SubmitEvidenceCmd(cdc *codec.Codec) *cobra.Command {
+func SubmitEvidenceCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "submit",
 		Short: "Submit arbitrary evidence of misbehavior",

@@ -51,7 +51,7 @@ func (invalidProposalValidation) ValidateBasic() error {
 	return errors.New("invalid proposal")
 }
 
-func registerTestCodec(cdc *codec.Codec) {
+func registerTestCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(validProposal{}, "test/validproposal", nil)
 	cdc.RegisterConcrete(invalidProposalTitle1{}, "test/invalidproposalt1", nil)
 	cdc.RegisterConcrete(invalidProposalTitle2{}, "test/invalidproposalt2", nil)

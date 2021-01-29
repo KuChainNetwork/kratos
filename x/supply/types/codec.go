@@ -6,17 +6,17 @@ import (
 )
 
 // RegisterCodec registers the account types and interface
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*exported.ModuleAccountI)(nil), nil)
 	cdc.RegisterInterface((*exported.SupplyI)(nil), nil)
 	cdc.RegisterConcrete(&Supply{}, "kuchain/Supply", nil)
 }
 
 // ModuleCdc generic sealed codec to be used throughout module
-var ModuleCdc *codec.Codec
+var ModuleCdc *codec.LegacyAmino
 
 func init() {
-	cdc := codec.New()
+	cdc := codec.NewLegacyAmino()
 	RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	ModuleCdc = cdc.Seal()

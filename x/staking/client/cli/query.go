@@ -16,7 +16,7 @@ import (
 )
 
 // GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	stakingQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the staking module",
@@ -44,7 +44,7 @@ func GetQueryCmd(queryRoute string, cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQueryValidator implements the validator query command.
-func GetCmdQueryValidator(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidator(storeName string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "validator [validator-account]",
 		Short: "Query a validator",
@@ -86,7 +86,7 @@ $ %s query kustaking validator jack
 }
 
 // GetCmdQueryValidators implements the query all validators command.
-func GetCmdQueryValidators(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidators(storeName string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "validators",
 		Short: "Query for all validators",
@@ -124,7 +124,7 @@ $ %s query staking validators
 }
 
 // GetCmdQueryValidatorUnbondingDelegations implements the query all unbonding delegatations from a validator command.
-func GetCmdQueryValidatorUnbondingDelegations(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidatorUnbondingDelegations(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unbonding-delegations-from [validator-account]",
 		Short: "Query all unbonding delegatations from a validator",
@@ -166,7 +166,7 @@ $ %s query kustaking unbonding-delegations-from jack
 
 // GetCmdQueryValidatorRedelegations implements the query all redelegatations
 // from a validator command.
-func GetCmdQueryValidatorRedelegations(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidatorRedelegations(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "redelegations-from [validator-account]",
 		Short: "Query all outgoing redelegatations from a validator",
@@ -210,7 +210,7 @@ $ %s query kustaking redelegations-from jack
 }
 
 // GetCmdQueryDelegation the query delegation command.
-func GetCmdQueryDelegation(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryDelegation(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "delegation [delegator-account] [validator-account]",
 		Short: "Query a delegation based on delegator account and validator account",
@@ -260,7 +260,7 @@ $ %s query kustaking delegation alice jack
 
 // GetCmdQueryDelegations implements the command to query all the delegations
 // made from one delegator.
-func GetCmdQueryDelegations(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryDelegations(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "delegations [delegator-account]",
 		Short: "Query all delegations made by one delegator",
@@ -305,7 +305,7 @@ $ %s query kustaking delegations alice
 
 // GetCmdQueryValidatorDelegations implements the command to query all the
 // delegations to a specific validator.
-func GetCmdQueryValidatorDelegations(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryValidatorDelegations(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "delegations-to [validator-account]",
 		Short: "Query all delegations made to one validator",
@@ -350,7 +350,7 @@ $ %s query kustaking delegations-to jack
 
 // GetCmdQueryUnbondingDelegation implements the command to query a single
 // unbonding-delegation record.
-func GetCmdQueryUnbondingDelegation(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryUnbondingDelegation(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unbonding-delegation [delegator-account] [validator-account]",
 		Short: "Query an unbonding-delegation record based on delegator and validator account",
@@ -400,7 +400,7 @@ $ %s query kustaking unbonding-delegation alice jack
 
 // GetCmdQueryUnbondingDelegations implements the command to query all the
 // unbonding-delegation records for a delegator.
-func GetCmdQueryUnbondingDelegations(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryUnbondingDelegations(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unbonding-delegations [delegator-account]",
 		Short: "Query all unbonding-delegations records for one delegator",
@@ -445,7 +445,7 @@ $ %s query kustaking unbonding-delegations alice
 
 // GetCmdQueryRedelegation implements the command to query a single
 // redelegation record.
-func GetCmdQueryRedelegation(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryRedelegation(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "redelegation [delegator-account] [src-validator-account] [dst-validator-account]",
 		Short: "Query a redelegation record based on delegator and a source and destination validator address",
@@ -500,7 +500,7 @@ $ %s query kustaking redelegation alice  jack validator
 
 // GetCmdQueryRedelegations implements the command to query all the
 // redelegation records for a delegator.
-func GetCmdQueryRedelegations(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryRedelegations(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "redelegations [delegator-account]",
 		Args:  cobra.ExactArgs(1),
@@ -544,7 +544,7 @@ $ %s query kustaking redelegations alice
 }
 
 // GetCmdQueryHistoricalInfo implements the historical info query command
-func GetCmdQueryHistoricalInfo(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryHistoricalInfo(queryRoute string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "historical-info [height]",
 		Args:  cobra.ExactArgs(1),
@@ -588,7 +588,7 @@ $ %s query kustaking historical-info 5
 }
 
 // GetCmdQueryPool implements the pool query command.
-func GetCmdQueryPool(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryPool(storeName string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "pool",
 		Args:  cobra.NoArgs,
@@ -621,7 +621,7 @@ $ %s query kustaking pool
 }
 
 // GetCmdQueryParams implements the params query command.
-func GetCmdQueryParams(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryParams(storeName string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "params",
 		Args:  cobra.NoArgs,

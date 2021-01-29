@@ -6,10 +6,10 @@ import (
 
 	"github.com/KuChainNetwork/kuchain/chain/constants/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/types/multisig"
+	kmultisig "github.com/cosmos/cosmos-sdk/crypto/keys/multisig"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/tendermint/tendermint/crypto"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -69,14 +69,14 @@ func (tx StdTx) ValidateBasic() error {
 }
 
 // CountSubKeys counts the total number of keys for a multi-sig public key.
-func CountSubKeys(pub crypto.PubKey) int {
-	v, ok := pub.(multisig.PubKeyMultisigThreshold)
+func CountSubKeys(pub cryptotypes.PubKey) int {
+	v, ok := pub.(*kmultisig.LegacyAminoPubKey)
 	if !ok {
 		return 1
 	}
 
 	numKeys := 0
-	for _, subkey := range v.PubKeys {
+	for _, subkey := range v.GetPubKeys() {
 		numKeys += CountSubKeys(subkey)
 	}
 
@@ -115,7 +115,7 @@ func (tx StdTx) GetMemo() string { return tx.Memo }
 // .Empty().
 func (tx StdTx) GetSignatures() []StdSignature { return tx.Signatures }
 
-func (tx StdTx) PrettifyJSON(cdc *codec.Codec) ([]byte, error) {
+func (tx StdTx) PrettifyJSON(cdc *codec.LegacyAmino) ([]byte, error) {
 	alias := struct {
 		Msgs       []json.RawMessage `json:"msg" yaml:"msg"`
 		Fee        StdFee            `json:"fee" yaml:"fee"`
@@ -240,12 +240,12 @@ func StdSignBytes(chainID string, accnum uint64, sequence uint64, fee StdFee, ms
 
 // StdSignature represents a sig
 type StdSignature struct {
-	crypto.PubKey `json:"pub_key" yaml:"pub_key"` // optional
-	Signature     []byte                          `json:"signature" yaml:"signature"`
+	cryptotypes.PubKey `json:"pub_key" yaml:"pub_key"` // optional
+	Signature          []byte                          `json:"signature" yaml:"signature"`
 }
 
 // DefaultTxDecoder logic for standard transaction decoding
-func DefaultTxDecoder(cdc *codec.Codec) sdk.TxDecoder {
+func DefaultTxDecoder(cdc *codec.LegacyAmino) sdk.TxDecoder {
 	return func(txBytes []byte) (sdk.Tx, error) {
 		var tx = StdTx{}
 
@@ -265,7 +265,7 @@ func DefaultTxDecoder(cdc *codec.Codec) sdk.TxDecoder {
 }
 
 // DefaultTxEncoder logic for standard transaction encoding
-func DefaultTxEncoder(cdc *codec.Codec) sdk.TxEncoder {
+func DefaultTxEncoder(cdc *codec.LegacyAmino) sdk.TxEncoder {
 	return func(tx sdk.Tx) ([]byte, error) {
 		return cdc.MarshalBinaryLengthPrefixed(tx)
 	}

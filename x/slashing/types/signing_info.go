@@ -58,7 +58,7 @@ func (i ValidatorSigningInfo) String() string {
 }
 
 // unmarshal a validator signing info from a store value
-func UnmarshalValSigningInfo(cdc *codec.Codec, value []byte) (signingInfo ValidatorSigningInfo, err error) {
+func UnmarshalValSigningInfo(cdc *codec.LegacyAmino, value []byte) (signingInfo ValidatorSigningInfo, err error) {
 	err = cdc.UnmarshalBinaryBare(value, &signingInfo)
 	return signingInfo, err
 }

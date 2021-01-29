@@ -22,10 +22,8 @@ type DecCoin struct {
 
 func (coin DecCoin) ToSDK() sdk.DecCoin {
 	return sdk.DecCoin{
-		Denom: coin.Denom,
-		Amount: sdk.Dec{
-			Int: coin.Amount.Int,
-		},
+		Denom:  coin.Denom,
+		Amount: sdk.NewDecFromBigInt(coin.Amount.BigInt()),
 	}
 }
 
@@ -146,7 +144,7 @@ func (coin DecCoin) IsPositive() bool {
 //
 // TODO: Remove once unsigned integers are used.
 func (coin DecCoin) IsNegative() bool {
-	return coin.Amount.Sign() == -1
+	return coin.Amount.IsNegative()
 }
 
 // String implements the Stringer interface for DecCoin. It returns a

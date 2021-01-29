@@ -49,7 +49,7 @@ func (AppModuleBasic) Name() string {
 }
 
 // RegisterCodec registers the gov module's types for the given codec.
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
+func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
 	RegisterCodec(cdc)
 }
 
@@ -65,7 +65,7 @@ func (a AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Route
 }
 
 // GetTxCmd returns the root tx command for the gov module.
-func (a AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func (a AppModuleBasic) GetTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	proposalCLIHandlers := make([]*cobra.Command, 0, len(a.proposalHandlers))
 	for _, proposalHandler := range a.proposalHandlers {
 		proposalCLIHandlers = append(proposalCLIHandlers, proposalHandler.CLIHandler(cdc))
@@ -75,7 +75,7 @@ func (a AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetQueryCmd returns the root query command for the gov module.
-func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func (AppModuleBasic) GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	return cli.GetQueryCmd(StoreKey, cdc)
 }
 

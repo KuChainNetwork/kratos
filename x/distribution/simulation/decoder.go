@@ -13,7 +13,7 @@ import (
 // FIXME: TO Kuchain
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding distribution type
-func DecodeStore(cdc *codec.Codec, kvA, kvB kv.Pair) string {
+func DecodeStore(cdc *codec.LegacyAmino, kvA, kvB kv.Pair) string {
 	switch {
 	case bytes.Equal(kvA.Key[:1], types.FeePoolKey):
 		var feePoolA, feePoolB types.FeePool

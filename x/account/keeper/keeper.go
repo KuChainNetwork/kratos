@@ -23,14 +23,14 @@ type AccountKeeper struct {
 	key sdk.StoreKey
 
 	// The codec codec for binary encoding/decoding of accounts.
-	cdc *codec.Codec
+	cdc *codec.LegacyAmino
 
 	// The prototypical Account constructor.
 	proto func() exported.Account
 }
 
 // NewAccountKeeper new account keeper
-func NewAccountKeeper(cdc *codec.Codec, key sdk.StoreKey) AccountKeeper {
+func NewAccountKeeper(cdc *codec.LegacyAmino, key sdk.StoreKey) AccountKeeper {
 	return AccountKeeper{
 		key:   key,
 		proto: types.NewProtoKuAccount,

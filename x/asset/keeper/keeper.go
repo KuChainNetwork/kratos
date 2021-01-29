@@ -30,7 +30,7 @@ type AssetCoinsKeeper interface {
 
 // AssetViewKeeper keeper view interface for asset module
 type AssetViewKeeper interface {
-	Cdc() *codec.Codec
+	Cdc() *codec.LegacyAmino
 
 	GetCoins(ctx sdk.Context, account types.AccountID) (types.Coins, error)
 	GetCoin(ctx sdk.Context, account types.AccountID, creator, symbol types.Name) (types.Coin, error)
@@ -53,7 +53,7 @@ type AssetKeeper struct {
 	key sdk.StoreKey
 
 	// The codec codec for binary encoding/decoding of accounts.
-	cdc *codec.Codec
+	cdc *codec.LegacyAmino
 
 	// AccountKeeper interface
 	ak AccountEnsurer
@@ -62,7 +62,7 @@ type AssetKeeper struct {
 var _ AssetCoinsKeeper = AssetKeeper{}
 
 // NewAssetKeeper new asset keeper
-func NewAssetKeeper(cdc *codec.Codec, key sdk.StoreKey, ak AccountEnsurer) AssetKeeper {
+func NewAssetKeeper(cdc *codec.LegacyAmino, key sdk.StoreKey, ak AccountEnsurer) AssetKeeper {
 	return AssetKeeper{
 		key: key,
 		cdc: cdc,
@@ -71,7 +71,7 @@ func NewAssetKeeper(cdc *codec.Codec, key sdk.StoreKey, ak AccountEnsurer) Asset
 }
 
 // Cdc get cdc
-func (a AssetKeeper) Cdc() *codec.Codec {
+func (a AssetKeeper) Cdc() *codec.LegacyAmino {
 	return a.cdc
 }
 

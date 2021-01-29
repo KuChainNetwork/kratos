@@ -12,7 +12,7 @@ import (
 
 // SetGenTxsInAppGenesisState - sets the genesis transactions in the app genesis state
 func SetGenTxsInAppGenesisState(
-	cdc *codec.Codec, appGenesisState map[string]json.RawMessage, genTxs []txutil.StdTx,
+	cdc *codec.LegacyAmino, appGenesisState map[string]json.RawMessage, genTxs []txutil.StdTx,
 ) (map[string]json.RawMessage, error) {
 	genesisState := GetGenesisStateFromAppState(cdc, appGenesisState)
 	genTxsBz := make([]json.RawMessage, 0, len(genTxs))
@@ -36,7 +36,7 @@ type DeliverTxfn func(abci.RequestDeliverTx) abci.ResponseDeliverTx
 // invokes the provided DeliverTxfn with the decoded StdTx. It returns the result
 // of the staking module's ApplyAndReturnValidatorSetUpdates.
 func DeliverGenTxs(
-	ctx sdk.Context, cdc *codec.Codec, genTxs []json.RawMessage,
+	ctx sdk.Context, cdc *codec.LegacyAmino, genTxs []json.RawMessage,
 	stakingKeeper types.StakingKeeper, deliverTx DeliverTxfn,
 ) []abci.ValidatorUpdate {
 	logger := ctx.Logger()

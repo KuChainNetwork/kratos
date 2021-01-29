@@ -18,7 +18,7 @@ import (
 // decCoins := chainTypes.NewDecCoins(chainTypes.NewDecCoin(constants.DefaultBondDenom, sdk.NewInt(sdk.OneDec().Int64())))
 
 func createFakeTxBuilder() txutil.TxBuilder {
-	cdc := codec.New()
+	cdc := codec.NewLegacyAmino()
 	return txutil.NewTxBuilder(
 		txutil.GetTxEncoder(cdc),
 		123,
@@ -35,7 +35,7 @@ func createFakeTxBuilder() txutil.TxBuilder {
 
 func Test_splitAndCall_NoMessages(t *testing.T) {
 	txBldr := createFakeTxBuilder()
-	ctxl := client.NewCtxByCodec(codec.New())
+	ctxl := client.NewCtxByCodec(codec.NewLegacyAmino())
 
 	err := splitAndApply(nil, ctxl, txBldr, nil, 10)
 	assert.NoError(t, err, "")
@@ -43,7 +43,7 @@ func Test_splitAndCall_NoMessages(t *testing.T) {
 
 func Test_splitAndCall_Splitting(t *testing.T) {
 	txBldr := createFakeTxBuilder()
-	ctxl := client.NewCtxByCodec(codec.New())
+	ctxl := client.NewCtxByCodec(codec.NewLegacyAmino())
 
 	addr := sdk.AccAddress(secp256k1.GenPrivKey().PubKey().Address())
 

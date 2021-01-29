@@ -12,7 +12,7 @@ import (
 
 // AddGenesisCmds
 func AddGenesisCmds(
-	ctx *server.Context, cdc *codec.Codec,
+	ctx *server.Context, cdc *codec.LegacyAmino,
 	defaultNodeHome, defaultClientHome string,
 ) *cobra.Command {
 	genCmd := &cobra.Command{

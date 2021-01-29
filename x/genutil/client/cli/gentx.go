@@ -46,7 +46,7 @@ type StakingMsgBuildingHelpers interface {
 		authAddress chainTypes.AccAddress, delAccountID, valAccountID chainTypes.AccountID) (txutil.TxBuilder, sdk.Msg, error)
 }
 
-func genTxRunE(ctx *server.Context, cdc *codec.Codec,
+func genTxRunE(ctx *server.Context, cdc *codec.LegacyAmino,
 	mbm module.BasicManager, smbh StakingMsgBuildingHelpers,
 	flagNodeID, flagPubKey string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
@@ -149,7 +149,7 @@ func genTxRunE(ctx *server.Context, cdc *codec.Codec,
 	}
 }
 
-func writeGenTxToFile(cdc *codec.Codec, config *cfg.Config, nodeID string, stdTx chainTypes.StdTx) error {
+func writeGenTxToFile(cdc *codec.LegacyAmino, config *cfg.Config, nodeID string, stdTx chainTypes.StdTx) error {
 	// Fetch output file name
 	var err error
 
@@ -170,7 +170,7 @@ func writeGenTxToFile(cdc *codec.Codec, config *cfg.Config, nodeID string, stdTx
 }
 
 // GenTxCmd builds the application's gentx command.
-func GenTxCmd(ctx *server.Context, cdc *codec.Codec,
+func GenTxCmd(ctx *server.Context, cdc *codec.LegacyAmino,
 	mbm module.BasicManager, smbh StakingMsgBuildingHelpers,
 	genBalIterator types.GenesisBalancesIterator, defaultNodeHome, defaultCLIHome string,
 	stakingFuncManager types.StakingFuncManager) *cobra.Command {
@@ -211,7 +211,7 @@ func makeOutputFilepath(rootDir, nodeID string) (string, error) {
 	return filepath.Join(writePath, fmt.Sprintf("gentx-%s.json", nodeID)), nil
 }
 
-func readUnsignedGenTxFile(cdc *codec.Codec, r io.Reader) (txutil.StdTx, error) {
+func readUnsignedGenTxFile(cdc *codec.LegacyAmino, r io.Reader) (txutil.StdTx, error) {
 	var stdTx txutil.StdTx
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -221,7 +221,7 @@ func readUnsignedGenTxFile(cdc *codec.Codec, r io.Reader) (txutil.StdTx, error) 
 	return stdTx, err
 }
 
-func writeSignedGenTx(cdc *codec.Codec, outputDocument string, tx txutil.StdTx) error {
+func writeSignedGenTx(cdc *codec.LegacyAmino, outputDocument string, tx txutil.StdTx) error {
 	outputFile, err := os.OpenFile(outputDocument, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
 	if err != nil {
 		return err

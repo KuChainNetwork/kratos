@@ -23,7 +23,7 @@ var _ types.DelegationSet = Keeper{}
 // keeper of the staking store
 type Keeper struct {
 	storeKey           sdk.StoreKey
-	cdc                *codec.Codec
+	cdc                *codec.LegacyAmino
 	bankKeeper         types.BankKeeper
 	supplyKeeper       types.SupplyKeeper
 	hooks              types.StakingHooks
@@ -35,7 +35,7 @@ type Keeper struct {
 
 // NewKeeper creates a new staking Keeper instance
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, bk types.BankKeeper, sk types.SupplyKeeper, ps external.ParamsSubspace, ak types.AccountStatKeeper,
+	cdc *codec.LegacyAmino, key sdk.StoreKey, bk types.BankKeeper, sk types.SupplyKeeper, ps external.ParamsSubspace, ak types.AccountStatKeeper,
 ) Keeper {
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(ParamKeyTable())

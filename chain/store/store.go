@@ -3,7 +3,7 @@ package store
 import (
 	"io"
 
-	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -23,7 +23,7 @@ type storeWapper struct {
 	store  KVStore
 }
 
-func (s *storeWapper) GetStoreType() store.StoreType {
+func (s *storeWapper) GetStoreType() types.StoreType {
 	return s.store.GetStoreType()
 }
 

@@ -18,7 +18,7 @@ const (
 )
 
 // GensisAccountCmd builds gen genesis account to genesis config
-func GensisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+func GensisAccountCmd(ctx *server.Context, cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-account",
 		Short: "Add a genesis account to chain",
@@ -63,7 +63,7 @@ func GensisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 }
 
 // GensisAddAccountCmd builds gen genesis account to genesis config
-func GensisAddAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+func GensisAddAccountCmd(ctx *server.Context, cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-address",
 		Short: "Add a genesis account to chain",
@@ -102,7 +102,7 @@ func GensisAddAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func addGenesisAccount(cdc *codec.Codec, state *account.GenesisState, name types.Name, auth types.AccAddress) error {
+func addGenesisAccount(cdc *codec.LegacyAmino, state *account.GenesisState, name types.Name, auth types.AccAddress) error {
 	for _, stateAcc := range state.Accounts {
 		if stateAcc.GetName().Eq(name) {
 			return fmt.Errorf("the application state already contains account %s", name)
@@ -119,7 +119,7 @@ func addGenesisAccount(cdc *codec.Codec, state *account.GenesisState, name types
 	return nil
 }
 
-func addGenesisAddAccount(cdc *codec.Codec, state *account.GenesisState, auth types.AccAddress) error {
+func addGenesisAddAccount(cdc *codec.LegacyAmino, state *account.GenesisState, auth types.AccAddress) error {
 	id := types.NewAccountIDFromAccAdd(auth)
 	for _, stateAcc := range state.Accounts {
 		if stateAcc.GetID().Eq(id) {

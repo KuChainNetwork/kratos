@@ -45,7 +45,7 @@ func (AppModuleBasic) Name() string {
 }
 
 // RegisterCodec registers the mint module's types for the given codec.
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {}
+func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {}
 
 // RegisterRESTRoutes registers the REST routes for the mint module.
 func (AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router) {
@@ -53,10 +53,10 @@ func (AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router)
 }
 
 // GetTxCmd returns no root tx command for the mint module.
-func (AppModuleBasic) GetTxCmd(_ *codec.Codec) *cobra.Command { return nil }
+func (AppModuleBasic) GetTxCmd(_ *codec.LegacyAmino) *cobra.Command { return nil }
 
 // GetQueryCmd returns the root query command for the mint module.
-func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func (AppModuleBasic) GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	return cli.GetQueryCmd(cdc)
 }
 

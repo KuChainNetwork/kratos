@@ -17,7 +17,7 @@ import (
 )
 
 // GetTxCmd returns the transaction commands for this module
-func GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func GetTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Dex transactions sub commands",
@@ -43,7 +43,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // CreateDex will create a dex
-func CreateDex(cdc *codec.Codec) *cobra.Command {
+func CreateDex(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create [creator] [stakings] [description]",
 		Short: "Create and sign a dex create trx",
@@ -84,7 +84,7 @@ func CreateDex(cdc *codec.Codec) *cobra.Command {
 }
 
 // UpdateDexDescriptionCmd returns a updated dex
-func UpdateDexDescriptionCmd(cdc *codec.Codec) *cobra.Command {
+func UpdateDexDescriptionCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update_description [creator] [description]",
 		Short: "Update creator dex description",
@@ -118,7 +118,7 @@ func UpdateDexDescriptionCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // DestroyDex return a destroy dex command
-func DestroyDex(cdc *codec.Codec) *cobra.Command {
+func DestroyDex(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "destroy [creator]",
 		Short: "Destroy creator dex",
@@ -150,7 +150,7 @@ func DestroyDex(cdc *codec.Codec) *cobra.Command {
 }
 
 // CreateSymbol returns a create symbol command
-func CreateSymbol(cdc *codec.Codec) *cobra.Command {
+func CreateSymbol(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "create_symbol [creator] [base_creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
 			" [quote_creator] [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [quote_tx_url]",
@@ -248,7 +248,7 @@ func CreateSymbol(cdc *codec.Codec) *cobra.Command {
 }
 
 // UpdateSymbol returns a update symbol command
-func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
+func UpdateSymbol(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "update_symbol [creator] [base_creator] [base_code] [base_name] [base_full_name] [base_icon_url] [base_tx_url]" +
 			" [quote_creator] [quote_code] [quote_name] [quote_full_name] [quote_icon_url] [quote_tx_url]",
@@ -348,7 +348,7 @@ func UpdateSymbol(cdc *codec.Codec) *cobra.Command {
 }
 
 // PauseSymbol returns a pause symbol command
-func PauseSymbol(cdc *codec.Codec) *cobra.Command {
+func PauseSymbol(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pause_symbol [creator] [base_creator] [base_code] [quote_creator] [quote_code]",
 		Short: "Pause dex symbol",
@@ -410,7 +410,7 @@ func PauseSymbol(cdc *codec.Codec) *cobra.Command {
 }
 
 // RestoreSymbol returns a restore symbol command
-func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
+func RestoreSymbol(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "restore_symbol [creator] [base_creator] [base_code] [quote_creator] [quote_code]",
 		Short: "Restore dex symbol",
@@ -472,7 +472,7 @@ func RestoreSymbol(cdc *codec.Codec) *cobra.Command {
 }
 
 // ShutdownSymbol returns a shutdown symbol command
-func ShutdownSymbol(cdc *codec.Codec) *cobra.Command {
+func ShutdownSymbol(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "shutdown_symbol [creator] [base_creator] [base_code] [quote_creator] [quote_code]",
 		Short: "Shutdown dex symbol",

@@ -20,7 +20,7 @@ import (
 
 const custom = "custom"
 
-func getQueriedParams(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier) (types.DepositParams, types.VotingParams, types.TallyParams) {
+func getQueriedParams(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier) (types.DepositParams, types.VotingParams, types.TallyParams) {
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, types.QueryParams, types.ParamDeposit}, "/"),
 		Data: []byte{},
@@ -61,7 +61,7 @@ func getQueriedParams(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier s
 }
 
 func getQueriedProposals(
-	t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier,
+	t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier,
 	depositor, voter chainTypes.AccountID, status types.ProposalStatus, page, limit int,
 ) []types.Proposal {
 
@@ -80,7 +80,7 @@ func getQueriedProposals(
 	return proposals
 }
 
-func getQueriedDeposit(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, proposalID uint64, depositor chainTypes.AccountID) types.Deposit {
+func getQueriedDeposit(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, proposalID uint64, depositor chainTypes.AccountID) types.Deposit {
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, types.QueryDeposit}, "/"),
 		Data: cdc.MustMarshalJSON(types.NewQueryDepositParams(proposalID, depositor)),
@@ -96,7 +96,7 @@ func getQueriedDeposit(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier 
 	return deposit
 }
 
-func getQueriedDeposits(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, proposalID uint64) []types.Deposit {
+func getQueriedDeposits(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, proposalID uint64) []types.Deposit {
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, types.QueryDeposits}, "/"),
 		Data: cdc.MustMarshalJSON(types.NewQueryProposalParams(proposalID)),
@@ -112,7 +112,7 @@ func getQueriedDeposits(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier
 	return deposits
 }
 
-func getQueriedVote(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier, proposalID uint64, voter chainTypes.AccountID) types.Vote {
+func getQueriedVote(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, proposalID uint64, voter chainTypes.AccountID) types.Vote {
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, types.QueryVote}, "/"),
 		Data: cdc.MustMarshalJSON(types.NewQueryVoteParams(proposalID, voter)),
@@ -128,7 +128,7 @@ func getQueriedVote(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk
 	return vote
 }
 
-func getQueriedVotes(t *testing.T, ctx sdk.Context, cdc *codec.Codec, querier sdk.Querier,
+func getQueriedVotes(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier,
 	proposalID uint64, page, limit int) []types.Vote {
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, types.QueryVote}, "/"),
@@ -365,4 +365,3 @@ func TestQuerier(t *testing.T) {
 		}
 	})
 }
-

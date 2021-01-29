@@ -10,7 +10,7 @@ import (
 )
 
 func TestQueryDelegationRewardsAddrValidation(t *testing.T) {
-	cdc := codec.New()
+	cdc := codec.NewLegacyAmino()
 	ctx := client.NewCtxByCodec(cdc)
 	type args struct {
 		delAddr string

@@ -53,7 +53,7 @@ var ProposalFlags = []string{
 // it contains a slice of "proposal" child commands. These commands are respective
 // to proposal type handlers that are implemented in other modules but are mounted
 // under the governance CLI (eg. parameter change proposals).
-func GetTxCmd(storeKey string, cdc *codec.Codec, pcmds []*cobra.Command) *cobra.Command {
+func GetTxCmd(storeKey string, cdc *codec.LegacyAmino, pcmds []*cobra.Command) *cobra.Command {
 	govTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Governance transactions subcommands",
@@ -77,7 +77,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec, pcmds []*cobra.Command) *cobra.
 }
 
 // GetCmdSubmitProposal implements submitting a proposal transaction command.
-func GetCmdSubmitProposal(cdc *codec.Codec) *cobra.Command {
+func GetCmdSubmitProposal(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "submit-proposal [proposer]",
 		Short: "Submit a proposal along with an initial deposit",
@@ -154,7 +154,7 @@ $ %s tx kugov submit-proposal jack --title="Test Proposal" --description="My awe
 }
 
 // GetCmdDeposit implements depositing tokens for an active proposal.
-func GetCmdDeposit(cdc *codec.Codec) *cobra.Command {
+func GetCmdDeposit(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "deposit [depositor] [proposal-id] [deposit]",
 		Args:  cobra.ExactArgs(3),
@@ -212,7 +212,7 @@ $ %s tx kugov deposit 1 10stake --from mykey
 }
 
 // GetCmdVote implements creating a new vote command.
-func GetCmdVote(cdc *codec.Codec) *cobra.Command {
+func GetCmdVote(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "vote [voter-account] [proposal-id] [option]",
 		Args:  cobra.ExactArgs(3),

@@ -11,10 +11,10 @@ var (
 	//
 	// The actual codec used for serialization should be provided to x/mint and
 	// defined at the application level.
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 )
 
-func Cdc() *codec.Codec {
+func Cdc() *codec.LegacyAmino {
 	return ModuleCdc
 }
 

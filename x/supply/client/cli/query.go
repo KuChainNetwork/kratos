@@ -14,7 +14,7 @@ import (
 )
 
 // GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	// Group supply queries under a subcommand
 	supplyQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -32,7 +32,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdQueryTotalSupply implements the query total supply command.
-func GetCmdQueryTotalSupply(cdc *codec.Codec) *cobra.Command {
+func GetCmdQueryTotalSupply(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "total [denom]",
 		Args:  cobra.MaximumNArgs(1),
@@ -61,7 +61,7 @@ $ %s query %s total stake
 	}
 }
 
-func queryTotalSupply(cliCtx client.Context, cdc *codec.Codec) error {
+func queryTotalSupply(cliCtx client.Context, cdc *codec.LegacyAmino) error {
 	params := types.NewQueryTotalSupplyParams(1, 0) // no pagination
 	bz, err := cdc.MarshalJSON(params)
 	if err != nil {
@@ -82,7 +82,7 @@ func queryTotalSupply(cliCtx client.Context, cdc *codec.Codec) error {
 	return cliCtx.PrintOutput(totalSupply)
 }
 
-func querySupplyOf(cliCtx client.Context, cdc *codec.Codec, denom string) error {
+func querySupplyOf(cliCtx client.Context, cdc *codec.LegacyAmino, denom string) error {
 	params := types.NewQuerySupplyOfParams(denom)
 	bz, err := cdc.MarshalJSON(params)
 	if err != nil {

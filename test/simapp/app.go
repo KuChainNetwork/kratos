@@ -82,8 +82,8 @@ var (
 )
 
 // custom tx codec
-func MakeCodec() *codec.Codec {
-	var cdc = codec.New()
+func MakeCodec() *codec.LegacyAmino {
+	var cdc = codec.NewLegacyAmino()
 
 	chainTypes.RegisterCodec(cdc)
 	ModuleBasics.RegisterCodec(cdc)
@@ -104,7 +104,7 @@ var _ App = (*SimApp)(nil)
 // capabilities aren't needed for testing.
 type SimApp struct {
 	*bam.BaseApp
-	cdc *codec.Codec
+	cdc *codec.LegacyAmino
 
 	seed      int64
 	seedMutex sync.Mutex
@@ -370,7 +370,7 @@ func (app *SimApp) BlacklistedAccAddrs() map[string]bool {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *SimApp) Codec() *codec.Codec {
+func (app *SimApp) Codec() *codec.LegacyAmino {
 	return app.cdc
 }
 

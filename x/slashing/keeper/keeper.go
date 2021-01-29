@@ -15,13 +15,13 @@ import (
 // Keeper of the slashing store
 type Keeper struct {
 	storeKey   sdk.StoreKey
-	cdc        *codec.Codec
+	cdc        *codec.LegacyAmino
 	sk         types.StakingKeeper
 	paramspace types.ParamSubspace
 }
 
 // NewKeeper creates a slashing keeper
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, sk types.StakingKeeper, paramspace types.ParamSubspace) Keeper {
+func NewKeeper(cdc *codec.LegacyAmino, key sdk.StoreKey, sk types.StakingKeeper, paramspace types.ParamSubspace) Keeper {
 	return Keeper{
 		storeKey:   key,
 		cdc:        cdc,

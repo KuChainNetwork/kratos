@@ -24,7 +24,7 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simulation.AppParams, cdc *codec.Codec, ak types.AccountKeeper,
+	appParams simulation.AppParams, cdc *codec.LegacyAmino, ak types.AccountKeeper,
 	bk types.BankKeeper, k keeper.Keeper, sk types.StakingKeeper,
 ) simulation.WeightedOperations {
 

@@ -15,7 +15,7 @@ import (
 )
 
 // GetTxCmd returns the transaction commands for this module
-func GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func GetTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Asset transactions sub commands",
@@ -38,7 +38,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // Transfer will create a account create tx and sign it with the given key.
-func Transfer(cdc *codec.Codec) *cobra.Command {
+func Transfer(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "transfer [from] [to] [coins]",
 		Short: "Transfer coins and sign a trx",

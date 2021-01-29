@@ -18,7 +18,7 @@ import (
 )
 
 // Create will create a account create tx and sign it with the given key.
-func Create(cdc *codec.Codec) *cobra.Command {
+func Create(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create [creator] [symbol] [max_supply] [canIssue] [canLock] [canBurn] [issueToHeight] [initSupply] [desc]",
 		Short: "Create coin, for canIssue, canLock and canBurn, the 1 means true.",

@@ -17,7 +17,7 @@ import (
 
 // add server commands
 func AddCommands(
-	ctx *server.Context, cdc *codec.Codec,
+	ctx *server.Context, cdc *codec.LegacyAmino,
 	rootCmd *cobra.Command,
 	appCreator server.AppCreator, appExport server.AppExporter) {
 	rootCmd.PersistentFlags().String("log_level", ctx.Config.LogLevel, "Log level")

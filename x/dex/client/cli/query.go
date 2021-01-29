@@ -12,7 +12,7 @@ import (
 )
 
 // GetQueryCmd returns the transaction commands for this module
-func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the dex module",
@@ -31,7 +31,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetDexCmd returns a query dex
-func GetDexCmd(cdc *codec.Codec) *cobra.Command {
+func GetDexCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get [creator]",
 		Short: "Query dex for creator",
@@ -58,7 +58,7 @@ func GetDexCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetSymbol returns a query symbol
-func GetSymbol(cdc *codec.Codec) *cobra.Command {
+func GetSymbol(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "symbol [creator] [base creator] [base code] [quote creator] [quote code]",
 		Short: "Query dex symbol",
@@ -122,7 +122,7 @@ func GetSymbol(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetSignInCmd returns a query dex
-func GetSigInCmd(cdc *codec.Codec) *cobra.Command {
+func GetSigInCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "getSigIn [account] [dex]",
 		Short: "Query sigIn status for account to dex",

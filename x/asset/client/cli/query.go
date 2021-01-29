@@ -11,7 +11,7 @@ import (
 )
 
 // GetQueryCmd returns the transaction commands for this module
-func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the asset module",
@@ -33,7 +33,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCoinCmd returns a query coin
-func GetCoinCmd(cdc *codec.Codec) *cobra.Command {
+func GetCoinCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "coin [account] [creator] [symbol]",
 		Short: "Query coin for a account",
@@ -70,7 +70,7 @@ func GetCoinCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCoinCmd returns a query coin
-func GetCoinsCmd(cdc *codec.Codec) *cobra.Command {
+func GetCoinsCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "coins [account]",
 		Short: "Query all coins for a account",
@@ -97,7 +97,7 @@ func GetCoinsCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCoinCmd returns a query coin
-func GetCoinPowerCmd(cdc *codec.Codec) *cobra.Command {
+func GetCoinPowerCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "coinpower [account] [creator] [symbol]",
 		Short: "Query coin power for a account",
@@ -134,7 +134,7 @@ func GetCoinPowerCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCoinCmd returns a query coin
-func GetCoinPowersCmd(cdc *codec.Codec) *cobra.Command {
+func GetCoinPowersCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "coinpowers [account]",
 		Short: "Query all coin powers for a account",
@@ -161,7 +161,7 @@ func GetCoinPowersCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCoinStatCmd returns a query coin
-func GetCoinStatCmd(cdc *codec.Codec) *cobra.Command {
+func GetCoinStatCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status [creator] [symbol]",
 		Short: "Query coin status for creator/symbol token",

@@ -24,7 +24,7 @@ import (
 )
 
 // GetTxCmd returns the transaction commands for this module
-func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
+func GetTxCmd(storeKey string, cdc *codec.LegacyAmino) *cobra.Command {
 	stakingTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Staking transaction subcommands",
@@ -45,7 +45,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdCreateValidator implements the create validator command handler.
-func GetCmdCreateValidator(cdc *codec.Codec) *cobra.Command {
+func GetCmdCreateValidator(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-validator [validator-operator-account]",
 		Short: "create a new validator",
@@ -94,7 +94,7 @@ func GetCmdCreateValidator(cdc *codec.Codec) *cobra.Command {
 
 // GetCmdEditValidator implements the create edit validator command.
 // TODO: add full description
-func GetCmdEditValidator(cdc *codec.Codec) *cobra.Command {
+func GetCmdEditValidator(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "edit-validator [validator-operator-account]",
 		Short: "edit an existing validator account",
@@ -151,7 +151,7 @@ func GetCmdEditValidator(cdc *codec.Codec) *cobra.Command {
 }
 
 // GetCmdDelegate implements the delegate command.
-func GetCmdDelegate(cdc *codec.Codec) *cobra.Command {
+func GetCmdDelegate(cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "delegate [delegate-account] [validator-account] [amount]",
 		Args:  cobra.ExactArgs(3),
@@ -200,7 +200,7 @@ $ %s tx kustaking delegate jack validator 1000stake --from jack
 }
 
 // GetCmdRedelegate the begin redelegation command.
-func GetCmdRedelegate(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdRedelegate(storeName string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "redelegate [delegate-account] [src-validator-account] [dst-validator-account] [amount]",
 		Short: "Redelegate illiquid tokens from one validator to another",
@@ -253,7 +253,7 @@ $ %s tx kustaking redelegate jack validator1 validator2 100stake --from jack
 }
 
 // GetCmdUnbond implements the unbond validator command.
-func GetCmdUnbond(storeName string, cdc *codec.Codec) *cobra.Command {
+func GetCmdUnbond(storeName string, cdc *codec.LegacyAmino) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unbond [delegate-account] [validator-account] [amount]",
 		Short: "Unbond shares from a validator",

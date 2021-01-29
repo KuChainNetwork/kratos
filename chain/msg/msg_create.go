@@ -23,7 +23,7 @@ func (k withData) Op(msg *KuMsg) error {
 }
 
 // WithData create kumsg with data
-func WithData(cdc *codec.Codec, data KuMsgData) Option {
+func WithData(cdc *codec.LegacyAmino, data KuMsgData) Option {
 	dataByte, err := cdc.MarshalBinaryLengthPrefixed(data)
 	if err != nil {
 		panic(err)

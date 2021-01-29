@@ -37,7 +37,7 @@ func (txr txEncodeRespStr) String() string {
 
 // GetEncodeCommand returns the encode command to take a JSONified transaction and turn it into
 // Amino-serialized bytes
-func GetEncodeCommand(cdc *codec.Codec) *cobra.Command {
+func GetEncodeCommand(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "encode [file]",
 		Short: "Encode transactions generated offline",
@@ -70,7 +70,7 @@ If you supply a dash (-) argument in place of an input filename, the command rea
 	return flags.PostCommands(cmd)[0]
 }
 
-func QueryTxCmd(cdc *codec.Codec) *cobra.Command {
+func QueryTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tx [hash]",
 		Short: "Query for a transaction by hash in a committed block",
@@ -99,7 +99,7 @@ func QueryTxCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func GetBroadcastCommand(cdc *codec.Codec) *cobra.Command {
+func GetBroadcastCommand(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "broadcast [file_path]",
 		Short: "Broadcast transactions generated offline",
@@ -172,7 +172,7 @@ func runDecodeTxString(codec *amino.Codec) func(cmd *cobra.Command, args []strin
 }
 
 // QueryTxsByEventsCmd returns a command to search through transactions by events.
-func QueryTxsByEventsCmd(cdc *codec.Codec) *cobra.Command {
+func QueryTxsByEventsCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "txs",
 		Short: "Query for paginated transactions that match a set of events",

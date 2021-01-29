@@ -99,8 +99,8 @@ var (
 )
 
 // create a codec used only for testing
-func MakeTestCodec() *codec.Codec {
-	var cdc = codec.New()
+func MakeTestCodec() *codec.LegacyAmino {
+	var cdc = codec.NewLegacyAmino()
 
 	accountTypes.RegisterCodec(cdc)
 	assetTypes.RegisterCodec(cdc)

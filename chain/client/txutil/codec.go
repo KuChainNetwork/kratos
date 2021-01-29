@@ -5,10 +5,10 @@ import (
 )
 
 // ModuleCdc auth module wide codec
-var ModuleCdc = codec.New()
+var ModuleCdc = codec.NewLegacyAmino()
 
 // RegisterCodec registers concrete types on the codec
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 }
 
 func init() {

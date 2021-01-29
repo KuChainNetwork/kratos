@@ -31,7 +31,7 @@ type RestServer struct {
 }
 
 // NewRestServer creates a new rest server instance
-func NewRestServer(cdc *codec.Codec) *RestServer {
+func NewRestServer(cdc *codec.LegacyAmino) *RestServer {
 	r := mux.NewRouter()
 	cliCtx := client.NewCtxByCodec(cdc)
 	logger := kuLog.NewLoggerByZap(viper.GetBool(cli.TraceFlag), viper.GetString("log_level")).With("module", "rest-server")
@@ -78,7 +78,7 @@ func (rs *RestServer) Start(listenAddr string, maxOpen int, readTimeout, writeTi
 // ServeCommand will start the application REST service as a blocking process. It
 // takes a codec to create a RestServer object and a function to register all
 // necessary routes.
-func ServeCommand(cdc *codec.Codec, registerRoutesFn func(*RestServer)) *cobra.Command {
+func ServeCommand(cdc *codec.LegacyAmino, registerRoutesFn func(*RestServer)) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "rest-server",
 		Short: "Start LCD (light-client daemon), a local REST server",

@@ -14,10 +14,10 @@ type Codec interface {
 }
 
 type EvidenceCodec struct {
-	amino *codec.Codec
+	amino *codec.LegacyAmino
 }
 
-func NewEveidenceCodec(amino *codec.Codec) *EvidenceCodec {
+func NewEveidenceCodec(amino *codec.LegacyAmino) *EvidenceCodec {
 	return &EvidenceCodec{amino: amino}
 }
 
@@ -63,14 +63,14 @@ func (c *EvidenceCodec) UnmarshalEvidenceJSON(bz []byte) (exported.Evidence, err
 
 // RegisterCodec registers all the necessary types and interfaces for the
 // evidence module.
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*exported.Evidence)(nil), nil)
 	cdc.RegisterConcrete(MsgSubmitEvidenceBase{}, "kuchain/MsgSubmitEvidenceBase", nil)
 	cdc.RegisterConcrete(Equivocation{}, "kuchain/Equivocation", nil)
 }
 
 var (
-	ModuleCdc = codec.New()
+	ModuleCdc = codec.NewLegacyAmino()
 
 	// EvidenceCdc references the global x/evidence module codec. Note, the codec should
 	// ONLY be used in certain instances of tests and for JSON encoding as Amino is

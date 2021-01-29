@@ -24,8 +24,8 @@ var (
 	consAddr1 = chainTypes.NewAccountIDFromByte(delPk1.Address().Bytes())
 )
 
-func makeTestCodec() (cdc *codec.Codec) {
-	cdc = codec.New()
+func makeTestCodec() (cdc *codec.LegacyAmino) {
+	cdc = codec.NewLegacyAmino()
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	types.RegisterCodec(cdc)

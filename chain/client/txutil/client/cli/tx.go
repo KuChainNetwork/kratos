@@ -21,7 +21,7 @@ func (txRes TxResponse) Empty() bool {
 	return sdk.TxResponse(txRes).Empty()
 }
 
-func (txRes TxResponse) PrettifyJSON(cdc *codec.Codec) ([]byte, error) {
+func (txRes TxResponse) PrettifyJSON(cdc *codec.LegacyAmino) ([]byte, error) {
 	txRaw, err := txRes.Tx.(types.Prettifier).PrettifyJSON(cdc)
 	if err != nil {
 		return []byte{}, err
@@ -152,7 +152,7 @@ func QueryTx(cliCtx client.Context, hashHexStr string) (TxResponse, error) {
 }
 
 // formatTxResults parses the indexed txs into a slice of TxResponse objects.
-func formatTxResults(cdc *codec.Codec, resTxs []*ctypes.ResultTx, resBlocks map[int64]*ctypes.ResultBlock) ([]TxResponse, error) {
+func formatTxResults(cdc *codec.LegacyAmino, resTxs []*ctypes.ResultTx, resBlocks map[int64]*ctypes.ResultBlock) ([]TxResponse, error) {
 	var err error
 	out := make([]TxResponse, len(resTxs))
 	for i := range resTxs {
@@ -202,7 +202,7 @@ func getBlocksForTxResults(cliCtx client.Context, resTxs []*ctypes.ResultTx) (ma
 	return resBlocks, nil
 }
 
-func formatTxResult(cdc *codec.Codec, resTx *ctypes.ResultTx, resBlock *ctypes.ResultBlock) (TxResponse, error) {
+func formatTxResult(cdc *codec.LegacyAmino, resTx *ctypes.ResultTx, resBlock *ctypes.ResultBlock) (TxResponse, error) {
 	tx, err := parseTx(cdc, resTx.Tx)
 	if err != nil {
 		return TxResponse{}, err
@@ -211,7 +211,7 @@ func formatTxResult(cdc *codec.Codec, resTx *ctypes.ResultTx, resBlock *ctypes.R
 	return TxResponse(sdk.NewResponseResultTx(resTx, tx, resBlock.Block.Time.Format(time.RFC3339))), nil
 }
 
-func parseTx(cdc *codec.Codec, txBytes []byte) (sdk.Tx, error) {
+func parseTx(cdc *codec.LegacyAmino, txBytes []byte) (sdk.Tx, error) {
 	var tx types.StdTx
 
 	err := cdc.UnmarshalBinaryLengthPrefixed(txBytes, &tx)

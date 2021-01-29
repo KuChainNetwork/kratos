@@ -17,7 +17,7 @@ type (
 	RESTHandlerFn func(client.Context) rest.EvidenceRESTHandler
 
 	// CLIHandlerFn defines a CLI command handler for evidence submission
-	CLIHandlerFn func(*codec.Codec) *cobra.Command
+	CLIHandlerFn func(*codec.LegacyAmino) *cobra.Command
 
 	// EvidenceHandler defines a type that exposes REST and CLI client handlers for
 	// evidence submission.

@@ -15,7 +15,7 @@ import (
 )
 
 // GetTxCmd returns the transaction commands for this module
-func GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func GetTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Account transactions sub commands",
@@ -33,7 +33,7 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 // CreateAccount will create a account create tx and sign it with the given key.
-func CreateAccount(cdc *codec.Codec) *cobra.Command {
+func CreateAccount(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create [creator] [new_account_name] [new_account_owner_auth]",
 		Short: "Create and sign a account create trx",
@@ -75,7 +75,7 @@ func CreateAccount(cdc *codec.Codec) *cobra.Command {
 }
 
 // UpdateAccountAuth will update auth for a account
-func UpdateAccountAuth(cdc *codec.Codec) *cobra.Command {
+func UpdateAccountAuth(cdc *codec.LegacyAmino) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "updateauth [account_name] [new_account_owner_auth]",
 		Short: "update account auth for a account",

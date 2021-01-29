@@ -119,7 +119,7 @@ func EnrichWithGas(txBldr TxBuilder, cliCtx client.Context, msgs []sdk.Msg) (TxB
 // CalculateGas simulates the execution of a transaction and returns
 // both the estimate obtained by the query and the adjusted amount.
 func CalculateGas(
-	queryFunc func(string, []byte) ([]byte, int64, error), cdc *codec.Codec,
+	queryFunc func(string, []byte) ([]byte, int64, error), cdc *codec.LegacyAmino,
 	txBytes []byte, adjustment float64) (estimate, adjusted uint64, err error) {
 	// run a simulation (via /app/simulate query) to
 	// estimate gas and update TxBuilder accordingly
@@ -218,7 +218,7 @@ func SignStdTxWithSignerAddress(
 }
 
 // Read and decode a StdTx from the given filename.  Can pass "-" to read from stdin.
-func ReadStdTxFromFile(cdc *codec.Codec, filename string) (stdTx StdTx, err error) {
+func ReadStdTxFromFile(cdc *codec.LegacyAmino, filename string) (stdTx StdTx, err error) {
 	var bytes []byte
 
 	if filename == "-" {
@@ -250,7 +250,7 @@ func populateAccountFromState(
 
 // GetTxEncoder return tx encoder from global sdk configuration if ones is defined.
 // Otherwise returns encoder with default logic.
-func GetTxEncoder(cdc *codec.Codec) (encoder sdk.TxEncoder) {
+func GetTxEncoder(cdc *codec.LegacyAmino) (encoder sdk.TxEncoder) {
 	encoder = sdk.GetConfig().GetTxEncoder()
 	if encoder == nil {
 		encoder = DefaultTxEncoder(cdc)
@@ -275,7 +275,7 @@ func adjustGasEstimate(estimate uint64, adjustment float64) uint64 {
 	return uint64(adjustment * float64(estimate))
 }
 
-func parseQueryResponse(cdc *codec.Codec, rawRes []byte) (uint64, error) {
+func parseQueryResponse(cdc *codec.LegacyAmino, rawRes []byte) (uint64, error) {
 	var gasUsed uint64
 	if err := cdc.UnmarshalBinaryLengthPrefixed(rawRes, &gasUsed); err != nil {
 		return 0, err

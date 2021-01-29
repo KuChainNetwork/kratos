@@ -45,7 +45,7 @@ func (AppModuleBasic) Name() string {
 }
 
 // RegisterCodec registers the distribution module's types for the given codec.
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
+func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
 	RegisterCodec(cdc)
 }
 
@@ -55,12 +55,12 @@ func (AppModuleBasic) RegisterRESTRoutes(ctx clientSDK.Context, rtr *mux.Router)
 }
 
 // GetTxCmd returns the root tx command for the distribution module.
-func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func (AppModuleBasic) GetTxCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	return cli.GetTxCmd(StoreKey, cdc)
 }
 
 // GetQueryCmd returns the root query command for the distribution module.
-func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func (AppModuleBasic) GetQueryCmd(cdc *codec.LegacyAmino) *cobra.Command {
 	return cli.GetQueryCmd(StoreKey, cdc)
 }
 
