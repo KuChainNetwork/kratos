@@ -36,7 +36,7 @@ func NewAppModuleBasic() AppModuleBasic {
 }
 
 // RegisterCodec registers the params module's types for the given codec.
-func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	proposal.RegisterCodec(cdc)
 }
 
@@ -44,10 +44,10 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 func (AppModuleBasic) RegisterRESTRoutes(_ clientSDK.Context, _ *mux.Router) {}
 
 // GetTxCmd returns no root tx command for the params module.
-func (AppModuleBasic) GetTxCmd(_ *codec.Codec) *cobra.Command { return nil }
+func (AppModuleBasic) GetTxCmd() *cobra.Command { return nil }
 
 // GetQueryCmd returns no root query command for the params module.
-func (AppModuleBasic) GetQueryCmd(_ *codec.Codec) *cobra.Command { return nil }
+func (AppModuleBasic) GetQueryCmd() *cobra.Command { return nil }
 
 // AppModule implements an application module for the distribution module.
 type AppModule struct {
